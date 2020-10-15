@@ -15,26 +15,26 @@ import {
   OnDestroy,
   Output,
   ViewChild,
-} from '@angular/core';
-import { FormControl, FormGroupDirective, NgForm } from '@angular/forms';
-import { ErrorStateMatcher } from '@angular/material/core';
-import { MatStepper } from '@angular/material/stepper';
-import { ComnAuthService } from '@crucible/common';
-import { BehaviorSubject, Subject } from 'rxjs';
-import { take, takeUntil } from 'rxjs/operators';
-import { PlayerDataService } from 'src/app/data/player/player-data-service';
-import { ResultDataService } from 'src/app/data/result/result-data.service';
-import { ResultQuery } from 'src/app/data/result/result.query';
-import { ScenarioDataService } from 'src/app/data/scenario/scenario-data.service';
-import { TaskDataService } from 'src/app/data/task/task-data.service';
-import { TaskQuery } from 'src/app/data/task/task.query';
+} from "@angular/core";
+import { FormControl, FormGroupDirective, NgForm } from "@angular/forms";
+import { ErrorStateMatcher } from "@angular/material/core";
+import { MatStepper } from "@angular/material/stepper";
+import { ComnAuthService } from "@crucible/common";
+import { BehaviorSubject, Subject } from "rxjs";
+import { take, takeUntil } from "rxjs/operators";
+import { PlayerDataService } from "src/app/data/player/player-data-service";
+import { ResultDataService } from "src/app/data/result/result-data.service";
+import { ResultQuery } from "src/app/data/result/result.query";
+import { ScenarioDataService } from "src/app/data/scenario/scenario-data.service";
+import { TaskDataService } from "src/app/data/task/task-data.service";
+import { TaskQuery } from "src/app/data/task/task.query";
 import {
   Scenario,
   Task,
   TaskService,
   Vm,
-} from 'src/app/swagger-codegen/dispatcher.api';
-import { ComnSettingsService } from '@crucible/common';
+} from "src/app/generated/steamfitter.api";
+import { ComnSettingsService } from "@crucible/common";
 
 /** Error when invalid control is dirty, touched, or submitted. */
 export class UserErrorStateMatcher implements ErrorStateMatcher {
@@ -48,14 +48,14 @@ export class UserErrorStateMatcher implements ErrorStateMatcher {
 }
 
 @Component({
-  selector: 'app-vm-task-execute',
-  templateUrl: './vm-task-execute.component.html',
-  styleUrls: ['./vm-task-execute.component.scss'],
+  selector: "app-vm-task-execute",
+  templateUrl: "./vm-task-execute.component.html",
+  styleUrls: ["./vm-task-execute.component.scss"],
 })
 export class VmTaskExecuteComponent implements OnDestroy {
   @Output() editComplete = new EventEmitter<boolean>();
   @ViewChild(VmTaskExecuteComponent) child;
-  @ViewChild('stepper') stepper: MatStepper;
+  @ViewChild("stepper") stepper: MatStepper;
 
   matcher = new UserErrorStateMatcher();
   isLinear = false;
@@ -70,7 +70,7 @@ export class VmTaskExecuteComponent implements OnDestroy {
   loggedInUser = this.authService.user$;
   userScenario: Scenario;
   private unsubscribe$ = new Subject();
-  topbarColor = '#ef3a47';
+  topbarColor = "#ef3a47";
 
   constructor(
     public zone: NgZone,
@@ -91,7 +91,9 @@ export class VmTaskExecuteComponent implements OnDestroy {
       });
     this.scenarioDataService.loadTaskBuilderScenario();
     this.isExecuting = false;
-    this.topbarColor = this.settingsService.settings.AppTopBarHexColor ? this.settingsService.settings.AppTopBarHexColor : this.topbarColor;
+    this.topbarColor = this.settingsService.settings.AppTopBarHexColor
+      ? this.settingsService.settings.AppTopBarHexColor
+      : this.topbarColor;
   }
 
   setTaskVms() {
@@ -117,7 +119,7 @@ export class VmTaskExecuteComponent implements OnDestroy {
         (error) => {
           this.isExecuting = false;
           console.log(
-            'The Steamfitter API generated an error.  ' + error.message
+            "The Steamfitter API generated an error.  " + error.message
           );
         }
       );

@@ -8,20 +8,18 @@ Carnegie Mellon(R) and CERT(R) are registered in the U.S. Patent and Trademark O
 DM20-0181
 */
 
-import {EntityState, EntityStore, Store, StoreConfig} from '@datorama/akita';
-import {Scenario} from 'src/app/swagger-codegen/dispatcher.api';
-import {Injectable} from '@angular/core';
+import { EntityState, EntityStore, Store, StoreConfig } from "@datorama/akita";
+import { Scenario } from "src/app/generated/steamfitter.api";
+import { Injectable } from "@angular/core";
 
-export interface ScenarioState extends EntityState<Scenario> {
-}
+export interface ScenarioState extends EntityState<Scenario> {}
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
-@StoreConfig({ name: 'scenarios' })
+@StoreConfig({ name: "scenarios" })
 export class ScenarioStore extends EntityStore<ScenarioState> {
   constructor() {
     super();
   }
 }
-

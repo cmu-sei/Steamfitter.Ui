@@ -8,11 +8,11 @@ Carnegie Mellon(R) and CERT(R) are registered in the U.S. Patent and Trademark O
 DM20-0181
 */
 
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { PlayerDataService } from 'src/app/data/player/player-data-service';
-import { Result } from 'src/app/swagger-codegen/dispatcher.api';
+import { Component, Input, OnDestroy, OnInit } from "@angular/core";
+import { Observable, Subject } from "rxjs";
+import { takeUntil } from "rxjs/operators";
+import { PlayerDataService } from "src/app/data/player/player-data-service";
+import { Result } from "src/app/generated/steamfitter.api";
 
 enum ResultStatus {
   all = 0,
@@ -23,9 +23,9 @@ enum ResultStatus {
 }
 
 @Component({
-  selector: 'app-results',
-  templateUrl: './results.component.html',
-  styleUrls: ['./results.component.scss'],
+  selector: "app-results",
+  templateUrl: "./results.component.html",
+  styleUrls: ["./results.component.scss"],
 })
 export class ResultsComponent implements OnInit, OnDestroy {
   @Input() results: Observable<Result[]>;
@@ -34,7 +34,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
   allResults: Result[];
   currentResults: Result[];
   filteredResults: Result[];
-  selectedTabStatus = '';
+  selectedTabStatus = "";
   showResults: Record<string, boolean | undefined> = {};
   private lastExecutionTime: Date;
   private unsubscribe$ = new Subject();
@@ -98,7 +98,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
   resultCount(status: string) {
     return !this.currentResults
       ? 0
-      : status === 'all'
+      : status === "all"
       ? this.currentResults.length
       : this.currentResults.filter((r) => r.status === status).length;
   }
@@ -113,28 +113,28 @@ export class ResultsComponent implements OnInit, OnDestroy {
         break;
       case 1:
         this.filteredResults = this.currentResults
-          .filter((r) => r.status === 'succeeded')
+          .filter((r) => r.status === "succeeded")
           .sort((a: Result, b: Result) =>
             a.vmName.toLowerCase() < b.vmName.toLowerCase() ? -1 : 1
           );
         break;
       case 2:
         this.filteredResults = this.currentResults
-          .filter((r) => r.status === 'failed')
+          .filter((r) => r.status === "failed")
           .sort((a: Result, b: Result) =>
             a.vmName.toLowerCase() < b.vmName.toLowerCase() ? -1 : 1
           );
         break;
       case 3:
         this.filteredResults = this.currentResults
-          .filter((r) => r.status === 'pending')
+          .filter((r) => r.status === "pending")
           .sort((a: Result, b: Result) =>
             a.vmName.toLowerCase() < b.vmName.toLowerCase() ? -1 : 1
           );
         break;
       case 4:
         this.filteredResults = this.currentResults
-          .filter((r) => r.status === 'queued')
+          .filter((r) => r.status === "queued")
           .sort((a: Result, b: Result) =>
             a.vmName.toLowerCase() < b.vmName.toLowerCase() ? -1 : 1
           );
@@ -152,7 +152,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
     const vms = this.playerDataService.vms.value;
     const vm = vms.find((v) => v.id === id);
     if (!!vm) {
-      window.open(vm.url, '_blank');
+      window.open(vm.url, "_blank");
     }
   }
 

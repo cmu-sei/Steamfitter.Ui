@@ -14,19 +14,22 @@ import {
   Input,
   Output,
   ViewChild,
-} from '@angular/core';
-import { TaskTreeComponent } from 'src/app/components/tasks/task-tree/task-tree.component';
-import { ResultQuery } from 'src/app/data/result/result.query';
-import { ScenarioQuery } from 'src/app/data/scenario/scenario.query';
-import { TaskDataService } from 'src/app/data/task/task-data.service';
-import { TaskQuery } from 'src/app/data/task/task.query';
-import { DialogService } from 'src/app/services/dialog/dialog.service';
-import { Scenario } from 'src/app/swagger-codegen/dispatcher.api/model/models';
+} from "@angular/core";
+import { TaskTreeComponent } from "src/app/components/tasks/task-tree/task-tree.component";
+import { ResultQuery } from "src/app/data/result/result.query";
+import { ScenarioQuery } from "src/app/data/scenario/scenario.query";
+import { TaskDataService } from "src/app/data/task/task-data.service";
+import { TaskQuery } from "src/app/data/task/task.query";
+import { DialogService } from "src/app/services/dialog/dialog.service";
+import {
+  Scenario,
+  ScenarioStatus,
+} from "src/app/generated/steamfitter.api/model/models";
 
 @Component({
-  selector: 'app-scenario-edit',
-  templateUrl: './scenario-edit.component.html',
-  styleUrls: ['./scenario-edit.component.scss'],
+  selector: "app-scenario-edit",
+  templateUrl: "./scenario-edit.component.html",
+  styleUrls: ["./scenario-edit.component.scss"],
 })
 export class ScenarioEditComponent {
   @Input() scenario: Scenario;
@@ -35,7 +38,7 @@ export class ScenarioEditComponent {
   @ViewChild(TaskTreeComponent) taskTree: TaskTreeComponent;
 
   public changesWereMade = false;
-  public scenarioStates = Object.values(Scenario.StatusEnum);
+  public scenarioStates = Object.values(ScenarioStatus);
   taskList = this.taskQuery.selectAll();
   resultList = this.resultQuery.selectAll();
   isLoading = this.scenarioQuery.selectLoading();

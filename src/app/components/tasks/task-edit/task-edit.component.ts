@@ -15,46 +15,53 @@ import {
   OnDestroy,
   OnInit,
   Output,
-} from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { BehaviorSubject, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { TaskDataService } from 'src/app/data/task/task-data.service';
-import { Command } from 'src/app/models/command';
-import { Task, TaskService, VmCredential } from 'src/app/swagger-codegen/dispatcher.api';
+} from "@angular/core";
+import { MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { BehaviorSubject, Subject } from "rxjs";
+import { takeUntil } from "rxjs/operators";
+import { TaskDataService } from "src/app/data/task/task-data.service";
+import { Command } from "src/app/models/command";
+import {
+  Task,
+  TaskIterationTermination,
+  TaskService,
+  TaskTrigger,
+  VmCredential,
+} from "src/app/generated/steamfitter.api";
 
 @Component({
-  selector: 'app-task-edit',
-  templateUrl: './task-edit.component.html',
-  styleUrls: ['./task-edit.component.scss'],
+  selector: "app-task-edit",
+  templateUrl: "./task-edit.component.html",
+  styleUrls: ["./task-edit.component.scss"],
 })
 export class TaskEditComponent implements OnInit, OnDestroy {
   @Output() editComplete = new EventEmitter<any>();
   triggerConditions = [
-    Task.TriggerConditionEnum.Time,
-    Task.TriggerConditionEnum.Manual,
-    Task.TriggerConditionEnum.Completion,
-    Task.TriggerConditionEnum.Success,
-    Task.TriggerConditionEnum.Failure,
-    Task.TriggerConditionEnum.Expiration,
+    TaskTrigger.Time,
+    TaskTrigger.Manual,
+    TaskTrigger.Completion,
+    TaskTrigger.Success,
+    TaskTrigger.Failure,
+    TaskTrigger.Expiration,
   ];
   iterationTerminations = [
-    Task.IterationTerminationEnum.IterationCount,
-    Task.IterationTerminationEnum.UntilSuccess,
-    Task.IterationTerminationEnum.UntilFailure,
+    TaskIterationTermination.IterationCount,
+    TaskIterationTermination.UntilSuccess,
+    TaskIterationTermination.UntilFailure,
   ];
   availableCommands: Command[];
   selectedCommand: Command;
   chooseVms = false;
-  username = new BehaviorSubject<string>('');
-  password = new BehaviorSubject<string>('');
+  username = new BehaviorSubject<string>("");
+  password = new BehaviorSubject<string>("");
   private unsubscribe$ = new Subject();
 
   constructor(
     public taskService: TaskService,
     private taskDataService: TaskDataService,
     dialogRef: MatDialogRef<TaskEditComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { task: Task, vmCredentials: Array<VmCredential> }
+    @Inject(MAT_DIALOG_DATA)
+    public data: { task: Task; vmCredentials: Array<VmCredential> }
   ) {
     dialogRef.disableClose = true;
   }
@@ -73,7 +80,7 @@ export class TaskEditComponent implements OnInit, OnDestroy {
         },
         (error) => {
           console.log(
-            'The Steamfitter API is not responding.  ' + error.message
+            "The Steamfitter API is not responding.  " + error.message
           );
         }
       );
@@ -83,8 +90,7 @@ export class TaskEditComponent implements OnInit, OnDestroy {
         if (!!t && !!t.id) {
           this.data.task = this.formatTaskVmList({ ...t });
           if (!t.iterationTermination) {
-            t.iterationTermination =
-              Task.IterationTerminationEnum.IterationCount;
+            t.iterationTermination = TaskIterationTermination.IterationCount;
           }
           this.selectTheTaskCommand();
         }
@@ -93,16 +99,16 @@ export class TaskEditComponent implements OnInit, OnDestroy {
 
   formatTaskVmList(task: Task) {
     if (task.vmMask) {
-      const splitMask = task.vmMask.split(',');
+      const splitMask = task.vmMask.split(",");
       if (
         splitMask[0].length === 36 &&
-        splitMask[0][8] === '-' &&
-        splitMask[0][13] === '-' &&
-        splitMask[0][18] === '-' &&
-        splitMask[0][23] === '-'
+        splitMask[0][8] === "-" &&
+        splitMask[0][13] === "-" &&
+        splitMask[0][18] === "-" &&
+        splitMask[0][23] === "-"
       ) {
         task.vmList = splitMask;
-        task.vmMask = '';
+        task.vmMask = "";
         this.chooseVms = true;
       } else {
         this.chooseVms = false;
@@ -124,9 +130,9 @@ export class TaskEditComponent implements OnInit, OnDestroy {
     const actionParameters: Record<string, string> = {};
     this.selectedCommand.parameters.forEach((param) => {
       actionParameters[param.key] = param.value;
-      if (param.key.toLowerCase() === 'username') {
+      if (param.key.toLowerCase() === "username") {
         this.username.next(param.value);
-      } else if (param.key.toLowerCase() === 'password') {
+      } else if (param.key.toLowerCase() === "password") {
         this.password.next(param.value);
       }
     });
@@ -137,7 +143,9 @@ export class TaskEditComponent implements OnInit, OnDestroy {
 
   credentialsAreRequired() {
     if (this.selectedCommand && this.selectedCommand.parameters) {
-      return this.selectedCommand.parameters.some(parameter => parameter.key.toLowerCase() === 'username');
+      return this.selectedCommand.parameters.some(
+        (parameter) => parameter.key.toLowerCase() === "username"
+      );
     }
     return false;
   }
@@ -151,16 +159,16 @@ export class TaskEditComponent implements OnInit, OnDestroy {
         ) {
           cmd.parameters.forEach((p) => {
             p.value = this.data.task.actionParameters[p.key];
-            if (p.key.toLowerCase() === 'username') {
+            if (p.key.toLowerCase() === "username") {
               this.username.next(p.value);
-            } else if (p.key.toLowerCase() === 'password') {
+            } else if (p.key.toLowerCase() === "password") {
               this.password.next(p.value);
             }
-                });
+          });
           this.selectedCommand = cmd;
         } else {
           cmd.parameters.forEach((p) => {
-            p.value = '';
+            p.value = "";
           });
         }
       });
@@ -175,7 +183,7 @@ export class TaskEditComponent implements OnInit, OnDestroy {
 
   handleEditComplete(saveChanges: boolean) {
     if (this.chooseVms) {
-      this.data.task.vmMask = '';
+      this.data.task.vmMask = "";
     } else {
       this.data.task.vmList = [];
     }
@@ -187,22 +195,24 @@ export class TaskEditComponent implements OnInit, OnDestroy {
   }
 
   handleVmCredentialChange(vmCredential: VmCredential) {
-    this.selectedCommand.parameters.find(p => p.key === 'Username').value = vmCredential.username;
-    this.selectedCommand.parameters.find(p => p.key === 'Password').value = vmCredential.password;
+    this.selectedCommand.parameters.find((p) => p.key === "Username").value =
+      vmCredential.username;
+    this.selectedCommand.parameters.find((p) => p.key === "Password").value =
+      vmCredential.password;
     this.onCommandChange();
   }
 
   loadFileContent(param, fileSelector) {
     const fileList: FileList = fileSelector.files;
     if (!fileList || fileList.length !== 1) {
-      param.value = '';
+      param.value = "";
       this.onCommandChange();
     } else {
       const self = this;
       const file = fileList[0];
       const fileReader: FileReader = new FileReader();
       fileReader.onloadend = function (x) {
-        if (file.name.endsWith('.json')) {
+        if (file.name.endsWith(".json")) {
           param.value = JSON.stringify(
             JSON.parse(fileReader.result.toString())
           );

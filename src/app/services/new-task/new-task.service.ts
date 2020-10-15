@@ -8,47 +8,46 @@ Carnegie Mellon(R) and CERT(R) are registered in the U.S. Patent and Trademark O
 DM20-0181
 */
 
-import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
-import { Command } from '../../models/command';
-import { Task, Vm } from 'src/app/swagger-codegen/dispatcher.api/model/models';
+import { Injectable } from "@angular/core";
+import { BehaviorSubject } from "rxjs";
+import { Command } from "../../models/command";
+import { Task, Vm } from "src/app/generated/steamfitter.api/model/models";
 
 const BLANK_TASK = {
-  name: '',
-  description: '',
-  scenarioTemplateId: '',
-  scenarioId: '',
+  name: "",
+  description: "",
+  scenarioTemplateId: "",
+  scenarioId: "",
   action: Task.ActionEnum.GuestProcessRun,
-  vmMask: '',
+  vmMask: "",
   vmList: [],
-  apiUrl: '',
+  apiUrl: "",
   actionParameters: {},
-  expectedOutput: '',
+  expectedOutput: "",
   expirationSeconds: 0,
   intervalSeconds: 0,
   iterations: 1,
   iterationTermination: Task.IterationTerminationEnum.IterationCount,
-  triggerTaskId: '',
+  triggerTaskId: "",
   triggerCondition: Task.TriggerConditionEnum.Manual,
 };
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class NewTaskService {
-
   public vmList = new BehaviorSubject<Array<Vm>>(new Array<Vm>());
   public command = new BehaviorSubject<Command>(undefined);
   public task = new BehaviorSubject<Task>(undefined);
-  private _task = {... BLANK_TASK};
+  private _task = { ...BLANK_TASK };
 
-  constructor() { }
+  constructor() {}
 
   reset() {
     this.vmList.next(new Array<Vm>());
     this.command.next(undefined);
     this.task.next(undefined);
-    this._task = {... BLANK_TASK};
+    this._task = { ...BLANK_TASK };
   }
 
   addVm(vm: Vm) {
@@ -59,7 +58,9 @@ export class NewTaskService {
   }
 
   removeVm(vm: Vm) {
-    const newList: Array<Vm> = this.vmList.value.filter(virtM => virtM.id !== vm.id);
+    const newList: Array<Vm> = this.vmList.value.filter(
+      (virtM) => virtM.id !== vm.id
+    );
     this.vmList.next(newList);
     this.buildRawCommand();
   }
@@ -72,22 +73,22 @@ export class NewTaskService {
   private buildRawCommand() {
     if (this.command.value !== undefined) {
       // Get first vm moid, NOT a list!
-      const moid = this.vmList.value.length > 0 ? this.vmList.value[0].id : '';
+      const moid = this.vmList.value.length > 0 ? this.vmList.value[0].id : "";
       this._task.actionParameters = this.command.value.parameters;
       this._task.apiUrl = this.command.value.api;
       this._task.vmList = [moid];
       this._task.action =
-        Task.ActionEnum[Object.keys(Task.ActionEnum).find(key =>
-        Task.ActionEnum[key] ===  this.command.value.action)];
+        Task.ActionEnum[
+          Object.keys(Task.ActionEnum).find(
+            (key) => Task.ActionEnum[key] === this.command.value.action
+          )
+        ];
       // let evryone know the new Task
       this.task.next(JSON.parse(JSON.stringify(this._task)));
     }
   }
 
-
   stringToEnum<ET, T>(enumObj: ET, str: keyof ET): T {
     return enumObj[<string>str];
   }
 }
-
-

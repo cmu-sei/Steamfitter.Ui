@@ -7,33 +7,31 @@ Released under a MIT (SEI)-style license, please see license.txt or contact perm
 Carnegie Mellon(R) and CERT(R) are registered in the U.S. Patent and Trademark Office by Carnegie Mellon University.
 DM20-0181
 */
-import { Component, OnDestroy } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { PageEvent } from '@angular/material/paginator';
-import { Sort } from '@angular/material/sort';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, Subject } from 'rxjs';
-import { map, takeUntil } from 'rxjs/operators';
-import {
-  PermissionService,
-} from 'src/app/swagger-codegen/dispatcher.api/api/api';
+import { Component, OnDestroy } from "@angular/core";
+import { FormControl } from "@angular/forms";
+import { PageEvent } from "@angular/material/paginator";
+import { Sort } from "@angular/material/sort";
+import { ActivatedRoute, Router } from "@angular/router";
+import { Observable, Subject } from "rxjs";
+import { map, takeUntil } from "rxjs/operators";
+import { PermissionService } from "src/app/generated/steamfitter.api/api/api";
 import {
   Permission,
   User,
   UserPermission,
-} from 'src/app/swagger-codegen/dispatcher.api/model/models';
-import { UserDataService } from '../../../data/user/user-data.service';
-import { TopbarView } from './../../shared/top-bar/topbar.models';
-import { ComnSettingsService, ComnAuthQuery, Theme } from '@crucible/common';
+} from "src/app/generated/steamfitter.api/model/models";
+import { UserDataService } from "../../../data/user/user-data.service";
+import { TopbarView } from "./../../shared/top-bar/topbar.models";
+import { ComnSettingsService, ComnAuthQuery, Theme } from "@crucible/common";
 
 @Component({
-  selector: 'app-admin-container',
-  templateUrl: './admin-container.component.html',
-  styleUrls: ['./admin-container.component.scss'],
+  selector: "app-admin-container",
+  templateUrl: "./admin-container.component.html",
+  styleUrls: ["./admin-container.component.scss"],
 })
 export class AdminContainerComponent implements OnDestroy {
   loggedInUser = this.userDataService.loggedInUser;
-  usersText = 'Users';
+  usersText = "Users";
   showSection: Observable<string>;
   isSidebarOpen = true;
   isSuperUser = false;
@@ -45,8 +43,8 @@ export class AdminContainerComponent implements OnDestroy {
   pageIndex: Observable<number>;
   private unsubscribe$ = new Subject();
   TopbarView = TopbarView;
-  topbarColor = '#ef3a47';
-  topbarTextColor = '#FFFFFF';
+  topbarColor = "#ef3a47";
+  topbarTextColor = "#FFFFFF";
   theme$: Observable<Theme>;
 
   constructor(
@@ -57,7 +55,6 @@ export class AdminContainerComponent implements OnDestroy {
     private settingsService: ComnSettingsService,
     private authQuery: ComnAuthQuery
   ) {
-
     this.theme$ = this.authQuery.userTheme$;
 
     this.userDataService.isSuperUser
@@ -65,22 +62,22 @@ export class AdminContainerComponent implements OnDestroy {
       .subscribe((result) => {
         this.isSuperUser = result;
         if (!result) {
-          router.navigate(['/']);
+          router.navigate(["/"]);
         }
       });
     this.userList = this.userDataService.userList;
     this.permissionList = this.permissionService.getPermissions();
     this.filterString = activatedRoute.queryParamMap.pipe(
-      map((params) => params.get('filter') || '')
+      map((params) => params.get("filter") || "")
     );
     this.pageSize = activatedRoute.queryParamMap.pipe(
-      map((params) => parseInt(params.get('pagesize') || '20', 10))
+      map((params) => parseInt(params.get("pagesize") || "20", 10))
     );
     this.pageIndex = activatedRoute.queryParamMap.pipe(
-      map((params) => parseInt(params.get('pageindex') || '0', 10))
+      map((params) => parseInt(params.get("pageindex") || "0", 10))
     );
     this.showSection = activatedRoute.queryParamMap.pipe(
-      map((params) => params.get('section') || this.usersText)
+      map((params) => params.get("section") || this.usersText)
     );
     this.userDataService.getUsersFromApi();
     this.userDataService
@@ -89,14 +86,18 @@ export class AdminContainerComponent implements OnDestroy {
       .subscribe();
     this.gotoUserSection();
     // Set the display settings from config file
-    this.topbarColor = this.settingsService.settings.AppTopBarHexColor ? this.settingsService.settings.AppTopBarHexColor : this.topbarColor;
-    this.topbarTextColor = this.settingsService.settings.AppTopBarHexTextColor ? this.settingsService.settings.AppTopBarHexTextColor : this.topbarTextColor;
+    this.topbarColor = this.settingsService.settings.AppTopBarHexColor
+      ? this.settingsService.settings.AppTopBarHexColor
+      : this.topbarColor;
+    this.topbarTextColor = this.settingsService.settings.AppTopBarHexTextColor
+      ? this.settingsService.settings.AppTopBarHexTextColor
+      : this.topbarTextColor;
   }
 
   gotoUserSection() {
     this.router.navigate([], {
       queryParams: { section: this.usersText },
-      queryParamsHandling: 'merge',
+      queryParamsHandling: "merge",
     });
   }
 
@@ -107,7 +108,7 @@ export class AdminContainerComponent implements OnDestroy {
   selectUser(userId: string) {
     this.router.navigate([], {
       queryParams: { userId: userId },
-      queryParamsHandling: 'merge',
+      queryParamsHandling: "merge",
     });
   }
 
@@ -130,14 +131,14 @@ export class AdminContainerComponent implements OnDestroy {
   sortChangeHandler(sort: Sort) {
     this.router.navigate([], {
       queryParams: { sorton: sort.active, sortdir: sort.direction },
-      queryParamsHandling: 'merge',
+      queryParamsHandling: "merge",
     });
   }
 
   pageChangeHandler(page: PageEvent) {
     this.router.navigate([], {
       queryParams: { pageindex: page.pageIndex, pagesize: page.pageSize },
-      queryParamsHandling: 'merge',
+      queryParamsHandling: "merge",
     });
   }
 

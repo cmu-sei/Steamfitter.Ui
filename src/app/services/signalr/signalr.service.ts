@@ -8,22 +8,22 @@ Carnegie Mellon(R) and CERT(R) are registered in the U.S. Patent and Trademark O
 DM20-0181
 */
 
-import { Injectable } from '@angular/core';
-import { ComnAuthService, ComnSettingsService } from '@crucible/common';
-import * as signalR from '@microsoft/signalr';
-import { ResultDataService } from 'src/app/data/result/result-data.service';
-import { ScenarioTemplateDataService } from 'src/app/data/scenario-template/scenario-template-data.service';
-import { ScenarioDataService } from 'src/app/data/scenario/scenario-data.service';
-import { TaskDataService } from 'src/app/data/task/task-data.service';
+import { Injectable } from "@angular/core";
+import { ComnAuthService, ComnSettingsService } from "@crucible/common";
+import * as signalR from "@microsoft/signalr";
+import { ResultDataService } from "src/app/data/result/result-data.service";
+import { ScenarioTemplateDataService } from "src/app/data/scenario-template/scenario-template-data.service";
+import { ScenarioDataService } from "src/app/data/scenario/scenario-data.service";
+import { TaskDataService } from "src/app/data/task/task-data.service";
 import {
   Result,
   Scenario,
   ScenarioTemplate,
   Task,
-} from 'src/app/swagger-codegen/dispatcher.api';
+} from "src/app/generated/steamfitter.api";
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class SignalRService {
   private hubConnection: signalR.HubConnection;
@@ -66,66 +66,66 @@ export class SignalRService {
 
   private addScenarioTemplateHandlers() {
     this.hubConnection.on(
-      'ScenarioTemplateCreated',
+      "ScenarioTemplateCreated",
       (scenarioTemplate: ScenarioTemplate) => {
         this.scenarioTemplateDataService.updateStore(scenarioTemplate);
       }
     );
 
     this.hubConnection.on(
-      'ScenarioTemplateUpdated',
+      "ScenarioTemplateUpdated",
       (scenarioTemplate: ScenarioTemplate) => {
         this.scenarioTemplateDataService.updateStore(scenarioTemplate);
       }
     );
 
-    this.hubConnection.on('ScenarioTemplateDeleted', (id: string) => {
+    this.hubConnection.on("ScenarioTemplateDeleted", (id: string) => {
       this.scenarioTemplateDataService.deleteFromStore(id);
     });
   }
 
   private addScenarioHandlers() {
-    this.hubConnection.on('ScenarioCreated', (scenario: Scenario) => {
+    this.hubConnection.on("ScenarioCreated", (scenario: Scenario) => {
       this.scenarioDataService.updateStore(scenario);
     });
 
-    this.hubConnection.on('ScenarioUpdated', (scenario: Scenario) => {
+    this.hubConnection.on("ScenarioUpdated", (scenario: Scenario) => {
       this.scenarioDataService.updateStore(scenario);
     });
 
-    this.hubConnection.on('ScenarioDeleted', (id: string) => {
+    this.hubConnection.on("ScenarioDeleted", (id: string) => {
       this.scenarioDataService.deleteFromStore(id);
     });
   }
 
   private addTaskHandlers() {
-    this.hubConnection.on('TaskCreated', (task: Task) => {
+    this.hubConnection.on("TaskCreated", (task: Task) => {
       this.taskDataService.updateStore(task);
     });
 
-    this.hubConnection.on('TaskUpdated', (task: Task) => {
+    this.hubConnection.on("TaskUpdated", (task: Task) => {
       this.taskDataService.updateStore(task);
     });
 
-    this.hubConnection.on('TaskDeleted', (id: string) => {
+    this.hubConnection.on("TaskDeleted", (id: string) => {
       this.taskDataService.deleteFromStore(id);
     });
   }
 
   private addResultHandlers() {
-    this.hubConnection.on('ResultCreated', (result: Result) => {
+    this.hubConnection.on("ResultCreated", (result: Result) => {
       this.resultDataService.updateStore(result);
     });
 
-    this.hubConnection.on('ResultUpdated', (result: Result) => {
+    this.hubConnection.on("ResultUpdated", (result: Result) => {
       this.resultDataService.updateStore(result);
     });
 
-    this.hubConnection.on('ResultsUpdated', (results: Result[]) => {
+    this.hubConnection.on("ResultsUpdated", (results: Result[]) => {
       this.resultDataService.updateStoreMany(results);
     });
 
-    this.hubConnection.on('ResultDeleted', (id: string) => {
+    this.hubConnection.on("ResultDeleted", (id: string) => {
       this.resultDataService.deleteFromStore(id);
     });
   }
