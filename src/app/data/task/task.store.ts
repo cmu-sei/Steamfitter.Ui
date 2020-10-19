@@ -8,9 +8,14 @@ Carnegie Mellon(R) and CERT(R) are registered in the U.S. Patent and Trademark O
 DM20-0181
 */
 
-import {EntityState, EntityStore, ActiveState, StoreConfig} from '@datorama/akita';
-import {Task} from 'src/app/swagger-codegen/dispatcher.api';
-import {Injectable} from '@angular/core';
+import {
+  EntityState,
+  EntityStore,
+  ActiveState,
+  StoreConfig,
+} from "@datorama/akita";
+import { Task } from "src/app/generated/steamfitter.api";
+import { Injectable } from "@angular/core";
 
 export interface TaskState extends EntityState<Task>, ActiveState {
   ui: {
@@ -25,17 +30,16 @@ const initialState = {
   ui: {
     scenarioTemplateTaskList: [],
     scenarioTaskList: [],
-    userTaskList: []
-  }
+    userTaskList: [],
+  },
 };
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
-@StoreConfig({ name: 'tasks' })
+@StoreConfig({ name: "tasks" })
 export class TaskStore extends EntityStore<TaskState> {
   constructor() {
     super(initialState);
   }
 }
-

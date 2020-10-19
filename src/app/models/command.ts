@@ -8,26 +8,24 @@ Carnegie Mellon(R) and CERT(R) are registered in the U.S. Patent and Trademark O
 DM20-0181
 */
 
-import { Task } from 'src/app/swagger-codegen/dispatcher.api';
+import { Task, TaskAction } from "src/app/generated/steamfitter.api";
 export interface CommandParameterChoice {
   key: string;
   display: string;
 }
 
 export interface CommandParameters {
-    key: string;
-    inputType: string;
-    display: string;
-    hint: string;
-    value: string;
-    choices: CommandParameterChoice[];
+  key: string;
+  inputType: string;
+  display: string;
+  hint: string;
+  value: string;
+  choices: CommandParameterChoice[];
 }
 
-
-export  interface Command {
-    api: string;
-    action: Task.ActionEnum;
-    display: string;
-    parameters: CommandParameters[];
+export interface Command {
+  api: string;
+  action: TaskAction;
+  display: string;
+  parameters: CommandParameters[];
 }
-

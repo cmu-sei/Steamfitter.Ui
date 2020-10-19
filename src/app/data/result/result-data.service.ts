@@ -8,28 +8,27 @@ Carnegie Mellon(R) and CERT(R) are registered in the U.S. Patent and Trademark O
 DM20-0181
 */
 
-import { ResultStore } from 'src/app/data/result/result.store';
-import { ResultQuery } from 'src/app/data/result/result.query';
-import { Injectable } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { PageEvent } from '@angular/material/paginator';
-import { Router, ActivatedRoute } from '@angular/router';
-import { Result, ResultService } from 'src/app/swagger-codegen/dispatcher.api';
-import { map, take, tap } from 'rxjs/operators';
-import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
+import { ResultStore } from "src/app/data/result/result.store";
+import { ResultQuery } from "src/app/data/result/result.query";
+import { Injectable } from "@angular/core";
+import { FormControl } from "@angular/forms";
+import { PageEvent } from "@angular/material/paginator";
+import { Router, ActivatedRoute } from "@angular/router";
+import { Result, ResultService } from "src/app/generated/steamfitter.api";
+import { map, take, tap } from "rxjs/operators";
+import { BehaviorSubject, Observable, combineLatest } from "rxjs";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
-
 export class ResultDataService {
-  private _requestedId$ = new BehaviorSubject<string>('');
+  private _requestedId$ = new BehaviorSubject<string>("");
   private _apiResults = new BehaviorSubject<Result[]>([]);
   readonly resultList: Observable<Result[]>;
   readonly selected: Observable<Result>;
   readonly filterControl = new FormControl();
   private filterTerm: Observable<string>;
-  private _pageEvent: PageEvent = {length: 0, pageIndex: 0, pageSize: 10};
+  private _pageEvent: PageEvent = { length: 0, pageIndex: 0, pageSize: 10 };
   readonly pageEvent = new BehaviorSubject<PageEvent>(this._pageEvent);
 
   constructor(
@@ -40,8 +39,8 @@ export class ResultDataService {
     private activatedRoute: ActivatedRoute
   ) {
     this.filterTerm = activatedRoute.queryParamMap.pipe(
-      tap(params => {
-        const resultId = params.get('resultId') || '';
+      tap((params) => {
+        const resultId = params.get("resultId") || "";
         if (resultId !== this._requestedId$.getValue()) {
           if (!!resultId) {
             this.loadById(resultId);
@@ -49,12 +48,19 @@ export class ResultDataService {
           this._requestedId$.next(resultId);
         }
       }),
-      map(params => params.get('resultmask') || '')
+      map((params) => params.get("resultmask") || "")
     );
-    this.filterControl.valueChanges.subscribe(term => {
-      this.router.navigate([], { queryParams: { resultmask: term }, queryParamsHandling: 'merge'});
+    this.filterControl.valueChanges.subscribe((term) => {
+      this.router.navigate([], {
+        queryParams: { resultmask: term },
+        queryParamsHandling: "merge",
+      });
     });
-    this.resultList = combineLatest([this.resultQuery.selectAll(), this.filterTerm, this.pageEvent]).pipe(
+    this.resultList = combineLatest([
+      this.resultQuery.selectAll(),
+      this.filterTerm,
+      this.pageEvent,
+    ]).pipe(
       map(([items, filterTerm, page]) => {
         if (!items || items.length === 0) {
           if (page.length !== 0) {
@@ -64,10 +70,20 @@ export class ResultDataService {
           return [];
         }
 
-        let resultList = items ? items as Result[] : [];
-        resultList = resultList.filter(item => (item.vmName && item.vmName.toLowerCase().includes(filterTerm.toLowerCase())) ||
-          (item.actualOutput && item.actualOutput.toLowerCase().includes(filterTerm.toLowerCase())) ||
-          (item.expectedOutput && item.expectedOutput.toLowerCase().includes(filterTerm.toLowerCase())));
+        let resultList = items ? (items as Result[]) : [];
+        resultList = resultList.filter(
+          (item) =>
+            (item.vmName &&
+              item.vmName.toLowerCase().includes(filterTerm.toLowerCase())) ||
+            (item.actualOutput &&
+              item.actualOutput
+                .toLowerCase()
+                .includes(filterTerm.toLowerCase())) ||
+            (item.expectedOutput &&
+              item.expectedOutput
+                .toLowerCase()
+                .includes(filterTerm.toLowerCase()))
+        );
         const pgsz = page.pageSize;
         const startIndex = page.pageIndex * pgsz;
         resultList = resultList.splice(startIndex, pgsz);
@@ -76,7 +92,7 @@ export class ResultDataService {
           this._pageEvent = {
             length: resultList.length,
             pageIndex: 0,
-            pageSize: this._pageEvent.pageSize
+            pageSize: this._pageEvent.pageSize,
           };
           this.pageEvent.next(this._pageEvent);
         }
@@ -85,7 +101,7 @@ export class ResultDataService {
     );
     this.selected = combineLatest([this.resultList, this._requestedId$]).pipe(
       map(([resultList, requestedResultId]) => {
-        return resultList.find(result => result.id === requestedResultId);
+        return resultList.find((result) => result.id === requestedResultId);
       })
     );
   }
@@ -93,103 +109,136 @@ export class ResultDataService {
   load() {
     this.resultStore.setLoading(true);
     this.resetStore();
-    this.resultService.getResults().pipe(
-      tap(() => { this.resultStore.setLoading(false); }),
-      take(1)
-    ).subscribe(results => {
-      results.forEach(r => this.fixDates(r));
-      this.setStore(results);
-    });
+    this.resultService
+      .getResults()
+      .pipe(
+        tap(() => {
+          this.resultStore.setLoading(false);
+        }),
+        take(1)
+      )
+      .subscribe((results) => {
+        results.forEach((r) => this.fixDates(r));
+        this.setStore(results);
+      });
   }
 
   loadByScenario(scenarioId: string) {
     this.resetStore();
-    this.resultService.getScenarioResults(scenarioId).pipe(take(1)).subscribe(results => {
-      results.forEach(r => this.fixDates(r));
-      this.setStore(results);
-    });
+    this.resultService
+      .getScenarioResults(scenarioId)
+      .pipe(take(1))
+      .subscribe((results) => {
+        results.forEach((r) => this.fixDates(r));
+        this.setStore(results);
+      });
   }
 
   loadByTask(taskId: string) {
-    this.resultService.getTaskResults(taskId).pipe(take(1)).subscribe(results => {
-      results.forEach(r => this.fixDates(r));
-      this.updateStoreMany(results);
-      }
-    );
+    this.resultService
+      .getTaskResults(taskId)
+      .pipe(take(1))
+      .subscribe((results) => {
+        results.forEach((r) => this.fixDates(r));
+        this.updateStoreMany(results);
+      });
   }
 
   loadByUser(userId: string) {
     this.resetStore();
-    this.resultService.getUserResults(userId).pipe(take(1)).subscribe(results => {
-      results.forEach(r => this.fixDates(r));
-      this.setStore(results);
-      }
-    );
+    this.resultService
+      .getUserResults(userId)
+      .pipe(take(1))
+      .subscribe((results) => {
+        results.forEach((r) => this.fixDates(r));
+        this.setStore(results);
+      });
   }
 
   loadByView(viewId: string) {
     this.resetStore();
-    this.resultService.getViewResults(viewId).pipe(take(1)).subscribe(results => {
-      results.forEach(r => this.fixDates(r));
-      this.setStore(results);
-      }
-    );
+    this.resultService
+      .getViewResults(viewId)
+      .pipe(take(1))
+      .subscribe((results) => {
+        results.forEach((r) => this.fixDates(r));
+        this.setStore(results);
+      });
   }
 
   loadByVm(vmId: string) {
-    this.resultService.getVmResults(vmId).pipe(take(1)).subscribe(results => {
-      results.forEach(r => this.fixDates(r));
-      this.updateStoreMany(results);
-      }
-    );
+    this.resultService
+      .getVmResults(vmId)
+      .pipe(take(1))
+      .subscribe((results) => {
+        results.forEach((r) => this.fixDates(r));
+        this.updateStoreMany(results);
+      });
   }
 
   loadById(id: string) {
-    this.resultService.getResult(id).pipe(take(1)).subscribe(result => {
-      this.fixDates(result);
-      this.updateStore({...result});
-    });
+    this.resultService
+      .getResult(id)
+      .pipe(take(1))
+      .subscribe((result) => {
+        this.fixDates(result);
+        this.updateStore({ ...result });
+      });
   }
 
   add(result: Result) {
     this.resultStore.setLoading(true);
-    this.resultService.createResult(result).pipe(
-        tap(() => { this.resultStore.setLoading(false); }),
+    this.resultService
+      .createResult(result)
+      .pipe(
+        tap(() => {
+          this.resultStore.setLoading(false);
+        }),
         take(1)
-      ).subscribe(t => {
+      )
+      .subscribe((t) => {
         this.updateStore(t);
         this.setActive(t.id);
-      }
-    );
+      });
   }
 
   updateResult(result: Result) {
     this.resultStore.setLoading(true);
-    this.resultService.updateResult(result.id, result).pipe(
-        tap(() => { this.resultStore.setLoading(false); }),
+    this.resultService
+      .updateResult(result.id, result)
+      .pipe(
+        tap(() => {
+          this.resultStore.setLoading(false);
+        }),
         take(1)
-      ).subscribe(dt => {
+      )
+      .subscribe((dt) => {
         this.updateStore(dt);
-      }
-    );
+      });
   }
 
   delete(id: string) {
-    this.resultService.deleteResult(id).pipe(take(1)).subscribe(dt => {
-      this.deleteFromStore(id);
-    });
+    this.resultService
+      .deleteResult(id)
+      .pipe(take(1))
+      .subscribe((dt) => {
+        this.deleteFromStore(id);
+      });
   }
 
   setActive(id: string) {
-    this.router.navigate([], { queryParams: { resultId: id }, queryParamsHandling: 'merge'});
+    this.router.navigate([], {
+      queryParams: { resultId: id },
+      queryParamsHandling: "merge",
+    });
   }
 
   setPageEvent(pageEvent: PageEvent) {
-    this.resultStore.update({pageEvent: pageEvent});
+    this.resultStore.update({ pageEvent: pageEvent });
   }
 
   setStore(results: Result[]) {
-    results.forEach(result => this.setAsDates(result));
+    results.forEach((result) => this.setAsDates(result));
     this.resultStore.set(results);
   }
 
@@ -199,7 +248,7 @@ export class ResultDataService {
   }
 
   updateStoreMany(results: Result[]) {
-    results.forEach(result => this.setAsDates(result));
+    results.forEach((result) => this.setAsDates(result));
     this.resultStore.upsertMany(results);
   }
 
@@ -216,10 +265,10 @@ export class ResultDataService {
 
   fixDates(result: Result) {
     // set as date object and handle c# not adding 'Z' to UTC dates.
-    result.dateCreated = new Date(result.dateCreated + 'Z');
-    result.dateModified = new Date(result.dateModified + 'Z');
-    result.statusDate = new Date(result.statusDate + 'Z');
-    result.sentDate = new Date(result.sentDate + 'Z');
+    result.dateCreated = new Date(result.dateCreated + "Z");
+    result.dateModified = new Date(result.dateModified + "Z");
+    result.statusDate = new Date(result.statusDate + "Z");
+    result.sentDate = new Date(result.sentDate + "Z");
   }
 
   setAsDates(result: Result) {
@@ -229,7 +278,4 @@ export class ResultDataService {
     result.statusDate = new Date(result.statusDate);
     result.sentDate = new Date(result.sentDate);
   }
-
 }
-
-

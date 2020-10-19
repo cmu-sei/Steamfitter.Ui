@@ -8,21 +8,21 @@ Carnegie Mellon(R) and CERT(R) are registered in the U.S. Patent and Trademark O
 DM20-0181
 */
 
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { PageEvent } from '@angular/material/paginator';
-import { Sort } from '@angular/material/sort';
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { FormControl } from "@angular/forms";
+import { PageEvent } from "@angular/material/paginator";
+import { Sort } from "@angular/material/sort";
 import {
   Permission,
   User,
   UserPermission,
-} from 'src/app/swagger-codegen/dispatcher.api/model/models';
-import { ComnSettingsService } from '@crucible/common';
+} from "src/app/generated/steamfitter.api/model/models";
+import { ComnSettingsService } from "@crucible/common";
 
 @Component({
-  selector: 'app-admin-users',
-  templateUrl: './admin-users.component.html',
-  styleUrls: ['./admin-users.component.scss'],
+  selector: "app-admin-users",
+  templateUrl: "./admin-users.component.html",
+  styleUrls: ["./admin-users.component.scss"],
 })
 export class AdminUsersComponent implements OnInit {
   @Input() filterControl: FormControl;
@@ -38,14 +38,14 @@ export class AdminUsersComponent implements OnInit {
   @Output() sortChange = new EventEmitter<Sort>();
   @Output() pageChange = new EventEmitter<PageEvent>();
   addingNewUser = false;
-  newUser: User = { id: '', name: '' };
+  newUser: User = { id: "", name: "" };
   isLoading = false;
-  topbarColor = '#ef3a47';
+  topbarColor = "#ef3a47";
 
-  constructor(
-    private settingsService: ComnSettingsService
-  ) {
-    this.topbarColor = this.settingsService.settings.AppTopBarHexColor ? this.settingsService.settings.AppTopBarHexColor : this.topbarColor;
+  constructor(private settingsService: ComnSettingsService) {
+    this.topbarColor = this.settingsService.settings.AppTopBarHexColor
+      ? this.settingsService.settings.AppTopBarHexColor
+      : this.topbarColor;
   }
 
   ngOnInit() {
@@ -72,8 +72,8 @@ export class AdminUsersComponent implements OnInit {
     if (isAdd) {
       this.addUser.emit(this.newUser);
     }
-    this.newUser.id = '';
-    this.newUser.name = '';
+    this.newUser.id = "";
+    this.newUser.name = "";
     this.addingNewUser = false;
   }
 

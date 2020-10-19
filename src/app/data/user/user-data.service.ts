@@ -8,26 +8,26 @@ Carnegie Mellon(R) and CERT(R) are registered in the U.S. Patent and Trademark O
 DM20-0181
 */
 
-import { Injectable, OnDestroy } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { ComnAuthQuery, ComnAuthService } from '@crucible/common';
-import { User as AuthUser } from 'oidc-client';
-import { BehaviorSubject, combineLatest, Observable, Subject } from 'rxjs';
-import { filter, map, take, takeUntil } from 'rxjs/operators';
+import { Injectable, OnDestroy } from "@angular/core";
+import { FormControl } from "@angular/forms";
+import { ActivatedRoute, Router } from "@angular/router";
+import { ComnAuthQuery, ComnAuthService } from "@crucible/common";
+import { User as AuthUser } from "oidc-client";
+import { BehaviorSubject, combineLatest, Observable, Subject } from "rxjs";
+import { filter, map, take, takeUntil } from "rxjs/operators";
 import {
   PermissionService,
   UserPermissionService,
   UserService,
-} from 'src/app/swagger-codegen/dispatcher.api/api/api';
+} from "src/app/generated/steamfitter.api/api/api";
 import {
   Permission,
   User,
   UserPermission,
-} from 'src/app/swagger-codegen/dispatcher.api/model/models';
+} from "src/app/generated/steamfitter.api/model/models";
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class UserDataService implements OnDestroy {
   private _permissions: Permission[] = [];
@@ -72,24 +72,24 @@ export class UserDataService implements OnDestroy {
       });
 
     this.filterTerm = activatedRoute.queryParamMap.pipe(
-      map((params) => params.get('filter') || '')
+      map((params) => params.get("filter") || "")
     );
     this.sortColumn = activatedRoute.queryParamMap.pipe(
-      map((params) => params.get('sorton') || 'name')
+      map((params) => params.get("sorton") || "name")
     );
     this.sortIsAscending = activatedRoute.queryParamMap.pipe(
-      map((params) => (params.get('sortdir') || 'asc') === 'asc')
+      map((params) => (params.get("sortdir") || "asc") === "asc")
     );
     this.pageSize = activatedRoute.queryParamMap.pipe(
-      map((params) => parseInt(params.get('pagesize') || '20', 10))
+      map((params) => parseInt(params.get("pagesize") || "20", 10))
     );
     this.pageIndex = activatedRoute.queryParamMap.pipe(
-      map((params) => parseInt(params.get('pageindex') || '0', 10))
+      map((params) => parseInt(params.get("pageindex") || "0", 10))
     );
     this.filterControl.valueChanges.subscribe((term) => {
       router.navigate([], {
         queryParams: { filter: term },
-        queryParamsHandling: 'merge',
+        queryParamsHandling: "merge",
       });
     });
     this.userList = combineLatest([
@@ -125,7 +125,7 @@ export class UserDataService implements OnDestroy {
       )
     );
     this.requestedUserId = activatedRoute.queryParamMap.pipe(
-      map((params) => params.get('userId') || '')
+      map((params) => params.get("userId") || "")
     );
     this.selectedUser = combineLatest([
       this.userList,
@@ -150,13 +150,13 @@ export class UserDataService implements OnDestroy {
         authUser.profile = { ...authUser.profile, ...user };
         this.isAuthorizedUser.next(
           permissions.some(
-            (p) => p.key === 'ContentDeveloper' || p.key === 'SystemAdmin'
+            (p) => p.key === "ContentDeveloper" || p.key === "SystemAdmin"
           )
         );
         // Steamfitter user model doesn't have a property 'isSystemAdmin' but it's required for the topbar
         // Set it by checking permissions.
         permissions.some((p) => {
-          if (p.key === 'SystemAdmin') {
+          if (p.key === "SystemAdmin") {
             this.isSuperUser.next(true);
             authUser.profile.isSystemAdmin = true;
           }
@@ -168,12 +168,12 @@ export class UserDataService implements OnDestroy {
 
   private sortUsers(a: User, b: User, column: string, isAsc: boolean) {
     switch (column) {
-      case 'name':
+      case "name":
         return (
           (a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1) *
           (isAsc ? 1 : -1)
         );
-      case 'id':
+      case "id":
         return (
           (a.id.toLowerCase() < b.id.toLowerCase() ? -1 : 1) * (isAsc ? 1 : -1)
         );
@@ -185,7 +185,7 @@ export class UserDataService implements OnDestroy {
   setActive(id: string) {
     this.router.navigate([], {
       queryParams: { userId: id },
-      queryParamsHandling: 'merge',
+      queryParamsHandling: "merge",
     });
   }
 

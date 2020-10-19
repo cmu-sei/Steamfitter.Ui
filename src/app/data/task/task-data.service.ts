@@ -8,16 +8,16 @@ Carnegie Mellon(R) and CERT(R) are registered in the U.S. Patent and Trademark O
 DM20-0181
 */
 
-import { TaskStore } from './task.store';
-import { TaskQuery } from './task.query';
-import { ResultDataService } from 'src/app/data/result/result-data.service';
-import { Injectable } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { PageEvent } from '@angular/material/paginator';
-import { Router, ActivatedRoute } from '@angular/router';
-import { Task, TaskService, Result } from 'src/app/swagger-codegen/dispatcher.api';
-import { map, take, tap } from 'rxjs/operators';
-import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
+import { TaskStore } from "./task.store";
+import { TaskQuery } from "./task.query";
+import { ResultDataService } from "src/app/data/result/result-data.service";
+import { Injectable } from "@angular/core";
+import { FormControl } from "@angular/forms";
+import { PageEvent } from "@angular/material/paginator";
+import { Router, ActivatedRoute } from "@angular/router";
+import { Task, TaskService, Result } from "src/app/generated/steamfitter.api";
+import { map, take, tap } from "rxjs/operators";
+import { BehaviorSubject, Observable, combineLatest } from "rxjs";
 
 export interface Clipboard {
   id: string | undefined;
@@ -31,16 +31,15 @@ export interface PasteLocation {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
-
 export class TaskDataService {
-  private _requestedTaskId$ = new BehaviorSubject<string>('');
+  private _requestedTaskId$ = new BehaviorSubject<string>("");
   readonly taskList: Observable<Task[]>;
   readonly selected: Observable<Task>;
   readonly filterControl = new FormControl();
   private filterTerm: Observable<string>;
-  private _pageEvent: PageEvent = {length: 0, pageIndex: 0, pageSize: 10};
+  private _pageEvent: PageEvent = { length: 0, pageIndex: 0, pageSize: 10 };
   readonly pageEvent = new BehaviorSubject<PageEvent>(this._pageEvent);
   readonly clipboard = new BehaviorSubject<Clipboard>(null);
   private _clipboard = null;
@@ -54,8 +53,8 @@ export class TaskDataService {
     activatedRoute: ActivatedRoute
   ) {
     this.filterTerm = activatedRoute.queryParamMap.pipe(
-      tap(params => {
-        const taskId = params.get('taskId') || '';
+      tap((params) => {
+        const taskId = params.get("taskId") || "";
         if (taskId !== this._requestedTaskId$.getValue()) {
           if (!!taskId) {
             this.loadById(taskId);
@@ -63,12 +62,19 @@ export class TaskDataService {
           this._requestedTaskId$.next(taskId);
         }
       }),
-      map(params => params.get('taskmask') || '')
+      map((params) => params.get("taskmask") || "")
     );
-    this.filterControl.valueChanges.subscribe(term => {
-      this.router.navigate([], { queryParams: { taskmask: term }, queryParamsHandling: 'merge'});
+    this.filterControl.valueChanges.subscribe((term) => {
+      this.router.navigate([], {
+        queryParams: { taskmask: term },
+        queryParamsHandling: "merge",
+      });
     });
-    this.taskList = combineLatest([this.taskQuery.selectAll(), this.filterTerm, this.pageEvent]).pipe(
+    this.taskList = combineLatest([
+      this.taskQuery.selectAll(),
+      this.filterTerm,
+      this.pageEvent,
+    ]).pipe(
       map(([items, filterTerm, page]) => {
         if (!items || items.length === 0) {
           if (page.length !== 0) {
@@ -78,9 +84,12 @@ export class TaskDataService {
           return [];
         }
 
-        let taskList = items ? items as Task[] : [];
-        taskList = taskList.filter(item => item.name.toLowerCase().includes(filterTerm.toLowerCase()) ||
-          item.id.toLowerCase().includes(filterTerm.toLowerCase()));
+        let taskList = items ? (items as Task[]) : [];
+        taskList = taskList.filter(
+          (item) =>
+            item.name.toLowerCase().includes(filterTerm.toLowerCase()) ||
+            item.id.toLowerCase().includes(filterTerm.toLowerCase())
+        );
         const pgsz = page.pageSize;
         const startIndex = page.pageIndex * pgsz;
         taskList = taskList.splice(startIndex, pgsz);
@@ -89,7 +98,7 @@ export class TaskDataService {
           this._pageEvent = {
             length: taskList.length,
             pageIndex: 0,
-            pageSize: this._pageEvent.pageSize
+            pageSize: this._pageEvent.pageSize,
           };
           this.pageEvent.next(this._pageEvent);
         }
@@ -98,139 +107,209 @@ export class TaskDataService {
     );
     this.selected = combineLatest([this.taskList, this._requestedTaskId$]).pipe(
       map(([taskList, requestedTaskId]) => {
-        return taskList.find(task => task.id === requestedTaskId);
+        return taskList.find((task) => task.id === requestedTaskId);
       })
     );
   }
 
   load() {
     this.taskStore.setLoading(true);
-    this.taskService.getTasks().pipe(
-      tap(() => { this.taskStore.setLoading(false); }),
-      take(1)
-    ).subscribe(tasks => {
-      this.taskStore.set(tasks);
-    }, error => {
-      this.taskStore.set([]);
-    });
+    this.taskService
+      .getTasks()
+      .pipe(
+        tap(() => {
+          this.taskStore.setLoading(false);
+        }),
+        take(1)
+      )
+      .subscribe(
+        (tasks) => {
+          this.taskStore.set(tasks);
+        },
+        (error) => {
+          this.taskStore.set([]);
+        }
+      );
   }
 
   loadByScenarioTemplate(scenarioTemplateId: string) {
     this.taskStore.setLoading(true);
-    return this.taskService.getScenarioTemplateTasks(scenarioTemplateId).pipe(
-      tap(() => { this.taskStore.setLoading(false); }),
-      take(1)
-    ).subscribe(tasks => {
-      this.taskStore.set(tasks);
-    }, error => {
-      this.taskStore.set([]);
-    });
+    return this.taskService
+      .getScenarioTemplateTasks(scenarioTemplateId)
+      .pipe(
+        tap(() => {
+          this.taskStore.setLoading(false);
+        }),
+        take(1)
+      )
+      .subscribe(
+        (tasks) => {
+          this.taskStore.set(tasks);
+        },
+        (error) => {
+          this.taskStore.set([]);
+        }
+      );
   }
 
   loadByScenario(scenarioId: string) {
     this.taskStore.setLoading(true);
-    this.taskService.getScenarioTasks(scenarioId).pipe(
-      tap(() => { this.taskStore.setLoading(false); }),
-      take(1)
-    ).subscribe(tasks => {
-      this.taskStore.set(tasks);
-    }, error => {
-      this.taskStore.set([]);
-    });
+    this.taskService
+      .getScenarioTasks(scenarioId)
+      .pipe(
+        tap(() => {
+          this.taskStore.setLoading(false);
+        }),
+        take(1)
+      )
+      .subscribe(
+        (tasks) => {
+          this.taskStore.set(tasks);
+        },
+        (error) => {
+          this.taskStore.set([]);
+        }
+      );
     this.resultDataService.loadByScenario(scenarioId);
   }
 
   loadByUser(userId: string) {
     this.taskStore.setLoading(true);
-    this.taskService.getUserTasks(userId).pipe(
-      tap(() => { this.taskStore.setLoading(false); }),
-      take(1)
-    ).subscribe(tasks => {
-      this.taskStore.set(tasks);
-    }, error => {
-      this.taskStore.set([]);
-    });
+    this.taskService
+      .getUserTasks(userId)
+      .pipe(
+        tap(() => {
+          this.taskStore.setLoading(false);
+        }),
+        take(1)
+      )
+      .subscribe(
+        (tasks) => {
+          this.taskStore.set(tasks);
+        },
+        (error) => {
+          this.taskStore.set([]);
+        }
+      );
     this.resultDataService.loadByUser(userId);
   }
 
   loadByView(viewId: string) {
     this.taskStore.setLoading(true);
-    this.taskService.getViewTasks(viewId).pipe(
-      tap(() => { this.taskStore.setLoading(false); }),
-      take(1)
-    ).subscribe(tasks => {
-      this.taskStore.set(tasks);
-    }, error => {
-      this.taskStore.set([]);
-    });
+    this.taskService
+      .getViewTasks(viewId)
+      .pipe(
+        tap(() => {
+          this.taskStore.setLoading(false);
+        }),
+        take(1)
+      )
+      .subscribe(
+        (tasks) => {
+          this.taskStore.set(tasks);
+        },
+        (error) => {
+          this.taskStore.set([]);
+        }
+      );
     this.resultDataService.loadByView(viewId);
   }
 
   loadByVm(vmId: string) {
     this.taskStore.setLoading(true);
-    this.taskService.getScenarioTasks(vmId).pipe(
-      tap(() => { this.taskStore.setLoading(false); }),
-      take(1)
-    ).subscribe(tasks => {
-      this.taskStore.set(tasks);
-    }, error => {
-      this.taskStore.set([]);
-    });
+    this.taskService
+      .getScenarioTasks(vmId)
+      .pipe(
+        tap(() => {
+          this.taskStore.setLoading(false);
+        }),
+        take(1)
+      )
+      .subscribe(
+        (tasks) => {
+          this.taskStore.set(tasks);
+        },
+        (error) => {
+          this.taskStore.set([]);
+        }
+      );
     this.resultDataService.loadByVm(vmId);
   }
 
   loadById(id: string) {
     this.taskStore.setLoading(true);
-    this.taskService.getTask(id).pipe(
-      tap(() => { this.taskStore.setLoading(false); }),
-      take(1)
-    ).subscribe(task => {
-      this.updateStore({...task});
-      this.resultDataService.loadByTask(id);
-    });
+    this.taskService
+      .getTask(id)
+      .pipe(
+        tap(() => {
+          this.taskStore.setLoading(false);
+        }),
+        take(1)
+      )
+      .subscribe((task) => {
+        this.updateStore({ ...task });
+        this.resultDataService.loadByTask(id);
+      });
   }
 
   add(task: Task) {
     this.taskStore.setLoading(true);
-    this.taskService.createTask(task).pipe(
-        tap(() => { this.taskStore.setLoading(false); }),
+    this.taskService
+      .createTask(task)
+      .pipe(
+        tap(() => {
+          this.taskStore.setLoading(false);
+        }),
         take(1)
-      ).subscribe(t => {
+      )
+      .subscribe((t) => {
         this.taskStore.add(t);
         this.setActive(t.id);
-      }
-    );
+      });
   }
 
   updateTask(task: Task) {
     this.taskStore.setLoading(true);
-    this.taskService.updateTask(task.id, task).pipe(
-        tap(() => { this.taskStore.setLoading(false); }),
+    this.taskService
+      .updateTask(task.id, task)
+      .pipe(
+        tap(() => {
+          this.taskStore.setLoading(false);
+        }),
         take(1)
-      ).subscribe(dt => {
+      )
+      .subscribe((dt) => {
         this.updateStore(dt);
-      }
-    );
+      });
   }
 
   execute(id: string) {
-    this.taskService.executeTask(id).pipe(take(1)).subscribe(results => {
-      this.resultDataService.updateStoreMany(results);
-    });
+    this.taskService
+      .executeTask(id)
+      .pipe(take(1))
+      .subscribe((results) => {
+        this.resultDataService.updateStoreMany(results);
+      });
   }
 
   delete(id: string) {
-    this.taskService.deleteTask(id).pipe(take(1)).subscribe(dt => {
-      this.deleteFromStore(id);
-    });
+    this.taskService
+      .deleteTask(id)
+      .pipe(take(1))
+      .subscribe((dt) => {
+        this.deleteFromStore(id);
+      });
   }
 
   setActive(id: string) {
-    this.router.navigate([], { queryParams: { taskId: id }, queryParamsHandling: 'merge'});
+    this.router.navigate([], {
+      queryParams: { taskId: id },
+      queryParamsHandling: "merge",
+    });
   }
 
   setPageEvent(pageEvent: PageEvent) {
-    this.taskStore.update({pageEvent: pageEvent});
+    this.taskStore.update({ pageEvent: pageEvent });
   }
 
   setClipboard(data: Clipboard) {
@@ -242,33 +321,41 @@ export class TaskDataService {
     if (!!this._clipboard) {
       if (this._clipboard.isCut) {
         // isCut, so move the existing task
-        this.taskService.moveTask(this._clipboard.id, location).pipe(take(1)).subscribe(dts => {
-            dts.forEach(dt => {
+        this.taskService
+          .moveTask(this._clipboard.id, location)
+          .pipe(take(1))
+          .subscribe((dts) => {
+            dts.forEach((dt) => {
               this.updateStore(dt);
               if (!!dt.triggerTaskId) {
                 this.setActive(dt.id);
               }
             });
-          }
-        );
+          });
       } else if (!!this._clipboard.id) {
         // Task ID is supplied, so copy the existing Task
-        this.taskService.copyTask(this._clipboard.id, location).pipe(take(1)).subscribe(dts => {
-          dts.forEach(dt => {
-            this.taskStore.add(dt);
-            if (!!dt.triggerTaskId) {
-              this.setActive(dt.id);
-            }
+        this.taskService
+          .copyTask(this._clipboard.id, location)
+          .pipe(take(1))
+          .subscribe((dts) => {
+            dts.forEach((dt) => {
+              this.taskStore.add(dt);
+              if (!!dt.triggerTaskId) {
+                this.setActive(dt.id);
+              }
+            });
           });
-        });
       } else if (!!this._clipboard.resultId) {
         // Result ID is supplied, so create a Task from the Result
-        this.taskService.createTaskFromResult(this._clipboard.resultId, location).pipe(take(1)).subscribe(task => {
-          this.taskStore.add(task);
-          if (!!task.triggerTaskId) {
-            this.setActive(task.id);
-          }
-        });
+        this.taskService
+          .createTaskFromResult(this._clipboard.resultId, location)
+          .pipe(take(1))
+          .subscribe((task) => {
+            this.taskStore.add(task);
+            if (!!task.triggerTaskId) {
+              this.setActive(task.id);
+            }
+          });
       }
     }
     this.setClipboard(null);
@@ -292,10 +379,10 @@ export class TaskDataService {
 
   fixDates(result: Result) {
     // set as date object and handle c# not adding 'Z' to UTC dates.
-    result.dateCreated = new Date(result.dateCreated + 'Z');
-    result.dateModified = new Date(result.dateModified + 'Z');
-    result.statusDate = new Date(result.statusDate + 'Z');
-    result.sentDate = new Date(result.sentDate + 'Z');
+    result.dateCreated = new Date(result.dateCreated + "Z");
+    result.dateModified = new Date(result.dateModified + "Z");
+    result.statusDate = new Date(result.statusDate + "Z");
+    result.sentDate = new Date(result.sentDate + "Z");
   }
 
   setAsDates(result: Result) {
@@ -305,7 +392,4 @@ export class TaskDataService {
     result.statusDate = new Date(result.statusDate);
     result.sentDate = new Date(result.sentDate);
   }
-
 }
-
-

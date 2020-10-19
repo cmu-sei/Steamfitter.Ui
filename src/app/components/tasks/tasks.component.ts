@@ -8,18 +8,15 @@ Carnegie Mellon(R) and CERT(R) are registered in the U.S. Patent and Trademark O
 DM20-0181
 */
 
-import { Component, Input } from '@angular/core';
-import { Observable } from 'rxjs';
-import { TaskDataService } from 'src/app/data/task/task-data.service';
-import {
-  Result,
-  Task,
-} from 'src/app/swagger-codegen/dispatcher.api/model/models';
+import { Component, Input } from "@angular/core";
+import { Observable } from "rxjs";
+import { TaskDataService } from "src/app/data/task/task-data.service";
+import { Result, Task } from "src/app/generated/steamfitter.api/model/models";
 
 @Component({
-  selector: 'app-tasks',
-  templateUrl: './tasks.component.html',
-  styleUrls: ['./tasks.component.scss'],
+  selector: "app-tasks",
+  templateUrl: "./tasks.component.html",
+  styleUrls: ["./tasks.component.scss"],
 })
 export class TasksComponent {
   @Input() taskList: Observable<Task[]>;
@@ -55,19 +52,19 @@ export class TasksComponent {
 
   pasteClipboard(taskId: string) {
     if (taskId) {
-      this.taskDataService.pasteClipboard({ id: taskId, locationType: 'task' });
+      this.taskDataService.pasteClipboard({ id: taskId, locationType: "task" });
     } else if (this.scenarioTemplateId) {
       this.taskDataService.pasteClipboard({
         id: this.scenarioTemplateId,
-        locationType: 'scenarioTemplate',
+        locationType: "scenarioTemplate",
       });
     } else if (this.scenarioId) {
       this.taskDataService.pasteClipboard({
         id: this.scenarioId,
-        locationType: 'scenario',
+        locationType: "scenario",
       });
     } else {
-      this.taskDataService.pasteClipboard({ id: '', locationType: '' });
+      this.taskDataService.pasteClipboard({ id: "", locationType: "" });
     }
   }
 

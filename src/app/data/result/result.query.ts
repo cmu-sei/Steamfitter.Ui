@@ -8,18 +8,18 @@ Carnegie Mellon(R) and CERT(R) are registered in the U.S. Patent and Trademark O
 DM20-0181
 */
 
-import { Order, Query, QueryConfig, QueryEntity } from '@datorama/akita';
-import { ResultState, ResultStore } from './result.store';
-import { Result } from 'src/app/swagger-codegen/dispatcher.api';
-import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Order, Query, QueryConfig, QueryEntity } from "@datorama/akita";
+import { ResultState, ResultStore } from "./result.store";
+import { Result } from "src/app/generated/steamfitter.api";
+import { Injectable } from "@angular/core";
+import { Observable } from "rxjs";
 
 @QueryConfig({
-  sortBy: 'name',
-  sortByOrder: Order.ASC
+  sortBy: "name",
+  sortByOrder: Order.ASC,
 })
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
 export class ResultQuery extends QueryEntity<ResultState> {
   constructor(protected store: ResultStore) {

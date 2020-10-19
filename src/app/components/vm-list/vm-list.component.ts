@@ -14,23 +14,23 @@ import {
   Input,
   OnDestroy,
   Output,
-} from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { PlayerDataService } from 'src/app/data/player/player-data-service';
-import { Vm } from 'src/app/swagger-codegen/dispatcher.api';
+} from "@angular/core";
+import { FormControl } from "@angular/forms";
+import { Subject } from "rxjs";
+import { takeUntil } from "rxjs/operators";
+import { PlayerDataService } from "src/app/data/player/player-data-service";
+import { Vm } from "src/app/generated/steamfitter.api";
 
 @Component({
-  selector: 'app-vm-list',
-  templateUrl: './vm-list.component.html',
-  styleUrls: ['./vm-list.component.scss'],
+  selector: "app-vm-list",
+  templateUrl: "./vm-list.component.html",
+  styleUrls: ["./vm-list.component.scss"],
 })
 export class VmListComponent implements OnDestroy {
   @Input() selectedVms: string[];
   @Output() updateVmList = new EventEmitter<string[]>();
   vmList: Vm[];
-  displayedColumns: string[] = ['name'];
+  displayedColumns: string[] = ["name"];
   private unsubscribe$ = new Subject();
   uploading = false;
   uploadProgress = 0;
@@ -48,7 +48,7 @@ export class VmListComponent implements OnDestroy {
 
   // Local Component functions
   openInTab(url: string) {
-    window.open(url, '_blank');
+    window.open(url, "_blank");
   }
 
   onCheckBoxChange(event: any, vmId: string) {
@@ -77,7 +77,7 @@ export class VmListComponent implements OnDestroy {
   }
 
   clearFilter() {
-    this.filterControl.setValue('');
+    this.filterControl.setValue("");
   }
 
   selectedVmList() {
@@ -85,7 +85,7 @@ export class VmListComponent implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.playerDataService.vmFilter.setValue('');
+    this.playerDataService.vmFilter.setValue("");
     this.unsubscribe$.next();
     this.unsubscribe$.complete();
   }

@@ -8,7 +8,7 @@ Carnegie Mellon(R) and CERT(R) are registered in the U.S. Patent and Trademark O
 DM20-0181
 */
 
-import { FlatTreeControl } from '@angular/cdk/tree';
+import { FlatTreeControl } from "@angular/cdk/tree";
 import {
   Component,
   EventEmitter,
@@ -17,18 +17,25 @@ import {
   OnInit,
   Output,
   ViewChild,
-} from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { MatMenuTrigger } from '@angular/material/menu';
+} from "@angular/core";
+import { MatDialog } from "@angular/material/dialog";
+import { MatMenuTrigger } from "@angular/material/menu";
 import {
   MatTreeFlatDataSource,
   MatTreeFlattener,
-} from '@angular/material/tree';
-import { Observable, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { TaskEditComponent } from 'src/app/components/tasks/task-edit/task-edit.component';
-import { DialogService } from 'src/app/services/dialog/dialog.service';
-import { Result, Task } from 'src/app/swagger-codegen/dispatcher.api';
+} from "@angular/material/tree";
+import { Observable, Subject } from "rxjs";
+import { takeUntil } from "rxjs/operators";
+import { TaskEditComponent } from "src/app/components/tasks/task-edit/task-edit.component";
+import { DialogService } from "src/app/services/dialog/dialog.service";
+import {
+  Result,
+  Task,
+  TaskAction,
+  TaskIterationTermination,
+  TaskStatus,
+  TaskTrigger,
+} from "src/app/generated/steamfitter.api";
 interface TaskNode {
   task: Task;
   results?: Result[];
@@ -43,26 +50,26 @@ interface FlatTaskNode {
 }
 
 const BLANK_TASK: Task = {
-  name: '',
-  description: '',
-  action: Task.ActionEnum.GuestProcessRun,
-  vmMask: '',
+  name: "",
+  description: "",
+  action: TaskAction.GuestProcessRun,
+  vmMask: "",
   vmList: [],
-  apiUrl: '',
+  apiUrl: "",
   actionParameters: {},
-  expectedOutput: '',
+  expectedOutput: "",
   delaySeconds: 0,
   expirationSeconds: 0,
   intervalSeconds: 0,
   iterations: 1,
-  iterationTermination: Task.IterationTerminationEnum.IterationCount,
-  triggerCondition: Task.TriggerConditionEnum.Manual,
+  iterationTermination: TaskIterationTermination.IterationCount,
+  triggerCondition: TaskTrigger.Manual,
 };
 
 @Component({
-  selector: 'app-task-tree',
-  templateUrl: './task-tree.component.html',
-  styleUrls: ['./task-tree.component.scss'],
+  selector: "app-task-tree",
+  templateUrl: "./task-tree.component.html",
+  styleUrls: ["./task-tree.component.scss"],
 })
 export class TaskTreeComponent implements OnInit, OnDestroy {
   @Input() taskList: Observable<Task[]>;
@@ -81,8 +88,8 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
   @Output() sendToClipboard = new EventEmitter<any>();
   @Output() pasteClipboard = new EventEmitter<string>();
   @ViewChild(FlatTreeControl) flatTreeControl;
-  selectedTaskId = '';
-  manualTrigger = Task.TriggerConditionEnum.Manual;
+  selectedTaskId = "";
+  manualTrigger = TaskTrigger.Manual;
   private tasks = new Array<Task>();
   private results = new Array<Result>();
   private expandedNodeSet = new Set<string>();
@@ -112,12 +119,9 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
 
   // context menu
   @ViewChild(MatMenuTrigger, { static: true }) contextMenu: MatMenuTrigger;
-  contextMenuPosition = { x: '0px', y: '0px' };
+  contextMenuPosition = { x: "0px", y: "0px" };
 
-  constructor(
-    public dialogService: DialogService,
-    private dialog: MatDialog
-  ) {}
+  constructor(public dialogService: DialogService, private dialog: MatDialog) {}
 
   ngOnInit() {
     this.taskList.pipe(takeUntil(this.unsubscribe)).subscribe((tasks) => {
@@ -225,9 +229,9 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
         } else if (
           results.some(
             (r) =>
-              r.status === Result.StatusEnum.Pending ||
-              r.status === Result.StatusEnum.Queued ||
-              r.status === Result.StatusEnum.Sent
+              r.status === TaskStatus.Pending ||
+              r.status === TaskStatus.Queued ||
+              r.status === TaskStatus.Sent
           )
         ) {
           isExecutable = false;
@@ -239,10 +243,10 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
 
   onContextMenu(event: MouseEvent, task: Task) {
     event.preventDefault();
-    this.contextMenuPosition.x = event.clientX + 'px';
-    this.contextMenuPosition.y = event.clientY + 'px';
+    this.contextMenuPosition.x = event.clientX + "px";
+    this.contextMenuPosition.y = event.clientY + "px";
     this.contextMenu.menuData = { item: task };
-    this.contextMenu.menu.focusFirstItem('mouse');
+    this.contextMenu.menu.focusFirstItem("mouse");
     this.contextMenu.openMenu();
   }
 
@@ -251,7 +255,7 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
     this.taskSelected.emit(task.id);
     const dialogRef = this.dialog.open(TaskEditComponent, {
       data: { task: { ...task } },
-      minWidth: '90%',
+      minWidth: "90%",
     });
     dialogRef.componentInstance.editComplete.subscribe((result) => {
       if (result.saveChanges && result.task) {
@@ -274,7 +278,7 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
   }
 
   onContextNew(task: Task) {
-    this.selectedTaskId = '';
+    this.selectedTaskId = "";
     this.taskSelected.emit(this.selectedTaskId);
     // add a dependent Task
     const newTask = { ...BLANK_TASK };
@@ -286,10 +290,10 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
     }
     if (task && task.id) {
       newTask.triggerTaskId = task.id;
-      newTask.triggerCondition = Task.TriggerConditionEnum.Completion;
+      newTask.triggerCondition = TaskTrigger.Completion;
     } else {
       newTask.triggerTaskId = null;
-      newTask.triggerCondition = Task.TriggerConditionEnum.Time;
+      newTask.triggerCondition = TaskTrigger.Time;
     }
     const dialogRef = this.dialog.open(TaskEditComponent, {
       data: { task: newTask },
@@ -305,11 +309,11 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
   onContextDelete(task: Task) {
     this.dialogService
       .confirm(
-        'Delete Task',
-        'Are you sure that you want to delete ' + task.name + '?'
+        "Delete Task",
+        "Are you sure that you want to delete " + task.name + "?"
       )
       .subscribe((result) => {
-        if (result['confirm']) {
+        if (result["confirm"]) {
           this.deleteTaskRequested.emit(task.id);
         }
       });
@@ -318,11 +322,11 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
   onContextExecute(task: Task) {
     this.dialogService
       .confirm(
-        'Execute Task',
-        'Are you sure that you want to execute ' + task.name + '?'
+        "Execute Task",
+        "Are you sure that you want to execute " + task.name + "?"
       )
       .subscribe((result) => {
-        if (result['confirm']) {
+        if (result["confirm"]) {
           this.executeRequested.emit(task.id);
         }
       });

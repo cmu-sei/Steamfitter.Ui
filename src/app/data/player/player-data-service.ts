@@ -8,19 +8,18 @@ Carnegie Mellon(R) and CERT(R) are registered in the U.S. Patent and Trademark O
 DM20-0181
 */
 
-import {Injectable} from '@angular/core';
-import {FormControl} from '@angular/forms';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
-import { MatTableDataSource } from '@angular/material/table';
-import { View, PlayerService, Vm } from 'src/app/swagger-codegen/dispatcher.api';
-import {map, take, switchMap} from 'rxjs/operators';
-import {Observable, combineLatest, BehaviorSubject} from 'rxjs';
-import {Router, ActivatedRoute} from '@angular/router';
+import { Injectable } from "@angular/core";
+import { FormControl } from "@angular/forms";
+import { MatPaginator, PageEvent } from "@angular/material/paginator";
+import { MatTableDataSource } from "@angular/material/table";
+import { View, PlayerService, Vm } from "src/app/generated/steamfitter.api";
+import { map, take, switchMap } from "rxjs/operators";
+import { Observable, combineLatest, BehaviorSubject } from "rxjs";
+import { Router, ActivatedRoute } from "@angular/router";
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: "root",
 })
-
 export class PlayerDataService {
   private _views: View[];
   private _viewMask: Observable<string>;
@@ -30,14 +29,14 @@ export class PlayerDataService {
   readonly selectedView: Observable<View>;
   private _selectedViewId: string;
   private _vms: Vm[];
-  private _vmMask = new BehaviorSubject<string>('');
+  private _vmMask = new BehaviorSubject<string>("");
   readonly vms = new BehaviorSubject<Vm[]>(this._vms);
   readonly vmList: Observable<Vm[]>;
   readonly vmFilter = new FormControl();
   private _selectedVms: string[] = [];
   readonly selectedVms = new BehaviorSubject<string[]>(this._selectedVms);
   private requestedViewId = this.activatedRoute.queryParamMap.pipe(
-    map(params => params.get('viewId') || '')
+    map((params) => params.get("viewId") || "")
   );
 
   constructor(
@@ -46,43 +45,63 @@ export class PlayerDataService {
     private activatedRoute: ActivatedRoute
   ) {
     this._viewMask = activatedRoute.queryParamMap.pipe(
-      map(params => params.get('exmask') || '')
+      map((params) => params.get("exmask") || "")
     );
-    this.viewFilter.valueChanges.subscribe(term => {
-      router.navigate([], { queryParams: { exmask: term }, queryParamsHandling: 'merge'});
+    this.viewFilter.valueChanges.subscribe((term) => {
+      router.navigate([], {
+        queryParams: { exmask: term },
+        queryParamsHandling: "merge",
+      });
     });
-    this.vmFilter.valueChanges.subscribe(term => {
+    this.vmFilter.valueChanges.subscribe((term) => {
       this._vmMask.next(term);
     });
     this.viewList = combineLatest([this.views, this._viewMask]).pipe(
       map(([items, filterTerm]) =>
-        items ? (items as View[])
-          .sort((a: View, b: View) => a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1 )
-          .filter(item => item.name.toLowerCase().includes(filterTerm.toLowerCase()) ||
-            item.id.toLowerCase().includes(filterTerm.toLowerCase()))
-        : [])
+        items
+          ? (items as View[])
+              .sort((a: View, b: View) =>
+                a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1
+              )
+              .filter(
+                (item) =>
+                  item.name.toLowerCase().includes(filterTerm.toLowerCase()) ||
+                  item.id.toLowerCase().includes(filterTerm.toLowerCase())
+              )
+          : []
+      )
     );
     this.vmList = combineLatest([this.vms, this._vmMask]).pipe(
       map(([items, filterTerm]) => {
-        let vmList = items ? items as Vm[] : [];
+        let vmList = items ? (items as Vm[]) : [];
         vmList = vmList
-          .sort((a: Vm, b: Vm) => a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1)
-          .filter(item => item.name.toLowerCase().includes(filterTerm.toLowerCase()) ||
-                  item.id.toLowerCase().includes(filterTerm.toLowerCase()));
+          .sort((a: Vm, b: Vm) =>
+            a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1
+          )
+          .filter(
+            (item) =>
+              item.name.toLowerCase().includes(filterTerm.toLowerCase()) ||
+              item.id.toLowerCase().includes(filterTerm.toLowerCase())
+          );
         return vmList;
       })
     );
-    this.selectedView = combineLatest([this.viewList, this.requestedViewId]).pipe(
+    this.selectedView = combineLatest([
+      this.viewList,
+      this.requestedViewId,
+    ]).pipe(
       map(([viewList, requestedViewId]) => {
         if (viewList && viewList.length > 0 && requestedViewId) {
-          const selectedView = viewList.find(view => view.id === requestedViewId);
+          const selectedView = viewList.find(
+            (view) => view.id === requestedViewId
+          );
           if (selectedView && selectedView.id !== this._selectedViewId) {
             this.getViewVmsFromApi(selectedView.id, true);
             this._selectedViewId = selectedView.id;
           }
           return selectedView;
         } else {
-          this._selectedViewId = '';
+          this._selectedViewId = "";
           return undefined;
         }
       })
@@ -90,22 +109,31 @@ export class PlayerDataService {
   }
 
   getViewsFromApi() {
-    this.playerService.getViews().pipe(take(1)).subscribe(views => {
-      this._views = Object.assign([], views);
-      this.views.next(this._views);
-    }, error => {
-      this.views.next([]);
-    });
+    this.playerService
+      .getViews()
+      .pipe(take(1))
+      .subscribe(
+        (views) => {
+          this._views = Object.assign([], views);
+          this.views.next(this._views);
+        },
+        (error) => {
+          this.views.next([]);
+        }
+      );
   }
 
   selectView(viewId: string) {
-    this.router.navigate([], { queryParams: { viewId: viewId }, queryParamsHandling: 'merge'});
+    this.router.navigate([], {
+      queryParams: { viewId: viewId },
+      queryParamsHandling: "merge",
+    });
   }
 
   getAllVmsFromApi() {
     this._vms = [];
     this.vms.next([]);
-    this._views.forEach(view => {
+    this._views.forEach((view) => {
       this.getViewVmsFromApi(view.id, false);
     });
   }
@@ -115,14 +143,17 @@ export class PlayerDataService {
       this._vms = [];
       this.vms.next([]);
     }
-    return this.playerService.getVms(viewId).pipe(take(1)).subscribe(vms => {
-      this._vms = this._vms.concat(vms);
-      this.vms.next(this._vms);
-    });
+    return this.playerService
+      .getVms(viewId)
+      .pipe(take(1))
+      .subscribe((vms) => {
+        this._vms = this._vms.concat(vms);
+        this.vms.next(this._vms);
+      });
   }
 
   addSelectedVm(id: string) {
-    if (this._vms.some(vm => vm.id === id)) {
+    if (this._vms.some((vm) => vm.id === id)) {
       const vmList = this.selectedVms.getValue();
       vmList.push(id);
       this.selectedVms.next(vmList);
@@ -130,12 +161,11 @@ export class PlayerDataService {
   }
 
   removeSelectedVm(id: string) {
-    const vmList = this.selectedVms.getValue().filter(vmId => vmId !== id);
+    const vmList = this.selectedVms.getValue().filter((vmId) => vmId !== id);
     this.selectedVms.next(vmList);
   }
 
   resetSelectedVms() {
     this.selectedVms.next([]);
   }
-
 }

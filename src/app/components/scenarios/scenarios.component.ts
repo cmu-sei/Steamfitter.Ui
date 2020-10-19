@@ -15,28 +15,28 @@ import {
   OnInit,
   Output,
   ViewChild,
-} from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { PageEvent } from '@angular/material/paginator';
-import { Sort } from '@angular/material/sort';
-import { MatStepper } from '@angular/material/stepper';
-import { ActivatedRoute, Router } from '@angular/router';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { PlayerDataService } from 'src/app/data/player/player-data-service';
-import { ScenarioDataService } from 'src/app/data/scenario/scenario-data.service';
-import { ScenarioQuery } from 'src/app/data/scenario/scenario.query';
-import { Scenario } from 'src/app/swagger-codegen/dispatcher.api';
+} from "@angular/core";
+import { FormControl } from "@angular/forms";
+import { PageEvent } from "@angular/material/paginator";
+import { Sort } from "@angular/material/sort";
+import { MatStepper } from "@angular/material/stepper";
+import { ActivatedRoute, Router } from "@angular/router";
+import { Observable } from "rxjs";
+import { map } from "rxjs/operators";
+import { PlayerDataService } from "src/app/data/player/player-data-service";
+import { ScenarioDataService } from "src/app/data/scenario/scenario-data.service";
+import { ScenarioQuery } from "src/app/data/scenario/scenario.query";
+import { Scenario } from "src/app/generated/steamfitter.api";
 
 @Component({
-  selector: 'app-scenarios',
-  templateUrl: './scenarios.component.html',
-  styleUrls: ['./scenarios.component.scss'],
+  selector: "app-scenarios",
+  templateUrl: "./scenarios.component.html",
+  styleUrls: ["./scenarios.component.scss"],
 })
 export class ScenariosComponent implements OnInit {
   @Output() editComplete = new EventEmitter<boolean>();
   @ViewChild(ScenariosComponent) child;
-  @ViewChild('stepper') stepper: MatStepper;
+  @ViewChild("stepper") stepper: MatStepper;
 
   isLinear = false;
   scenarioList = this.scenarioDataService.scenarioList;
@@ -60,25 +60,25 @@ export class ScenariosComponent implements OnInit {
   ) {
     this.scenarioDataService.load();
     this.filterString = activatedRoute.queryParamMap.pipe(
-      map((params) => params.get('scenariomask') || '')
+      map((params) => params.get("scenariomask") || "")
     );
     this.pageSize = activatedRoute.queryParamMap.pipe(
-      map((params) => parseInt(params.get('pagesize') || '20', 10))
+      map((params) => parseInt(params.get("pagesize") || "20", 10))
     );
     this.pageIndex = activatedRoute.queryParamMap.pipe(
-      map((params) => parseInt(params.get('pageindex') || '0', 10))
+      map((params) => parseInt(params.get("pageindex") || "0", 10))
     );
     this.statuses = activatedRoute.queryParamMap.pipe(
-      map((params) => params.get('statuses') || 'active,ready')
+      map((params) => params.get("statuses") || "active,ready")
     );
   }
 
   ngOnInit() {
     const statuses: string = this.activatedRoute.snapshot.queryParamMap.get(
-      'statuses'
+      "statuses"
     );
     const secondParam: string = this.activatedRoute.snapshot.queryParamMap.get(
-      'secondParamKey'
+      "secondParamKey"
     );
   }
   setActive(id: string) {
@@ -88,24 +88,24 @@ export class ScenariosComponent implements OnInit {
   sortChangeHandler(sort: Sort) {
     this.router.navigate([], {
       queryParams: { sorton: sort.active, sortdir: sort.direction },
-      queryParamsHandling: 'merge',
+      queryParamsHandling: "merge",
     });
   }
 
   filterStatusChangeHandler(statusList: any) {
-    let statuses = statusList.active ? 'active' : 'x';
-    statuses = statusList.ready ? statuses + ',ready' : statuses;
-    statuses = statusList.ended ? statuses + ',ended' : statuses;
+    let statuses = statusList.active ? "active" : "x";
+    statuses = statusList.ready ? statuses + ",ready" : statuses;
+    statuses = statusList.ended ? statuses + ",ended" : statuses;
     this.router.navigate([], {
       queryParams: { statuses: statuses },
-      queryParamsHandling: 'merge',
+      queryParamsHandling: "merge",
     });
   }
 
   pageChangeHandler(page: PageEvent) {
     this.router.navigate([], {
       queryParams: { pageindex: page.pageIndex, pagesize: page.pageSize },
-      queryParamsHandling: 'merge',
+      queryParamsHandling: "merge",
     });
   }
 

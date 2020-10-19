@@ -15,23 +15,20 @@ import {
   OnInit,
   Output,
   ViewChild,
-} from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
-import { MatMenuTrigger } from '@angular/material/menu';
-import { PageEvent } from '@angular/material/paginator';
-import { Sort } from '@angular/material/sort';
-import { ScenarioTemplateEditDialogComponent } from 'src/app/components/scenario-templates/scenario-template-edit-dialog/scenario-template-edit-dialog.component';
-import { ScenarioTemplateEditComponent } from 'src/app/components/scenario-templates/scenario-template-edit/scenario-template-edit.component';
-import { ScenarioEditDialogComponent } from 'src/app/components/scenarios/scenario-edit-dialog/scenario-edit-dialog.component';
-import { ScenarioTemplateDataService } from 'src/app/data/scenario-template/scenario-template-data.service';
-import { ScenarioDataService } from 'src/app/data/scenario/scenario-data.service';
-import { DialogService } from 'src/app/services/dialog/dialog.service';
-import {
-  Scenario,
-  ScenarioTemplate,
-} from 'src/app/swagger-codegen/dispatcher.api';
-import { ComnSettingsService } from '@crucible/common';
+} from "@angular/core";
+import { FormControl } from "@angular/forms";
+import { MatDialog } from "@angular/material/dialog";
+import { MatMenuTrigger } from "@angular/material/menu";
+import { PageEvent } from "@angular/material/paginator";
+import { Sort } from "@angular/material/sort";
+import { ScenarioTemplateEditDialogComponent } from "src/app/components/scenario-templates/scenario-template-edit-dialog/scenario-template-edit-dialog.component";
+import { ScenarioTemplateEditComponent } from "src/app/components/scenario-templates/scenario-template-edit/scenario-template-edit.component";
+import { ScenarioEditDialogComponent } from "src/app/components/scenarios/scenario-edit-dialog/scenario-edit-dialog.component";
+import { ScenarioTemplateDataService } from "src/app/data/scenario-template/scenario-template-data.service";
+import { ScenarioDataService } from "src/app/data/scenario/scenario-data.service";
+import { DialogService } from "src/app/services/dialog/dialog.service";
+import { Scenario, ScenarioTemplate } from "src/app/generated/steamfitter.api";
+import { ComnSettingsService } from "@crucible/common";
 
 export interface Action {
   Value: string;
@@ -39,9 +36,9 @@ export interface Action {
 }
 
 @Component({
-  selector: 'app-scenario-template-list',
-  templateUrl: './scenario-template-list.component.html',
-  styleUrls: ['./scenario-template-list.component.scss'],
+  selector: "app-scenario-template-list",
+  templateUrl: "./scenario-template-list.component.html",
+  styleUrls: ["./scenario-template-list.component.scss"],
 })
 export class ScenarioTemplateListComponent implements OnInit {
   @Input() scenarioTemplateList: ScenarioTemplate[];
@@ -57,12 +54,12 @@ export class ScenarioTemplateListComponent implements OnInit {
   @Output() pageChange = new EventEmitter<PageEvent>();
   @ViewChild(ScenarioTemplateEditComponent)
   scenarioTemplateEditComponent: ScenarioTemplateEditComponent;
-  topbarColor = '#ef3a47';
-  displayedColumns: string[] = ['name', 'description', 'durationHours'];
-  editScenarioTemplateText = 'Edit ScenarioTemplate';
+  topbarColor = "#ef3a47";
+  displayedColumns: string[] = ["name", "description", "durationHours"];
+  editScenarioTemplateText = "Edit ScenarioTemplate";
   // context menu
   @ViewChild(MatMenuTrigger, { static: true }) contextMenu: MatMenuTrigger;
-  contextMenuPosition = { x: '0px', y: '0px' };
+  contextMenuPosition = { x: "0px", y: "0px" };
 
   constructor(
     public dialogService: DialogService,
@@ -71,18 +68,20 @@ export class ScenarioTemplateListComponent implements OnInit {
     private dialog: MatDialog,
     private settingsService: ComnSettingsService
   ) {
-    this.topbarColor = this.settingsService.settings.AppTopBarHexColor ? this.settingsService.settings.AppTopBarHexColor : this.topbarColor;
+    this.topbarColor = this.settingsService.settings.AppTopBarHexColor
+      ? this.settingsService.settings.AppTopBarHexColor
+      : this.topbarColor;
   }
 
   ngOnInit() {
     this.filterControl.setValue(this.filterString);
     const id = this.selectedScenarioTemplate
       ? this.selectedScenarioTemplate.id
-      : '';
+      : "";
     // force already expanded scenarioTemplate to refresh details
     if (id) {
       const here = this;
-      this.setActive.emit('');
+      this.setActive.emit("");
       setTimeout(function () {
         here.setActive.emit(id);
       }, 1);
@@ -90,15 +89,15 @@ export class ScenarioTemplateListComponent implements OnInit {
   }
 
   clearFilter() {
-    this.filterControl.setValue('');
+    this.filterControl.setValue("");
   }
 
   onContextMenu(event: MouseEvent, scenarioTemplate: ScenarioTemplate) {
     event.preventDefault();
-    this.contextMenuPosition.x = event.clientX + 'px';
-    this.contextMenuPosition.y = event.clientY + 'px';
+    this.contextMenuPosition.x = event.clientX + "px";
+    this.contextMenuPosition.y = event.clientY + "px";
     this.contextMenu.menuData = { item: scenarioTemplate };
-    this.contextMenu.menu.focusFirstItem('mouse');
+    this.contextMenu.menu.focusFirstItem("mouse");
     this.contextMenu.openMenu();
   }
 
@@ -107,10 +106,10 @@ export class ScenarioTemplateListComponent implements OnInit {
    */
   editScenarioTemplate(scenarioTemplate: ScenarioTemplate) {
     scenarioTemplate = !scenarioTemplate
-      ? <ScenarioTemplate>{ name: '', description: '' }
+      ? <ScenarioTemplate>{ name: "", description: "" }
       : scenarioTemplate;
     const dialogRef = this.dialog.open(ScenarioTemplateEditDialogComponent, {
-      width: '800px',
+      width: "800px",
       data: { scenarioTemplate: scenarioTemplate },
     });
     dialogRef.componentInstance.editComplete.subscribe((result) => {
@@ -127,13 +126,13 @@ export class ScenarioTemplateListComponent implements OnInit {
   deleteScenarioTemplate(scenarioTemplate: ScenarioTemplate): void {
     this.dialogService
       .confirm(
-        'Delete ScenarioTemplate',
-        'Are you sure that you want to delete scenarioTemplate ' +
+        "Delete ScenarioTemplate",
+        "Are you sure that you want to delete scenarioTemplate " +
           scenarioTemplate.name +
-          '?'
+          "?"
       )
       .subscribe((result) => {
-        if (result['confirm']) {
+        if (result["confirm"]) {
           this.scenarioTemplateDataService.delete(scenarioTemplate.id);
         }
       });
@@ -145,13 +144,13 @@ export class ScenarioTemplateListComponent implements OnInit {
   copyScenarioTemplate(scenarioTemplate: ScenarioTemplate): void {
     this.dialogService
       .confirm(
-        'Copy ScenarioTemplate',
-        'Are you sure that you want to create a new scenarioTemplate from ' +
+        "Copy ScenarioTemplate",
+        "Are you sure that you want to create a new scenarioTemplate from " +
           scenarioTemplate.name +
-          '?'
+          "?"
       )
       .subscribe((result) => {
-        if (result['confirm']) {
+        if (result["confirm"]) {
           this.scenarioTemplateDataService.copyScenarioTemplate(
             scenarioTemplate.id
           );
@@ -165,13 +164,13 @@ export class ScenarioTemplateListComponent implements OnInit {
   createScenario(scenarioTemplate: ScenarioTemplate): void {
     this.dialogService
       .confirm(
-        'Create Scenario',
-        'Are you sure that you want to create a scenario from ' +
+        "Create Scenario",
+        "Are you sure that you want to create a scenario from " +
           scenarioTemplate.name +
-          '?'
+          "?"
       )
       .subscribe((result) => {
-        if (result['confirm']) {
+        if (result["confirm"]) {
           this.scenarioDataService.createScenarioFromScenarioTemplate(
             scenarioTemplate.id
           );
@@ -184,7 +183,7 @@ export class ScenarioTemplateListComponent implements OnInit {
    */
   editNewScenario(scenario: Scenario) {
     const dialogRef = this.dialog.open(ScenarioEditDialogComponent, {
-      width: '800px',
+      width: "800px",
       data: { scenario: scenario },
     });
     dialogRef.componentInstance.editComplete.subscribe((newScenario) => {
@@ -197,7 +196,7 @@ export class ScenarioTemplateListComponent implements OnInit {
       !!this.selectedScenarioTemplate &&
       scenarioTemplateId === this.selectedScenarioTemplate.id
     ) {
-      this.setActive.emit('');
+      this.setActive.emit("");
     } else {
       this.setActive.emit(scenarioTemplateId);
     }
