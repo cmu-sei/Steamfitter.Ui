@@ -11,7 +11,7 @@ DM20-0181
 import { Injectable, OnDestroy } from "@angular/core";
 import { FormControl } from "@angular/forms";
 import { ActivatedRoute, Router } from "@angular/router";
-import { ComnAuthQuery, ComnAuthService } from "@crucible/common";
+import { ComnAuthQuery, ComnAuthService } from "@cmusei/crucible-common";
 import { User as AuthUser } from "oidc-client";
 import { BehaviorSubject, combineLatest, Observable, Subject } from "rxjs";
 import { filter, map, take, takeUntil } from "rxjs/operators";

@@ -27,7 +27,7 @@ import { ResultQuery } from "src/app/data/result/result.query";
 import { TaskDataService } from "src/app/data/task/task-data.service";
 import { UserDataService } from "src/app/data/user/user-data.service";
 import { Result, User, View, Vm } from "src/app/generated/steamfitter.api";
-import { ComnSettingsService } from "@crucible/common";
+import { ComnSettingsService } from "@cmusei/crucible-common";
 
 enum HistoryView {
   user = "User",

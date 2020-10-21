@@ -17,7 +17,7 @@ import {
   User,
   UserPermission,
 } from "src/app/generated/steamfitter.api/model/models";
-import { ComnSettingsService } from "@crucible/common";
+import { ComnSettingsService } from "@cmusei/crucible-common";
 
 @Component({
   selector: "app-admin-users",

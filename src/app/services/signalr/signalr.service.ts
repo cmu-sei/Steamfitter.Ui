@@ -9,7 +9,7 @@ DM20-0181
 */
 
 import { Injectable } from "@angular/core";
-import { ComnAuthService, ComnSettingsService } from "@crucible/common";
+import { ComnAuthService, ComnSettingsService } from "@cmusei/crucible-common";
 import * as signalR from "@microsoft/signalr";
 import { ResultDataService } from "src/app/data/result/result-data.service";
 import { ScenarioTemplateDataService } from "src/app/data/scenario-template/scenario-template-data.service";

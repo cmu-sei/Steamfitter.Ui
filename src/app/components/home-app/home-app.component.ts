@@ -13,7 +13,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, Observable } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { PlayerDataService } from 'src/app/data/player/player-data-service';
-import { ComnSettingsService, Theme, ComnAuthQuery } from '@crucible/common';
+import { ComnSettingsService, Theme, ComnAuthQuery } from '@cmusei/crucible-common';
 import { SignalRService } from 'src/app/services/signalr/signalr.service';
 import { UserDataService } from '../../data/user/user-data.service';
 import { TopbarView } from './../shared/top-bar/topbar.models';

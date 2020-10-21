@@ -22,7 +22,7 @@ import {
 } from "src/app/generated/steamfitter.api/model/models";
 import { UserDataService } from "../../../data/user/user-data.service";
 import { TopbarView } from "./../../shared/top-bar/topbar.models";
-import { ComnSettingsService, ComnAuthQuery, Theme } from "@crucible/common";
+import { ComnSettingsService, ComnAuthQuery, Theme } from "@cmusei/crucible-common";
 
 @Component({
   selector: "app-admin-container",
