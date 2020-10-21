@@ -19,7 +19,7 @@ import {
 import { FormControl, FormGroupDirective, NgForm } from "@angular/forms";
 import { ErrorStateMatcher } from "@angular/material/core";
 import { MatStepper } from "@angular/material/stepper";
-import { ComnAuthService } from "@crucible/common";
+import { ComnAuthService } from "@cmusei/crucible-common";
 import { BehaviorSubject, Subject } from "rxjs";
 import { take, takeUntil } from "rxjs/operators";
 import { PlayerDataService } from "src/app/data/player/player-data-service";
@@ -34,7 +34,7 @@ import {
   TaskService,
   Vm,
 } from "src/app/generated/steamfitter.api";
-import { ComnSettingsService } from "@crucible/common";
+import { ComnSettingsService } from "@cmusei/crucible-common";
 
 /** Error when invalid control is dirty, touched, or submitted. */
 export class UserErrorStateMatcher implements ErrorStateMatcher {

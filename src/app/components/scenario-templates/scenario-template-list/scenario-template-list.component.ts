@@ -28,7 +28,7 @@ import { ScenarioTemplateDataService } from "src/app/data/scenario-template/scen
 import { ScenarioDataService } from "src/app/data/scenario/scenario-data.service";
 import { DialogService } from "src/app/services/dialog/dialog.service";
 import { Scenario, ScenarioTemplate } from "src/app/generated/steamfitter.api";
-import { ComnSettingsService } from "@crucible/common";
+import { ComnSettingsService } from "@cmusei/crucible-common";
 
 export interface Action {
   Value: string;

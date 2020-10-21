@@ -55,7 +55,7 @@ import {
   ComnSettingsConfig,
   ComnSettingsModule,
   ComnSettingsService,
-} from "@crucible/common";
+} from "@cmusei/crucible-common";
 import { AkitaNgRouterStoreModule } from "@datorama/akita-ng-router-store";
 import { AkitaNgDevtools } from "@datorama/akita-ngdevtools";
 import { ClipboardModule } from "ngx-clipboard";
