@@ -184,6 +184,12 @@ export class AppComponent implements OnDestroy {
       )
     );
     iconRegistry.addSvgIcon(
+      'error',
+      sanitizer.bypassSecurityTrustResourceUrl(
+        'assets/svg-icons/alert-outline.svg'
+      )
+    );
+    iconRegistry.addSvgIcon(
       'completion',
       sanitizer.bypassSecurityTrustResourceUrl(
         'assets/svg-icons/check-circle-outline.svg'
@@ -227,6 +233,12 @@ export class AppComponent implements OnDestroy {
     );
     iconRegistry.addSvgIcon(
       'expiration',
+      sanitizer.bypassSecurityTrustResourceUrl(
+        'assets/svg-icons/clock-alert-outline.svg'
+      )
+    );
+    iconRegistry.addSvgIcon(
+      'expired',
       sanitizer.bypassSecurityTrustResourceUrl(
         'assets/svg-icons/clock-alert-outline.svg'
       )
