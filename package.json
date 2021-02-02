@@ -31,7 +31,6 @@
     "@angular/platform-browser": "~9.1.12",
     "@angular/platform-browser-dynamic": "~9.1.12",
     "@angular/router": "~9.1.12",
-    "@cmusei/crucible-common": "0.0.5",
     "@datorama/akita": "^4.10.4",
     "@datorama/akita-ng-router-store": "^3.1.4",
     "@datorama/akita-ngdevtools": "^3.0.2",
