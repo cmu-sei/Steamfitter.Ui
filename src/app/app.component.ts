@@ -6,8 +6,7 @@ import { Component, HostBinding, OnDestroy } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import { ComnAuthQuery, Theme } from '@cmusei/crucible-common';
-import { Subject } from 'rxjs';
-import { Observable } from 'rxjs/Observable';
+import { Subject, Observable } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 
 @Component({
