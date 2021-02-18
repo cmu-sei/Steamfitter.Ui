@@ -14,14 +14,14 @@ import { Router, ActivatedRoute } from "@angular/router";
   providedIn: "root",
 })
 export class PlayerDataService {
-  private _views: View[];
+  private _views: View[] = [];
   private _viewMask: Observable<string>;
   readonly views = new BehaviorSubject<View[]>(this._views);
   readonly viewList: Observable<View[]>;
   readonly viewFilter = new FormControl();
   readonly selectedView: Observable<View>;
   private _selectedViewId: string;
-  private _vms: Vm[];
+  private _vms: Vm[] = [];
   private _vmMask = new BehaviorSubject<string>("");
   readonly vms = new BehaviorSubject<Vm[]>(this._vms);
   readonly vmList: Observable<Vm[]>;

@@ -15,7 +15,7 @@ import { MatMenuTrigger } from "@angular/material/menu";
 import { MatPaginator, PageEvent } from "@angular/material/paginator";
 import { MatSort, Sort } from "@angular/material/sort";
 import { MatTableDataSource } from "@angular/material/table";
-import { Observable } from "rxjs/Observable";
+import { Observable } from "rxjs";
 import { ScenarioEditDialogComponent } from "src/app/components/scenarios/scenario-edit-dialog/scenario-edit-dialog.component";
 import { ScenarioEditComponent } from "src/app/components/scenarios/scenario-edit/scenario-edit.component";
 import { ScenarioDataService } from "src/app/data/scenario/scenario-data.service";

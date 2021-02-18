@@ -122,7 +122,7 @@ export function getBasePath(settingsSvc: ComnSettingsService) {
   ],
   imports: [
     AkitaNgDevtools.forRoot(),
-    AkitaNgRouterStoreModule.forRoot(),
+    AkitaNgRouterStoreModule,
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
