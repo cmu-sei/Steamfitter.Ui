@@ -1,4 +1,4 @@
-# SteamfitterUi
+# Steamfitter.Ui Readme
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.1.4.
 
@@ -8,7 +8,8 @@ Run `ng serve` for a dev server. Navigate to `http://localhost:4401/`. The app w
 
 ## Code scaffolding
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Run `ng generate component component-name` to generate a new component. You can also use:
+`ng generate directive|pipe|service|class|guard|interface|enum|module`.
 
 ## Build
 
@@ -35,3 +36,7 @@ Include as much detail as possible including steps to reproduce, specific app in
 Have a good idea for a new feature? Submit all new feature requests through the [cmu-sei/crucible issue tracker](https://github.com/cmu-sei/crucible/issues). 
 
 Include the reasons why you're requesting the new feature and how it might benefit other Crucible users.
+
+## License
+
+Copyright 2021 Carnegie Mellon University. See the [LICENSE.md](./LICENSE.md) files for details.
