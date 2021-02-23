@@ -8,6 +8,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
+    "postinstall": "ngcc",
     "swagger-gen": "curl --insecure http://host.docker.internal:4400/swagger/v1/swagger.json --output swagger.json && node_modules/@openapitools/openapi-generator-cli/bin/openapi-generator generate -i ./swagger.json -g typescript-angular -o src/app/generated/steamfitter.api --additional-properties ngVersion=9.1 --additional-properties useRxJS6=true --additional-properties modelPropertyNaming=original --type-mappings=DateTime=Date --skip-validate-spec",
     "swagger-gen-win": "docker run --rm -v %CD%:/local openapitools/openapi-generator-cli:v4.1.2 generate -i http://host.docker.internal:4400/swagger/v1/swagger.json -g typescript-angular -o /local/src/app/generated/steamfitter.api --additional-properties ngVersion=9.1 --additional-properties useRxJS6=true --additional-properties modelPropertyNaming=original --type-mappings=DateTime=Date --skip-validate-spec",
     "docker:init": "docker network create identity --driver=overlay",
@@ -46,7 +47,7 @@
     "tslib": "^2.1.0",
     "typescript": "~4.1.5",
     "zone.js": "~0.11.4",
-    "@cmusei/crucible-common": "0.0.8"
+    "@cmusei/crucible-common": "0.1.0"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "~0.1102.1",
