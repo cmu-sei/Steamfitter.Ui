@@ -5,11 +5,12 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 
 <div fxLayout="row" fxLayoutAlign="start center">
   <div class="sp-icon">
-    <mat-icon svgIcon="playlist_play" [ngStyle]="{'color': topbarColor}"></mat-icon>
+    <mat-icon
+      svgIcon="playlist_play"
+      [ngStyle]="{ color: topbarColor }"
+    ></mat-icon>
   </div>
-  <div fxLayout="row">
-
-  </div>
+  <div fxLayout="row"></div>
   <mat-icon
     class="icon-color search-icon"
     svgIcon="ic_magnify_search"
@@ -25,10 +26,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       class="no-outline"
       title="Clear Search"
     >
-      <mat-icon
-        class="scale-85"
-        svgIcon="ic_cancel_circle"
-      ></mat-icon>
+      <mat-icon class="scale-85" svgIcon="ic_cancel_circle"></mat-icon>
     </button>
   </div>
   <div>
@@ -41,17 +39,20 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       [(ngModel)]="showStatus.active"
       (change)="filterStatus()"
       class="checkbox-text"
-    >Active</mat-checkbox><br />
+      >Active</mat-checkbox
+    ><br />
     <mat-checkbox
       [(ngModel)]="showStatus.ended"
       (change)="filterStatus()"
       class="checkbox-text"
-    >Ended</mat-checkbox><br />
+      >Ended</mat-checkbox
+    ><br />
     <mat-checkbox
       [(ngModel)]="showStatus.ready"
       (change)="filterStatus()"
       class="checkbox-text"
-    >Ready</mat-checkbox>
+      >Ready</mat-checkbox
+    >
   </div>
   <div class="button-end">
     <mat-paginator
@@ -83,7 +84,10 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   </section>
 
   <mat-expansion-panel
-    *ngFor="let item of paginateScenarios(scenarioList, pageIndex, pageSize)"
+    *ngFor="
+      let item of paginateScenarios(scenarioList, pageIndex, pageSize);
+      trackBy: trackByFn
+    "
     [expanded]="selectedScenario && item.id == selectedScenario.id"
     (click)="selectScenario(item.id)"
   >
@@ -124,7 +128,12 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   </mat-expansion-panel>
 </mat-accordion>
 
-<div *ngIf="isLoading" fxLayout="column" fxLayoutAlign="start center" fxFlexAlign="center">
+<div
+  *ngIf="isLoading"
+  fxLayout="column"
+  fxLayoutAlign="start center"
+  fxFlexAlign="center"
+>
   <div flex fxFlexAlign="center">
     <mat-progress-spinner color="accent" mode="indeterminate">
     </mat-progress-spinner>
@@ -132,7 +141,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 </div>
 
 <div
-  style="visibility: hidden; position: fixed;"
+  style="visibility: hidden; position: fixed"
   [style.left]="contextMenuPosition.x"
   [style.top]="contextMenuPosition.y"
   [matMenuTriggerFor]="contextMenu"

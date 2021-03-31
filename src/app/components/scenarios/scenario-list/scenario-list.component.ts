@@ -8,20 +8,20 @@ import {
   OnInit,
   Output,
   ViewChild,
-} from "@angular/core";
-import { FormControl } from "@angular/forms";
-import { MatDialog } from "@angular/material/dialog";
-import { MatMenuTrigger } from "@angular/material/menu";
-import { MatPaginator, PageEvent } from "@angular/material/paginator";
-import { MatSort, Sort } from "@angular/material/sort";
-import { MatTableDataSource } from "@angular/material/table";
-import { Observable } from "rxjs";
-import { ScenarioEditDialogComponent } from "src/app/components/scenarios/scenario-edit-dialog/scenario-edit-dialog.component";
-import { ScenarioEditComponent } from "src/app/components/scenarios/scenario-edit/scenario-edit.component";
-import { ScenarioDataService } from "src/app/data/scenario/scenario-data.service";
-import { DialogService } from "src/app/services/dialog/dialog.service";
-import { Scenario, View } from "src/app/generated/steamfitter.api";
-import { ComnSettingsService } from "@cmusei/crucible-common";
+} from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
+import { MatMenuTrigger } from '@angular/material/menu';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatSort, Sort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
+import { Observable } from 'rxjs';
+import { ScenarioEditDialogComponent } from 'src/app/components/scenarios/scenario-edit-dialog/scenario-edit-dialog.component';
+import { ScenarioEditComponent } from 'src/app/components/scenarios/scenario-edit/scenario-edit.component';
+import { ScenarioDataService } from 'src/app/data/scenario/scenario-data.service';
+import { DialogService } from 'src/app/services/dialog/dialog.service';
+import { Scenario, View } from 'src/app/generated/steamfitter.api';
+import { ComnSettingsService } from '@cmusei/crucible-common';
 
 export interface Action {
   Value: string;
@@ -29,9 +29,9 @@ export interface Action {
 }
 
 @Component({
-  selector: "app-scenario-list",
-  templateUrl: "./scenario-list.component.html",
-  styleUrls: ["./scenario-list.component.scss"],
+  selector: 'app-scenario-list',
+  templateUrl: './scenario-list.component.html',
+  styleUrls: ['./scenario-list.component.scss'],
 })
 export class ScenarioListComponent implements OnInit {
   @Input() scenarioList: Scenario[];
@@ -53,17 +53,17 @@ export class ScenarioListComponent implements OnInit {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(ScenarioEditComponent)
   scenarioEditComponent: ScenarioEditComponent;
-  topbarColor = "#ef3a47";
+  topbarColor = '#ef3a47';
   displayedColumns: string[] = [
-    "name",
-    "view",
-    "status",
-    "startDate",
-    "endDate",
-    "description",
+    'name',
+    'view',
+    'status',
+    'startDate',
+    'endDate',
+    'description',
   ];
   showStatus = { active: true, ready: true, ended: false };
-  editScenarioText = "Edit Scenario";
+  editScenarioText = 'Edit Scenario';
   scenarioToEdit: Scenario;
   scenarioDataSource = new MatTableDataSource<Scenario>(new Array<Scenario>());
 
@@ -77,7 +77,7 @@ export class ScenarioListComponent implements OnInit {
 
   // context menu
   @ViewChild(MatMenuTrigger, { static: true }) contextMenu: MatMenuTrigger;
-  contextMenuPosition = { x: "0px", y: "0px" };
+  contextMenuPosition = { x: '0px', y: '0px' };
 
   constructor(
     private scenarioDataService: ScenarioDataService,
@@ -91,15 +91,15 @@ export class ScenarioListComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.showStatus.active = this.statuses.indexOf("active") > -1;
-    this.showStatus.ended = this.statuses.indexOf("ended") > -1;
-    this.showStatus.ready = this.statuses.indexOf("ready") > -1;
+    this.showStatus.active = this.statuses.indexOf('active') > -1;
+    this.showStatus.ended = this.statuses.indexOf('ended') > -1;
+    this.showStatus.ready = this.statuses.indexOf('ready') > -1;
     this.filterControl.setValue(this.filterString);
-    const id = this.selectedScenario ? this.selectedScenario.id : "";
+    const id = this.selectedScenario ? this.selectedScenario.id : '';
     // force already expanded scenario to refresh details
     if (id) {
       const here = this;
-      this.setActive.emit("");
+      this.setActive.emit('');
       setTimeout(function () {
         here.setActive.emit(id);
       }, 1);
@@ -107,15 +107,15 @@ export class ScenarioListComponent implements OnInit {
   }
 
   clearFilter() {
-    this.filterControl.setValue("");
+    this.filterControl.setValue('');
   }
 
   onContextMenu(event: MouseEvent, scenario: Scenario) {
     event.preventDefault();
-    this.contextMenuPosition.x = event.clientX + "px";
-    this.contextMenuPosition.y = event.clientY + "px";
+    this.contextMenuPosition.x = event.clientX + 'px';
+    this.contextMenuPosition.y = event.clientY + 'px';
     this.contextMenu.menuData = { item: scenario };
-    this.contextMenu.menu.focusFirstItem("mouse");
+    this.contextMenu.menu.focusFirstItem('mouse');
     this.contextMenu.openMenu();
   }
 
@@ -130,17 +130,17 @@ export class ScenarioListComponent implements OnInit {
       const endDate = new Date(startDate);
       endDate.setHours(endDate.getHours() + 4);
       scenario = {
-        name: "",
-        description: "",
+        name: '',
+        description: '',
         startDate: startDate,
         endDate: endDate,
-        status: "ready",
+        status: 'ready',
       };
     } else {
       scenario = { ...scenarioToEdit };
     }
     const dialogRef = this.dialog.open(ScenarioEditDialogComponent, {
-      width: "800px",
+      width: '800px',
       data: { scenario: scenario, views: this.views },
     });
     dialogRef.componentInstance.editComplete.subscribe((result) => {
@@ -157,11 +157,11 @@ export class ScenarioListComponent implements OnInit {
   deleteScenario(scenario: Scenario): void {
     this.dialogService
       .confirm(
-        "Delete Scenario",
-        "Are you sure that you want to delete scenario " + scenario.name + "?"
+        'Delete Scenario',
+        'Are you sure that you want to delete scenario ' + scenario.name + '?'
       )
       .subscribe((result) => {
-        if (result["confirm"]) {
+        if (result['confirm']) {
           this.scenarioDataService.delete(scenario.id);
         }
       });
@@ -173,11 +173,11 @@ export class ScenarioListComponent implements OnInit {
   copyScenario(scenario: Scenario): void {
     this.dialogService
       .confirm(
-        "Copy Scenario",
-        "Are you sure that you want to copy scenario " + scenario.name + "?"
+        'Copy Scenario',
+        'Are you sure that you want to copy scenario ' + scenario.name + '?'
       )
       .subscribe((result) => {
-        if (result["confirm"]) {
+        if (result['confirm']) {
           this.scenarioDataService.copyScenario(scenario.id);
         }
       });
@@ -189,11 +189,11 @@ export class ScenarioListComponent implements OnInit {
   startScenario(scenario: Scenario): void {
     this.dialogService
       .confirm(
-        "Start Scenario Now",
-        "Are you sure that you want to start scenario " + scenario.name + "?"
+        'Start Scenario Now',
+        'Are you sure that you want to start scenario ' + scenario.name + '?'
       )
       .subscribe((result) => {
-        if (result["confirm"]) {
+        if (result['confirm']) {
           this.scenarioDataService.start(scenario.id);
         }
       });
@@ -205,11 +205,11 @@ export class ScenarioListComponent implements OnInit {
   endScenario(scenario: Scenario): void {
     this.dialogService
       .confirm(
-        "End Scenario Now",
-        "Are you sure that you want to end scenario " + scenario.name + "?"
+        'End Scenario Now',
+        'Are you sure that you want to end scenario ' + scenario.name + '?'
       )
       .subscribe((result) => {
-        if (result["confirm"]) {
+        if (result['confirm']) {
           this.scenarioDataService.end(scenario.id);
         }
       });
@@ -224,7 +224,7 @@ export class ScenarioListComponent implements OnInit {
 
   selectScenario(scenarioId: string) {
     if (!!this.selectedScenario && scenarioId === this.selectedScenario.id) {
-      this.setActive.emit("");
+      this.setActive.emit('');
     } else {
       this.setActive.emit(scenarioId);
     }
@@ -249,5 +249,9 @@ export class ScenarioListComponent implements OnInit {
 
   sortChanged(sort: Sort) {
     this.sortChange.emit(sort);
+  }
+
+  trackByFn(index, item) {
+    return item.id;
   }
 }

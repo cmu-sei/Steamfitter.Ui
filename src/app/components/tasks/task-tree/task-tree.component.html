@@ -4,10 +4,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 -->
 
 <mat-card flex="100" *ngIf="!(isLoading | async)">
-  <div
-    fxLayout="row"
-    (contextmenu)="onContextMenu($event, null)"
-  >
+  <div fxLayout="row" (contextmenu)="onContextMenu($event, null)">
     <div fxFlex="100" fxLayoutAlign="start">
       <div>
         <b>Tasks:</b>&nbsp;&nbsp;&nbsp;
@@ -38,7 +35,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         <mat-tree-node
           *matTreeNodeDef="let node"
           matTreeNodePadding
-          style="margin-top: 5px;"
+          style="margin-top: 5px"
         >
           <button mat-icon-button disabled *ngIf="!node.expandable"></button>
           <button
@@ -64,27 +61,46 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             (click)="toggleNodeDetails(node); $event.stopPropagation()"
           >
             <mat-expansion-panel-header
+              fxLayout="row"
               (contextmenu)="onContextMenu($event, node)"
             >
-              <mat-panel-title>
+              <mat-panel-title fxFlex="85">
                 <div fxLayout="row" fxLayoutAlign="space-around center">
                   <button
                     mat-icon-button
                     title="Task Menu"
-                    (click)="onContextMenu($event, node); $event.stopPropagation()"
+                    (click)="
+                      onContextMenu($event, node); $event.stopPropagation()
+                    "
                   >
                     <mat-icon class="icon-color" svgIcon="menu"></mat-icon>
                   </button>
                   <mat-icon
                     class="icon-color icon-20"
-                    svgIcon="{{node.task.triggerCondition.toLowerCase()}}"
+                    svgIcon="{{ node.task.triggerCondition.toLowerCase() }}"
                     title="Runs on {{ node.task.triggerCondition }}"
                   ></mat-icon>
                   <mat-label>&nbsp;{{ node.task.name }}</mat-label>
                 </div>
               </mat-panel-title>
+              <mat-panel-description *ngIf="node.task.totalScore > 0">
+                <div *ngIf="node.task.scenarioTemplateId != null">
+                  <span> Score: {{ node.task.score }} </span>
+                  <span> Total Score: {{ node.task.totalScore }} </span>
+                </div>
+                <div *ngIf="node.task.scenarioId != null">
+                  <span>
+                    Score: {{ node.task.scoreEarned }}/{{ node.task.score }}
+                  </span>
+                  <span>
+                    Total Score: {{ node.task.totalScoreEarned }}/{{
+                      node.task.totalScore
+                    }}
+                  </span>
+                </div>
+              </mat-panel-description>
             </mat-expansion-panel-header>
-            <span (click)="$event.stopPropagation();">
+            <span (click)="$event.stopPropagation()">
               <div class="taskText"></div>
               <div class="taskText">
                 <b>Description:</b> {{ node.task.description }}
@@ -96,7 +112,9 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
                 <span *ngFor="let k of node.task.actionParameters | keyvalue"
                   >&nbsp;&nbsp;&nbsp;&nbsp;{{ k.key }}:
                   {{
-                    k.key.toLowerCase() === 'password' ? '**************' : k.value
+                    k.key.toLowerCase() === 'password'
+                      ? '**************'
+                      : k.value
                   }}<br
                 /></span>
               </div>
@@ -110,10 +128,12 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
                 <b>Iterations:</b> {{ node.task.iterations }}
               </div>
               <div class="taskText">
-                <b>Iteration Interval (seconds):</b> {{ node.task.intervalSeconds }}
+                <b>Iteration Interval (seconds):</b>
+                {{ node.task.intervalSeconds }}
               </div>
               <div class="taskText">
-                <b>Iteration Termination:</b> {{ node.task.iterationTermination }}
+                <b>Iteration Termination:</b>
+                {{ node.task.iterationTermination }}
               </div>
               <div class="taskText">
                 <b>Expiration (seconds):</b> {{ node.task.experationSeconds }}
@@ -143,7 +163,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 </mat-card>
 
 <div
-  style="visibility: hidden; position: fixed;"
+  style="visibility: hidden; position: fixed"
   [style.left]="contextMenuPosition.x"
   [style.top]="contextMenuPosition.y"
   [matMenuTriggerFor]="contextMenu"

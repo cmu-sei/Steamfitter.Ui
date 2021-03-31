@@ -1,16 +1,16 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { TaskStore } from "./task.store";
-import { TaskQuery } from "./task.query";
-import { ResultDataService } from "src/app/data/result/result-data.service";
-import { Injectable } from "@angular/core";
-import { FormControl } from "@angular/forms";
-import { PageEvent } from "@angular/material/paginator";
-import { Router, ActivatedRoute } from "@angular/router";
-import { Task, TaskService, Result } from "src/app/generated/steamfitter.api";
-import { map, take, tap } from "rxjs/operators";
-import { BehaviorSubject, Observable, combineLatest } from "rxjs";
+import { TaskStore } from './task.store';
+import { TaskQuery } from './task.query';
+import { ResultDataService } from 'src/app/data/result/result-data.service';
+import { Injectable } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { PageEvent } from '@angular/material/paginator';
+import { Router, ActivatedRoute } from '@angular/router';
+import { Task, TaskService, Result } from 'src/app/generated/steamfitter.api';
+import { map, take, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
 
 export interface Clipboard {
   id: string | undefined;
@@ -24,10 +24,10 @@ export interface PasteLocation {
 }
 
 @Injectable({
-  providedIn: "root",
+  providedIn: 'root',
 })
 export class TaskDataService {
-  private _requestedTaskId$ = new BehaviorSubject<string>("");
+  private _requestedTaskId$ = new BehaviorSubject<string>('');
   readonly taskList: Observable<Task[]>;
   readonly selected: Observable<Task>;
   readonly filterControl = new FormControl();
@@ -47,7 +47,7 @@ export class TaskDataService {
   ) {
     this.filterTerm = activatedRoute.queryParamMap.pipe(
       tap((params) => {
-        const taskId = params.get("taskId") || "";
+        const taskId = params.get('taskId') || '';
         if (taskId !== this._requestedTaskId$.getValue()) {
           if (!!taskId) {
             this.loadById(taskId);
@@ -55,12 +55,12 @@ export class TaskDataService {
           this._requestedTaskId$.next(taskId);
         }
       }),
-      map((params) => params.get("taskmask") || "")
+      map((params) => params.get('taskmask') || '')
     );
     this.filterControl.valueChanges.subscribe((term) => {
       this.router.navigate([], {
         queryParams: { taskmask: term },
-        queryParamsHandling: "merge",
+        queryParamsHandling: 'merge',
       });
     });
     this.taskList = combineLatest([
@@ -187,7 +187,7 @@ export class TaskDataService {
     this.resultDataService.loadByUser(userId);
   }
 
-  loadByView(viewId: string) {
+  loadByView(viewId: string, loadResults: boolean) {
     this.taskStore.setLoading(true);
     this.taskService
       .getViewTasks(viewId)
@@ -205,7 +205,10 @@ export class TaskDataService {
           this.taskStore.set([]);
         }
       );
-    this.resultDataService.loadByView(viewId);
+
+    if (loadResults) {
+      this.resultDataService.loadByView(viewId);
+    }
   }
 
   loadByVm(vmId: string) {
@@ -297,7 +300,7 @@ export class TaskDataService {
   setActive(id: string) {
     this.router.navigate([], {
       queryParams: { taskId: id },
-      queryParamsHandling: "merge",
+      queryParamsHandling: 'merge',
     });
   }
 
@@ -372,10 +375,10 @@ export class TaskDataService {
 
   fixDates(result: Result) {
     // set as date object and handle c# not adding 'Z' to UTC dates.
-    result.dateCreated = new Date(result.dateCreated + "Z");
-    result.dateModified = new Date(result.dateModified + "Z");
-    result.statusDate = new Date(result.statusDate + "Z");
-    result.sentDate = new Date(result.sentDate + "Z");
+    result.dateCreated = new Date(result.dateCreated + 'Z');
+    result.dateModified = new Date(result.dateModified + 'Z');
+    result.statusDate = new Date(result.statusDate + 'Z');
+    result.sentDate = new Date(result.sentDate + 'Z');
   }
 
   setAsDates(result: Result) {

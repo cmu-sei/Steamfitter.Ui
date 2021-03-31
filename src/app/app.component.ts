@@ -165,9 +165,7 @@ export class AppComponent implements OnDestroy {
     );
     iconRegistry.addSvgIcon(
       'time',
-      sanitizer.bypassSecurityTrustResourceUrl(
-        'assets/svg-icons/alarm.svg'
-      )
+      sanitizer.bypassSecurityTrustResourceUrl('assets/svg-icons/alarm.svg')
     );
     iconRegistry.addSvgIcon(
       'alert_outline',
@@ -237,15 +235,11 @@ export class AppComponent implements OnDestroy {
     );
     iconRegistry.addSvgIcon(
       'send',
-      sanitizer.bypassSecurityTrustResourceUrl(
-        'assets/svg-icons/send.svg'
-      )
+      sanitizer.bypassSecurityTrustResourceUrl('assets/svg-icons/send.svg')
     );
     iconRegistry.addSvgIcon(
       'pending',
-      sanitizer.bypassSecurityTrustResourceUrl(
-        'assets/svg-icons/z-wave.svg'
-      )
+      sanitizer.bypassSecurityTrustResourceUrl('assets/svg-icons/z-wave.svg')
     );
     iconRegistry.addSvgIcon(
       'queued',
