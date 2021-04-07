@@ -1,4 +1,4 @@
-FROM node:14.13.1-stretch as builder
+FROM node as builder
 
 COPY package.json package-lock.json ./
 
@@ -18,6 +18,15 @@ FROM nginx
 
 ## Copy our default nginx config
 COPY default.conf /etc/nginx/conf.d/
+
+RUN chown -R nginx:nginx /usr/share/nginx/html      && \
+    chown -R nginx:nginx /var/cache/nginx           && \
+    chown -R nginx:nginx /var/log/nginx             && \
+    chown -R nginx:nginx /etc/nginx/conf.d          && \
+    sed -i '/user  nginx;/d' /etc/nginx/nginx.conf  && \
+    sed -i 's,/var/run/nginx.pid,/tmp/nginx.pid,' /etc/nginx/nginx.conf
+
+USER nginx
 
 ## Remove default nginx website
 RUN rm -rf /usr/share/nginx/html/*
