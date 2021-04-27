@@ -15,5 +15,5 @@
     "AppTitle": "Steamfitter",
     "AppTopBarHexColor": "#EF3A47",
     "AppTopBarHexTextColor": "#FFFFFF",
-    "UseLocalAuthStorage": true
+    "UseLocalAuthStorage": false
 }
