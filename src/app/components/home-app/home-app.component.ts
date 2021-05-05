@@ -6,7 +6,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, Observable } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { PlayerDataService } from 'src/app/data/player/player-data-service';
-import { ComnSettingsService, Theme, ComnAuthQuery } from '@cmusei/crucible-common';
+import {
+  ComnSettingsService,
+  Theme,
+  ComnAuthQuery,
+} from '@cmusei/crucible-common';
 import { SignalRService } from 'src/app/services/signalr/signalr.service';
 import { UserDataService } from '../../data/user/user-data.service';
 import { TopbarView } from './../shared/top-bar/topbar.models';
@@ -48,7 +52,6 @@ export class HomeAppComponent implements OnDestroy {
     private signalRService: SignalRService,
     private authQuery: ComnAuthQuery
   ) {
-
     this.theme$ = this.authQuery.userTheme$;
 
     this.playerDataService.getViewsFromApi();
@@ -68,12 +71,18 @@ export class HomeAppComponent implements OnDestroy {
       .subscribe((isAuthorized) => {
         this.isAuthorizedUser = isAuthorized;
       });
-    this.signalRService.startConnection();
+    this.signalRService.joinSystem();
 
     // Set the display settings from config file
-    this.topbarColor = this.settingsService.settings.AppTopBarHexColor ? this.settingsService.settings.AppTopBarHexColor : this.topbarColor;
-    this.topbarTextColor = this.settingsService.settings.AppTopBarHexTextColor ? this.settingsService.settings.AppTopBarHexTextColor : this.topbarTextColor;
-    this.titleText = this.settingsService.settings.AppTitle ? this.settingsService.settings.AppTitle : this.titleText;
+    this.topbarColor = this.settingsService.settings.AppTopBarHexColor
+      ? this.settingsService.settings.AppTopBarHexColor
+      : this.topbarColor;
+    this.topbarTextColor = this.settingsService.settings.AppTopBarHexTextColor
+      ? this.settingsService.settings.AppTopBarHexTextColor
+      : this.topbarTextColor;
+    this.titleText = this.settingsService.settings.AppTitle
+      ? this.settingsService.settings.AppTitle
+      : this.titleText;
   }
 
   selectTab(section: Section) {

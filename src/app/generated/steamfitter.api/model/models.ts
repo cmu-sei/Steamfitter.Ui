@@ -1,11 +1,14 @@
-// Copyright 2021 Carnegie Mellon University. All Rights Reserved.
-// Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
+/*
+Copyright 2021 Carnegie Mellon University. All Rights Reserved. 
+ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
+*/
 
 export * from './bondAgent';
+export * from './consoleConnectionInfo';
 export * from './directoryInfo';
 export * from './fileAttributes';
 export * from './fileInfo';
-export * from './inlineObject';
+export * from './healthStatus';
 export * from './localUser';
 export * from './monitoredTool';
 export * from './newLocation';

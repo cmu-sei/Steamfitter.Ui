@@ -5,7 +5,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 
 <div fxLayout="row" fxLayoutAlign="start center">
   <div class="sp-icon">
-    <mat-icon svgIcon="storage" [ngStyle]="{'color': topbarColor}"></mat-icon>
+    <mat-icon svgIcon="storage" [ngStyle]="{ color: topbarColor }"></mat-icon>
   </div>
   <mat-icon
     class="icon-color search-icon"
@@ -22,10 +22,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       (click)="clearFilter()"
       title="Clear Search"
     >
-      <mat-icon
-        class="scale-85"
-        svgIcon="ic_cancel_circle"
-      ></mat-icon>
+      <mat-icon class="scale-85" svgIcon="ic_cancel_circle"></mat-icon>
     </button>
   </div>
   <div class="button-end">
@@ -68,7 +65,8 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         scenarioTemplateList,
         pageIndex,
         pageSize
-      )
+      );
+      trackBy: trackByFn
     "
     [expanded]="
       selectedScenarioTemplate && item.id == selectedScenarioTemplate.id
@@ -105,7 +103,12 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   </mat-expansion-panel>
 </mat-accordion>
 
-<div *ngIf="isLoading" fxLayout="column" fxLayoutAlign="start center" fxFlexAlign="center">
+<div
+  *ngIf="isLoading"
+  fxLayout="column"
+  fxLayoutAlign="start center"
+  fxFlexAlign="center"
+>
   <div flex fxFlexAlign="center">
     <mat-progress-spinner color="accent" mode="indeterminate">
     </mat-progress-spinner>
@@ -113,7 +116,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 </div>
 
 <div
-  style="visibility: hidden; position: fixed;"
+  style="visibility: hidden; position: fixed"
   [style.left]="contextMenuPosition.x"
   [style.top]="contextMenuPosition.y"
   [matMenuTriggerFor]="contextMenu"

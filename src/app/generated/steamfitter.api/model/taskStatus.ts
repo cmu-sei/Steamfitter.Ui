@@ -1,5 +1,7 @@
-// Copyright 2021 Carnegie Mellon University. All Rights Reserved.
-// Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
+/*
+Copyright 2021 Carnegie Mellon University. All Rights Reserved. 
+ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
+*/
 
 /**
  * Steamfitter API
@@ -14,9 +16,10 @@
  */
 
 
-export type TaskStatus = 'pending' | 'queued' | 'sent' | 'cancelled' | 'expired' | 'failed' | 'succeeded' | 'error';
+export type TaskStatus = 'none' | 'pending' | 'queued' | 'sent' | 'cancelled' | 'expired' | 'failed' | 'succeeded' | 'error';
 
 export const TaskStatus = {
+    None: 'none' as TaskStatus,
     Pending: 'pending' as TaskStatus,
     Queued: 'queued' as TaskStatus,
     Sent: 'sent' as TaskStatus,

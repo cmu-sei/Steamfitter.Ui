@@ -1,36 +1,36 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { ScenarioStore } from "./scenario.store";
-import { ScenarioQuery } from "./scenario.query";
-import { Injectable } from "@angular/core";
-import { FormControl } from "@angular/forms";
-import { PageEvent } from "@angular/material/paginator";
-import { Router, ActivatedRoute } from "@angular/router";
+import { ScenarioStore } from './scenario.store';
+import { ScenarioQuery } from './scenario.query';
+import { Injectable } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { PageEvent } from '@angular/material/paginator';
+import { Router, ActivatedRoute } from '@angular/router';
 import {
   Scenario,
   ScenarioService,
   VmCredential,
   VmCredentialService,
-} from "src/app/generated/steamfitter.api";
+} from 'src/app/generated/steamfitter.api';
 import {
   map,
   take,
   tap,
   distinctUntilChanged,
   debounceTime,
-} from "rxjs/operators";
-import { BehaviorSubject, Observable, combineLatest } from "rxjs";
-import { TaskDataService } from "src/app/data/task/task-data.service";
-import { PlayerDataService } from "src/app/data/player/player-data-service";
+} from 'rxjs/operators';
+import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
+import { TaskDataService } from 'src/app/data/task/task-data.service';
+import { PlayerDataService } from 'src/app/data/player/player-data-service';
 
 @Injectable({
-  providedIn: "root",
+  providedIn: 'root',
 })
 export class ScenarioDataService {
   private _requestedScenarioId: string;
   private _requestedScenarioId$ = this.activatedRoute.queryParamMap.pipe(
-    map((params) => params.get("scenarioId") || "")
+    map((params) => params.get('scenarioId') || '')
   );
   readonly allScenarios = this.scenarioQuery.selectAll();
   readonly scenarioList: Observable<Scenario[]>;
@@ -58,26 +58,26 @@ export class ScenarioDataService {
     this.filterControl.valueChanges.subscribe((term) => {
       router.navigate([], {
         queryParams: { scenariomask: term },
-        queryParamsHandling: "merge",
+        queryParamsHandling: 'merge',
       });
     });
     this.filterTerm = activatedRoute.queryParamMap.pipe(
-      map((params) => params.get("scenariomask") || "")
+      map((params) => params.get('scenariomask') || '')
     );
     this.statuses = activatedRoute.queryParamMap.pipe(
-      map((params) => params.get("statuses") || "active,ready")
+      map((params) => params.get('statuses') || 'active,ready')
     );
     this.sortColumn = activatedRoute.queryParamMap.pipe(
-      map((params) => params.get("sorton") || "name")
+      map((params) => params.get('sorton') || 'name')
     );
     this.sortIsAscending = activatedRoute.queryParamMap.pipe(
-      map((params) => (params.get("sortdir") || "asc") === "asc")
+      map((params) => (params.get('sortdir') || 'asc') === 'asc')
     );
     this.pageSize = activatedRoute.queryParamMap.pipe(
-      map((params) => parseInt(params.get("pagesize") || "20", 10))
+      map((params) => parseInt(params.get('pagesize') || '20', 10))
     );
     this.pageIndex = activatedRoute.queryParamMap.pipe(
-      map((params) => parseInt(params.get("pageindex") || "0", 10))
+      map((params) => parseInt(params.get('pageindex') || '0', 10))
     );
     this.scenarioList = combineLatest([
       this.allScenarios,
@@ -94,13 +94,13 @@ export class ScenarioDataService {
               )
               .filter(
                 (scenario) =>
-                  (("" + scenario.name)
+                  (('' + scenario.name)
                     .toLowerCase()
                     .includes(filterTerm.toLowerCase()) ||
-                    ("" + scenario.description)
+                    ('' + scenario.description)
                       .toLowerCase()
                       .includes(filterTerm.toLowerCase()) ||
-                    ("" + scenario.view)
+                    ('' + scenario.view)
                       .toLowerCase()
                       .includes(filterTerm.toLowerCase())) &&
                   statuses.toString().indexOf(scenario.status) > -1
@@ -129,8 +129,8 @@ export class ScenarioDataService {
             this.playerDataService.selectView(selectedScenario.viewId);
           }
         } else {
-          this._requestedScenarioId = "";
-          this.scenarioStore.setActive("");
+          this._requestedScenarioId = '';
+          this.scenarioStore.setActive('');
           this.scenarioStore.update({ taskList: [] });
         }
         return selectedScenario;
@@ -145,33 +145,33 @@ export class ScenarioDataService {
     isAsc: boolean
   ) {
     switch (column) {
-      case "name":
+      case 'name':
         return (
           (a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1) *
           (isAsc ? 1 : -1)
         );
-      case "description":
+      case 'description':
         return (
           (a.description.toLowerCase() < b.description.toLowerCase() ? -1 : 1) *
           (isAsc ? 1 : -1)
         );
-      case "status":
+      case 'status':
         return (
           (a.status.toLowerCase() < b.status.toLowerCase() ? -1 : 1) *
           (isAsc ? 1 : -1)
         );
-      case "startDate":
+      case 'startDate':
         return (
           (a.startDate.getTime() < b.startDate.getTime() ? -1 : 1) *
           (isAsc ? 1 : -1)
         );
-      case "endDate":
+      case 'endDate':
         return (
           (a.endDate.getTime() < b.endDate.getTime() ? -1 : 1) *
           (isAsc ? 1 : -1)
         );
-      case "view":
-        return (a.view + "" < b.view + "" ? -1 : 1) * (isAsc ? 1 : -1);
+      case 'view':
+        return (a.view + '' < b.view + '' ? -1 : 1) * (isAsc ? 1 : -1);
       default:
         return 0;
     }
@@ -194,7 +194,7 @@ export class ScenarioDataService {
           });
           this.scenarioStore.set(
             scenarios.filter(
-              (s) => s.description !== "Personal Task Builder Scenario"
+              (s) => s.description !== 'Personal Task Builder Scenario'
             )
           );
         },
@@ -219,9 +219,24 @@ export class ScenarioDataService {
       });
   }
 
+  loadByViewId(viewId: string) {
+    this.scenarioStore.setLoading(true);
+    return this.scenarioService
+      .getScenariosByViewId(viewId)
+      .pipe(
+        tap(() => {
+          this.scenarioStore.setLoading(false);
+        }),
+        take(1)
+      )
+      .subscribe((s) => {
+        this.scenarioStore.upsertMany(s);
+      });
+  }
+
   loadTaskBuilderScenario() {
     this.scenarioStore.setLoading(true);
-    this.setActive("");
+    this.setActive('');
     return this.scenarioService
       .getMyScenario()
       .pipe(
@@ -309,7 +324,7 @@ export class ScenarioDataService {
       .pipe(take(1))
       .subscribe((r) => {
         this.deleteFromStore(id);
-        this.setActive("");
+        this.setActive('');
       });
   }
 
@@ -334,7 +349,7 @@ export class ScenarioDataService {
   setActive(id: string) {
     this.router.navigate([], {
       queryParams: { scenarioId: id },
-      queryParamsHandling: "merge",
+      queryParamsHandling: 'merge',
     });
   }
 
@@ -371,10 +386,10 @@ export class ScenarioDataService {
 
   fixDates(scenario: Scenario) {
     // set as date object and handle c# not adding 'Z' to UTC dates.
-    scenario.dateCreated = new Date(scenario.dateCreated + "Z");
-    scenario.dateModified = new Date(scenario.dateModified + "Z");
-    scenario.startDate = new Date(scenario.startDate + "Z");
-    scenario.endDate = new Date(scenario.endDate + "Z");
+    scenario.dateCreated = new Date(scenario.dateCreated + 'Z');
+    scenario.dateModified = new Date(scenario.dateModified + 'Z');
+    scenario.startDate = new Date(scenario.startDate + 'Z');
+    scenario.endDate = new Date(scenario.endDate + 'Z');
   }
 
   setAsDates(scenario: Scenario) {

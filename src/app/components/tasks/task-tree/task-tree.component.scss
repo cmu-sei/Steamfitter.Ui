@@ -2,8 +2,8 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 .add-margin {
-    margin-top: 8px;
-    margin-bottom: 8px;
+  margin-top: 8px;
+  margin-bottom: 8px;
 }
 
 .taskText {
@@ -14,3 +14,7 @@
   margin-right: 0;
 }
 
+mat-panel-description,
+span {
+  display: block;
+}

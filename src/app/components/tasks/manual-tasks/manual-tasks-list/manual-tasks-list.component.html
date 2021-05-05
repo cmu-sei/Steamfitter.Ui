@@ -1,0 +1,54 @@
+<!--
+Copyright 2021 Carnegie Mellon University. All Rights Reserved. 
+ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
+-->
+
+<div fxLayout="column" fxLayoutAlign="space-around center">
+  <div>
+    <h1>
+      Score: {{ scenario?.scoreEarned }}/{{ scenario?.score }} ({{
+        scenario?.scoreEarned / scenario?.score | percent
+      }})
+    </h1>
+  </div>
+  <div>
+    <div fxLayout="row" fxLayoutAlign="center center">
+      <mat-icon
+        class="steamfitter-icon"
+        svgIcon="ic_crucible_steamfitter"
+      ></mat-icon>
+      <h2>Tasks</h2>
+    </div>
+    <mat-action-list>
+      <div
+        *ngFor="let task of tasks"
+        [matTooltip]="
+          task.executable
+            ? null
+            : 'This Task cannot be executed again once successfull'
+        "
+      >
+        <mat-list-item
+          [disabled]="!task.executable"
+          (click)="executeTask(task.id)"
+          class="list-item"
+        >
+          <mat-icon
+            matListIcon
+            svgIcon="{{
+              task.totalStatus == 'none' ? 'manual' : task.totalStatus
+            }}"
+            class="icon-color icon-20px"
+            matTooltip="{{
+              task.totalStatus == 'none' ? 'click to execute' : task.totalStatus
+            }}"
+          ></mat-icon>
+          <h4 matLine matTooltip="{{ task.description }}">{{ task.name }}</h4>
+          <p matLine matTooltip="{{ task.description }}">
+            ({{ task.totalScoreEarned }}/{{ task.totalScore }} Points)
+          </p>
+        </mat-list-item>
+      </div>
+    </mat-action-list>
+  </div>
+</div>

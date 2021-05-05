@@ -1,10 +1,14 @@
-// Copyright 2021 Carnegie Mellon University. All Rights Reserved.
-// Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
+/*
+Copyright 2021 Carnegie Mellon University. All Rights Reserved. 
+ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
+*/
 
 export * from './bondAgent.service';
 import { BondAgentService } from './bondAgent.service';
 export * from './files.service';
 import { FilesService } from './files.service';
+export * from './health.service';
+import { HealthService } from './health.service';
 export * from './permission.service';
 import { PermissionService } from './permission.service';
 export * from './player.service';
@@ -23,4 +27,4 @@ export * from './userPermission.service';
 import { UserPermissionService } from './userPermission.service';
 export * from './vmCredential.service';
 import { VmCredentialService } from './vmCredential.service';
-export const APIS = [BondAgentService, FilesService, PermissionService, PlayerService, ResultService, ScenarioService, ScenarioTemplateService, TaskService, UserService, UserPermissionService, VmCredentialService];
+export const APIS = [BondAgentService, FilesService, HealthService, PermissionService, PlayerService, ResultService, ScenarioService, ScenarioTemplateService, TaskService, UserService, UserPermissionService, VmCredentialService];

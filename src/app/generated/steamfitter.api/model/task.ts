@@ -1,5 +1,7 @@
-// Copyright 2021 Carnegie Mellon University. All Rights Reserved.
-// Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
+/*
+Copyright 2021 Carnegie Mellon University. All Rights Reserved. 
+ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
+*/
 
 /**
  * Steamfitter API
@@ -15,6 +17,7 @@
 import { TaskIterationTermination } from './taskIterationTermination';
 import { TaskTrigger } from './taskTrigger';
 import { TaskAction } from './taskAction';
+import { TaskStatus } from './taskStatus';
 
 
 export interface Task { 
@@ -38,6 +41,15 @@ export interface Task {
     currentIteration?: number;
     triggerTaskId?: string | null;
     triggerCondition?: TaskTrigger;
+    score?: number;
+    status?: TaskStatus;
+    scoreEarned?: number;
+    userExecutable?: boolean;
+    totalScore?: number;
+    totalScoreEarned?: number;
+    totalStatus?: TaskStatus;
+    repeatable?: boolean;
+    executable?: boolean;
     dateCreated?: Date;
     dateModified?: Date | null;
     createdBy?: string;

@@ -1,5 +1,7 @@
-// Copyright 2021 Carnegie Mellon University. All Rights Reserved.
-// Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
+/*
+Copyright 2021 Carnegie Mellon University. All Rights Reserved. 
+ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
+*/
 
 /**
  * Steamfitter API
@@ -22,6 +24,8 @@ export interface ScenarioTemplate {
     durationHours?: number | null;
     defaultVmCredentialId?: string | null;
     vmCredentials?: Array<VmCredential> | null;
+    score?: number;
+    scoreEarned?: number;
     dateCreated?: Date;
     dateModified?: Date | null;
     createdBy?: string;

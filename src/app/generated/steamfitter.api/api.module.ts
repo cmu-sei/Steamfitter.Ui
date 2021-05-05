@@ -1,13 +1,15 @@
-// Copyright 2021 Carnegie Mellon University. All Rights Reserved.
-// Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
+/*
+Copyright 2021 Carnegie Mellon University. All Rights Reserved. 
+ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
+*/
 
 import { NgModule, ModuleWithProviders, SkipSelf, Optional } from '@angular/core';
 import { Configuration } from './configuration';
 import { HttpClient } from '@angular/common/http';
 
-
 import { BondAgentService } from './api/bondAgent.service';
 import { FilesService } from './api/files.service';
+import { HealthService } from './api/health.service';
 import { PermissionService } from './api/permission.service';
 import { PlayerService } from './api/player.service';
 import { ResultService } from './api/result.service';
@@ -22,18 +24,7 @@ import { VmCredentialService } from './api/vmCredential.service';
   imports:      [],
   declarations: [],
   exports:      [],
-  providers: [
-    BondAgentService,
-    FilesService,
-    PermissionService,
-    PlayerService,
-    ResultService,
-    ScenarioService,
-    ScenarioTemplateService,
-    TaskService,
-    UserService,
-    UserPermissionService,
-    VmCredentialService ]
+  providers: []
 })
 export class ApiModule {
     public static forRoot(configurationFactory: () => Configuration): ModuleWithProviders<ApiModule> {
