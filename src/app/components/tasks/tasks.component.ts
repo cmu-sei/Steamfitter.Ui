@@ -31,6 +31,10 @@ export class TasksComponent {
     this.taskDataService.execute(id);
   }
 
+  stopTaskIterations(id: string) {
+    this.taskDataService.stopIterations(id);
+  }
+
   saveTaskHandler(task: Task) {
     if (!task.id) {
       this.taskDataService.add(task);

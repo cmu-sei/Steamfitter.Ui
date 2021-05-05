@@ -78,6 +78,7 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
   @Output() saveTask = new EventEmitter<Task>();
   @Output() deleteTaskRequested = new EventEmitter<string>();
   @Output() executeRequested = new EventEmitter<string>();
+  @Output() stopIterationsRequested = new EventEmitter<string>();
   @Output() sendToClipboard = new EventEmitter<any>();
   @Output() pasteClipboard = new EventEmitter<string>();
   @ViewChild(FlatTreeControl) flatTreeControl;
@@ -321,6 +322,19 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
       .subscribe((result) => {
         if (result["confirm"]) {
           this.executeRequested.emit(task.id);
+        }
+      });
+  }
+
+  onContextStopIterations(task: Task) {
+    this.dialogService
+      .confirm(
+        "Stop Task Iterations",
+        "Are you sure that you want to stop " + task.name + "?"
+      )
+      .subscribe((result) => {
+        if (result["confirm"]) {
+          this.stopIterationsRequested.emit(task.id);
         }
       });
   }
