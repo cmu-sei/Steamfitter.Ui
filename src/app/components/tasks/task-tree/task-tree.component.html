@@ -228,6 +228,15 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         >
           Execute
         </button>
+        <button
+          mat-menu-item
+          (click)="onContextStopIterations(item.task)"
+          fxLayout="row"
+          title="Stops task iterations after the current iteration completes"
+          *ngIf="isExecutableTask(item.task)"
+        >
+          Stop Iterations
+        </button>
       </span>
       <ng-template #readOnly>
         <button

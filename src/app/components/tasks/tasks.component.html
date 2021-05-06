@@ -14,6 +14,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   [clipboard]="clipboard | async"
   (deleteTaskRequested)="deleteTask($event)"
   (executeRequested)="executeTask($event)"
+  (stopIterationsRequested)="stopTaskIterations($event)"
   (saveTask)="saveTaskHandler($event)"
   (sendToClipboard)="sendToClipboard($event)"
   (pasteClipboard)="pasteClipboard($event)"
