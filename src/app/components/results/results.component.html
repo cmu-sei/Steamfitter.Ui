@@ -26,7 +26,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           title="{{ result.status }}: Open/Close Details"
         >
           <mat-icon
-            svgIcon="{{ result.status }}"
+            svgIcon="{{ result.status || result.status }}"
             class="icon-color icon-20px"
           ></mat-icon>
           {{ result.vmName }}
@@ -36,6 +36,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           class="open-vm-button"
           (click)="openVmConsole(result.vmId); $event.stopPropagation()"
           title="Open {{ result.vmName }}"
+          *ngIf="result.vmId"
         >
           <mat-icon
             class="icon-color icon-20px"

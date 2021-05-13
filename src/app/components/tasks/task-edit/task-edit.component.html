@@ -45,75 +45,67 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         </mat-option>
       </mat-select>
     </mat-form-field>
-    <div
-      fxFlex
-      fxLayout="column"
-      *ngIf="selectedCommand != undefined"
-      class="content"
-    >
-      <form class="param-form">
-        <div
-          *ngFor="let param of selectedCommand.parameters"
-          class="param-indent"
+    <span *ngIf="selectedCommand != undefined">
+      <span
+        *ngFor="let param of selectedCommand.parameters"
+        class="param-indent"
+      >
+        <mat-form-field
+          class="param-full-width"
+          *ngIf="
+            param.inputType === 'text' && param.key.toLowerCase() !== 'username'
+          "
         >
-          <mat-form-field
-            class="param-full-width"
-            *ngIf="
-              param.inputType === 'text' &&
-              param.key.toLowerCase() !== 'username'
-            "
+          <input
+            matInput
+            placeholder="{{ param.display }}"
+            [value]="param.value"
+            (input)="param.value = $event.target.value"
+            (change)="onCommandChange()"
+          />
+        </mat-form-field>
+        <mat-form-field
+          class="param-full-width"
+          *ngIf="param.inputType === 'select'"
+        >
+          <mat-label>{{ param.display }}</mat-label>
+          <mat-select
+            [(ngModel)]="param.value"
+            (selectionChange)="onCommandChange()"
+            name="{{ param.key }}"
           >
-            <input
-              matInput
-              placeholder="{{ param.display }}"
-              [value]="param.value"
-              (input)="param.value = $event.target.value"
-              (change)="onCommandChange()"
-            />
-          </mat-form-field>
-          <mat-form-field
-            class="param-full-width"
-            *ngIf="param.inputType === 'select'"
-          >
-            <mat-label>{{ param.display }}</mat-label>
-            <mat-select
-              [(ngModel)]="param.value"
-              (selectionChange)="onCommandChange()"
-              name="{{ param.key }}"
+            <mat-option
+              *ngFor="let choice of param.choices"
+              [value]="choice.key"
             >
-              <mat-option
-                *ngFor="let choice of param.choices"
-                [value]="choice.key"
-              >
-                {{ choice.display }}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-          <div class="param-full-width" *ngIf="param.inputType === 'file'">
-            <input
-              #file
-              id="fileInput"
-              type="file"
-              multiple
-              style="display: none"
-              (change)="loadFileContent(param, file)"
-            />
-            <button mat-menu-item (click)="file.click()">
-              Select a Text File (... or enter text below)
-            </button>
-            <textarea
-              class="mdc-text-field__input"
-              rows="10"
-              cols="160"
-              placeholder="{{ param.display }}"
-              [(ngModel)]="param.value"
-              name="content"
-              (change)="onCommandChange()"
-            ></textarea>
-          </div>
-        </div>
-      </form>
-    </div>
+              {{ choice.display }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <span class="param-full-width" *ngIf="param.inputType === 'file'">
+          <input
+            #file
+            id="fileInput"
+            type="file"
+            multiple
+            style="display: none"
+            (change)="loadFileContent(param, file)"
+          />
+          <button mat-menu-item (click)="file.click()">
+            Select a Text File (... or enter text below)
+          </button>
+          <textarea
+            class="mdc-text-field__input"
+            rows="10"
+            cols="160"
+            placeholder="{{ param.display }}"
+            [(ngModel)]="param.value"
+            name="content"
+            (change)="onCommandChange()"
+          ></textarea>
+        </span>
+      </span>
+    </span>
     <mat-form-field class="param-full-width">
       <mat-label>Trigger Condition</mat-label>
       <mat-select
@@ -202,39 +194,41 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       />
     </mat-form-field>
 
-    <span *ngIf="credentialsAreRequired()">
-      <h2>VM Credentials</h2>
-      <app-vm-credentials
-        [scenarioTemplateId]="data.task.scenarioTemplateId"
-        [scenarioId]="data.task.scenarioId"
-        [username]="username | async"
-        [password]="password | async"
-        (selectedVmCredentialChanged)="handleVmCredentialChange($event)"
-      ></app-vm-credentials>
-    </span>
+    <span *ngIf="selectedCommand && selectedCommand.requiresVm">
+      <span *ngIf="credentialsAreRequired()">
+        <h2>VM Credentials</h2>
+        <app-vm-credentials
+          [scenarioTemplateId]="data.task.scenarioTemplateId"
+          [scenarioId]="data.task.scenarioId"
+          [username]="username | async"
+          [password]="password | async"
+          (selectedVmCredentialChanged)="handleVmCredentialChange($event)"
+        ></app-vm-credentials>
+      </span>
 
-    <h2>VM Selection</h2>
-    <mat-form-field class="param-full-width" *ngIf="!chooseVms">
-      <input
-        matInput
-        placeholder="VM Mask (VM name includes this text)"
-        [value]="data.task.vmMask"
-        (input)="data.task.vmMask = $event.target.value"
-      />
-    </mat-form-field>
-    <mat-checkbox
-      [checked]="chooseVms"
-      (change)="switchChooseVmsMethod($event)"
-      style="margin-right: 20px"
-      *ngIf="!data.task.scenarioTemplateId"
-      >Choose Actual VMs</mat-checkbox
-    >
-    <app-vm-list
-      *ngIf="chooseVms"
-      [selectedVms]="data.task.vmList || []"
-      (updateVmList)="handleUpdateVmList($event)"
-    >
-    </app-vm-list>
+      <h2>VM Selection</h2>
+      <mat-form-field class="param-full-width" *ngIf="!chooseVms">
+        <input
+          matInput
+          placeholder="VM Mask (VM name includes this text)"
+          [value]="data.task.vmMask"
+          (input)="data.task.vmMask = $event.target.value"
+        />
+      </mat-form-field>
+      <mat-checkbox
+        [checked]="chooseVms"
+        (change)="switchChooseVmsMethod($event)"
+        style="margin-right: 20px"
+        *ngIf="!data.task.scenarioTemplateId"
+        >Choose Actual VMs</mat-checkbox
+      >
+      <app-vm-list
+        *ngIf="chooseVms"
+        [selectedVms]="data.task.vmList || []"
+        (updateVmList)="handleUpdateVmList($event)"
+      >
+      </app-vm-list>
+    </span>
   </div>
 </mat-dialog-content>
 <mat-dialog-actions align="center">
