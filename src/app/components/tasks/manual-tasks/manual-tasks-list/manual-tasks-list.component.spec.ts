@@ -13,9 +13,8 @@ describe('ManualTasksListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ManualTasksListComponent ]
-    })
-    .compileComponents();
+      declarations: [ManualTasksListComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

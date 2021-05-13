@@ -1,30 +1,31 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { ScenarioTemplateStore } from "./scenario-template.store";
-import { ScenarioTemplateQuery } from "./scenario-template.query";
-import { Injectable } from "@angular/core";
-import { FormControl } from "@angular/forms";
-import { PageEvent } from "@angular/material/paginator";
-import { Router, ActivatedRoute } from "@angular/router";
+import { ScenarioTemplateStore } from './scenario-template.store';
+import { ScenarioTemplateQuery } from './scenario-template.query';
+import { Injectable } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { PageEvent } from '@angular/material/paginator';
+import { Router, ActivatedRoute } from '@angular/router';
 import {
   ScenarioTemplate,
   ScenarioTemplateService,
   VmCredential,
   VmCredentialService,
-} from "src/app/generated/steamfitter.api";
-import { map, take, tap } from "rxjs/operators";
-import { BehaviorSubject, Observable, combineLatest } from "rxjs";
-import { TaskDataService } from "src/app/data/task/task-data.service";
+} from 'src/app/generated/steamfitter.api';
+import { map, take, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
+import { TaskDataService } from 'src/app/data/task/task-data.service';
 
 @Injectable({
-  providedIn: "root",
+  providedIn: 'root',
 })
 export class ScenarioTemplateDataService {
   private _requestedScenarioTemplateId: string;
-  private _requestedScenarioTemplateId$ = this.activatedRoute.queryParamMap.pipe(
-    map((params) => params.get("scenarioTemplateId") || "")
-  );
+  private _requestedScenarioTemplateId$ =
+    this.activatedRoute.queryParamMap.pipe(
+      map((params) => params.get('scenarioTemplateId') || '')
+    );
   readonly scenarioTemplateList: Observable<ScenarioTemplate[]>;
   readonly selected: Observable<ScenarioTemplate>;
   readonly filterControl = new FormControl();
@@ -46,25 +47,25 @@ export class ScenarioTemplateDataService {
     private activatedRoute: ActivatedRoute
   ) {
     this.filterTerm = activatedRoute.queryParamMap.pipe(
-      map((params) => params.get("scenarioTemplatemask") || "")
+      map((params) => params.get('scenarioTemplatemask') || '')
     );
     this.filterControl.valueChanges.subscribe((term) => {
       this.router.navigate([], {
         queryParams: { scenarioTemplatemask: term },
-        queryParamsHandling: "merge",
+        queryParamsHandling: 'merge',
       });
     });
     this.sortColumn = activatedRoute.queryParamMap.pipe(
-      map((params) => params.get("sorton") || "name")
+      map((params) => params.get('sorton') || 'name')
     );
     this.sortIsAscending = activatedRoute.queryParamMap.pipe(
-      map((params) => (params.get("sortdir") || "asc") === "asc")
+      map((params) => (params.get('sortdir') || 'asc') === 'asc')
     );
     this.pageSize = activatedRoute.queryParamMap.pipe(
-      map((params) => parseInt(params.get("pagesize") || "20", 10))
+      map((params) => parseInt(params.get('pagesize') || '20', 10))
     );
     this.pageIndex = activatedRoute.queryParamMap.pipe(
-      map((params) => parseInt(params.get("pageindex") || "0", 10))
+      map((params) => parseInt(params.get('pageindex') || '0', 10))
     );
     this.scenarioTemplateList = combineLatest([
       this.scenarioTemplateQuery.selectAll(),
@@ -90,7 +91,7 @@ export class ScenarioTemplateDataService {
                 )
                 .filter(
                   (scenarioTemplate) =>
-                    ("" + scenarioTemplate.name)
+                    ('' + scenarioTemplate.name)
                       .toLowerCase()
                       .includes(filterTerm.toLowerCase()) ||
                     scenarioTemplate.id
@@ -126,8 +127,8 @@ export class ScenarioTemplateDataService {
             );
           }
         } else {
-          this._requestedScenarioTemplateId = "";
-          this.scenarioTemplateStore.setActive("");
+          this._requestedScenarioTemplateId = '';
+          this.scenarioTemplateStore.setActive('');
           this.scenarioTemplateStore.update({ taskList: [] });
         }
         return selectedScenarioTemplate;
@@ -142,19 +143,19 @@ export class ScenarioTemplateDataService {
     isAsc: boolean
   ) {
     switch (column) {
-      case "name":
+      case 'name':
         return (
           (a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1) *
           (isAsc ? 1 : -1)
         );
-      case "description":
+      case 'description':
         return (
           (a.description.toLowerCase() < b.description.toLowerCase() ? -1 : 1) *
           (isAsc ? 1 : -1)
         );
-      case "durationHours":
+      case 'durationHours':
         return (a.durationHours < b.durationHours ? -1 : 1) * (isAsc ? 1 : -1);
-      case "dateCreated":
+      case 'dateCreated':
         return (
           (a.dateCreated.valueOf() < b.dateCreated.valueOf() ? -1 : 1) *
           (isAsc ? 1 : -1)
@@ -252,14 +253,14 @@ export class ScenarioTemplateDataService {
       .pipe(take(1))
       .subscribe((r) => {
         this.deleteFromStore(id);
-        this.setActive("");
+        this.setActive('');
       });
   }
 
   setActive(id: string) {
     this.router.navigate([], {
       queryParams: { scenarioTemplateId: id },
-      queryParamsHandling: "merge",
+      queryParamsHandling: 'merge',
     });
   }
 

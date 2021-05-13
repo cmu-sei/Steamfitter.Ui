@@ -4,20 +4,19 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 -->
 
 <span *ngIf="scenario !== undefined && scenario !== null">
-
-  <div fxLayout="row" class="add-margin" (click)="$event.stopPropagation();">
+  <div fxLayout="row" class="add-margin" (click)="$event.stopPropagation()">
     <div fxFlex fxFlexOffset="3">
       <app-tasks
         [taskList]="taskList"
         [resultList]="resultList"
         [scenarioId]="scenario.id"
-        [isEditable]="scenario.status === 'ready' || scenario.status === 'active'"
+        [isEditable]="
+          scenario.status === 'ready' || scenario.status === 'active'
+        "
         [isExecutable]="scenario.status === 'active'"
         (taskListChanged)="refreshTaskList()"
         (deleteTaskRequested)="deleteTask($event)"
       ></app-tasks>
     </div>
   </div>
-
 </span>
-

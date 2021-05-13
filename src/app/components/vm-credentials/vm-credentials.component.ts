@@ -1,22 +1,22 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
-import { Component, EventEmitter, Input, Output, OnInit } from "@angular/core";
-import { VmCredential } from "src/app/generated/steamfitter.api/model/vmCredential";
-import { ScenarioQuery } from "src/app/data/scenario/scenario.query";
-import { ScenarioTemplateQuery } from "src/app/data/scenario-template/scenario-template.query";
-import { Scenario, ScenarioTemplate } from "src/app/generated/steamfitter.api";
-import { DialogService } from "src/app/services/dialog/dialog.service";
-import { MatDialog } from "@angular/material/dialog";
-import { ScenarioTemplateDataService } from "src/app/data/scenario-template/scenario-template-data.service";
-import { ScenarioDataService } from "src/app/data/scenario/scenario-data.service";
-import { AddDialogComponent } from "./add-dialog/add-dialog.component";
-import { Observable } from "rxjs";
-import { delay, tap } from "rxjs/operators";
+import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
+import { VmCredential } from 'src/app/generated/steamfitter.api/model/vmCredential';
+import { ScenarioQuery } from 'src/app/data/scenario/scenario.query';
+import { ScenarioTemplateQuery } from 'src/app/data/scenario-template/scenario-template.query';
+import { Scenario, ScenarioTemplate } from 'src/app/generated/steamfitter.api';
+import { DialogService } from 'src/app/services/dialog/dialog.service';
+import { MatDialog } from '@angular/material/dialog';
+import { ScenarioTemplateDataService } from 'src/app/data/scenario-template/scenario-template-data.service';
+import { ScenarioDataService } from 'src/app/data/scenario/scenario-data.service';
+import { AddDialogComponent } from './add-dialog/add-dialog.component';
+import { Observable } from 'rxjs';
+import { delay, tap } from 'rxjs/operators';
 
 @Component({
-  selector: "app-vm-credentials",
-  templateUrl: "./vm-credentials.component.html",
-  styleUrls: ["./vm-credentials.component.scss"],
+  selector: 'app-vm-credentials',
+  templateUrl: './vm-credentials.component.html',
+  styleUrls: ['./vm-credentials.component.scss'],
 })
 export class VmCredentialsComponent implements OnInit {
   @Input() username: string;
@@ -39,18 +39,18 @@ export class VmCredentialsComponent implements OnInit {
     private scenarioTemplateDataService: ScenarioTemplateDataService,
     private scenarioDataService: ScenarioDataService
   ) {
-    this.scenarioTemplate = (this.scenarioTemplateQuery.selectActive() as Observable<
-      ScenarioTemplate
-    >).pipe(
+    this.scenarioTemplate = (
+      this.scenarioTemplateQuery.selectActive() as Observable<ScenarioTemplate>
+    ).pipe(
       delay(0),
       tap((p) => {
         this.setVmCredentialsToDefault(p);
         this.vmCredentialList = this.sortVmCredentialList(p.vmCredentials);
       })
     );
-    this.scenario = (this.scenarioQuery.selectActive() as Observable<
-      Scenario
-    >).pipe(
+    this.scenario = (
+      this.scenarioQuery.selectActive() as Observable<Scenario>
+    ).pipe(
       delay(0),
       tap((p) => {
         this.setVmCredentialsToDefault(p);
@@ -110,11 +110,11 @@ export class VmCredentialsComponent implements OnInit {
     const newVmCredential = {
       username: this.username,
       password: this.password,
-      description: "",
+      description: '',
     } as VmCredential;
     const dialogRef = this.dialog.open(AddDialogComponent, {
       data: { vmCredential: { ...newVmCredential } },
-      minWidth: "50%",
+      minWidth: '50%',
     });
     dialogRef.componentInstance.editComplete.subscribe((result) => {
       if (result.add) {
@@ -136,13 +136,13 @@ export class VmCredentialsComponent implements OnInit {
   deleteVmCredential(vmCredential: VmCredential) {
     this.dialogService
       .confirm(
-        "Delete VM Credential",
-        "Are you sure that you want to delete VM Credential " +
+        'Delete VM Credential',
+        'Are you sure that you want to delete VM Credential ' +
           vmCredential.username +
-          "?"
+          '?'
       )
       .subscribe((result) => {
-        if (result["confirm"]) {
+        if (result['confirm']) {
           if (this.scenarioTemplateId) {
             this.scenarioTemplateDataService.deleteVmCredential(
               this.scenarioTemplateId,

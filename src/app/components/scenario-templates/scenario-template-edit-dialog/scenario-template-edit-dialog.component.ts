@@ -118,9 +118,8 @@ export class ScenarioTemplateEditDialogComponent {
       modifiedScenarioTemplate.description = this.descriptionFormControl.value
         .toString()
         .trim();
-      modifiedScenarioTemplate.durationHours = this.durationHoursFormControl.value
-        .toString()
-        .trim();
+      modifiedScenarioTemplate.durationHours =
+        this.durationHoursFormControl.value.toString().trim();
       if (this.errorFree) {
         this.editComplete.emit({
           saveChanges: saveChanges,

@@ -1,17 +1,17 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Injectable } from "@angular/core";
-import { FormControl } from "@angular/forms";
-import { MatPaginator, PageEvent } from "@angular/material/paginator";
-import { MatTableDataSource } from "@angular/material/table";
-import { View, PlayerService, Vm } from "src/app/generated/steamfitter.api";
-import { map, take, switchMap } from "rxjs/operators";
-import { Observable, combineLatest, BehaviorSubject } from "rxjs";
-import { Router, ActivatedRoute } from "@angular/router";
+import { Injectable } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
+import { View, PlayerService, Vm } from 'src/app/generated/steamfitter.api';
+import { map, take, switchMap } from 'rxjs/operators';
+import { Observable, combineLatest, BehaviorSubject } from 'rxjs';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Injectable({
-  providedIn: "root",
+  providedIn: 'root',
 })
 export class PlayerDataService {
   private _views: View[] = [];
@@ -22,14 +22,14 @@ export class PlayerDataService {
   readonly selectedView: Observable<View>;
   private _selectedViewId: string;
   private _vms: Vm[] = [];
-  private _vmMask = new BehaviorSubject<string>("");
+  private _vmMask = new BehaviorSubject<string>('');
   readonly vms = new BehaviorSubject<Vm[]>(this._vms);
   readonly vmList: Observable<Vm[]>;
   readonly vmFilter = new FormControl();
   private _selectedVms: string[] = [];
   readonly selectedVms = new BehaviorSubject<string[]>(this._selectedVms);
   private requestedViewId = this.activatedRoute.queryParamMap.pipe(
-    map((params) => params.get("viewId") || "")
+    map((params) => params.get('viewId') || '')
   );
 
   constructor(
@@ -38,12 +38,12 @@ export class PlayerDataService {
     private activatedRoute: ActivatedRoute
   ) {
     this._viewMask = activatedRoute.queryParamMap.pipe(
-      map((params) => params.get("exmask") || "")
+      map((params) => params.get('exmask') || '')
     );
     this.viewFilter.valueChanges.subscribe((term) => {
       router.navigate([], {
         queryParams: { exmask: term },
-        queryParamsHandling: "merge",
+        queryParamsHandling: 'merge',
       });
     });
     this.vmFilter.valueChanges.subscribe((term) => {
@@ -94,7 +94,7 @@ export class PlayerDataService {
           }
           return selectedView;
         } else {
-          this._selectedViewId = "";
+          this._selectedViewId = '';
           return undefined;
         }
       })
@@ -119,7 +119,7 @@ export class PlayerDataService {
   selectView(viewId: string) {
     this.router.navigate([], {
       queryParams: { viewId: viewId },
-      queryParamsHandling: "merge",
+      queryParamsHandling: 'merge',
     });
   }
 

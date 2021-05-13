@@ -9,7 +9,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 >
   <div fxLayout="row" class="title">
     <div fxFlex="5" fxLayoutAlign="center center">
-      <mat-icon [ngStyle]="{'color': topbarColor}" svgIcon="input"></mat-icon>
+      <mat-icon [ngStyle]="{ color: topbarColor }" svgIcon="input"></mat-icon>
     </div>
     <div fxFlex="90" fxLayoutAlign="start center">
       <h4>Build and Execute a Task</h4>
@@ -17,7 +17,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   </div>
 
   <div fxLayout="row" class="add-margin" (click)="$event.stopPropagation()">
-    <div style="width: 40px;"></div>
+    <div style="width: 40px"></div>
     <mat-form-field fxFlex fxFlexFill>
       <mat-select
         placeholder="Select a View"
@@ -29,10 +29,15 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         </mat-option>
       </mat-select>
     </mat-form-field>
-    <div style="width: 40px;"></div>
+    <div style="width: 40px"></div>
   </div>
 
-  <div mat-card fxLayout="row" class="add-margin" (click)="$event.stopPropagation()">
+  <div
+    mat-card
+    fxLayout="row"
+    class="add-margin"
+    (click)="$event.stopPropagation()"
+  >
     <div fxFlex="94" fxFlexOffset="3">
       <app-tasks
         [taskList]="taskList"

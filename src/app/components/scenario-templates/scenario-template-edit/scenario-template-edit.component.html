@@ -3,8 +3,10 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
 
-<span *ngIf="scenarioTemplate !== undefined && scenarioTemplate !== null" (click)="$event.stopPropagation();">
-
+<span
+  *ngIf="scenarioTemplate !== undefined && scenarioTemplate !== null"
+  (click)="$event.stopPropagation()"
+>
   <div fxLayout="row" class="add-margin">
     <div fxFlex fxFlexOffset="3">
       <app-tasks
@@ -18,6 +20,4 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       ></app-tasks>
     </div>
   </div>
-
 </span>
-

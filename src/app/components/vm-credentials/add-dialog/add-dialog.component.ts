@@ -2,11 +2,11 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import {Component, Inject, Output, EventEmitter} from '@angular/core';
+import { Component, Inject, Output, EventEmitter } from '@angular/core';
 
 @Component({
-    selector: 'app-add-dialog',
-    templateUrl: './add-dialog.component.html'
+  selector: 'app-add-dialog',
+  templateUrl: './add-dialog.component.html',
 })
 export class AddDialogComponent {
   @Output() editComplete = new EventEmitter<any>();
@@ -24,5 +24,3 @@ export class AddDialogComponent {
     this.editComplete.emit(this.data);
   }
 }
-
-

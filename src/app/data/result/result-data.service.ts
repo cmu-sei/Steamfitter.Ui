@@ -1,21 +1,21 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { ResultStore } from "src/app/data/result/result.store";
-import { ResultQuery } from "src/app/data/result/result.query";
-import { Injectable } from "@angular/core";
-import { FormControl } from "@angular/forms";
-import { PageEvent } from "@angular/material/paginator";
-import { Router, ActivatedRoute } from "@angular/router";
-import { Result, ResultService } from "src/app/generated/steamfitter.api";
-import { map, take, tap } from "rxjs/operators";
-import { BehaviorSubject, Observable, combineLatest } from "rxjs";
+import { ResultStore } from 'src/app/data/result/result.store';
+import { ResultQuery } from 'src/app/data/result/result.query';
+import { Injectable } from '@angular/core';
+import { FormControl } from '@angular/forms';
+import { PageEvent } from '@angular/material/paginator';
+import { Router, ActivatedRoute } from '@angular/router';
+import { Result, ResultService } from 'src/app/generated/steamfitter.api';
+import { map, take, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
 
 @Injectable({
-  providedIn: "root",
+  providedIn: 'root',
 })
 export class ResultDataService {
-  private _requestedId$ = new BehaviorSubject<string>("");
+  private _requestedId$ = new BehaviorSubject<string>('');
   private _apiResults = new BehaviorSubject<Result[]>([]);
   readonly resultList: Observable<Result[]>;
   readonly selected: Observable<Result>;
@@ -33,7 +33,7 @@ export class ResultDataService {
   ) {
     this.filterTerm = activatedRoute.queryParamMap.pipe(
       tap((params) => {
-        const resultId = params.get("resultId") || "";
+        const resultId = params.get('resultId') || '';
         if (resultId !== this._requestedId$.getValue()) {
           if (!!resultId) {
             this.loadById(resultId);
@@ -41,12 +41,12 @@ export class ResultDataService {
           this._requestedId$.next(resultId);
         }
       }),
-      map((params) => params.get("resultmask") || "")
+      map((params) => params.get('resultmask') || '')
     );
     this.filterControl.valueChanges.subscribe((term) => {
       this.router.navigate([], {
         queryParams: { resultmask: term },
-        queryParamsHandling: "merge",
+        queryParamsHandling: 'merge',
       });
     });
     this.resultList = combineLatest([
@@ -222,7 +222,7 @@ export class ResultDataService {
   setActive(id: string) {
     this.router.navigate([], {
       queryParams: { resultId: id },
-      queryParamsHandling: "merge",
+      queryParamsHandling: 'merge',
     });
   }
 
@@ -258,10 +258,10 @@ export class ResultDataService {
 
   fixDates(result: Result) {
     // set as date object and handle c# not adding 'Z' to UTC dates.
-    result.dateCreated = new Date(result.dateCreated + "Z");
-    result.dateModified = new Date(result.dateModified + "Z");
-    result.statusDate = new Date(result.statusDate + "Z");
-    result.sentDate = new Date(result.sentDate + "Z");
+    result.dateCreated = new Date(result.dateCreated + 'Z');
+    result.dateModified = new Date(result.dateModified + 'Z');
+    result.statusDate = new Date(result.statusDate + 'Z');
+    result.sentDate = new Date(result.sentDate + 'Z');
   }
 
   setAsDates(result: Result) {

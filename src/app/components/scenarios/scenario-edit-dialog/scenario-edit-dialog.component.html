@@ -3,14 +3,28 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
 
-<div mat-dialog-content *ngIf="!!data && data.scenario !== undefined && data.scenario !== null">
-
+<div
+  mat-dialog-content
+  *ngIf="!!data && data.scenario !== undefined && data.scenario !== null"
+>
   <div fxLayout="row" class="add-margin">
     <div fxFlex fxFlexOffset="10">
       <mat-form-field class="full-width">
-        <input type="text" matInput [formControl]="scenarioNameFormControl" placeholder="Name (required)" (blur)="saveScenario('name')"
-          value="{{data.scenario.name}}" [errorStateMatcher]="matcher">
-        <mat-error *ngIf="scenarioNameFormControl.hasError('minlength') && !scenarioNameFormControl.hasError('required')">
+        <input
+          type="text"
+          matInput
+          [formControl]="scenarioNameFormControl"
+          placeholder="Name (required)"
+          (blur)="saveScenario('name')"
+          value="{{ data.scenario.name }}"
+          [errorStateMatcher]="matcher"
+        />
+        <mat-error
+          *ngIf="
+            scenarioNameFormControl.hasError('minlength') &&
+            !scenarioNameFormControl.hasError('required')
+          "
+        >
           Must contain 4 or more characters
         </mat-error>
         <mat-error *ngIf="scenarioNameFormControl.hasError('required')">
@@ -23,8 +37,14 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   <div fxLayout="row" class="add-margin">
     <div fxFlex fxFlexOffset="10">
       <mat-form-field class="full-width">
-        <textarea matInput placeholder="Scenario Description (required)" [formControl]="descriptionFormControl"
-          (blur)="saveScenario('description')" value="{{data.scenario.description}}" [errorStateMatcher]="matcher"></textarea>
+        <textarea
+          matInput
+          placeholder="Scenario Description (required)"
+          [formControl]="descriptionFormControl"
+          (blur)="saveScenario('description')"
+          value="{{ data.scenario.description }}"
+          [errorStateMatcher]="matcher"
+        ></textarea>
         <mat-error *ngIf="descriptionFormControl.hasError('required')">
           Description is <strong>required</strong>
         </mat-error>
@@ -35,10 +55,19 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   <div fxLayout="row" class="add-margin">
     <div fxFlex fxFlexOffset="10">
       <mat-form-field>
-        <mat-select placeholder="View" [(ngModel)]="data.scenario.viewId" (selectionChange)="saveScenario('view')">
+        <mat-select
+          placeholder="View"
+          [(ngModel)]="data.scenario.viewId"
+          (selectionChange)="saveScenario('view')"
+        >
           <mat-option>None</mat-option>
-          <mat-option *ngFor="let view of data.views" [value]="view.id" [matTooltip]="view.id" matTooltipPosition="right">
-            {{view.name}}
+          <mat-option
+            *ngFor="let view of data.views"
+            [value]="view.id"
+            [matTooltip]="view.id"
+            matTooltipPosition="right"
+          >
+            {{ view.name }}
           </mat-option>
         </mat-select>
       </mat-form-field>
@@ -48,18 +77,31 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   <div fxLayout="row" class="add-margin">
     <div fxFlex fxFlexOffset="10">
       <mat-form-field>
-        <input matInput [matDatepicker]="startDatePicker" placeholder="Start Date / Time" (inputChange)="saveScenario('startDate')" (dateChange)="saveScenario('startDate')"
-          [formControl]="startDateFormControl">
-        <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
-        <mat-datepicker #startDatePicker [startAt]="data.scenario.startDate.toLocaleDateString()"></mat-datepicker>
+        <input
+          matInput
+          [matDatepicker]="startDatePicker"
+          placeholder="Start Date / Time"
+          (inputChange)="saveScenario('startDate')"
+          (dateChange)="saveScenario('startDate')"
+          [formControl]="startDateFormControl"
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="startDatePicker"
+        ></mat-datepicker-toggle>
+        <mat-datepicker
+          #startDatePicker
+          [startAt]="data.scenario.startDate.toLocaleDateString()"
+        ></mat-datepicker>
       </mat-form-field>
-      <mat-form-field fxFlexOffset="5" style="margin-top: -15px;">
-        <input matInput hidden>
+      <mat-form-field fxFlexOffset="5" style="margin-top: -15px">
+        <input matInput hidden />
         <ngx-timepicker-field
           [formControl]="startTimeFormControl"
           [format]="24"
           [defaultTime]="startTimeFormControl.value"
-          (timeChanged)="saveScenario('startTime')">
+          (timeChanged)="saveScenario('startTime')"
+        >
         </ngx-timepicker-field>
       </mat-form-field>
     </div>
@@ -68,18 +110,31 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   <div fxLayout="row" class="add-margin">
     <div fxFlex fxFlexOffset="10">
       <mat-form-field>
-        <input matInput [matDatepicker]="endDatePicker" placeholder="End Date / Time" (inputChange)="saveScenario('endDate')" (dateChange)="saveScenario('endDate')"
-          [formControl]="endDateFormControl">
-        <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
-        <mat-datepicker #endDatePicker [startAt]="data.scenario.endDate.toLocaleDateString()"></mat-datepicker>
+        <input
+          matInput
+          [matDatepicker]="endDatePicker"
+          placeholder="End Date / Time"
+          (inputChange)="saveScenario('endDate')"
+          (dateChange)="saveScenario('endDate')"
+          [formControl]="endDateFormControl"
+        />
+        <mat-datepicker-toggle
+          matSuffix
+          [for]="endDatePicker"
+        ></mat-datepicker-toggle>
+        <mat-datepicker
+          #endDatePicker
+          [startAt]="data.scenario.endDate.toLocaleDateString()"
+        ></mat-datepicker>
       </mat-form-field>
-      <mat-form-field fxFlexOffset="5" style="margin-top: -15px;">
-        <input matInput hidden>
+      <mat-form-field fxFlexOffset="5" style="margin-top: -15px">
+        <input matInput hidden />
         <ngx-timepicker-field
           [formControl]="endTimeFormControl"
           [format]="24"
           [defaultTime]="endTimeFormControl.value"
-          (timeChanged)="saveScenario('endTime')">
+          (timeChanged)="saveScenario('endTime')"
+        >
         </ngx-timepicker-field>
       </mat-form-field>
     </div>
@@ -87,11 +142,19 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 
   <div fxLayout="row" class="bottom-button">
     <div fxFlex fxLayoutAlign="left" class="delete-button">
-      <button mat-stroked-button (click)="handleEditComplete(true)" [disabled]="!errorFree()" style="margin-left: 40px;">Save</button>
+      <button
+        mat-stroked-button
+        (click)="handleEditComplete(true)"
+        [disabled]="!errorFree()"
+        style="margin-left: 40px"
+      >
+        Save
+      </button>
     </div>
     <div fxFlex fxLayoutAlign="end" class="delete-button">
-      <button mat-stroked-button (click)="handleEditComplete(false)">Cancel</button>
+      <button mat-stroked-button (click)="handleEditComplete(false)">
+        Cancel
+      </button>
     </div>
   </div>
-
 </div>

@@ -9,12 +9,13 @@ describe('TaskTreeComponent', () => {
   let component: TaskTreeComponent;
   let fixture: ComponentFixture<TaskTreeComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [ TaskTreeComponent ]
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        declarations: [TaskTreeComponent],
+      }).compileComponents();
     })
-    .compileComponents();
-  }));
+  );
 
   beforeEach(() => {
     fixture = TestBed.createComponent(TaskTreeComponent);
@@ -26,4 +27,3 @@ describe('TaskTreeComponent', () => {
     expect(component).toBeTruthy();
   });
 });
-
