@@ -1,32 +1,32 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Injectable } from "@angular/core";
-import { BehaviorSubject } from "rxjs";
-import { Command } from "../../models/command";
-import { Task, Vm } from "src/app/generated/steamfitter.api/model/models";
+import { Injectable } from '@angular/core';
+import { BehaviorSubject } from 'rxjs';
+import { Command } from '../../models/command';
+import { Task, Vm } from 'src/app/generated/steamfitter.api/model/models';
 
 const BLANK_TASK = {
-  name: "",
-  description: "",
-  scenarioTemplateId: "",
-  scenarioId: "",
+  name: '',
+  description: '',
+  scenarioTemplateId: '',
+  scenarioId: '',
   action: Task.ActionEnum.GuestProcessRun,
-  vmMask: "",
+  vmMask: '',
   vmList: [],
-  apiUrl: "",
+  apiUrl: '',
   actionParameters: {},
-  expectedOutput: "",
+  expectedOutput: '',
   expirationSeconds: 0,
   intervalSeconds: 0,
   iterations: 1,
   iterationTermination: Task.IterationTerminationEnum.IterationCount,
-  triggerTaskId: "",
+  triggerTaskId: '',
   triggerCondition: Task.TriggerConditionEnum.Manual,
 };
 
 @Injectable({
-  providedIn: "root",
+  providedIn: 'root',
 })
 export class NewTaskService {
   public vmList = new BehaviorSubject<Array<Vm>>(new Array<Vm>());
@@ -66,7 +66,7 @@ export class NewTaskService {
   private buildRawCommand() {
     if (this.command.value !== undefined) {
       // Get first vm moid, NOT a list!
-      const moid = this.vmList.value.length > 0 ? this.vmList.value[0].id : "";
+      const moid = this.vmList.value.length > 0 ? this.vmList.value[0].id : '';
       this._task.actionParameters = this.command.value.parameters;
       this._task.apiUrl = this.command.value.api;
       this._task.vmList = [moid];

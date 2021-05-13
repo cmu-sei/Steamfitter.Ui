@@ -4,12 +4,12 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 -->
 
 <div class="component-container mat-elevation-z8">
-
   <div fxLayout="row" class="add-margin">
     <div fxFlex>
       <app-scenario-list
         [scenarioList]="scenarioList | async"
-        [pageSize]="pageSize | async" [pageIndex]="pageIndex | async"
+        [pageSize]="pageSize | async"
+        [pageIndex]="pageIndex | async"
         [selectedScenario]="selectedScenario | async"
         [isLoading]="isLoading | async"
         [filterControl]="filterControl"
@@ -24,6 +24,4 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       ></app-scenario-list>
     </div>
   </div>
-
 </div>
-

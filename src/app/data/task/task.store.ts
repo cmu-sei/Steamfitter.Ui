@@ -6,9 +6,9 @@ import {
   EntityStore,
   ActiveState,
   StoreConfig,
-} from "@datorama/akita";
-import { Task } from "src/app/generated/steamfitter.api";
-import { Injectable } from "@angular/core";
+} from '@datorama/akita';
+import { Task } from 'src/app/generated/steamfitter.api';
+import { Injectable } from '@angular/core';
 
 export interface TaskState extends EntityState<Task>, ActiveState {
   ui: {
@@ -28,9 +28,9 @@ const initialState = {
 };
 
 @Injectable({
-  providedIn: "root",
+  providedIn: 'root',
 })
-@StoreConfig({ name: "tasks" })
+@StoreConfig({ name: 'tasks' })
 export class TaskStore extends EntityStore<TaskState> {
   constructor() {
     super(initialState);

@@ -7,38 +7,38 @@ import {
   style,
   transition,
   trigger,
-} from "@angular/animations";
-import { Component, OnDestroy, OnInit, ViewChild } from "@angular/core";
-import { MatPaginator, PageEvent } from "@angular/material/paginator";
-import { MatSort } from "@angular/material/sort";
-import { MatTableDataSource } from "@angular/material/table";
-import { Subject } from "rxjs";
-import { takeUntil, withLatestFrom } from "rxjs/operators";
-import { PlayerDataService } from "src/app/data/player/player-data-service";
-import { ResultDataService } from "src/app/data/result/result-data.service";
-import { ResultQuery } from "src/app/data/result/result.query";
-import { TaskDataService } from "src/app/data/task/task-data.service";
-import { UserDataService } from "src/app/data/user/user-data.service";
-import { Result, User, View, Vm } from "src/app/generated/steamfitter.api";
-import { ComnSettingsService } from "@cmusei/crucible-common";
+} from '@angular/animations';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
+import { Subject } from 'rxjs';
+import { takeUntil, withLatestFrom } from 'rxjs/operators';
+import { PlayerDataService } from 'src/app/data/player/player-data-service';
+import { ResultDataService } from 'src/app/data/result/result-data.service';
+import { ResultQuery } from 'src/app/data/result/result.query';
+import { TaskDataService } from 'src/app/data/task/task-data.service';
+import { UserDataService } from 'src/app/data/user/user-data.service';
+import { Result, User, View, Vm } from 'src/app/generated/steamfitter.api';
+import { ComnSettingsService } from '@cmusei/crucible-common';
 
 enum HistoryView {
-  user = "User",
-  view = "View",
-  vm = "VM",
+  user = 'User',
+  view = 'View',
+  vm = 'VM',
 }
 
 @Component({
-  selector: "app-history",
-  templateUrl: "./history.component.html",
-  styleUrls: ["./history.component.scss"],
+  selector: 'app-history',
+  templateUrl: './history.component.html',
+  styleUrls: ['./history.component.scss'],
   animations: [
-    trigger("detailExpand", [
-      state("collapsed", style({ height: "0px", minHeight: "0" })),
-      state("expanded", style({ height: "*" })),
+    trigger('detailExpand', [
+      state('collapsed', style({ height: '0px', minHeight: '0' })),
+      state('expanded', style({ height: '*' })),
       transition(
-        "expanded <=> collapsed",
-        animate("225ms cubic-bezier(0.4, 0.0, 0.2, 1)")
+        'expanded <=> collapsed',
+        animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')
       ),
     ]),
   ],
@@ -46,12 +46,12 @@ enum HistoryView {
 export class HistoryComponent implements OnInit, OnDestroy {
   HistoryView = HistoryView;
   displayedColumns: string[] = [
-    "id",
-    "statusDate",
-    "vmName",
-    "status",
-    "actualOutput",
-    "expectedOutput",
+    'id',
+    'statusDate',
+    'vmName',
+    'status',
+    'actualOutput',
+    'expectedOutput',
   ];
   modelDataSource = new MatTableDataSource<Result>(new Array<Result>());
   // MatPaginator Output
@@ -71,7 +71,7 @@ export class HistoryComponent implements OnInit, OnDestroy {
   private unsubscribe$ = new Subject();
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
-  topbarColor = "#ef3a47";
+  topbarColor = '#ef3a47';
 
   constructor(
     private resultQuery: ResultQuery,
@@ -97,7 +97,7 @@ export class HistoryComponent implements OnInit, OnDestroy {
           }
         },
         (error) => {
-          console.log("API is not responding:", error.message);
+          console.log('API is not responding:', error.message);
         }
       );
     this.userDataService.users
@@ -141,7 +141,7 @@ export class HistoryComponent implements OnInit, OnDestroy {
               )
             : [];
       });
-    this.playerDataService.selectView("");
+    this.playerDataService.selectView('');
     this.topbarColor = this.settingsService.settings.AppTopBarHexColor
       ? this.settingsService.settings.AppTopBarHexColor
       : this.topbarColor;

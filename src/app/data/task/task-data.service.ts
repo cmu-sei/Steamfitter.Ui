@@ -8,7 +8,12 @@ import { Injectable } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { PageEvent } from '@angular/material/paginator';
 import { Router, ActivatedRoute } from '@angular/router';
-import { Task, TaskService, Result, TaskStatus } from 'src/app/generated/steamfitter.api';
+import {
+  Task,
+  TaskService,
+  Result,
+  TaskStatus,
+} from 'src/app/generated/steamfitter.api';
 import { map, take, tap } from 'rxjs/operators';
 import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
 
@@ -280,7 +285,7 @@ export class TaskDataService {
   }
 
   stopIterations(id: string) {
-    var task = { ...this.taskQuery.getEntity(id)};
+    var task = { ...this.taskQuery.getEntity(id) };
     task.status = TaskStatus.Cancelled;
     this.updateTask(task);
   }

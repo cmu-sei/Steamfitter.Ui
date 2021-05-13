@@ -7,18 +7,18 @@ import {
   NgZone,
   Output,
   ViewChild,
-} from "@angular/core";
-import { FormControl, FormGroupDirective, NgForm } from "@angular/forms";
-import { ErrorStateMatcher } from "@angular/material/core";
-import { PageEvent } from "@angular/material/paginator";
-import { Sort } from "@angular/material/sort";
-import { MatStepper } from "@angular/material/stepper";
-import { ActivatedRoute, Router } from "@angular/router";
-import { Observable } from "rxjs";
-import { map } from "rxjs/operators";
-import { ScenarioTemplateDataService } from "src/app/data/scenario-template/scenario-template-data.service";
-import { ScenarioTemplateQuery } from "src/app/data/scenario-template/scenario-template.query";
-import { ScenarioTemplate } from "src/app/generated/steamfitter.api";
+} from '@angular/core';
+import { FormControl, FormGroupDirective, NgForm } from '@angular/forms';
+import { ErrorStateMatcher } from '@angular/material/core';
+import { PageEvent } from '@angular/material/paginator';
+import { Sort } from '@angular/material/sort';
+import { MatStepper } from '@angular/material/stepper';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { ScenarioTemplateDataService } from 'src/app/data/scenario-template/scenario-template-data.service';
+import { ScenarioTemplateQuery } from 'src/app/data/scenario-template/scenario-template.query';
+import { ScenarioTemplate } from 'src/app/generated/steamfitter.api';
 
 /** Error when invalid control is dirty, touched, or submitted. */
 export class UserErrorStateMatcher implements ErrorStateMatcher {
@@ -32,14 +32,14 @@ export class UserErrorStateMatcher implements ErrorStateMatcher {
 }
 
 @Component({
-  selector: "app-scenario-templates",
-  templateUrl: "./scenario-templates.component.html",
-  styleUrls: ["./scenario-templates.component.scss"],
+  selector: 'app-scenario-templates',
+  templateUrl: './scenario-templates.component.html',
+  styleUrls: ['./scenario-templates.component.scss'],
 })
 export class ScenarioTemplatesComponent {
   @Output() editComplete = new EventEmitter<boolean>();
   @ViewChild(ScenarioTemplatesComponent) child;
-  @ViewChild("stepper") stepper: MatStepper;
+  @ViewChild('stepper') stepper: MatStepper;
 
   matcher = new UserErrorStateMatcher();
   isLinear = false;
@@ -61,13 +61,13 @@ export class ScenarioTemplatesComponent {
   ) {
     this.scenarioTemplateDataService.load();
     this.filterString = activatedRoute.queryParamMap.pipe(
-      map((params) => params.get("scenarioTemplatemask") || "")
+      map((params) => params.get('scenarioTemplatemask') || '')
     );
     this.pageSize = activatedRoute.queryParamMap.pipe(
-      map((params) => parseInt(params.get("pagesize") || "20", 10))
+      map((params) => parseInt(params.get('pagesize') || '20', 10))
     );
     this.pageIndex = activatedRoute.queryParamMap.pipe(
-      map((params) => parseInt(params.get("pageindex") || "0", 10))
+      map((params) => parseInt(params.get('pageindex') || '0', 10))
     );
   }
 
@@ -78,14 +78,14 @@ export class ScenarioTemplatesComponent {
   sortChangeHandler(sort: Sort) {
     this.router.navigate([], {
       queryParams: { sorton: sort.active, sortdir: sort.direction },
-      queryParamsHandling: "merge",
+      queryParamsHandling: 'merge',
     });
   }
 
   pageChangeHandler(page: PageEvent) {
     this.router.navigate([], {
       queryParams: { pageindex: page.pageIndex, pagesize: page.pageSize },
-      queryParamsHandling: "merge",
+      queryParamsHandling: 'merge',
     });
   }
 

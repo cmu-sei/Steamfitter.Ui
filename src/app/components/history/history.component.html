@@ -8,7 +8,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     <div fxFlex="5" fxFlexOffset="1" fxLayoutAlign="start center">
       <mat-icon
         class="icon-35px"
-        [ngStyle]="{'color': topbarColor}"
+        [ngStyle]="{ color: topbarColor }"
         svgIcon="history"
         alt="History"
       ></mat-icon>
@@ -161,7 +161,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
           <td mat-cell *matCellDef="let element" class="status-column">
             <mat-icon
-              svgIcon="{{element.status.toLowerCase()}}"
+              svgIcon="{{ element.status.toLowerCase() }}"
               class="icon-20"
               title="{{ element.status }}"
             ></mat-icon>
@@ -177,9 +177,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           </td>
         </ng-container>
         <ng-container matColumnDef="expectedOutput">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header>
-            Expected
-          </th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Expected</th>
           <td mat-cell *matCellDef="let element">
             <span title="{{ element.expectedOutput }}">
               {{ element.expectedOutput }}
@@ -194,7 +192,9 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             [attr.colspan]="displayedColumns.length"
           >
             <div
-              [@detailExpand]="result === expandedResult ? 'expanded' : 'collapsed'"
+              [@detailExpand]="
+                result === expandedResult ? 'expanded' : 'collapsed'
+              "
               (click)="$event.stopPropagation()"
             >
               <div class="result-details">

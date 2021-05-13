@@ -22,7 +22,8 @@ table {
   min-height: 48px;
 }
 
-.mat-cell, .mat-header-cell {
+.mat-cell,
+.mat-header-cell {
   flex: 1;
   overflow: hidden;
   word-wrap: break-word;

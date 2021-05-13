@@ -9,12 +9,13 @@ describe('AdminViewEditComponent', () => {
   let component: AdminViewEditComponent;
   let fixture: ComponentFixture<AdminViewEditComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [ AdminViewEditComponent ]
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        declarations: [AdminViewEditComponent],
+      }).compileComponents();
     })
-    .compileComponents();
-  }));
+  );
 
   beforeEach(() => {
     fixture = TestBed.createComponent(AdminViewEditComponent);
@@ -26,4 +27,3 @@ describe('AdminViewEditComponent', () => {
     expect(component).toBeTruthy();
   });
 });
-

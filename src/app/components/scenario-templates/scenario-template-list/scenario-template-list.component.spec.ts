@@ -9,12 +9,13 @@ describe('ScenarioTemplateListComponent', () => {
   let component: ScenarioTemplateListComponent;
   let fixture: ComponentFixture<ScenarioTemplateListComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [ ScenarioTemplateListComponent ]
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        declarations: [ScenarioTemplateListComponent],
+      }).compileComponents();
     })
-    .compileComponents();
-  }));
+  );
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ScenarioTemplateListComponent);
@@ -26,4 +27,3 @@ describe('ScenarioTemplateListComponent', () => {
     expect(component).toBeTruthy();
   });
 });
-

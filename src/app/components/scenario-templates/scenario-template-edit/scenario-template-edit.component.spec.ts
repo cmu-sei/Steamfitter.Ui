@@ -9,12 +9,13 @@ describe('ScenarioTemplateEditComponent', () => {
   let component: ScenarioTemplateEditComponent;
   let fixture: ComponentFixture<ScenarioTemplateEditComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [ ScenarioTemplateEditComponent ]
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        declarations: [ScenarioTemplateEditComponent],
+      }).compileComponents();
     })
-    .compileComponents();
-  }));
+  );
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ScenarioTemplateEditComponent);
@@ -26,4 +27,3 @@ describe('ScenarioTemplateEditComponent', () => {
     expect(component).toBeTruthy();
   });
 });
-

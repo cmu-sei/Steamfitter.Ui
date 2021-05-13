@@ -9,12 +9,13 @@ describe('AddDialogComponent', () => {
   let component: AddDialogComponent;
   let fixture: ComponentFixture<AddDialogComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [ AddDialogComponent ]
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        declarations: [AddDialogComponent],
+      }).compileComponents();
     })
-    .compileComponents();
-  }));
+  );
 
   beforeEach(() => {
     fixture = TestBed.createComponent(AddDialogComponent);
@@ -26,4 +27,3 @@ describe('AddDialogComponent', () => {
     expect(component).toBeTruthy();
   });
 });
-

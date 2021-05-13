@@ -121,7 +121,8 @@ export class ScenarioEditDialogComponent {
         this.data.scenario.name = this.scenarioNameFormControl.value.toString();
         break;
       case 'description':
-        this.data.scenario.description = this.descriptionFormControl.value.toString();
+        this.data.scenario.description =
+          this.descriptionFormControl.value.toString();
         break;
       case 'view':
         const view = this.data.views.find(

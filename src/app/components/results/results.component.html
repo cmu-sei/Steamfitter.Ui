@@ -25,7 +25,10 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           (click)="toggleResultDisplay(result.id); $event.stopPropagation()"
           title="{{ result.status }}: Open/Close Details"
         >
-          <mat-icon svgIcon="{{ result.status }}" class="icon-color icon-20px"></mat-icon>
+          <mat-icon
+            svgIcon="{{ result.status }}"
+            class="icon-color icon-20px"
+          ></mat-icon>
           {{ result.vmName }}
         </button>
         <button
@@ -34,7 +37,10 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           (click)="openVmConsole(result.vmId); $event.stopPropagation()"
           title="Open {{ result.vmName }}"
         >
-          <mat-icon class="icon-color icon-20px" svgIcon="open_in_new"></mat-icon>
+          <mat-icon
+            class="icon-color icon-20px"
+            svgIcon="open_in_new"
+          ></mat-icon>
         </button>
         <div *ngIf="showResults[result.id]">
           id: {{ result.id }}<br />
@@ -66,10 +72,15 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
               <button
                 mat-button
                 class="result-button"
-                (click)="toggleResultDisplay(oldResult.id); $event.stopPropagation()"
+                (click)="
+                  toggleResultDisplay(oldResult.id); $event.stopPropagation()
+                "
                 title="{{ oldResult.status }}: Open/Close Details"
               >
-                <mat-icon svgIcon="{{ oldResult.status }}" class="icon-color icon-20px"></mat-icon>
+                <mat-icon
+                  svgIcon="{{ oldResult.status }}"
+                  class="icon-color icon-20px"
+                ></mat-icon>
                 {{ oldResult.dateCreated | date: 'yyyy/MM/dd HH:mm:ss' }}
               </button>
               <div *ngIf="showResults[oldResult.id]">
@@ -94,11 +105,9 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
                 expectedOutput: {{ oldResult.expectedOutput }}<br />
                 actualOutput: {{ oldResult.actualOutput }}<br />
                 dateCreated:
-                {{ oldResult.dateCreated | date: 'yyyy/MM/dd HH:mm:ss'
-                }}<br />
+                {{ oldResult.dateCreated | date: 'yyyy/MM/dd HH:mm:ss' }}<br />
                 statusDate:
-                {{ oldResult.statusDate | date: 'yyyy/MM/dd HH:mm:ss'
-                }}<br />
+                {{ oldResult.statusDate | date: 'yyyy/MM/dd HH:mm:ss' }}<br />
               </div>
             </div>
           </div>

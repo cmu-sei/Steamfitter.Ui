@@ -8,17 +8,17 @@ import {
   NgZone,
   Output,
   ViewChild,
-} from "@angular/core";
-import { ScenarioTemplateQuery } from "src/app/data/scenario-template/scenario-template.query";
-import { TaskDataService } from "src/app/data/task/task-data.service";
-import { TaskQuery } from "src/app/data/task/task.query";
-import { ScenarioTemplate } from "src/app/generated/steamfitter.api";
-import { TasksComponent } from "../../tasks/tasks.component";
+} from '@angular/core';
+import { ScenarioTemplateQuery } from 'src/app/data/scenario-template/scenario-template.query';
+import { TaskDataService } from 'src/app/data/task/task-data.service';
+import { TaskQuery } from 'src/app/data/task/task.query';
+import { ScenarioTemplate } from 'src/app/generated/steamfitter.api';
+import { TasksComponent } from '../../tasks/tasks.component';
 
 @Component({
-  selector: "app-scenario-template-edit",
-  templateUrl: "./scenario-template-edit.component.html",
-  styleUrls: ["./scenario-template-edit.component.scss"],
+  selector: 'app-scenario-template-edit',
+  templateUrl: './scenario-template-edit.component.html',
+  styleUrls: ['./scenario-template-edit.component.scss'],
 })
 export class ScenarioTemplateEditComponent {
   @Input() scenarioTemplate: ScenarioTemplate;

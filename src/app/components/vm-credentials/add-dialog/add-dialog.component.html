@@ -7,21 +7,41 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   <div fxFlex fxLayout="column" class="content">
     <h1 mat-dialog-title>Add VM Credentials</h1>
     <mat-form-field class="param-full-width">
-      <input matInput placeholder="Username" [(ngModel)]="data.vmCredential.username" tabindex="1">
+      <input
+        matInput
+        placeholder="Username"
+        [(ngModel)]="data.vmCredential.username"
+        tabindex="1"
+      />
     </mat-form-field>
     <mat-form-field class="param-full-width">
-      <input matInput [type]="'password'" placeholder="Password" [(ngModel)]="data.vmCredential.password" tabindex="2">
+      <input
+        matInput
+        [type]="'password'"
+        placeholder="Password"
+        [(ngModel)]="data.vmCredential.password"
+        tabindex="2"
+      />
     </mat-form-field>
     <mat-form-field class="param-full-width">
-      <input matInput placeholder="Description" [(ngModel)]="data.vmCredential.description" tabindex="3">
+      <input
+        matInput
+        placeholder="Description"
+        [(ngModel)]="data.vmCredential.description"
+        tabindex="3"
+      />
     </mat-form-field>
   </div>
   <div fxFlex fxLayout="row">
     <div fxFlex="30" fxFlexAlign="center" fxFlexOffset="20">
-      <button mat-stroked-button (click)="onClick(true)" tabindex="4">ADD</button>
+      <button mat-stroked-button (click)="onClick(true)" tabindex="4">
+        ADD
+      </button>
     </div>
     <div fxFlex="30" fxFlexAlign="center" fxFlexOffset="20">
-      <button mat-stroked-button (click)="onClick(false)" tabIndex="5">CANCEL</button>
+      <button mat-stroked-button (click)="onClick(false)" tabIndex="5">
+        CANCEL
+      </button>
     </div>
   </div>
 </div>

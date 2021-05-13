@@ -9,12 +9,13 @@ describe('ScenarioListComponent', () => {
   let component: ScenarioListComponent;
   let fixture: ComponentFixture<ScenarioListComponent>;
 
-  beforeEach(waitForAsync(() => {
-    TestBed.configureTestingModule({
-      declarations: [ ScenarioListComponent ]
+  beforeEach(
+    waitForAsync(() => {
+      TestBed.configureTestingModule({
+        declarations: [ScenarioListComponent],
+      }).compileComponents();
     })
-    .compileComponents();
-  }));
+  );
 
   beforeEach(() => {
     fixture = TestBed.createComponent(ScenarioListComponent);
@@ -26,4 +27,3 @@ describe('ScenarioListComponent', () => {
     expect(component).toBeTruthy();
   });
 });
-

@@ -31,11 +31,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       <div class="team-text">Team:</div>
       <b class="team-text">{{ team.name }}</b>
       <div *ngIf="teams.length > 1" fxLayout="row" fxLayoutAlign="start center">
-        <button
-          mat-button
-          [matMenuTriggerFor]="teamMenu"
-          style="outline: none;"
-        >
+        <button mat-button [matMenuTriggerFor]="teamMenu" style="outline: none">
           <mat-icon class="icon-color" svgIcon="ic_expand_more"></mat-icon>
         </button>
         <mat-menu #teamMenu="matMenu" [overlapTrigger]="false">
@@ -60,7 +56,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         mat-button
         class="icon-color"
         [matMenuTriggerFor]="menu"
-        style="outline: none;"
+        style="outline: none"
       >
         <strong>{{ currentUser.profile.name }}</strong>
         <mat-icon class="icon-color" svgIcon="ic_expand_more"></mat-icon>

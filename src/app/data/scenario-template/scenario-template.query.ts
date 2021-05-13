@@ -1,22 +1,22 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Order, Query, QueryConfig, QueryEntity } from "@datorama/akita";
+import { Order, Query, QueryConfig, QueryEntity } from '@datorama/akita';
 import {
   ScenarioTemplateState,
   ScenarioTemplateStore,
-} from "./scenario-template.store";
-import { ScenarioTemplate } from "src/app/generated/steamfitter.api";
-import { Injectable } from "@angular/core";
-import { PageEvent } from "@angular/material/paginator";
-import { Observable } from "rxjs";
+} from './scenario-template.store';
+import { ScenarioTemplate } from 'src/app/generated/steamfitter.api';
+import { Injectable } from '@angular/core';
+import { PageEvent } from '@angular/material/paginator';
+import { Observable } from 'rxjs';
 
 @QueryConfig({
-  sortBy: "name",
+  sortBy: 'name',
   sortByOrder: Order.ASC,
 })
 @Injectable({
-  providedIn: "root",
+  providedIn: 'root',
 })
 export class ScenarioTemplateQuery extends QueryEntity<ScenarioTemplateState> {
   constructor(protected store: ScenarioTemplateStore) {

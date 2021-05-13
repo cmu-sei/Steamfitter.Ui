@@ -13,4 +13,3 @@ describe('NewTaskService', () => {
     expect(service).toBeTruthy();
   });
 });
-
