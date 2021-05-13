@@ -20,5 +20,6 @@ export interface Command {
   api: string;
   action: TaskAction;
   display: string;
+  requiresVm: boolean;
   parameters: CommandParameters[];
 }
