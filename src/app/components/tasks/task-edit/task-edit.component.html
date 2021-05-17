@@ -53,16 +53,31 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         <mat-form-field
           class="param-full-width"
           *ngIf="
-            param.inputType === 'text' && param.key.toLowerCase() !== 'username'
+            (param.inputType === 'text' || param.inputType === 'textArea') &&
+            param.key.toLowerCase() !== 'username'
           "
         >
           <input
+            *ngIf="param.inputType === 'text'"
             matInput
             placeholder="{{ param.display }}"
             [value]="param.value"
             (input)="param.value = $event.target.value"
             (change)="onCommandChange()"
+            [matTooltip]="param.hint"
           />
+          <textarea
+            *ngIf="param.inputType === 'textArea'"
+            matInput
+            class="mdc-text-field__input"
+            rows="10"
+            cols="160"
+            placeholder="{{ param.display }}"
+            [value]="param.value"
+            (input)="param.value = $event.target.value"
+            (change)="onCommandChange()"
+            [matTooltip]="param.hint"
+          ></textarea>
         </mat-form-field>
         <mat-form-field
           class="param-full-width"
@@ -73,6 +88,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             [(ngModel)]="param.value"
             (selectionChange)="onCommandChange()"
             name="{{ param.key }}"
+            [matTooltip]="param.hint"
           >
             <mat-option
               *ngFor="let choice of param.choices"
@@ -90,6 +106,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             multiple
             style="display: none"
             (change)="loadFileContent(param, file)"
+            [matTooltip]="param.hint"
           />
           <button mat-menu-item (click)="file.click()">
             Select a Text File (... or enter text below)
