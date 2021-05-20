@@ -57,6 +57,7 @@ const BLANK_TASK: Task = {
   iterations: 1,
   iterationTermination: TaskIterationTermination.IterationCount,
   triggerCondition: TaskTrigger.Manual,
+  score: 0,
 };
 
 @Component({
