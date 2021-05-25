@@ -79,7 +79,7 @@ export class VmListComponent implements OnDestroy {
 
   ngOnDestroy() {
     this.playerDataService.vmFilter.setValue('');
-    this.unsubscribe$.next();
+    this.unsubscribe$.next(null);
     this.unsubscribe$.complete();
   }
 }
