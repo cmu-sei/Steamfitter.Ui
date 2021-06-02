@@ -9,13 +9,14 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { VmCredential } from './vmCredential';
 
 
-export interface ConsoleConnectionInfo { 
-    hostname?: string | null;
-    port?: string | null;
-    protocol?: string | null;
-    username?: string | null;
-    password?: string | null;
+export interface ScenarioTemplateForm { 
+    name?: string | null;
+    description?: string | null;
+    durationHours?: number | null;
+    defaultVmCredentialId?: string | null;
+    vmCredentials?: Array<VmCredential> | null;
 }
 

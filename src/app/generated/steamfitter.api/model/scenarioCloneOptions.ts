@@ -11,11 +11,9 @@
  */
 
 
-export interface ConsoleConnectionInfo { 
-    hostname?: string | null;
-    port?: string | null;
-    protocol?: string | null;
-    username?: string | null;
-    password?: string | null;
+export interface ScenarioCloneOptions { 
+    nameSuffix?: string | null;
+    viewId?: string | null;
+    userIds?: Array<string> | null;
 }
 

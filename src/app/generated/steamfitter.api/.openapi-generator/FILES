@@ -23,6 +23,7 @@ model/consoleConnectionInfo.ts
 model/directoryInfo.ts
 model/fileAttributes.ts
 model/fileInfo.ts
+model/gradedExecutionInfo.ts
 model/healthStatus.ts
 model/localUser.ts
 model/models.ts
@@ -33,11 +34,15 @@ model/permission.ts
 model/problemDetails.ts
 model/result.ts
 model/scenario.ts
+model/scenarioCloneOptions.ts
+model/scenarioForm.ts
 model/scenarioStatus.ts
 model/scenarioTemplate.ts
+model/scenarioTemplateForm.ts
 model/sshPort.ts
 model/task.ts
 model/taskAction.ts
+model/taskForm.ts
 model/taskIterationTermination.ts
 model/taskStatus.ts
 model/taskTrigger.ts

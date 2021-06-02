@@ -13,8 +13,7 @@ import { ScenarioStatus } from './scenarioStatus';
 import { VmCredential } from './vmCredential';
 
 
-export interface Scenario { 
-    id?: string;
+export interface ScenarioForm { 
     name?: string | null;
     description?: string | null;
     startDate?: Date;
@@ -26,12 +25,5 @@ export interface Scenario {
     view?: string | null;
     defaultVmCredentialId?: string | null;
     vmCredentials?: Array<VmCredential> | null;
-    users?: Array<string> | null;
-    score?: number;
-    scoreEarned?: number;
-    dateCreated?: Date;
-    dateModified?: Date | null;
-    createdBy?: string;
-    modifiedBy?: string | null;
 }
 

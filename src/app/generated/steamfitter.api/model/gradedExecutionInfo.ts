@@ -11,11 +11,10 @@
  */
 
 
-export interface ConsoleConnectionInfo { 
-    hostname?: string | null;
-    port?: string | null;
-    protocol?: string | null;
-    username?: string | null;
-    password?: string | null;
+export interface GradedExecutionInfo { 
+    scenarioId?: string;
+    startTaskName?: string | null;
+    gradedTaskName?: string | null;
+    taskSubstitutions?: { [key: string]: string; } | null;
 }
 

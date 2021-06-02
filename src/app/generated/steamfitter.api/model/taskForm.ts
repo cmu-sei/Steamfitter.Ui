@@ -12,11 +12,9 @@
 import { TaskIterationTermination } from './taskIterationTermination';
 import { TaskTrigger } from './taskTrigger';
 import { TaskAction } from './taskAction';
-import { TaskStatus } from './taskStatus';
 
 
-export interface Task { 
-    id?: string;
+export interface TaskForm { 
     name?: string | null;
     description?: string | null;
     scenarioTemplateId?: string | null;
@@ -37,17 +35,8 @@ export interface Task {
     triggerTaskId?: string | null;
     triggerCondition?: TaskTrigger;
     score?: number;
-    status?: TaskStatus;
-    scoreEarned?: number;
     userExecutable?: boolean;
-    totalScore?: number;
-    totalScoreEarned?: number;
-    totalStatus?: TaskStatus;
     repeatable?: boolean;
     executable?: boolean;
-    dateCreated?: Date;
-    dateModified?: Date | null;
-    createdBy?: string;
-    modifiedBy?: string | null;
 }
 
