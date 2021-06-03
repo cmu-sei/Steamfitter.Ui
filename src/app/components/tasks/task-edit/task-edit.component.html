@@ -147,9 +147,9 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     <mat-form-field class="param-full-width">
       <input
         matInput
+        type="number"
         placeholder="Points awarded for successful task completion"
-        [value]="data.task.score"
-        (input)="data.task.score = $event.target.value"
+        [(ngModel)]="data.task.score"
       />
     </mat-form-field>
     <mat-checkbox
@@ -167,25 +167,25 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     <mat-form-field class="param-full-width">
       <input
         matInput
+        type="number"
         placeholder="Delay (in seconds) Before Executing This Task"
-        [value]="data.task.delaySeconds"
-        (input)="data.task.delaySeconds = $event.target.value"
+        [(ngModel)]="data.task.delaySeconds"
       />
     </mat-form-field>
     <mat-form-field class="param-full-width">
       <input
         matInput
+        type="number"
         placeholder="Number of Iterations"
-        [value]="data.task.iterations"
-        (input)="data.task.iterations = $event.target.value"
+        [(ngModel)]="data.task.iterations"
       />
     </mat-form-field>
     <mat-form-field class="param-full-width">
       <input
         matInput
+        type="number"
         placeholder="Interval (in seconds) Between Iterations"
-        [value]="data.task.intervalSeconds"
-        (input)="data.task.intervalSeconds = $event.target.value"
+        [(ngModel)]="data.task.intervalSeconds"
       />
     </mat-form-field>
     <mat-form-field class="param-full-width">
@@ -205,9 +205,9 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     <mat-form-field class="param-full-width">
       <input
         matInput
+        type="number"
         placeholder="Expiration Timeout (in seconds)"
-        [value]="data.task.expirationSeconds"
-        (input)="data.task.expirationSeconds = $event.target.value"
+        [(ngModel)]="data.task.expirationSeconds"
       />
     </mat-form-field>
 

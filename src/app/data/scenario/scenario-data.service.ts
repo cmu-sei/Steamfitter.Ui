@@ -289,7 +289,7 @@ export class ScenarioDataService {
   createScenarioFromScenarioTemplate(scenarioTemplateId: string) {
     this.scenarioStore.setLoading(true);
     this.scenarioService
-      .createScenarioFromScenarioTemplate(scenarioTemplateId)
+      .createScenarioFromScenarioTemplate(scenarioTemplateId, {})
       .pipe(
         tap(() => {
           this.scenarioStore.setLoading(false);

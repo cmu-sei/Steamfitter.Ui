@@ -22,10 +22,12 @@ import { HttpClient, HttpHeaders, HttpParams,
 import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
+import { GradedExecutionInfo } from '../model/models';
 import { NewLocation } from '../model/models';
 import { ProblemDetails } from '../model/models';
 import { Result } from '../model/models';
 import { Task } from '../model/models';
+import { TaskForm } from '../model/models';
 
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
@@ -163,14 +165,14 @@ export class TaskService {
     /**
      * Creates a new Task and executes it
      * Creates a new Task with the attributes specified and executes it  &lt;para /&gt;  Accessible only to a SuperUser or an Administrator
-     * @param task The data to create the Task with
+     * @param taskForm The data to create the Task with
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public createAndExecuteTask(task?: Task, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<Array<Result>>;
-    public createAndExecuteTask(task?: Task, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<Array<Result>>>;
-    public createAndExecuteTask(task?: Task, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<Array<Result>>>;
-    public createAndExecuteTask(task?: Task, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+    public createAndExecuteTask(taskForm?: TaskForm, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<Array<Result>>;
+    public createAndExecuteTask(taskForm?: TaskForm, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<Array<Result>>>;
+    public createAndExecuteTask(taskForm?: TaskForm, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<Array<Result>>>;
+    public createAndExecuteTask(taskForm?: TaskForm, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
 
         let headers = this.defaultHeaders;
 
@@ -213,7 +215,7 @@ export class TaskService {
         }
 
         return this.httpClient.post<Array<Result>>(`${this.configuration.basePath}/api/tasks/execute`,
-            task,
+            taskForm,
             {
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
@@ -227,14 +229,14 @@ export class TaskService {
     /**
      * Creates a new Task
      * Creates a new Task with the attributes specified  &lt;para /&gt;  Accessible only to a SuperUser or an Administrator
-     * @param task The data to create the Task with
+     * @param taskForm The data to create the Task with
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public createTask(task?: Task, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<Task>;
-    public createTask(task?: Task, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<Task>>;
-    public createTask(task?: Task, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<Task>>;
-    public createTask(task?: Task, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+    public createTask(taskForm?: TaskForm, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<Task>;
+    public createTask(taskForm?: TaskForm, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<Task>>;
+    public createTask(taskForm?: TaskForm, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<Task>>;
+    public createTask(taskForm?: TaskForm, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
 
         let headers = this.defaultHeaders;
 
@@ -277,7 +279,7 @@ export class TaskService {
         }
 
         return this.httpClient.post<Task>(`${this.configuration.basePath}/api/tasks`,
-            task,
+            taskForm,
             {
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
@@ -410,8 +412,72 @@ export class TaskService {
     }
 
     /**
+     * Executes a specific Task by id and substitutes GuestFileContent for file upload tasks.
+     * Executes the Task with the id specified after substituting file content, if provided.  &lt;para /&gt;  Accessible to an authenticated user.  The task will fail, if the user does not have access to the targeted VMs.
+     * @param gradedExecutionInfo The scenario ID, start task name and task substitutions to make
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public executeForGrade(gradedExecutionInfo?: GradedExecutionInfo, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<Array<Result>>;
+    public executeForGrade(gradedExecutionInfo?: GradedExecutionInfo, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<Array<Result>>>;
+    public executeForGrade(gradedExecutionInfo?: GradedExecutionInfo, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<Array<Result>>>;
+    public executeForGrade(gradedExecutionInfo?: GradedExecutionInfo, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+
+        let headers = this.defaultHeaders;
+
+        let credential: string | undefined;
+        // authentication (oauth2) required
+        credential = this.configuration.lookupCredential('oauth2');
+        if (credential) {
+            headers = headers.set('Authorization', 'Bearer ' + credential);
+        }
+
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'text/plain',
+                'application/json',
+                'text/json'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (httpHeaderAcceptSelected !== undefined) {
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        }
+
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json',
+            'text/json',
+            'application/_*+json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            headers = headers.set('Content-Type', httpContentTypeSelected);
+        }
+
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
+        return this.httpClient.post<Array<Result>>(`${this.configuration.basePath}/api/tasks/execute/graded`,
+            gradedExecutionInfo,
+            {
+                responseType: <any>responseType,
+                withCredentials: this.configuration.withCredentials,
+                headers: headers,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
      * Executes a specific Task by id
-     * Executes the Task with the id specified  &lt;para /&gt;  Accessible to a SuperUser or administrator
+     * Executes the Task with the id specified
      * @param id The id of the STT.Task
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -455,6 +521,74 @@ export class TaskService {
 
         return this.httpClient.post<Array<Result>>(`${this.configuration.basePath}/api/tasks/${encodeURIComponent(String(id))}/execute`,
             null,
+            {
+                responseType: <any>responseType,
+                withCredentials: this.configuration.withCredentials,
+                headers: headers,
+                observe: observe,
+                reportProgress: reportProgress
+            }
+        );
+    }
+
+    /**
+     * Executes a specific Task by id and makes substitutions in task parameters
+     * Executes the Task with the id specified and makes substitutions in task parameters
+     * @param id The id of the STT.Task
+     * @param requestBody The task substitutions to make
+     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+     * @param reportProgress flag to report request and response progress.
+     */
+    public executeTaskWithSubstitutions(id: string, requestBody?: { [key: string]: string; }, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<Array<Result>>;
+    public executeTaskWithSubstitutions(id: string, requestBody?: { [key: string]: string; }, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<Array<Result>>>;
+    public executeTaskWithSubstitutions(id: string, requestBody?: { [key: string]: string; }, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<Array<Result>>>;
+    public executeTaskWithSubstitutions(id: string, requestBody?: { [key: string]: string; }, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling executeTaskWithSubstitutions.');
+        }
+
+        let headers = this.defaultHeaders;
+
+        let credential: string | undefined;
+        // authentication (oauth2) required
+        credential = this.configuration.lookupCredential('oauth2');
+        if (credential) {
+            headers = headers.set('Authorization', 'Bearer ' + credential);
+        }
+
+        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+        if (httpHeaderAcceptSelected === undefined) {
+            // to determine the Accept header
+            const httpHeaderAccepts: string[] = [
+                'text/plain',
+                'application/json',
+                'text/json'
+            ];
+            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+        }
+        if (httpHeaderAcceptSelected !== undefined) {
+            headers = headers.set('Accept', httpHeaderAcceptSelected);
+        }
+
+
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json',
+            'text/json',
+            'application/_*+json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            headers = headers.set('Content-Type', httpContentTypeSelected);
+        }
+
+        let responseType: 'text' | 'json' = 'json';
+        if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+            responseType = 'text';
+        }
+
+        return this.httpClient.post<Array<Result>>(`${this.configuration.basePath}/api/tasks/${encodeURIComponent(String(id))}/execute/substitutions`,
+            requestBody,
             {
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
@@ -1075,14 +1209,14 @@ export class TaskService {
      * Updates a Task
      * Updates a Task with the attributes specified  &lt;para /&gt;  Accessible only to a SuperUser or a User on an Admin Team within the specified Task
      * @param id The Id of the Exericse to update
-     * @param task The updated Task values
+     * @param taskForm The updated Task values
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public updateTask(id: string, task?: Task, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<Task>;
-    public updateTask(id: string, task?: Task, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<Task>>;
-    public updateTask(id: string, task?: Task, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<Task>>;
-    public updateTask(id: string, task?: Task, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+    public updateTask(id: string, taskForm?: TaskForm, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<Task>;
+    public updateTask(id: string, taskForm?: TaskForm, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<Task>>;
+    public updateTask(id: string, taskForm?: TaskForm, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<Task>>;
+    public updateTask(id: string, taskForm?: TaskForm, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling updateTask.');
         }
@@ -1128,7 +1262,7 @@ export class TaskService {
         }
 
         return this.httpClient.put<Task>(`${this.configuration.basePath}/api/tasks/${encodeURIComponent(String(id))}`,
-            task,
+            taskForm,
             {
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,

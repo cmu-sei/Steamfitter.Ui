@@ -24,6 +24,7 @@ import { Observable }                                        from 'rxjs';
 
 import { ProblemDetails } from '../model/models';
 import { ScenarioTemplate } from '../model/models';
+import { ScenarioTemplateForm } from '../model/models';
 
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
@@ -149,14 +150,14 @@ export class ScenarioTemplateService {
     /**
      * Creates a new ScenarioTemplate
      * Creates a new ScenarioTemplate with the attributes specified  &lt;para /&gt;  Accessible only to a SuperUser or an Administrator
-     * @param scenarioTemplate The data to create the ScenarioTemplate with
+     * @param scenarioTemplateForm The data to create the ScenarioTemplate with
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public createScenarioTemplate(scenarioTemplate?: ScenarioTemplate, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<ScenarioTemplate>;
-    public createScenarioTemplate(scenarioTemplate?: ScenarioTemplate, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<ScenarioTemplate>>;
-    public createScenarioTemplate(scenarioTemplate?: ScenarioTemplate, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<ScenarioTemplate>>;
-    public createScenarioTemplate(scenarioTemplate?: ScenarioTemplate, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+    public createScenarioTemplate(scenarioTemplateForm?: ScenarioTemplateForm, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<ScenarioTemplate>;
+    public createScenarioTemplate(scenarioTemplateForm?: ScenarioTemplateForm, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<ScenarioTemplate>>;
+    public createScenarioTemplate(scenarioTemplateForm?: ScenarioTemplateForm, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<ScenarioTemplate>>;
+    public createScenarioTemplate(scenarioTemplateForm?: ScenarioTemplateForm, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
 
         let headers = this.defaultHeaders;
 
@@ -199,7 +200,7 @@ export class ScenarioTemplateService {
         }
 
         return this.httpClient.post<ScenarioTemplate>(`${this.configuration.basePath}/api/scenariotemplates`,
-            scenarioTemplate,
+            scenarioTemplateForm,
             {
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
@@ -373,14 +374,14 @@ export class ScenarioTemplateService {
      * Updates an ScenarioTemplate
      * Updates an ScenarioTemplate with the attributes specified  &lt;para /&gt;  Accessible only to a SuperUser or a User on an Admin Team within the specified ScenarioTemplate
      * @param id The Id of the Exericse to update
-     * @param scenarioTemplate The updated ScenarioTemplate values
+     * @param scenarioTemplateForm The updated ScenarioTemplate values
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public updateScenarioTemplate(id: string, scenarioTemplate?: ScenarioTemplate, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<ScenarioTemplate>;
-    public updateScenarioTemplate(id: string, scenarioTemplate?: ScenarioTemplate, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<ScenarioTemplate>>;
-    public updateScenarioTemplate(id: string, scenarioTemplate?: ScenarioTemplate, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<ScenarioTemplate>>;
-    public updateScenarioTemplate(id: string, scenarioTemplate?: ScenarioTemplate, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+    public updateScenarioTemplate(id: string, scenarioTemplateForm?: ScenarioTemplateForm, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<ScenarioTemplate>;
+    public updateScenarioTemplate(id: string, scenarioTemplateForm?: ScenarioTemplateForm, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<ScenarioTemplate>>;
+    public updateScenarioTemplate(id: string, scenarioTemplateForm?: ScenarioTemplateForm, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<ScenarioTemplate>>;
+    public updateScenarioTemplate(id: string, scenarioTemplateForm?: ScenarioTemplateForm, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling updateScenarioTemplate.');
         }
@@ -426,7 +427,7 @@ export class ScenarioTemplateService {
         }
 
         return this.httpClient.put<ScenarioTemplate>(`${this.configuration.basePath}/api/scenariotemplates/${encodeURIComponent(String(id))}`,
-            scenarioTemplate,
+            scenarioTemplateForm,
             {
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,

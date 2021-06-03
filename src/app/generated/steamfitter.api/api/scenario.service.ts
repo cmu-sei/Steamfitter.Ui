@@ -24,6 +24,8 @@ import { Observable }                                        from 'rxjs';
 
 import { ProblemDetails } from '../model/models';
 import { Scenario } from '../model/models';
+import { ScenarioCloneOptions } from '../model/models';
+import { ScenarioForm } from '../model/models';
 
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
@@ -273,14 +275,14 @@ export class ScenarioService {
     /**
      * Creates a new Scenario
      * Creates a new Scenario with the attributes specified  &lt;para /&gt;  Accessible only to a SuperUser or an Administrator
-     * @param scenario The data to create the Scenario with
+     * @param scenarioForm The data to create the Scenario with
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public createScenario(scenario?: Scenario, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<Scenario>;
-    public createScenario(scenario?: Scenario, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<Scenario>>;
-    public createScenario(scenario?: Scenario, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<Scenario>>;
-    public createScenario(scenario?: Scenario, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+    public createScenario(scenarioForm?: ScenarioForm, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<Scenario>;
+    public createScenario(scenarioForm?: ScenarioForm, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<Scenario>>;
+    public createScenario(scenarioForm?: ScenarioForm, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<Scenario>>;
+    public createScenario(scenarioForm?: ScenarioForm, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
 
         let headers = this.defaultHeaders;
 
@@ -323,7 +325,7 @@ export class ScenarioService {
         }
 
         return this.httpClient.post<Scenario>(`${this.configuration.basePath}/api/scenarios`,
-            scenario,
+            scenarioForm,
             {
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
@@ -338,13 +340,14 @@ export class ScenarioService {
      * Creates a new Scenario from a ScenarioTemplate
      * Creates a new Scenario from the specified ScenarioTemplate  &lt;para /&gt;  Accessible only to a SuperUser or an Administrator
      * @param id The ScenarioTemplate ID to create the Scenario with
+     * @param scenarioCloneOptions 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public createScenarioFromScenarioTemplate(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<Scenario>;
-    public createScenarioFromScenarioTemplate(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<Scenario>>;
-    public createScenarioFromScenarioTemplate(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<Scenario>>;
-    public createScenarioFromScenarioTemplate(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+    public createScenarioFromScenarioTemplate(id: string, scenarioCloneOptions?: ScenarioCloneOptions, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<Scenario>;
+    public createScenarioFromScenarioTemplate(id: string, scenarioCloneOptions?: ScenarioCloneOptions, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<Scenario>>;
+    public createScenarioFromScenarioTemplate(id: string, scenarioCloneOptions?: ScenarioCloneOptions, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<Scenario>>;
+    public createScenarioFromScenarioTemplate(id: string, scenarioCloneOptions?: ScenarioCloneOptions, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling createScenarioFromScenarioTemplate.');
         }
@@ -373,13 +376,24 @@ export class ScenarioService {
         }
 
 
+        // to determine the Content-Type header
+        const consumes: string[] = [
+            'application/json',
+            'text/json',
+            'application/_*+json'
+        ];
+        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+        if (httpContentTypeSelected !== undefined) {
+            headers = headers.set('Content-Type', httpContentTypeSelected);
+        }
+
         let responseType: 'text' | 'json' = 'json';
         if(httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
             responseType = 'text';
         }
 
         return this.httpClient.post<Scenario>(`${this.configuration.basePath}/api/scenariotemplates/${encodeURIComponent(String(id))}/scenarios`,
-            null,
+            scenarioCloneOptions,
             {
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
@@ -827,14 +841,14 @@ export class ScenarioService {
      * Updates a Scenario
      * Updates an Scenario with the attributes specified  &lt;para /&gt;  Accessible only to a SuperUser or a User on an Admin Team within the specified Scenario
      * @param id The Id of the Exericse to update
-     * @param scenario The updated Scenario values
+     * @param scenarioForm The updated Scenario values
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public updateScenario(id: string, scenario?: Scenario, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<Scenario>;
-    public updateScenario(id: string, scenario?: Scenario, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<Scenario>>;
-    public updateScenario(id: string, scenario?: Scenario, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<Scenario>>;
-    public updateScenario(id: string, scenario?: Scenario, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+    public updateScenario(id: string, scenarioForm?: ScenarioForm, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<Scenario>;
+    public updateScenario(id: string, scenarioForm?: ScenarioForm, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<Scenario>>;
+    public updateScenario(id: string, scenarioForm?: ScenarioForm, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<Scenario>>;
+    public updateScenario(id: string, scenarioForm?: ScenarioForm, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
         if (id === null || id === undefined) {
             throw new Error('Required parameter id was null or undefined when calling updateScenario.');
         }
@@ -880,7 +894,7 @@ export class ScenarioService {
         }
 
         return this.httpClient.put<Scenario>(`${this.configuration.basePath}/api/scenarios/${encodeURIComponent(String(id))}`,
-            scenario,
+            scenarioForm,
             {
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
