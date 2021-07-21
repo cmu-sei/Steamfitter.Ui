@@ -32,7 +32,7 @@
     "@angular/platform-browser-dynamic": "^12.1.0",
     "@angular/router": "^12.1.0",
     "@cmusei/crucible-common": "0.1.1",
-    "@datorama/akita": "^6.2.0",
+    "@datorama/akita": "^6.2.1",
     "@datorama/akita-ng-router-store": "^6.0.1",
     "@datorama/akita-ngdevtools": "^6.0.1",
     "@mdi/font": "^5.9.55",
