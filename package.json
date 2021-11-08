@@ -1,6 +1,6 @@
 {
   "name": "steamfitter-web",
-  "version": "0.0.0",
+  "version": "3.4.2",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --aot",
@@ -10,12 +10,7 @@
     "e2e": "ng e2e",
     "postinstall": "ngcc",
     "swagger-gen": "curl --insecure http://host.docker.internal:4400/swagger/v1/swagger.json --output swagger.json && node_modules/@openapitools/openapi-generator-cli/bin/openapi-generator generate -i ./swagger.json -g typescript-angular -o src/app/generated/steamfitter.api --additional-properties ngVersion=11.2.1 --additional-properties useRxJS6=true --additional-properties modelPropertyNaming=original --type-mappings=DateTime=Date --skip-validate-spec",
-    "swagger-gen-win": "docker run --rm -v %CD%:/local openapitools/openapi-generator-cli:v5.1.0 generate -i http://host.docker.internal:4400/swagger/v1/swagger.json -g typescript-angular -o /local/src/app/generated/steamfitter.api --additional-properties ngVersion=11.2.1 --additional-properties useRxJS6=true --additional-properties modelPropertyNaming=original --type-mappings=DateTime=Date --skip-validate-spec",
-    "docker:init": "docker network create identity --driver=overlay",
-    "docker:stack": "npm run docker:stack:identity && npm run docker:stack:api",
-    "docker:stack:api": "docker stack deploy -c docker-compose.yml -c docker/compose/api.yml steamfitter_stack",
-    "docker:stack:identity": "docker stack deploy -c docker-compose.yml -c docker/compose/identity.yml identity_stack",
-    "docker:destroy": "docker stack rm steamfitter_stack identity_stack"
+    "swagger-gen-win": "docker run --rm -v %CD%:/local openapitools/openapi-generator-cli:v5.1.0 generate -i http://host.docker.internal:4400/swagger/v1/swagger.json -g typescript-angular -o /local/src/app/generated/steamfitter.api --additional-properties ngVersion=11.2.1 --additional-properties useRxJS6=true --additional-properties modelPropertyNaming=original --type-mappings=DateTime=Date --skip-validate-spec"
   },
   "private": true,
   "dependencies": {
