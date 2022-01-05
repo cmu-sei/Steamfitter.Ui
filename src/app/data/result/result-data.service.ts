@@ -111,7 +111,7 @@ export class ResultDataService {
         take(1)
       )
       .subscribe((results) => {
-        results.forEach((r) => this.fixDates(r));
+        results.forEach((r) => this.setAsDates(r));
         this.setStore(results);
       });
   }
@@ -122,7 +122,7 @@ export class ResultDataService {
       .getScenarioResults(scenarioId)
       .pipe(take(1))
       .subscribe((results) => {
-        results.forEach((r) => this.fixDates(r));
+        results.forEach((r) => this.setAsDates(r));
         this.setStore(results);
       });
   }
@@ -132,7 +132,7 @@ export class ResultDataService {
       .getTaskResults(taskId)
       .pipe(take(1))
       .subscribe((results) => {
-        results.forEach((r) => this.fixDates(r));
+        results.forEach((r) => this.setAsDates(r));
         this.updateStoreMany(results);
       });
   }
@@ -143,7 +143,7 @@ export class ResultDataService {
       .getUserResults(userId)
       .pipe(take(1))
       .subscribe((results) => {
-        results.forEach((r) => this.fixDates(r));
+        results.forEach((r) => this.setAsDates(r));
         this.setStore(results);
       });
   }
@@ -154,7 +154,7 @@ export class ResultDataService {
       .getViewResults(viewId)
       .pipe(take(1))
       .subscribe((results) => {
-        results.forEach((r) => this.fixDates(r));
+        results.forEach((r) => this.setAsDates(r));
         this.setStore(results);
       });
   }
@@ -164,7 +164,7 @@ export class ResultDataService {
       .getVmResults(vmId)
       .pipe(take(1))
       .subscribe((results) => {
-        results.forEach((r) => this.fixDates(r));
+        results.forEach((r) => this.setAsDates(r));
         this.updateStoreMany(results);
       });
   }
@@ -174,7 +174,7 @@ export class ResultDataService {
       .getResult(id)
       .pipe(take(1))
       .subscribe((result) => {
-        this.fixDates(result);
+        this.setAsDates(result);
         this.updateStore({ ...result });
       });
   }
@@ -254,14 +254,6 @@ export class ResultDataService {
     if (this._requestedId$.getValue()) {
       this.loadById(this._requestedId$.getValue());
     }
-  }
-
-  fixDates(result: Result) {
-    // set as date object and handle c# not adding 'Z' to UTC dates.
-    result.dateCreated = new Date(result.dateCreated + 'Z');
-    result.dateModified = new Date(result.dateModified + 'Z');
-    result.statusDate = new Date(result.statusDate + 'Z');
-    result.sentDate = new Date(result.sentDate + 'Z');
   }
 
   setAsDates(result: Result) {
