@@ -190,7 +190,7 @@ export class ScenarioDataService {
       .subscribe(
         (scenarios) => {
           scenarios.forEach((scenario) => {
-            this.fixDates(scenario);
+            this.setAsDates(scenario);
           });
           this.scenarioStore.set(
             scenarios.filter(
@@ -382,14 +382,6 @@ export class ScenarioDataService {
 
   deleteFromStore(id: string) {
     this.scenarioStore.remove(id);
-  }
-
-  fixDates(scenario: Scenario) {
-    // set as date object and handle c# not adding 'Z' to UTC dates.
-    scenario.dateCreated = new Date(scenario.dateCreated + 'Z');
-    scenario.dateModified = new Date(scenario.dateModified + 'Z');
-    scenario.startDate = new Date(scenario.startDate + 'Z');
-    scenario.endDate = new Date(scenario.endDate + 'Z');
   }
 
   setAsDates(scenario: Scenario) {

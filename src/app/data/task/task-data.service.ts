@@ -384,14 +384,6 @@ export class TaskDataService {
     }
   }
 
-  fixDates(result: Result) {
-    // set as date object and handle c# not adding 'Z' to UTC dates.
-    result.dateCreated = new Date(result.dateCreated + 'Z');
-    result.dateModified = new Date(result.dateModified + 'Z');
-    result.statusDate = new Date(result.statusDate + 'Z');
-    result.sentDate = new Date(result.sentDate + 'Z');
-  }
-
   setAsDates(result: Result) {
     // set to a date object.
     result.dateCreated = new Date(result.dateCreated);
