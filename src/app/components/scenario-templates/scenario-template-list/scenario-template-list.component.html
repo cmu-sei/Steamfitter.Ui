@@ -42,21 +42,16 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   </div>
 </div>
 
-<mat-accordion displayMode="flat" class="mat-table">
+<mat-accordion displayMode="flat">
   <section
     matSort
     (matSortChange)="sortChanged($event)"
     class="mat-elevation-z2 mat-header-row"
   >
-    <span class="mat-cell" fxFlex="4">&nbsp;</span>
-    <span class="mat-header-cell" mat-sort-header="name">Name</span>
-    <span class="mat-header-cell" mat-sort-header="description"
-      >Description</span
-    >
-    <span class="mat-header-cell" mat-sort-header="durationHours"
-      >Duration</span
-    >
-    <span class="mat-header-cell" mat-sort-header="dateCreated">Created</span>
+    <span class="mat-header-cell four-cell" mat-sort-header="name"><span class="name-header">Name</span></span>
+    <span class="mat-header-cell four-cell" mat-sort-header="description">Description</span>
+    <span class="mat-header-cell one-cell" mat-sort-header="durationHours">Duration</span>
+    <span class="mat-header-cell one-cell" mat-sort-header="dateCreated">Created</span>
   </section>
 
   <mat-expansion-panel
@@ -77,23 +72,31 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       class="mat-row"
       (contextmenu)="onContextMenu($event, item)"
     >
-      <span
-        class="mat-cell"
-        fxFlex="4"
-        title="Scenario Template Menu"
-        (click)="onContextMenu($event, item); $event.stopPropagation()"
-      >
-        <mat-icon
-          svgIcon="menu"
-          class="icon-color icon-20px"
-          title="Scenario Template Menu"
+      <div class="mat-cell flex-row-cell four-cell">
+        <button
+          mat-icon-button
+          class="copy-button"
+          ngxClipboard
+          [cbContent]="item.id"
+          (click)="$event.stopPropagation()"
+          title="Copy ID:  {{ item.id }}"
+        >
+          <mat-icon class="mdi-20px copy-icon" fontIcon="mdi-content-copy"></mat-icon>
+        </button>
+        <button
+          mat-icon-button
+          class="menu-button"
+          ngxClipboard
           (click)="onContextMenu($event, item); $event.stopPropagation()"
-        ></mat-icon>
-      </span>
-      <span class="mat-cell">{{ item.name }}</span>
-      <span class="mat-cell">{{ item.description }}</span>
-      <span class="mat-cell">{{ item.durationHours }}</span>
-      <span class="mat-cell">{{ item.dateCreated | date: 'yyyy-MM-dd' }}</span>
+          title="Scenario Template Menu"
+        >
+          <mat-icon class="mdi-24px" fontIcon="mdi-menu"></mat-icon>
+        </button>
+        {{ item.name }}
+      </div>
+      <div class="mat-cell four-cell center-self">{{ item.description }}</div>
+      <div class="mat-cell one-cell center-self">{{ item.durationHours }}</div>
+      <div class="mat-cell one-cell center-self">{{ item.dateCreated | date: 'yyyy-MM-dd' }}</div>
     </mat-expansion-panel-header>
     <ng-template matExpansionPanelContent>
       <app-scenario-template-edit
