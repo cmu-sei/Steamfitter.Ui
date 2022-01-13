@@ -216,6 +216,18 @@ $custom-typography: mat.define-typography-config(
       color: map-get($foreground, disabled);
     }
   }
+
+  .ngx-timepicker-control__input {
+    background: map-get($background, 'background');
+  }
+  .ngx-timepicker-control__arrow {
+    color: map-get($foreground, 'text') !important;
+  }
+
+  .ngx-material-timepicker-toggle {
+    color: map-get($foreground, 'text') !important;
+  }
+
 }
 
 $primary: mat.define-palette($mat-cmu-tartan);
