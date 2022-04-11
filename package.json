@@ -1,6 +1,6 @@
 {
   "name": "steamfitter-web",
-  "version": "3.4.2",
+  "version": "3.6.3",
   "scripts": {
     "ng": "ng",
     "start": "ng serve --aot",
@@ -26,7 +26,7 @@
     "@angular/platform-browser": "^12.1.3",
     "@angular/platform-browser-dynamic": "^12.1.3",
     "@angular/router": "^12.1.3",
-    "@cmusei/crucible-common": "0.1.1",
+    "@cmusei/crucible-common": "0.1.2",
     "@datorama/akita": "^6.2.2",
     "@datorama/akita-ng-router-store": "^6.0.2",
     "@datorama/akita-ngdevtools": "^6.0.1",
