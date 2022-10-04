@@ -14,6 +14,7 @@ export interface CommandParameters {
   hint: string;
   value: string;
   choices: CommandParameterChoice[];
+  default: string;
 }
 
 export interface Command {
