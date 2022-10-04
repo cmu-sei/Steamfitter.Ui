@@ -54,7 +54,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           class="param-full-width"
           *ngIf="
             (param.inputType === 'text' || param.inputType === 'textArea') &&
-            param.key.toLowerCase() !== 'username'
+            !(param.key.toLowerCase() === 'username' && param.requiresVm)
           "
         >
           <input
