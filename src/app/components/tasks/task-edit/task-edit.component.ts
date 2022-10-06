@@ -163,7 +163,8 @@ export class TaskEditComponent implements OnInit, OnDestroy {
           this.selectedCommand = cmd;
         } else {
           cmd.parameters.forEach((p) => {
-            p.value = '';
+            p.value = p.default ? p.default : '';
+            p.value = p.value.toLowerCase() === 'false' ? '' : p.value;
           });
         }
       });
