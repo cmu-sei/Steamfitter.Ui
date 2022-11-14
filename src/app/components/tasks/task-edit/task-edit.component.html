@@ -54,9 +54,10 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           class="param-full-width"
           *ngIf="
             (param.inputType === 'text' || param.inputType === 'textArea') &&
-            param.key.toLowerCase() !== 'username'
+            !(param.key.toLowerCase() === 'username' && param.requiresVm)
           "
         >
+          <mat-label>{{ param.display }}</mat-label>
           <input
             *ngIf="param.inputType === 'text'"
             matInput
@@ -98,6 +99,16 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             </mat-option>
           </mat-select>
         </mat-form-field>
+        <mat-checkbox
+          class="param-full-width"
+          *ngIf="param.inputType === 'checkbox'"
+          name="{{ param.key }}"
+          [matTooltip]="param.hint"
+          [(ngModel)]="param.value"
+          (change)="onCommandChange()"
+          >
+          {{ param.display }}
+        </mat-checkbox>
         <span class="param-full-width" *ngIf="param.inputType === 'file'">
           <input
             #file
