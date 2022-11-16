@@ -63,7 +63,7 @@ export class VmTaskExecuteComponent implements OnDestroy {
   loggedInUser = this.authService.user$;
   userScenario: Scenario;
   private unsubscribe$ = new Subject();
-  topbarColor = '#ef3a47';
+  topbarColor = '#BB0000';
 
   constructor(
     public zone: NgZone,

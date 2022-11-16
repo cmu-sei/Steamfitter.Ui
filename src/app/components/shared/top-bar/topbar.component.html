@@ -95,13 +95,14 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         </button>
         <button mat-menu-item (click)="logout()">Logout</button>
         <mat-slide-toggle
+          aria-labelledby="theme-toggle"
           class="mat-menu-item"
           color="primary"
           [checked]="(theme$ | async) === 'dark-theme' ? true : false"
           (click)="$event.stopPropagation()"
           (change)="themeFn($event)"
         >
-          Dark Theme
+          <mat-label id="theme-toggle">Dark Theme</mat-label>
         </mat-slide-toggle>
       </mat-menu>
     </div>

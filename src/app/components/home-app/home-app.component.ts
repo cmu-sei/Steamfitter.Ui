@@ -38,7 +38,7 @@ export class HomeAppComponent implements OnDestroy {
   isSidebarOpen = true;
   viewList = this.playerDataService.viewList;
   private unsubscribe$ = new Subject();
-  topbarColor = '#ef3a47';
+  topbarColor = '#BB0000';
   topbarTextColor = '#FFFFFF';
   TopbarView = TopbarView;
   theme$: Observable<Theme>;

@@ -40,7 +40,7 @@ export class AdminContainerComponent implements OnDestroy {
   pageIndex: Observable<number>;
   private unsubscribe$ = new Subject();
   TopbarView = TopbarView;
-  topbarColor = '#ef3a47';
+  topbarColor = '#BB0000';
   topbarTextColor = '#FFFFFF';
   theme$: Observable<Theme>;
 

@@ -53,7 +53,7 @@ export class ScenarioListComponent implements OnInit {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   @ViewChild(ScenarioEditComponent)
   scenarioEditComponent: ScenarioEditComponent;
-  topbarColor = '#ef3a47';
+  topbarColor = '#BB0000';
   displayedColumns: string[] = [
     'name',
     'view',
