@@ -45,9 +45,10 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         </button>
         <div *ngIf="showResults[result.id]">
           id: {{ result.id }}<br />
+          <div *ngIf="showVmFields">
           vmId: {{ result.vmId }}<br />
           vmName: {{ result.vmName }}<br />
-          apiUrl: {{ result.apiUrl }}<br />
+          </div>
           actionParameters:<br />
           <span *ngFor="let k of result.actionParameters | keyvalue"
             >&nbsp;&nbsp;&nbsp;&nbsp;{{ k.key }}:
@@ -86,9 +87,10 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
               </button>
               <div *ngIf="showResults[oldResult.id]">
                 id: {{ oldResult.id }}<br />
+                <div *ngIf="showVmFields">
                 vmId: {{ oldResult.vmId }}<br />
                 vmName: {{ oldResult.vmName }}<br />
-                apiUrl: {{ oldResult.apiUrl }}<br />
+                </div>
                 actionParameters:<br />
                 <span *ngFor="let k of result.actionParameters | keyvalue"
                   >&nbsp;&nbsp;&nbsp;&nbsp;{{ k.key }}:
