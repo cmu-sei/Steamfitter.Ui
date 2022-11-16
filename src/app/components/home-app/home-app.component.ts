@@ -14,6 +14,7 @@ import {
 import { SignalRService } from 'src/app/services/signalr/signalr.service';
 import { UserDataService } from '../../data/user/user-data.service';
 import { TopbarView } from './../shared/top-bar/topbar.models';
+//import { HealthCheckService } from 'src/app/generated/steamfitter.api';
 
 enum Section {
   taskBuilder = 'Tasks',
@@ -29,6 +30,8 @@ enum Section {
 })
 export class HomeAppComponent implements OnDestroy {
   @ViewChild('sidenav') sidenav: MatSidenav;
+  apiIsSick = false;
+  apiMessage = 'The API web service is not responding.';
   titleText = 'Steamfitter';
   section = Section;
   selectedSection: Section;
@@ -38,6 +41,7 @@ export class HomeAppComponent implements OnDestroy {
   isSidebarOpen = true;
   viewList = this.playerDataService.viewList;
   private unsubscribe$ = new Subject();
+  hideTopbar = false;
   topbarColor = '#BB0000';
   topbarTextColor = '#FFFFFF';
   TopbarView = TopbarView;
@@ -50,9 +54,13 @@ export class HomeAppComponent implements OnDestroy {
     private playerDataService: PlayerDataService,
     private settingsService: ComnSettingsService,
     private signalRService: SignalRService,
+    //private healthCheckService: HealthCheckService,
     private authQuery: ComnAuthQuery
   ) {
+    //this.healthCheck();
+
     this.theme$ = this.authQuery.userTheme$;
+    this.hideTopbar = this.inIframe();
 
     this.playerDataService.getViewsFromApi();
     activatedRoute.queryParamMap
@@ -99,6 +107,32 @@ export class HomeAppComponent implements OnDestroy {
   logout() {
     this.userDataService.logout();
   }
+
+
+  inIframe() {
+    try {
+      return window.self !== window.top;
+    } catch (e) {
+      return true;
+    }
+  }
+
+  /*
+  healthCheck() {
+    this.healthCheckService
+      .healthCheck()
+      .pipe(take(1))
+      .subscribe(
+        (message) => {
+          this.apiIsSick = message !== 'It is well';
+          this.apiMessage = message;
+        },
+        (error) => {
+          this.apiIsSick = true;
+        }
+      );
+  }
+  */
 
   ngOnDestroy() {
     this.unsubscribe$.next(null);
