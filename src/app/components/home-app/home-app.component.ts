@@ -14,7 +14,7 @@ import {
 import { SignalRService } from 'src/app/services/signalr/signalr.service';
 import { UserDataService } from '../../data/user/user-data.service';
 import { TopbarView } from './../shared/top-bar/topbar.models';
-//import { HealthCheckService } from 'src/app/generated/steamfitter.api';
+import { HealthService } from 'src/app/generated/steamfitter.api';
 
 enum Section {
   taskBuilder = 'Tasks',
@@ -54,10 +54,10 @@ export class HomeAppComponent implements OnDestroy {
     private playerDataService: PlayerDataService,
     private settingsService: ComnSettingsService,
     private signalRService: SignalRService,
-    //private healthCheckService: HealthCheckService,
+    private healthService: HealthService,
     private authQuery: ComnAuthQuery
   ) {
-    //this.healthCheck();
+    this.healthCheck();
 
     this.theme$ = this.authQuery.userTheme$;
     this.hideTopbar = this.inIframe();
@@ -116,14 +116,12 @@ export class HomeAppComponent implements OnDestroy {
     }
   }
 
-  /*
   healthCheck() {
-    this.healthCheckService
-      .healthCheck()
-      .pipe(take(1))
+    this.healthService
+      .healthGetReadiness('body')
       .subscribe(
         (message) => {
-          this.apiIsSick = message !== 'It is well';
+          this.apiIsSick = message !== 'Healthy';
           this.apiMessage = message;
         },
         (error) => {
@@ -131,7 +129,6 @@ export class HomeAppComponent implements OnDestroy {
         }
       );
   }
-  */
 
   ngOnDestroy() {
     this.unsubscribe$.next(null);

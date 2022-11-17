@@ -147,7 +147,19 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       [sidenav]="sidenav"
       (sidenavToggle)="sidenavToggleFn()"
     ></app-topbar>
-    <span *ngIf="isAuthorizedUser">
+
+    <div
+      *ngIf="apiIsSick"
+      class="app-header-container mat-elevation-z8"
+      autosize
+    >
+    <h1>{{ apiMessage }}</h1>
+    <h2>Please refresh this page.</h2>
+      <h2>If the problem persists, please contact the site administrator.</h2>
+    </div>
+
+
+    <span *ngIf="!apiIsSick && isAuthorizedUser">
       <app-scenario-templates
         *ngIf="selectedSection === section.scenarioTemplates"
       ></app-scenario-templates>
