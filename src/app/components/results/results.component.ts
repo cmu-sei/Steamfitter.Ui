@@ -23,6 +23,7 @@ enum ResultStatus {
 export class ResultsComponent implements OnInit, OnDestroy {
   @Input() results: Observable<Result[]>;
   @Input() taskId: string;
+  @Input() taskAction: string;
 
   allResults: Result[];
   currentResults: Result[];
@@ -31,6 +32,7 @@ export class ResultsComponent implements OnInit, OnDestroy {
   showResults: Record<string, boolean | undefined> = {};
   private lastExecutionTime: Date;
   private unsubscribe$ = new Subject();
+  showVmFields: boolean;
 
   constructor(private playerDataService: PlayerDataService) {}
 
@@ -43,6 +45,14 @@ export class ResultsComponent implements OnInit, OnDestroy {
       }
       this.filterCurrentResults();
     });
+    this.showVmFields = this.hasVmFields();
+  }
+
+  hasVmFields() {
+    if (/^http|linux|core/.test(this.taskAction)) {
+      return false;
+    };
+    return true;
   }
 
   filterCurrentResults() {

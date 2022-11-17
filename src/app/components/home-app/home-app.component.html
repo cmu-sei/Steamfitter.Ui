@@ -21,6 +21,16 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             {{ titleText }}
           </h2>
         </div>
+        <button
+          *ngIf="isSuperUser"
+          aria-label="Show Administration Page"
+          mat-icon-button
+          [routerLink]="['/admin']"
+          style="outline: none;"
+          title="Administration"
+        >
+          <mat-icon aria-hidden="false" class="mdi-24px" fontIcon="mdi-cog"></mat-icon>
+        </button>
         <mat-divider></mat-divider>
       </mat-list-item>
       <mat-list-item
@@ -41,7 +51,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         </div>
 
         <div>
-          <button mat-icon-button>
+          <button mat-icon-button aria-label="Scenario Templates">
             <mat-icon class="icon-color" svgIcon="ic_chevron_right"></mat-icon>
           </button>
         </div>
@@ -64,7 +74,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         </div>
 
         <div>
-          <button mat-icon-button>
+          <button mat-icon-button aria-label="Scenarios">
             <mat-icon class="icon-color" svgIcon="ic_chevron_right"></mat-icon>
           </button>
         </div>
@@ -87,7 +97,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         </div>
 
         <div>
-          <button mat-icon-button>
+          <button mat-icon-button aria-label="Tasks">
             <mat-icon class="icon-color" svgIcon="ic_chevron_right"></mat-icon>
           </button>
         </div>
@@ -110,13 +120,15 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         </div>
 
         <div>
-          <button mat-icon-button>
+          <button mat-icon-button aria-label="History">
             <mat-icon class="icon-color" svgIcon="ic_chevron_right"></mat-icon>
           </button>
         </div>
       </mat-list-item>
     </mat-list>
     <img
+      *ngIf="!hideTopbar"
+      title="crucible logo"
       class="crucible-logo"
       [src]="
         (theme$ | async) === 'light-theme'
@@ -127,6 +139,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   </mat-sidenav>
   <mat-sidenav-content>
     <app-topbar
+      *ngIf="!hideTopbar"
       [title]="selectedSection"
       [topbarView]="TopbarView.STEAMFITTER_HOME"
       [topbarColor]="topbarColor"
@@ -134,7 +147,19 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       [sidenav]="sidenav"
       (sidenavToggle)="sidenavToggleFn()"
     ></app-topbar>
-    <span *ngIf="isAuthorizedUser">
+
+    <div
+      *ngIf="apiIsSick"
+      class="app-header-container mat-elevation-z8"
+      autosize
+    >
+    <h1>{{ apiMessage }}</h1>
+    <h2>Please refresh this page.</h2>
+      <h2>If the problem persists, please contact the site administrator.</h2>
+    </div>
+
+
+    <span *ngIf="!apiIsSick && isAuthorizedUser">
       <app-scenario-templates
         *ngIf="selectedSection === section.scenarioTemplates"
       ></app-scenario-templates>

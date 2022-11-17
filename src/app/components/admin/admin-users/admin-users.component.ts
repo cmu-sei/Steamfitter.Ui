@@ -33,7 +33,7 @@ export class AdminUsersComponent implements OnInit {
   addingNewUser = false;
   newUser: User = { id: '', name: '' };
   isLoading = false;
-  topbarColor = '#ef3a47';
+  topbarColor = '#BB0000';
 
   constructor(private settingsService: ComnSettingsService) {
     this.topbarColor = this.settingsService.settings.AppTopBarHexColor

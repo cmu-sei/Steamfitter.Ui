@@ -71,7 +71,7 @@ export class HistoryComponent implements OnInit, OnDestroy {
   private unsubscribe$ = new Subject();
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
-  topbarColor = '#ef3a47';
+  topbarColor = '#BB0000';
 
   constructor(
     private resultQuery: ResultQuery,

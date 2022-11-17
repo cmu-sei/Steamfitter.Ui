@@ -40,7 +40,8 @@ export class AdminContainerComponent implements OnDestroy {
   pageIndex: Observable<number>;
   private unsubscribe$ = new Subject();
   TopbarView = TopbarView;
-  topbarColor = '#ef3a47';
+  hideTopbar = false;
+  topbarColor = '#BB0000';
   topbarTextColor = '#FFFFFF';
   theme$: Observable<Theme>;
 
@@ -53,6 +54,7 @@ export class AdminContainerComponent implements OnDestroy {
     private authQuery: ComnAuthQuery
   ) {
     this.theme$ = this.authQuery.userTheme$;
+    this.hideTopbar = this.inIframe();
 
     this.userDataService.isSuperUser
       .pipe(takeUntil(this.unsubscribe$))
@@ -100,6 +102,14 @@ export class AdminContainerComponent implements OnDestroy {
 
   logout() {
     this.userDataService.logout();
+  }
+
+  inIframe() {
+    try {
+      return window.self !== window.top;
+    } catch (e) {
+      return true;
+    }
   }
 
   selectUser(userId: string) {

@@ -47,7 +47,7 @@ export class ScenarioTemplateListComponent implements OnInit {
   @Output() pageChange = new EventEmitter<PageEvent>();
   @ViewChild(ScenarioTemplateEditComponent)
   scenarioTemplateEditComponent: ScenarioTemplateEditComponent;
-  topbarColor = '#ef3a47';
+  topbarColor = '#BB0000';
   displayedColumns: string[] = ['name', 'description', 'durationHours'];
   editScenarioTemplateText = 'Edit ScenarioTemplate';
   // context menu

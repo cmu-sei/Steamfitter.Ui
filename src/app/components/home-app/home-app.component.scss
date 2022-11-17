@@ -15,6 +15,13 @@
   font-family: open_sansbold;
 }
 
+.app-header-container {
+  display: flex;
+  flex-flow: column;
+  justify-content: center;
+  text-align: center;
+}
+
 .appcontent-container {
   position: absolute;
   top: 0;

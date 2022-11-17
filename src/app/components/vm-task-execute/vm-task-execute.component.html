@@ -19,8 +19,8 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   <div fxLayout="row" class="add-margin" (click)="$event.stopPropagation()">
     <div style="width: 40px"></div>
     <mat-form-field fxFlex fxFlexFill>
+      <mat-label >Select a View</mat-label>
       <mat-select
-        placeholder="Select a View"
         [value]="selectedView | async"
         (selectionChange)="onViewChange($event)"
       >
