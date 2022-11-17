@@ -22,6 +22,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           </h2>
         </div>
         <button
+          *ngIf="isSuperUser"
           aria-label="Show Administration Page"
           mat-icon-button
           [routerLink]="['/admin']"
