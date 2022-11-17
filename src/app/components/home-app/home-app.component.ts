@@ -108,7 +108,6 @@ export class HomeAppComponent implements OnDestroy {
     this.userDataService.logout();
   }
 
-
   inIframe() {
     try {
       return window.self !== window.top;

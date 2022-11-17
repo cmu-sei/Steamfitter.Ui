@@ -264,6 +264,12 @@ export class AppComponent implements OnDestroy {
         'assets/svg-icons/ic_crucible_steamfitter.svg'
       )
     );
+    iconRegistry.addSvgIcon(
+      'close-circle-outline',
+      sanitizer.bypassSecurityTrustResourceUrl(
+        'assets/svg-icons/close-circle-outline.svg'
+      )
+    );
 
     this.theme$.pipe(takeUntil(this.unsubscribe$)).subscribe((theme) => {
       if (this.paramTheme && this.paramTheme !== theme) {

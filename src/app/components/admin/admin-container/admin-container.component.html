@@ -19,8 +19,8 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         <a class="nolink" [routerLink]="['/']">
           <div fxLayout="row" fxLayoutAlign="start center">
             <mat-icon
-              class="steamfitter-icon"
-              svgIcon="ic_crucible_steamfitter"
+              class="icon-35px"
+              svgIcon="close-circle-outline"
             ></mat-icon>
             <h2 class="icon-text">Administration</h2>
           </div>
@@ -52,6 +52,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       </mat-list-item>
     </mat-list>
     <img
+      *ngIf="!hideTopbar"
       class="crucible-logo"
       [src]="
         (theme$ | async) === 'light-theme'
@@ -62,6 +63,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   </mat-sidenav>
   <mat-sidenav-content>
     <app-topbar
+      *ngIf="!hideTopbar"
       [title]="usersText"
       [topbarView]="TopbarView.STEAMFITTER_ADMIN"
       [topbarColor]="topbarColor"
