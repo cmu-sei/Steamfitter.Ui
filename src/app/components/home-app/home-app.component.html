@@ -21,6 +21,15 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             {{ titleText }}
           </h2>
         </div>
+        <button
+          aria-label="Show Administration Page"
+          mat-icon-button
+          [routerLink]="['/admin']"
+          style="outline: none;"
+          title="Administration"
+        >
+          <mat-icon aria-hidden="false" class="mdi-24px" fontIcon="mdi-cog"></mat-icon>
+        </button>
         <mat-divider></mat-divider>
       </mat-list-item>
       <mat-list-item
@@ -117,6 +126,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       </mat-list-item>
     </mat-list>
     <img
+      *ngIf="!hideTopbar"
       title="crucible logo"
       class="crucible-logo"
       [src]="
