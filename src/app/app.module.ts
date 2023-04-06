@@ -55,7 +55,6 @@ import {
 import { AkitaNgRouterStoreModule } from '@datorama/akita-ng-router-store';
 import { AkitaNgDevtools } from '@datorama/akita-ngdevtools';
 import { ClipboardModule } from 'ngx-clipboard';
-import { NgxMaterialTimepickerModule } from 'ngx-material-timepicker';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AdminContainerComponent } from './components/admin/admin-container/admin-container.component';
@@ -90,6 +89,7 @@ import { BASE_PATH } from './generated/steamfitter.api';
 import { ApiModule as SwaggerCodegenApiModule } from './generated/steamfitter.api/api.module';
 import { ManualTasksPageComponent } from './components/manual-tasks-page/manual-tasks-page.component';
 import { ManualTasksListComponent } from './components/tasks/manual-tasks/manual-tasks-list/manual-tasks-list.component';
+import { NgxMatDatetimePickerModule, NgxMatTimepickerModule, NgxMatNativeDateModule } from '@angular-material-components/datetime-picker';
 
 const settings: ComnSettingsConfig = {
   url: 'assets/config/settings.json',
@@ -180,10 +180,13 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
     MatBottomSheetModule,
     MatBadgeModule,
     MatFormFieldModule,
+    MatDatepickerModule,
+    NgxMatTimepickerModule,
+    NgxMatDatetimePickerModule,
+    NgxMatNativeDateModule,
     CdkTableModule,
     MatTreeModule,
     CdkTreeModule,
-    NgxMaterialTimepickerModule,
     ClipboardModule,
     ComnAuthModule.forRoot(),
     ComnSettingsModule.forRoot(),
