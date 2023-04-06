@@ -10,11 +10,11 @@ import {
   ViewChild,
 } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
-import { MatMenuTrigger } from '@angular/material/menu';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
+import { MatLegacyMenuTrigger as MatMenuTrigger } from '@angular/material/legacy-menu';
+import { MatLegacyPaginator as MatPaginator, LegacyPageEvent as PageEvent } from '@angular/material/legacy-paginator';
 import { MatSort, Sort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatLegacyTableDataSource as MatTableDataSource } from '@angular/material/legacy-table';
 import { Observable } from 'rxjs';
 import { ScenarioEditDialogComponent } from 'src/app/components/scenarios/scenario-edit-dialog/scenario-edit-dialog.component';
 import { ScenarioEditComponent } from 'src/app/components/scenarios/scenario-edit/scenario-edit.component';

@@ -5,7 +5,7 @@ import { ScenarioTemplateStore } from './scenario-template.store';
 import { ScenarioTemplateQuery } from './scenario-template.query';
 import { Injectable } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
-import { PageEvent } from '@angular/material/paginator';
+import { LegacyPageEvent as PageEvent } from '@angular/material/legacy-paginator';
 import { Router, ActivatedRoute } from '@angular/router';
 import {
   ScenarioTemplate,

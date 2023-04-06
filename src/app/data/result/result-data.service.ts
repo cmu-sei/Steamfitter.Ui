@@ -5,7 +5,7 @@ import { ResultStore } from 'src/app/data/result/result.store';
 import { ResultQuery } from 'src/app/data/result/result.query';
 import { Injectable } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
-import { PageEvent } from '@angular/material/paginator';
+import { LegacyPageEvent as PageEvent } from '@angular/material/legacy-paginator';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Result, ResultService } from 'src/app/generated/steamfitter.api';
 import { map, take, tap } from 'rxjs/operators';

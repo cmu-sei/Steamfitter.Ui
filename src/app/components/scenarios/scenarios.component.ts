@@ -10,7 +10,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
-import { PageEvent } from '@angular/material/paginator';
+import { LegacyPageEvent as PageEvent } from '@angular/material/legacy-paginator';
 import { Sort } from '@angular/material/sort';
 import { MatStepper } from '@angular/material/stepper';
 import { ActivatedRoute, Router } from '@angular/router';

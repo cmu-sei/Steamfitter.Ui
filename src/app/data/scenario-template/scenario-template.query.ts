@@ -8,7 +8,7 @@ import {
 } from './scenario-template.store';
 import { ScenarioTemplate } from 'src/app/generated/steamfitter.api';
 import { Injectable } from '@angular/core';
-import { PageEvent } from '@angular/material/paginator';
+import { LegacyPageEvent as PageEvent } from '@angular/material/legacy-paginator';
 import { Observable } from 'rxjs';
 
 @QueryConfig({

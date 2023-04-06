@@ -3,8 +3,8 @@
 
 import { Injectable } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatLegacyPaginator as MatPaginator, LegacyPageEvent as PageEvent } from '@angular/material/legacy-paginator';
+import { MatLegacyTableDataSource as MatTableDataSource } from '@angular/material/legacy-table';
 import { View, PlayerService, Vm } from 'src/app/generated/steamfitter.api';
 import { map, take, switchMap } from 'rxjs/operators';
 import { Observable, combineLatest, BehaviorSubject } from 'rxjs';

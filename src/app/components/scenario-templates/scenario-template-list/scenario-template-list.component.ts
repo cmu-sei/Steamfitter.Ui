@@ -10,9 +10,9 @@ import {
   ViewChild,
 } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
-import { MatMenuTrigger } from '@angular/material/menu';
-import { PageEvent } from '@angular/material/paginator';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
+import { MatLegacyMenuTrigger as MatMenuTrigger } from '@angular/material/legacy-menu';
+import { LegacyPageEvent as PageEvent } from '@angular/material/legacy-paginator';
 import { Sort } from '@angular/material/sort';
 import { ScenarioTemplateEditDialogComponent } from 'src/app/components/scenario-templates/scenario-template-edit-dialog/scenario-template-edit-dialog.component';
 import { ScenarioTemplateEditComponent } from 'src/app/components/scenario-templates/scenario-template-edit/scenario-template-edit.component';

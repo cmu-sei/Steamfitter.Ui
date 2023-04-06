@@ -11,8 +11,8 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { MatMenuTrigger } from '@angular/material/menu';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
+import { MatLegacyMenuTrigger as MatMenuTrigger } from '@angular/material/legacy-menu';
 import {
   MatTreeFlatDataSource,
   MatTreeFlattener,
