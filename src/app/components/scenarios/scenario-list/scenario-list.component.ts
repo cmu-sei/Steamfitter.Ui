@@ -51,8 +51,7 @@ export class ScenarioListComponent implements OnInit {
 
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
-  @ViewChild(ScenarioEditComponent)
-  scenarioEditComponent: ScenarioEditComponent;
+  @ViewChild(ScenarioEditComponent) scenarioEditComponent: ScenarioEditComponent;
   topbarColor = '#BB0000';
   displayedColumns: string[] = [
     'name',

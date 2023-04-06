@@ -86,18 +86,18 @@ export class ScenarioTemplateDataService {
         ]) =>
           items
             ? (items as ScenarioTemplate[])
-                .sort((a: ScenarioTemplate, b: ScenarioTemplate) =>
-                  this.sortScenarioTemplates(a, b, sortColumn, sortIsAscending)
-                )
-                .filter(
-                  (scenarioTemplate) =>
-                    ('' + scenarioTemplate.name)
-                      .toLowerCase()
-                      .includes(filterTerm.toLowerCase()) ||
+              .sort((a: ScenarioTemplate, b: ScenarioTemplate) =>
+                this.sortScenarioTemplates(a, b, sortColumn, sortIsAscending)
+              )
+              .filter(
+                (scenarioTemplate) =>
+                  ('' + scenarioTemplate.name)
+                    .toLowerCase()
+                    .includes(filterTerm.toLowerCase()) ||
                     scenarioTemplate.id
                       .toLowerCase()
                       .includes(filterTerm.toLowerCase())
-                )
+              )
             : []
       )
     );

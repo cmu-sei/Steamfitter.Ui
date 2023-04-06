@@ -109,8 +109,8 @@ export class HistoryComponent implements OnInit, OnDestroy {
         this.userList =
           !!users && users.length > 0
             ? users.sort((a: User, b: User) =>
-                a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1
-              )
+              a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1
+            )
             : [];
 
         this.selectedUser = this.userList.find(
@@ -127,8 +127,8 @@ export class HistoryComponent implements OnInit, OnDestroy {
         this.viewList =
           !!views && views.length > 0
             ? views.sort((a: User, b: User) =>
-                a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1
-              )
+              a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1
+            )
             : [];
       });
     this.playerDataService.vms
@@ -137,8 +137,8 @@ export class HistoryComponent implements OnInit, OnDestroy {
         this.vmList =
           !!vms && vms.length > 0
             ? vms.sort((a: User, b: User) =>
-                a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1
-              )
+              a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1
+            )
             : [];
       });
     this.playerDataService.selectView('');

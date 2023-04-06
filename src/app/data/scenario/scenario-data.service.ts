@@ -89,14 +89,14 @@ export class ScenarioDataService {
       map(([items, filterTerm, sortColumn, sortIsAscending, statuses]) =>
         items
           ? (items as Scenario[])
-              .sort((a: Scenario, b: Scenario) =>
-                this.sortScenarios(a, b, sortColumn, sortIsAscending)
-              )
-              .filter(
-                (scenario) =>
-                  (('' + scenario.name)
-                    .toLowerCase()
-                    .includes(filterTerm.toLowerCase()) ||
+            .sort((a: Scenario, b: Scenario) =>
+              this.sortScenarios(a, b, sortColumn, sortIsAscending)
+            )
+            .filter(
+              (scenario) =>
+                (('' + scenario.name)
+                  .toLowerCase()
+                  .includes(filterTerm.toLowerCase()) ||
                     ('' + scenario.description)
                       .toLowerCase()
                       .includes(filterTerm.toLowerCase()) ||
@@ -104,7 +104,7 @@ export class ScenarioDataService {
                       .toLowerCase()
                       .includes(filterTerm.toLowerCase())) &&
                   statuses.toString().indexOf(scenario.status) > -1
-              )
+            )
           : []
       )
     );

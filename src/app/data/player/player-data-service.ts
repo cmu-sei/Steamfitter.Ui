@@ -53,14 +53,14 @@ export class PlayerDataService {
       map(([items, filterTerm]) =>
         items
           ? (items as View[])
-              .sort((a: View, b: View) =>
-                a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1
-              )
-              .filter(
-                (item) =>
-                  item.name.toLowerCase().includes(filterTerm.toLowerCase()) ||
+            .sort((a: View, b: View) =>
+              a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1
+            )
+            .filter(
+              (item) =>
+                item.name.toLowerCase().includes(filterTerm.toLowerCase()) ||
                   item.id.toLowerCase().includes(filterTerm.toLowerCase())
-              )
+            )
           : []
       )
     );

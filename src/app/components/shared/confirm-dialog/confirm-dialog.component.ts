@@ -11,7 +11,7 @@ import { Component, Inject } from '@angular/core';
 export class ConfirmDialogComponent {
   public title: string;
   public message: string;
-  public removeArtifacts: boolean = true;
+  public removeArtifacts = true;
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     public dialogRef: MatDialogRef<ConfirmDialogComponent>

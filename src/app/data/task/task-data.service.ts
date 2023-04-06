@@ -104,9 +104,7 @@ export class TaskDataService {
       })
     );
     this.selected = combineLatest([this.taskList, this._requestedTaskId$]).pipe(
-      map(([taskList, requestedTaskId]) => {
-        return taskList.find((task) => task.id === requestedTaskId);
-      })
+      map(([taskList, requestedTaskId]) => taskList.find((task) => task.id === requestedTaskId))
     );
   }
 
@@ -285,7 +283,7 @@ export class TaskDataService {
   }
 
   stopIterations(id: string) {
-    var task = { ...this.taskQuery.getEntity(id) };
+    const task = { ...this.taskQuery.getEntity(id) };
     task.status = TaskStatus.Cancelled;
     this.updateTask(task);
   }

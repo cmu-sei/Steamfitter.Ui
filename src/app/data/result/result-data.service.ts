@@ -93,9 +93,7 @@ export class ResultDataService {
       })
     );
     this.selected = combineLatest([this.resultList, this._requestedId$]).pipe(
-      map(([resultList, requestedResultId]) => {
-        return resultList.find((result) => result.id === requestedResultId);
-      })
+      map(([resultList, requestedResultId]) => resultList.find((result) => result.id === requestedResultId))
     );
   }
 
