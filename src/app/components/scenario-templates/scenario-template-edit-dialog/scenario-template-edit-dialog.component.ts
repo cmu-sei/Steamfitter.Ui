@@ -30,7 +30,7 @@ export class NotIntegerErrorStateMatcher implements ErrorStateMatcher {
     form: FormGroupDirective | NgForm | null
   ): boolean {
     const hours = parseInt(control.value, 10);
-    let isNotAnInteger = hours === NaN || hours <= 0;
+    let isNotAnInteger = Number.isNaN(hours) || hours <= 0;
     if (!isNotAnInteger && !!control.value) {
       isNotAnInteger = hours.toString() !== control.value.toString();
     }
