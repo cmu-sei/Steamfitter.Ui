@@ -3,7 +3,7 @@
 
 import { Component, EventEmitter, Inject, Output } from '@angular/core';
 import {
-  FormControl,
+  UntypedFormControl,
   FormGroupDirective,
   NgForm,
   Validators,
@@ -15,7 +15,7 @@ import { DialogService } from 'src/app/services/dialog/dialog.service';
 /** Error when invalid control is dirty, touched, or submitted. */
 export class UserErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(
-    control: FormControl | null,
+    control: UntypedFormControl | null,
     form: FormGroupDirective | NgForm | null
   ): boolean {
     const isSubmitted = form && form.submitted;
@@ -26,7 +26,7 @@ export class UserErrorStateMatcher implements ErrorStateMatcher {
 /** Error when control isn't an integer */
 export class NotIntegerErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(
-    control: FormControl | null,
+    control: UntypedFormControl | null,
     form: FormGroupDirective | NgForm | null
   ): boolean {
     const hours = parseInt(control.value, 10);
@@ -54,17 +54,17 @@ export class NotIntegerErrorStateMatcher implements ErrorStateMatcher {
 export class ScenarioTemplateEditDialogComponent {
   @Output() editComplete = new EventEmitter<any>();
 
-  scenarioTemplateNameFormControl = new FormControl(
+  scenarioTemplateNameFormControl = new UntypedFormControl(
     this.data.scenarioTemplate.name,
     [Validators.required, Validators.minLength(4)]
   );
-  descriptionFormControl = new FormControl(
+  descriptionFormControl = new UntypedFormControl(
     this.data.scenarioTemplate.description
       ? this.data.scenarioTemplate.description
       : ' ',
     [Validators.required, Validators.minLength(4)]
   );
-  durationHoursFormControl = new FormControl(
+  durationHoursFormControl = new UntypedFormControl(
     this.data.scenarioTemplate.durationHours,
     [Validators.required]
   );

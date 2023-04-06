@@ -8,7 +8,7 @@ import {
   OnDestroy,
   Output,
 } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { PlayerDataService } from 'src/app/data/player/player-data-service';
@@ -28,7 +28,7 @@ export class VmListComponent implements OnDestroy {
   uploading = false;
   uploadProgress = 0;
   vmApiResponded = true;
-  filterControl: FormControl = this.playerDataService.vmFilter;
+  filterControl: UntypedFormControl = this.playerDataService.vmFilter;
   showSelectedOnly = false;
 
   constructor(private playerDataService: PlayerDataService) {

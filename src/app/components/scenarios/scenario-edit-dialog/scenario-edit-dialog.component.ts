@@ -3,7 +3,7 @@
 
 import { Component, EventEmitter, Inject, Output } from '@angular/core';
 import {
-  FormControl,
+  UntypedFormControl,
   FormGroupDirective,
   NgForm,
   Validators,
@@ -15,7 +15,7 @@ import { DialogService } from 'src/app/services/dialog/dialog.service';
 /** Error when invalid control is dirty, touched, or submitted. */
 export class UserErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(
-    control: FormControl | null,
+    control: UntypedFormControl | null,
     form: FormGroupDirective | NgForm | null
   ): boolean {
     const isSubmitted = form && form.submitted;
@@ -31,29 +31,29 @@ export class UserErrorStateMatcher implements ErrorStateMatcher {
 export class ScenarioEditDialogComponent {
   @Output() editComplete = new EventEmitter<any>();
 
-  public scenarioNameFormControl = new FormControl(this.data.scenario.name, [
+  public scenarioNameFormControl = new UntypedFormControl(this.data.scenario.name, [
     Validators.required,
     Validators.minLength(4),
   ]);
-  public descriptionFormControl = new FormControl(
+  public descriptionFormControl = new UntypedFormControl(
     this.data.scenario.description ? this.data.scenario.description : ' ',
     [Validators.required, Validators.minLength(4)]
   );
-  public startDateFormControl = new FormControl(
+  public startDateFormControl = new UntypedFormControl(
     this.data.scenario.startDate ? this.data.scenario.startDate : '',
     []
   );
-  public startTimeFormControl = new FormControl(
+  public startTimeFormControl = new UntypedFormControl(
     this.data.scenario.startDate
       ? this.data.scenario.startDate.toTimeString().substr(0, 5)
       : '',
     []
   );
-  public endDateFormControl = new FormControl(
+  public endDateFormControl = new UntypedFormControl(
     this.data.scenario.endDate ? this.data.scenario.endDate : '',
     []
   );
-  public endTimeFormControl = new FormControl(
+  public endTimeFormControl = new UntypedFormControl(
     this.data.scenario.endDate
       ? this.data.scenario.endDate.toTimeString().substr(0, 5)
       : '',

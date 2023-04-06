@@ -4,7 +4,7 @@
 import { ResultStore } from 'src/app/data/result/result.store';
 import { ResultQuery } from 'src/app/data/result/result.query';
 import { Injectable } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { PageEvent } from '@angular/material/paginator';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Result, ResultService } from 'src/app/generated/steamfitter.api';
@@ -19,7 +19,7 @@ export class ResultDataService {
   private _apiResults = new BehaviorSubject<Result[]>([]);
   readonly resultList: Observable<Result[]>;
   readonly selected: Observable<Result>;
-  readonly filterControl = new FormControl();
+  readonly filterControl = new UntypedFormControl();
   private filterTerm: Observable<string>;
   private _pageEvent: PageEvent = { length: 0, pageIndex: 0, pageSize: 10 };
   readonly pageEvent = new BehaviorSubject<PageEvent>(this._pageEvent);

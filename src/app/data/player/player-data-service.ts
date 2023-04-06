@@ -2,7 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { Injectable } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { View, PlayerService, Vm } from 'src/app/generated/steamfitter.api';
@@ -18,14 +18,14 @@ export class PlayerDataService {
   private _viewMask: Observable<string>;
   readonly views = new BehaviorSubject<View[]>(this._views);
   readonly viewList: Observable<View[]>;
-  readonly viewFilter = new FormControl();
+  readonly viewFilter = new UntypedFormControl();
   readonly selectedView: Observable<View>;
   private _selectedViewId: string;
   private _vms: Vm[] = [];
   private _vmMask = new BehaviorSubject<string>('');
   readonly vms = new BehaviorSubject<Vm[]>(this._vms);
   readonly vmList: Observable<Vm[]>;
-  readonly vmFilter = new FormControl();
+  readonly vmFilter = new UntypedFormControl();
   private _selectedVms: string[] = [];
   readonly selectedVms = new BehaviorSubject<string[]>(this._selectedVms);
   private requestedViewId = this.activatedRoute.queryParamMap.pipe(

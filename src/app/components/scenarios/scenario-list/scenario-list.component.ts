@@ -9,7 +9,7 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { MatMenuTrigger } from '@angular/material/menu';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
@@ -39,7 +39,7 @@ export class ScenarioListComponent implements OnInit {
   @Input() pageSize: number;
   @Input() pageIndex: number;
   @Input() isLoading: boolean;
-  @Input() filterControl: FormControl;
+  @Input() filterControl: UntypedFormControl;
   @Input() filterString: string;
   @Input() views: Observable<View[]>;
   @Input() statuses: string;

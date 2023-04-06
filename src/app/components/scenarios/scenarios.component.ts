@@ -9,7 +9,7 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { UntypedFormControl } from '@angular/forms';
 import { PageEvent } from '@angular/material/paginator';
 import { Sort } from '@angular/material/sort';
 import { MatStepper } from '@angular/material/stepper';
@@ -36,7 +36,7 @@ export class ScenariosComponent implements OnInit {
   selectedScenario = this.scenarioDataService.selected;
   scenarioPageEvent = this.scenarioDataService.pageEvent;
   isLoading = this.scenarioQuery.selectLoading();
-  filterControl: FormControl = this.scenarioDataService.filterControl;
+  filterControl: UntypedFormControl = this.scenarioDataService.filterControl;
   filterString: Observable<string>;
   pageSize: Observable<number>;
   pageIndex: Observable<number>;
