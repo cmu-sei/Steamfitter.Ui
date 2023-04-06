@@ -246,7 +246,7 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
     this.taskSelected.emit(task.id);
     const dialogRef = this.dialog.open(TaskEditComponent, {
       data: { task: { ...task } },
-      minWidth: '90%',
+      width: '50%',
     });
     dialogRef.componentInstance.editComplete.subscribe((result) => {
       if (result.saveChanges && result.task) {
