@@ -2,7 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 /* VENDER IMPORTS */
-@use '~@angular/material' as mat;
+@use '@angular/material' as mat;
 @include mat.core();
 $mdi-font-path: '~@mdi/font/fonts';
 @import '~@mdi/font/scss/materialdesignicons';
