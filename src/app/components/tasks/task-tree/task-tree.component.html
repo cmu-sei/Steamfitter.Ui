@@ -4,8 +4,8 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 -->
 
 <mat-card flex="100" *ngIf="!(isLoading | async)">
-  <div fxLayout="row" (contextmenu)="onContextMenu($event, null)">
-    <div fxFlex="100" fxLayoutAlign="start">
+  <div (contextmenu)="onContextMenu($event, null)">
+    <div>
       <div>
         <b>Tasks:</b>&nbsp;&nbsp;&nbsp;
         <button mat-icon-button title="Add a Task" (click)="onContextNew(null)">
@@ -25,10 +25,9 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       </div>
     </div>
   </div>
-  <div fxLayout="row">
-    <div fxFlex="100" fxLayoutAlign="start">
+  <div>
+    <div>
       <mat-tree
-        fxFlex="100"
         [dataSource]="dataSource"
         [treeControl]="treeControl"
       >
@@ -56,16 +55,15 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             ></mat-icon>
           </button>
           <mat-expansion-panel
-            fxFlex="100"
+            style="width:100%"
             [expanded]="areDetailsExpanded(node)"
             (click)="toggleNodeDetails(node); $event.stopPropagation()"
           >
             <mat-expansion-panel-header
-              fxLayout="row"
               (contextmenu)="onContextMenu($event, node)"
             >
-              <mat-panel-title fxFlex="85">
-                <div fxLayout="row" fxLayoutAlign="space-around center">
+              <mat-panel-title>
+                <div class="cssLayoutRowSpaceCenter">
                   <button
                     mat-icon-button
                     title="Task Menu"
@@ -157,8 +155,8 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   </div>
 </mat-card>
 <mat-card flex *ngIf="isLoading | async">
-  <div fxLayout="column" fxLayoutAlign="start center" fxFlexAlign="center">
-    <div flex fxFlexAlign="center">
+  <div class="cssLayoutColumnCenterCenter">
+    <div flex>
       <mat-progress-spinner color="accent" mode="indeterminate">
       </mat-progress-spinner>
     </div>
@@ -177,56 +175,50 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       <button
         mat-menu-item
         (click)="onContextPaste(item)"
-        fxLayout="row"
         *ngIf="!!clipboard"
       >
         Paste
       </button>
-      <button mat-menu-item (click)="onContextNew(item)" fxLayout="row">
+      <button mat-menu-item (click)="onContextNew(item)">
         New
       </button>
     </span>
     <ng-template #taskContext>
       <span *ngIf="isEditableTask(item.task.id); else readOnly">
-        <button mat-menu-item (click)="onContextEdit(item.task)" fxLayout="row">
+        <button mat-menu-item (click)="onContextEdit(item.task)">
           Edit
         </button>
         <button
           mat-menu-item
           (click)="onContextCopy(item.task.id)"
-          fxLayout="row"
         >
           Copy
         </button>
         <button
           mat-menu-item
           (click)="onContextCut(item.task.id)"
-          fxLayout="row"
         >
           Cut
         </button>
         <button
           mat-menu-item
           (click)="onContextPaste(item.task.id)"
-          fxLayout="row"
           *ngIf="!!clipboard"
         >
           Paste
         </button>
-        <button mat-menu-item (click)="onContextNew(item.task)" fxLayout="row">
+        <button mat-menu-item (click)="onContextNew(item.task)">
           New
         </button>
         <button
           mat-menu-item
           (click)="onContextDelete(item.task)"
-          fxLayout="row"
         >
           Delete
         </button>
         <button
           mat-menu-item
           (click)="onContextExecute(item.task)"
-          fxLayout="row"
           *ngIf="isExecutableTask(item.task)"
         >
           Execute
@@ -234,7 +226,6 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         <button
           mat-menu-item
           (click)="onContextStopIterations(item.task)"
-          fxLayout="row"
           title="Stops task iterations after the current iteration completes"
           *ngIf="isExecutableTask(item.task)"
         >
@@ -245,28 +236,24 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         <button
           mat-menu-item
           (click)="onContextCopy(item.task.id)"
-          fxLayout="row"
         >
           Copy
         </button>
         <button
           mat-menu-item
           (click)="onContextCut(item.task.id)"
-          fxLayout="row"
         >
           Cut
         </button>
         <button
           mat-menu-item
           (click)="onContextDelete(item.task)"
-          fxLayout="row"
         >
           Delete
         </button>
         <button
           mat-menu-item
           (click)="onContextExecute(item.task)"
-          fxLayout="row"
           *ngIf="isExecutableTask(item.task)"
         >
           Re-Execute

@@ -3,14 +3,13 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
 
-<div fxLayout="row" fxLayoutAlign="start center">
+<div class="cssLayoutRowStartCenter">
   <div class="sp-icon">
     <mat-icon
       svgIcon="playlist_play"
       [ngStyle]="{ color: topbarColor }"
     ></mat-icon>
   </div>
-  <div fxLayout="row"></div>
   <mat-icon
     class="icon-color search-icon"
     svgIcon="ic_magnify_search"
@@ -20,7 +19,6 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   </mat-form-field>
   <div class="clear-search">
     <button
-      fxLayoutAlign="start center"
       mat-icon-button
       (click)="clearFilter()"
       class="no-outline"
@@ -137,11 +135,9 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 
 <div
   *ngIf="isLoading"
-  fxLayout="column"
-  fxLayoutAlign="start center"
-  fxFlexAlign="center"
+  class="cssLayoutRowStartCenter"
 >
-  <div flex fxFlexAlign="center">
+  <div flex>
     <mat-progress-spinner color="accent" mode="indeterminate">
     </mat-progress-spinner>
   </div>
@@ -155,16 +151,15 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 ></div>
 <mat-menu #contextMenu="matMenu">
   <ng-template matMenuContent let-item="item">
-    <button mat-menu-item (click)="editScenario(item)" fxLayout="row">
+    <button mat-menu-item (click)="editScenario(item)">
       Edit
     </button>
-    <button mat-menu-item (click)="copyScenario(item)" fxLayout="row">
+    <button mat-menu-item (click)="copyScenario(item)">
       Copy
     </button>
     <button
       mat-menu-item
       (click)="startScenario(item)"
-      fxLayout="row"
       *ngIf="item.status === 'ready' && !!item.viewId"
     >
       Start
@@ -172,12 +167,11 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     <button
       mat-menu-item
       (click)="endScenario(item)"
-      fxLayout="row"
       *ngIf="item.status === 'active'"
     >
       End
     </button>
-    <button mat-menu-item (click)="deleteScenario(item)" fxLayout="row">
+    <button mat-menu-item (click)="deleteScenario(item)">
       Delete
     </button>
   </ng-template>

@@ -3,8 +3,8 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
 
-<div fxFlex fxLayout="column" class="content">
-  <div fxFlex fxLayout="column" class="content">
+<div class="content">
+  <div class="content">
     <h1 mat-dialog-title>Add VM Credentials</h1>
     <mat-form-field class="param-full-width">
       <input
@@ -32,13 +32,13 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       />
     </mat-form-field>
   </div>
-  <div fxFlex fxLayout="row">
-    <div fxFlex="30" fxFlexAlign="center" fxFlexOffset="20">
+  <div>
+    <div>
       <button mat-stroked-button (click)="onClick(true)" tabindex="4">
         ADD
       </button>
     </div>
-    <div fxFlex="30" fxFlexAlign="center" fxFlexOffset="20">
+    <div>
       <button mat-stroked-button (click)="onClick(false)" tabIndex="5">
         CANCEL
       </button>

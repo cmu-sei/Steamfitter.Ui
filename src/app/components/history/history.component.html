@@ -4,16 +4,16 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 -->
 
 <div class="component-container mat-elevation-z8 scroll-container">
-  <div fxLayout="row" class="title">
-    <div fxFlex="5" fxFlexOffset="1" fxLayoutAlign="start center">
+  <div class="cssLayoutRowStartCenter">
+    <div class="sp-icon">
       <mat-icon
-        class="icon-35px"
+        class="icon-24px"
         [ngStyle]="{ color: topbarColor }"
         svgIcon="history"
         alt="History"
       ></mat-icon>
     </div>
-    <div fxFlex="95" fxLayoutAlign="start center">
+    <div class="cssLayoutRowStartCenter">
       <h4>
         <mat-form-field>
           <mat-label>Category</mat-label>
@@ -89,9 +89,9 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     </div>
   </div>
 
-  <div fxLayout="row" class="title">
-    <div fxFlex="5" fxLayoutAlign="start center"></div>
-    <div fxFlex="90" fxLayoutAlign="start center">
+  <div class="title">
+    <div class="cssLayoutRowStartCenter"></div>
+    <div class="cssLayoutRowStartCenter">
       <mat-card
         *ngIf="loading && !apiResponded"
         style="
@@ -243,7 +243,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         ></tr>
       </table>
     </div>
-    <div fxFlex="5" fxLayoutAlign="start center"></div>
+    <div class="cssLayoutRowStartCenter"></div>
   </div>
   <br />
   <br />

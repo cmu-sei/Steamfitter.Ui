@@ -7,8 +7,8 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   *ngIf="scenarioTemplate !== undefined && scenarioTemplate !== null"
   (click)="$event.stopPropagation()"
 >
-  <div fxLayout="row" class="add-margin">
-    <div fxFlex fxFlexOffset="3">
+  <div class="add-margin">
+    <div>
       <app-tasks
         [taskList]="taskList"
         [scenarioTemplateId]="scenarioTemplate.id"

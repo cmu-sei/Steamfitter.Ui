@@ -13,6 +13,7 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { PlayerDataService } from 'src/app/data/player/player-data-service';
 import { Vm } from 'src/app/generated/steamfitter.api';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
   selector: 'app-vm-list',

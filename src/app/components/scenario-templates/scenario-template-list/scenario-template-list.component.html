@@ -3,7 +3,7 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
 
-<div fxLayout="row" fxLayoutAlign="start center">
+<div class="cssLayoutRowStartCenter">
   <div class="sp-icon">
     <mat-icon svgIcon="storage" [ngStyle]="{ color: topbarColor }"></mat-icon>
   </div>
@@ -17,7 +17,6 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   <div class="clear-search">
     <button
       class="no-outline"
-      fxLayoutAlign="start center"
       mat-icon-button
       (click)="clearFilter()"
       title="Clear Search"
@@ -108,11 +107,8 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 
 <div
   *ngIf="isLoading"
-  fxLayout="column"
-  fxLayoutAlign="start center"
-  fxFlexAlign="center"
 >
-  <div flex fxFlexAlign="center">
+  <div flex>
     <mat-progress-spinner color="accent" mode="indeterminate">
     </mat-progress-spinner>
   </div>
@@ -126,16 +122,16 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 ></div>
 <mat-menu #contextMenu="matMenu">
   <ng-template matMenuContent let-item="item">
-    <button mat-menu-item (click)="editScenarioTemplate(item)" fxLayout="row">
+    <button mat-menu-item (click)="editScenarioTemplate(item)">
       Edit
     </button>
-    <button mat-menu-item (click)="copyScenarioTemplate(item)" fxLayout="row">
+    <button mat-menu-item (click)="copyScenarioTemplate(item)">
       Copy
     </button>
-    <button mat-menu-item (click)="deleteScenarioTemplate(item)" fxLayout="row">
+    <button mat-menu-item (click)="deleteScenarioTemplate(item)">
       Delete
     </button>
-    <button mat-menu-item (click)="createScenario(item)" fxLayout="row">
+    <button mat-menu-item (click)="createScenario(item)">
       Create a Scenario
     </button>
   </ng-template>
