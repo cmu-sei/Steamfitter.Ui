@@ -25,7 +25,7 @@ export class SimpleDataSource<T> extends DataSource<T> {
 }
 
 function defaultSort(a: any, b: any): number {
-  //treat null === undefined for sorting
+  // treat null === undefined for sorting
   a = a === undefined ? null : a;
   b = b === undefined ? null : b;
 
@@ -39,7 +39,7 @@ function defaultSort(a: any, b: any): number {
     return 1;
   }
 
-  //from this point on a & b can not be null or undefined.
+  // from this point on a & b can not be null or undefined.
 
   if (a > b) {
     return 1;
@@ -73,7 +73,7 @@ function toSortFn<U>(
             throw new Error(`Unknown sort property [${sort.active}]`);
           }
 
-          //By default assume sort.active is a property name, and sort using the default sort
+          // By default assume sort.active is a property name, and sort using the default sort
           //  uses < and >.
           sortFn = (a: U, b: U) =>
             defaultSort((<any>a)[sort.active], (<any>b)[sort.active]);

@@ -8,9 +8,9 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { FormControl, FormGroupDirective, NgForm } from '@angular/forms';
+import { UntypedFormControl, FormGroupDirective, NgForm } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
-import { PageEvent } from '@angular/material/paginator';
+import { LegacyPageEvent as PageEvent } from '@angular/material/legacy-paginator';
 import { Sort } from '@angular/material/sort';
 import { MatStepper } from '@angular/material/stepper';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -23,7 +23,7 @@ import { ScenarioTemplate } from 'src/app/generated/steamfitter.api';
 /** Error when invalid control is dirty, touched, or submitted. */
 export class UserErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(
-    control: FormControl | null,
+    control: UntypedFormControl | null,
     form: FormGroupDirective | NgForm | null
   ): boolean {
     const isSubmitted = form && form.submitted;
@@ -47,7 +47,7 @@ export class ScenarioTemplatesComponent {
   selectedScenarioTemplate = this.scenarioTemplateDataService.selected;
   scenarioTemplatePageEvent = this.scenarioTemplateDataService.pageEvent;
   isLoading = this.scenarioTemplateQuery.selectLoading();
-  filterControl: FormControl = this.scenarioTemplateDataService.filterControl;
+  filterControl: UntypedFormControl = this.scenarioTemplateDataService.filterControl;
   filterString: Observable<string>;
   pageSize: Observable<number>;
   pageIndex: Observable<number>;

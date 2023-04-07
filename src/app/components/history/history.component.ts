@@ -9,9 +9,9 @@ import {
   trigger,
 } from '@angular/animations';
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatLegacyPaginator as MatPaginator, LegacyPageEvent as PageEvent } from '@angular/material/legacy-paginator';
 import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatLegacyTableDataSource as MatTableDataSource } from '@angular/material/legacy-table';
 import { Subject } from 'rxjs';
 import { takeUntil, withLatestFrom } from 'rxjs/operators';
 import { PlayerDataService } from 'src/app/data/player/player-data-service';
@@ -109,8 +109,8 @@ export class HistoryComponent implements OnInit, OnDestroy {
         this.userList =
           !!users && users.length > 0
             ? users.sort((a: User, b: User) =>
-                a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1
-              )
+              a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1
+            )
             : [];
 
         this.selectedUser = this.userList.find(
@@ -127,8 +127,8 @@ export class HistoryComponent implements OnInit, OnDestroy {
         this.viewList =
           !!views && views.length > 0
             ? views.sort((a: User, b: User) =>
-                a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1
-              )
+              a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1
+            )
             : [];
       });
     this.playerDataService.vms
@@ -137,8 +137,8 @@ export class HistoryComponent implements OnInit, OnDestroy {
         this.vmList =
           !!vms && vms.length > 0
             ? vms.sort((a: User, b: User) =>
-                a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1
-              )
+              a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1
+            )
             : [];
       });
     this.playerDataService.selectView('');

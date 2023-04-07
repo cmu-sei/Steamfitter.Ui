@@ -1,8 +1,8 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 import { Component, OnDestroy } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { PageEvent } from '@angular/material/paginator';
+import { UntypedFormControl } from '@angular/forms';
+import { LegacyPageEvent as PageEvent } from '@angular/material/legacy-paginator';
 import { Sort } from '@angular/material/sort';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
@@ -33,7 +33,7 @@ export class AdminContainerComponent implements OnDestroy {
   isSidebarOpen = true;
   isSuperUser = false;
   userList: Observable<User[]>;
-  filterControl: FormControl = this.userDataService.filterControl;
+  filterControl: UntypedFormControl = this.userDataService.filterControl;
   filterString: Observable<string>;
   permissionList: Observable<Permission[]>;
   pageSize: Observable<number>;

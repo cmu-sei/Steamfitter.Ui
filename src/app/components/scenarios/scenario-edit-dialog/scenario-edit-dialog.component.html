@@ -7,8 +7,8 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   mat-dialog-content
   *ngIf="!!data && data.scenario !== undefined && data.scenario !== null"
 >
-  <div fxLayout="row" class="add-margin">
-    <div fxFlex fxFlexOffset="10">
+  <div class="add-margin">
+    <div>
       <mat-form-field class="full-width">
         <input
           type="text"
@@ -34,8 +34,8 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     </div>
   </div>
 
-  <div fxLayout="row" class="add-margin">
-    <div fxFlex fxFlexOffset="10">
+  <div class="add-margin">
+    <div>
       <mat-form-field class="full-width">
         <textarea
           matInput
@@ -52,8 +52,8 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     </div>
   </div>
 
-  <div fxLayout="row" class="add-margin">
-    <div fxFlex fxFlexOffset="10">
+  <div class="add-margin">
+    <div>
       <mat-form-field>
         <mat-select
           placeholder="View"
@@ -74,74 +74,68 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     </div>
   </div>
 
-  <div fxLayout="row" class="add-margin">
-    <div fxFlex fxFlexOffset="10">
+  <div class="add-margin">
+    <div>
       <mat-form-field>
         <input
           matInput
-          [matDatepicker]="startDatePicker"
+          [ngxMatDatetimePicker]="startDatePicker"
           placeholder="Start Date / Time"
+          [formControl]="startDateFormControl"
           (inputChange)="saveScenario('startDate')"
           (dateChange)="saveScenario('startDate')"
-          [formControl]="startDateFormControl"
-        />
+        >
         <mat-datepicker-toggle
           matSuffix
-          [for]="startDatePicker"
-        ></mat-datepicker-toggle>
-        <mat-datepicker
-          #startDatePicker
-          [startAt]="data.scenario.startDate.toLocaleDateString()"
-        ></mat-datepicker>
-      </mat-form-field>
-      <mat-form-field fxFlexOffset="5" style="margin-top: -15px">
-        <input matInput hidden />
-        <ngx-timepicker-field
-          [formControl]="startTimeFormControl"
-          [format]="24"
-          [defaultTime]="startTimeFormControl.value"
-          (timeChanged)="saveScenario('startTime')"
-        >
-        </ngx-timepicker-field>
+          [for]="$any(startDatePicker)">
+        </mat-datepicker-toggle>
+        <ngx-mat-datetime-picker #startDatePicker
+          [showSpinners]=true
+          [showSeconds]=true
+          [stepHour]=1
+          [stepMinute]=1
+          [stepSecond]=1
+          [touchUi]=false
+          [enableMeridian]=true
+          [disableMinute]=false
+          [hideTime]=false>
+        </ngx-mat-datetime-picker>
       </mat-form-field>
     </div>
   </div>
 
-  <div fxLayout="row" class="add-margin">
-    <div fxFlex fxFlexOffset="10">
+  <div class="add-margin">
+    <div>
       <mat-form-field>
         <input
           matInput
-          [matDatepicker]="endDatePicker"
+          [ngxMatDatetimePicker]="endDatePicker"
           placeholder="End Date / Time"
+          [formControl]="endDateFormControl"
           (inputChange)="saveScenario('endDate')"
           (dateChange)="saveScenario('endDate')"
-          [formControl]="endDateFormControl"
-        />
+        >
         <mat-datepicker-toggle
           matSuffix
-          [for]="endDatePicker"
-        ></mat-datepicker-toggle>
-        <mat-datepicker
-          #endDatePicker
-          [startAt]="data.scenario.endDate.toLocaleDateString()"
-        ></mat-datepicker>
-      </mat-form-field>
-      <mat-form-field fxFlexOffset="5" style="margin-top: -15px">
-        <input matInput hidden />
-        <ngx-timepicker-field
-          [formControl]="endTimeFormControl"
-          [format]="24"
-          [defaultTime]="endTimeFormControl.value"
-          (timeChanged)="saveScenario('endTime')"
-        >
-        </ngx-timepicker-field>
+          [for]="$any(endDatePicker)">
+        </mat-datepicker-toggle>
+        <ngx-mat-datetime-picker #endDatePicker
+          [showSpinners]=true
+          [showSeconds]=true
+          [stepHour]=1
+          [stepMinute]=1
+          [stepSecond]=1
+          [touchUi]=false
+          [enableMeridian]=true
+          [disableMinute]=false
+          [hideTime]=false>
+        </ngx-mat-datetime-picker>
       </mat-form-field>
     </div>
   </div>
 
-  <div fxLayout="row" class="bottom-button">
-    <div fxFlex fxLayoutAlign="left" class="delete-button">
+  <div class="cssLayoutRowStartCenter bottom-button">
+    <div class="delete-button">
       <button
         mat-stroked-button
         (click)="handleEditComplete(true)"
@@ -151,7 +145,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         Save
       </button>
     </div>
-    <div fxFlex fxLayoutAlign="end" class="delete-button">
+    <div class="delete-button">
       <button mat-stroked-button (click)="handleEditComplete(false)">
         Cancel
       </button>

@@ -4,8 +4,8 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 -->
 
 <span *ngIf="scenario !== undefined && scenario !== null">
-  <div fxLayout="row" class="add-margin" (click)="$event.stopPropagation()">
-    <div fxFlex fxFlexOffset="3">
+  <div class="add-margin" (click)="$event.stopPropagation()">
+    <div>
       <app-tasks
         [taskList]="taskList"
         [resultList]="resultList"

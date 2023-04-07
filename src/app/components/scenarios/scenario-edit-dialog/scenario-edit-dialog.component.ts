@@ -3,19 +3,19 @@
 
 import { Component, EventEmitter, Inject, Output } from '@angular/core';
 import {
-  FormControl,
+  UntypedFormControl,
   FormGroupDirective,
   NgForm,
   Validators,
 } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatLegacyDialogRef as MatDialogRef, MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA } from '@angular/material/legacy-dialog';
 import { DialogService } from 'src/app/services/dialog/dialog.service';
 
 /** Error when invalid control is dirty, touched, or submitted. */
 export class UserErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(
-    control: FormControl | null,
+    control: UntypedFormControl | null,
     form: FormGroupDirective | NgForm | null
   ): boolean {
     const isSubmitted = form && form.submitted;
@@ -31,32 +31,20 @@ export class UserErrorStateMatcher implements ErrorStateMatcher {
 export class ScenarioEditDialogComponent {
   @Output() editComplete = new EventEmitter<any>();
 
-  public scenarioNameFormControl = new FormControl(this.data.scenario.name, [
+  public scenarioNameFormControl = new UntypedFormControl(this.data.scenario.name, [
     Validators.required,
     Validators.minLength(4),
   ]);
-  public descriptionFormControl = new FormControl(
+  public descriptionFormControl = new UntypedFormControl(
     this.data.scenario.description ? this.data.scenario.description : ' ',
     [Validators.required, Validators.minLength(4)]
   );
-  public startDateFormControl = new FormControl(
+  public startDateFormControl = new UntypedFormControl(
     this.data.scenario.startDate ? this.data.scenario.startDate : '',
     []
   );
-  public startTimeFormControl = new FormControl(
-    this.data.scenario.startDate
-      ? this.data.scenario.startDate.toTimeString().substr(0, 5)
-      : '',
-    []
-  );
-  public endDateFormControl = new FormControl(
+  public endDateFormControl = new UntypedFormControl(
     this.data.scenario.endDate ? this.data.scenario.endDate : '',
-    []
-  );
-  public endTimeFormControl = new FormControl(
-    this.data.scenario.endDate
-      ? this.data.scenario.endDate.toTimeString().substr(0, 5)
-      : '',
     []
   );
   public matcher = new UserErrorStateMatcher();
@@ -133,55 +121,12 @@ export class ScenarioEditDialogComponent {
       case 'startDate':
         const newStart = new Date(this.startDateFormControl.value);
         const oldStart = new Date(this.data.scenario.startDate);
-        newStart.setHours(oldStart.getHours());
-        newStart.setMinutes(oldStart.getMinutes());
         this.data.scenario.startDate = newStart;
-        const newEndDate =
-          this.data.scenario.endDate.getTime() +
-          (newStart.getTime() - oldStart.getTime());
-        this.data.scenario.endDate = new Date(newEndDate);
-        this.endDateFormControl.setValue(this.data.scenario.endDate);
-        break;
-      case 'startTime':
-        if (
-          this.startTimeFormControl.value.length === 5 &&
-          (this.data.scenario.startDate.getHours() !==
-            this.startTimeFormControl.value.substr(0, 2) ||
-            this.data.scenario.startDate.getMinutes() !==
-              this.startTimeFormControl.value.substr(2, 2))
-        ) {
-          const timeParts = this.startTimeFormControl.value.split(':');
-          const oldDate = new Date(this.data.scenario.startDate);
-          this.data.scenario.startDate.setHours(timeParts[0]);
-          this.data.scenario.startDate.setMinutes(timeParts[1]);
-          const endDate =
-            this.data.scenario.endDate.getTime() +
-            (this.data.scenario.startDate.getTime() - oldDate.getTime());
-          this.data.scenario.endDate.setTime(endDate);
-          this.endTimeFormControl.setValue(
-            this.data.scenario.endDate.toTimeString().substr(0, 5)
-          );
-        }
         break;
       case 'endDate':
         const newEnd = new Date(this.endDateFormControl.value);
         const oldEnd = new Date(this.data.scenario.endDate);
-        newEnd.setHours(oldEnd.getHours());
-        newEnd.setMinutes(oldEnd.getMinutes());
         this.data.scenario.endDate = newEnd;
-        break;
-      case 'endTime':
-        if (
-          this.endTimeFormControl.value.length === 5 &&
-          (this.data.scenario.endDate.getHours() !==
-            this.endTimeFormControl.value.substr(0, 2) ||
-            this.data.scenario.endDate.getMinutes() !==
-              this.endTimeFormControl.value.substr(2, 2))
-        ) {
-          const timeParts = this.endTimeFormControl.value.split(':');
-          this.data.scenario.endDate.setHours(timeParts[0]);
-          this.data.scenario.endDate.setMinutes(timeParts[1]);
-        }
         break;
       default:
         break;

@@ -9,7 +9,7 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatLegacyDialogRef as MatDialogRef, MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA } from '@angular/material/legacy-dialog';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { TaskDataService } from 'src/app/data/task/task-data.service';
@@ -152,7 +152,7 @@ export class TaskEditComponent implements OnInit, OnDestroy {
         ) {
           cmd.parameters.forEach((p) => {
             p.value = this.data.task.actionParameters[p.key];
-            //p.value = p.value || !p.default ? p.value : p.default;
+            // p.value = p.value || !p.default ? p.value : p.default;
             p.value = p.value.toLowerCase() === 'false' ? '' : p.value;
             if (p.key.toLowerCase() === 'username') {
               this.username.next(p.value);

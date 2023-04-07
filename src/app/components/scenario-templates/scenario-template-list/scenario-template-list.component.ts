@@ -9,13 +9,17 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
-import { MatMenuTrigger } from '@angular/material/menu';
-import { PageEvent } from '@angular/material/paginator';
+import { UntypedFormControl } from '@angular/forms';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
+import { MatLegacyMenuTrigger as MatMenuTrigger } from '@angular/material/legacy-menu';
+import { LegacyPageEvent as PageEvent } from '@angular/material/legacy-paginator';
 import { Sort } from '@angular/material/sort';
-import { ScenarioTemplateEditDialogComponent } from 'src/app/components/scenario-templates/scenario-template-edit-dialog/scenario-template-edit-dialog.component';
-import { ScenarioTemplateEditComponent } from 'src/app/components/scenario-templates/scenario-template-edit/scenario-template-edit.component';
+import {
+  ScenarioTemplateEditDialogComponent
+} from 'src/app/components/scenario-templates/scenario-template-edit-dialog/scenario-template-edit-dialog.component';
+import {
+  ScenarioTemplateEditComponent
+} from 'src/app/components/scenario-templates/scenario-template-edit/scenario-template-edit.component';
 import { ScenarioEditDialogComponent } from 'src/app/components/scenarios/scenario-edit-dialog/scenario-edit-dialog.component';
 import { ScenarioTemplateDataService } from 'src/app/data/scenario-template/scenario-template-data.service';
 import { ScenarioDataService } from 'src/app/data/scenario/scenario-data.service';
@@ -39,14 +43,14 @@ export class ScenarioTemplateListComponent implements OnInit {
   @Input() pageSize: number;
   @Input() pageIndex: number;
   @Input() isLoading: boolean;
-  @Input() filterControl: FormControl;
+  @Input() filterControl: UntypedFormControl;
   @Input() filterString: string;
   @Output() saveScenarioTemplate = new EventEmitter<ScenarioTemplate>();
   @Output() setActive = new EventEmitter<string>();
   @Output() sortChange = new EventEmitter<Sort>();
   @Output() pageChange = new EventEmitter<PageEvent>();
   @ViewChild(ScenarioTemplateEditComponent)
-  scenarioTemplateEditComponent: ScenarioTemplateEditComponent;
+    scenarioTemplateEditComponent: ScenarioTemplateEditComponent;
   topbarColor = '#BB0000';
   displayedColumns: string[] = ['name', 'description', 'durationHours'];
   editScenarioTemplateText = 'Edit ScenarioTemplate';

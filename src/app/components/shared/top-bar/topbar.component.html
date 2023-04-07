@@ -29,29 +29,9 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       </button>
     </span>
     <span class="view-text">{{ title }}</span>
-    <ng-container *ngIf="teams && team && teams.length > 0">
-      <div class="team-text">Team:</div>
-      <b class="team-text">{{ team.name }}</b>
-      <div *ngIf="teams.length > 1" fxLayout="row" fxLayoutAlign="start center">
-        <button mat-button [matMenuTriggerFor]="teamMenu" style="outline: none">
-          <mat-icon class="icon-color" svgIcon="ic_expand_more"></mat-icon>
-        </button>
-        <mat-menu #teamMenu="matMenu" [overlapTrigger]="false">
-          <button
-            *ngFor="let val of teams"
-            mat-menu-item
-            (click)="setTeamFn(val.id)"
-          >
-            {{ val.name }}
-          </button>
-        </mat-menu>
-      </div>
-    </ng-container>
     <span class="spacer"></span>
     <div
-      fxFlex
-      class="team-text"
-      fxLayoutAlign="end center"
+      class="user-text"
       *ngIf="currentUser$ | async as currentUser"
     >
       <button
@@ -64,13 +44,6 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         <mat-icon class="icon-color" svgIcon="ic_expand_more"></mat-icon>
       </button>
       <mat-menu #menu="matMenu" [overlapTrigger]="false">
-        <button
-          *ngIf="team && team.canManage"
-          (click)="editFn($event)"
-          mat-menu-item
-        >
-          Edit View
-        </button>
         <button
           *ngIf="
             currentUser.profile.isSystemAdmin !== null &&

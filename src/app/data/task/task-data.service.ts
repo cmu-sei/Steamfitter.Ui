@@ -5,8 +5,8 @@ import { TaskStore } from './task.store';
 import { TaskQuery } from './task.query';
 import { ResultDataService } from 'src/app/data/result/result-data.service';
 import { Injectable } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { PageEvent } from '@angular/material/paginator';
+import { UntypedFormControl } from '@angular/forms';
+import { LegacyPageEvent as PageEvent } from '@angular/material/legacy-paginator';
 import { Router, ActivatedRoute } from '@angular/router';
 import {
   Task,
@@ -35,7 +35,7 @@ export class TaskDataService {
   private _requestedTaskId$ = new BehaviorSubject<string>('');
   readonly taskList: Observable<Task[]>;
   readonly selected: Observable<Task>;
-  readonly filterControl = new FormControl();
+  readonly filterControl = new UntypedFormControl();
   private filterTerm: Observable<string>;
   private _pageEvent: PageEvent = { length: 0, pageIndex: 0, pageSize: 10 };
   readonly pageEvent = new BehaviorSubject<PageEvent>(this._pageEvent);
@@ -104,9 +104,7 @@ export class TaskDataService {
       })
     );
     this.selected = combineLatest([this.taskList, this._requestedTaskId$]).pipe(
-      map(([taskList, requestedTaskId]) => {
-        return taskList.find((task) => task.id === requestedTaskId);
-      })
+      map(([taskList, requestedTaskId]) => taskList.find((task) => task.id === requestedTaskId))
     );
   }
 
@@ -285,7 +283,7 @@ export class TaskDataService {
   }
 
   stopIterations(id: string) {
-    var task = { ...this.taskQuery.getEntity(id) };
+    const task = { ...this.taskQuery.getEntity(id) };
     task.status = TaskStatus.Cancelled;
     this.updateTask(task);
   }

@@ -1,5 +1,5 @@
 /*
-Copyright 2021 Carnegie Mellon University. All Rights Reserved. 
+Copyright 2021 Carnegie Mellon University. All Rights Reserved.
  Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 */
 
@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import { TaskDataService } from 'src/app/data/task/task-data.service';
 import { Scenario, Task } from 'src/app/generated/steamfitter.api';
+import { MatIcon } from '@angular/material/icon';
 
 @Component({
   selector: 'app-manual-tasks-list',

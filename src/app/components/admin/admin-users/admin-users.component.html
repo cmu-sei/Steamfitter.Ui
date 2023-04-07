@@ -1,36 +1,37 @@
 <!--
-Copyright 2021 Carnegie Mellon University. All Rights Reserved.
-Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
+Copyright 2022 Carnegie Mellon University. All Rights Reserved.
+Released under a MIT (SEI)-style license, please see LICENSE.md in the
+project root for license information or contact permission@sei.cmu.edu for full terms.
 -->
 
-<div fxLayout="row" fxLayoutAlign="start center">
+<div class="cssLayoutRowStartCenter">
   <div class="sp-icon">
     <mat-icon
-      svgIcon="account_multiple"
-      [ngStyle]="{ color: topbarColor }"
+      class="mdi-24px"
+      fontIcon="mdi-account"
+      [ngStyle]="{'color': topbarColor}"
     ></mat-icon>
   </div>
-  <mat-icon
-    style="margin-left: 40px; transform: scale(0.85); margin-right: 5px"
-    class="icon-color"
-    svgIcon="ic_magnify_search"
-  ></mat-icon>
-  <mat-form-field style="width: 300px">
+  <button
+    mat-icon-button
+    (click)="addingNewUser = true"
+    style="outline: none; margin-left: 20px;"
+    title="Add User"
+  >
+    <mat-icon class="mdi-24px self-center" fontIcon="mdi-plus-circle"></mat-icon>
+  </button>
+  <mat-form-field style="width: 300px; margin-left: 10px;">
     <input matInput [formControl]="filterControl" placeholder="Search" />
   </mat-form-field>
-  <div style="width: 30px">
+  <div style="width: 30px;">
     <button
-      fxLayoutAlign="start center"
       mat-icon-button
       (click)="applyFilter('')"
-      style="outline: none"
+      style="outline: none;"
       title="Clear Search"
     >
       <mat-icon class="mdi-24px" fontIcon="mdi-close-circle-outline"></mat-icon>
     </button>
-  </div>
-  <div style="width: 100px">
-    <button mat-stroked-button (click)="addingNewUser = true">Add User</button>
   </div>
   <div class="button-end">
     <mat-paginator
@@ -45,20 +46,11 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 </div>
 
 <mat-accordion displayMode="flat" class="mat-table">
-  <section
-    matSort
-    (matSortChange)="sortChanged($event)"
-    class="mat-elevation-z2 mat-header-row"
-  >
-    <span class="mat-header-cell" mat-sort-header="id">ID</span>
-    <span class="mat-header-cell" mat-sort-header="name">Name</span>
-    <span class="mat-header-cell">Permissions</span>
-  </section>
-
   <mat-expansion-panel *ngIf="addingNewUser" [disabled]="true">
     <mat-expansion-panel-header class="mat-row">
-      <span class="mat-cell">
-        <mat-form-field>
+      <span class="mat-cell new-user-cell">
+        <label>Add New User:</label>
+        <mat-form-field class="new-user-spacing">
           <input
             matInput
             placeholder="User ID"
@@ -66,9 +58,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             matTooltip="Must be a valid Guid"
           />
         </mat-form-field>
-      </span>
-      <span class="mat-cell">
-        <mat-form-field>
+        <mat-form-field class="new-user-spacing">
           <input
             matInput
             placeholder="User Name"
@@ -76,10 +66,9 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             matTooltip="Must have a minimum of 4 characters"
           />
         </mat-form-field>
-      </span>
-      <span class="mat-cell">
         <button
           mat-icon-button
+          class="new-user-spacing"
           (click)="addUserRequest(true)"
           [disabled]="!newUser.id || !newUser.name || newUser.name.length < 4"
         >
@@ -100,38 +89,45 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     </mat-expansion-panel-header>
   </mat-expansion-panel>
 
+  <section
+    matSort
+    (matSortChange)="sortChanged($event)"
+    class="mat-elevation-z2 mat-header-row"
+  >
+    <div class="mat-header-cell user-cell" mat-sort-header="name"><span style="margin-left: 40px;">User</span></div>
+    <div class="mat-header-cell permission-cell">Permissions</div>
+  </section>
+
   <mat-expansion-panel
     *ngFor="let user of paginateUsers(userList, pageIndex, pageSize)"
     [disabled]="true"
   >
     <mat-expansion-panel-header class="mat-row" *ngIf="!isLoading">
-      <span class="mat-cell">
+      <span class="mat-cell user-cell">
         <button
           mat-icon-button
           ngxClipboard
           [cbContent]="user.id"
           (click)="$event.stopPropagation()"
-          title="Copy:  {{ user.id }}"
+          title="Copy User ID:  {{ user.id }}"
         >
           <mat-icon class="mdi-24px" fontIcon="mdi-content-copy"></mat-icon>
         </button>
-        {{ user.id }}
-      </span>
-      <span class="mat-cell">
         {{ user.name }}
       </span>
-      <span class="mat-cell">
-        <div fxLayout="row">
-          <div *ngFor="let permission of permissionList">
+      <span class="mat-cell permission-cell">
+        <div class="cssLayoutRowStartCenter">
+          <div class="permission-item" *ngFor="let permission of permissionList">
             <mat-checkbox
               [checked]="hasPermission(permission.id, user)"
               (change)="toggleUserPermission(user, permission.id)"
-              style="margin-right: 20px"
+              style="margin-right: 20px;"
               >{{ permission.key }}</mat-checkbox
             >
           </div>
           <button
             mat-icon-button
+            class="button-end"
             (click)="deleteUserRequest(user); $event.stopPropagation()"
             title="Delete User"
           >
@@ -148,7 +144,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 
 <mat-card
   *ngIf="isLoading"
-  style="display: flex; justify-content: center; align-items: center"
+  style="display: flex; justify-content: center; align-items: center;"
 >
   <mat-progress-spinner color="primary" mode="indeterminate">
   </mat-progress-spinner>

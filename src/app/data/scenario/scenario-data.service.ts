@@ -4,8 +4,8 @@
 import { ScenarioStore } from './scenario.store';
 import { ScenarioQuery } from './scenario.query';
 import { Injectable } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { PageEvent } from '@angular/material/paginator';
+import { UntypedFormControl } from '@angular/forms';
+import { LegacyPageEvent as PageEvent } from '@angular/material/legacy-paginator';
 import { Router, ActivatedRoute } from '@angular/router';
 import {
   Scenario,
@@ -35,7 +35,7 @@ export class ScenarioDataService {
   readonly allScenarios = this.scenarioQuery.selectAll();
   readonly scenarioList: Observable<Scenario[]>;
   readonly selected: Observable<Scenario>;
-  readonly filterControl = new FormControl();
+  readonly filterControl = new UntypedFormControl();
   private filterTerm: Observable<string>;
   private sortColumn: Observable<string>;
   private sortIsAscending: Observable<boolean>;
@@ -89,14 +89,14 @@ export class ScenarioDataService {
       map(([items, filterTerm, sortColumn, sortIsAscending, statuses]) =>
         items
           ? (items as Scenario[])
-              .sort((a: Scenario, b: Scenario) =>
-                this.sortScenarios(a, b, sortColumn, sortIsAscending)
-              )
-              .filter(
-                (scenario) =>
-                  (('' + scenario.name)
-                    .toLowerCase()
-                    .includes(filterTerm.toLowerCase()) ||
+            .sort((a: Scenario, b: Scenario) =>
+              this.sortScenarios(a, b, sortColumn, sortIsAscending)
+            )
+            .filter(
+              (scenario) =>
+                (('' + scenario.name)
+                  .toLowerCase()
+                  .includes(filterTerm.toLowerCase()) ||
                     ('' + scenario.description)
                       .toLowerCase()
                       .includes(filterTerm.toLowerCase()) ||
@@ -104,7 +104,7 @@ export class ScenarioDataService {
                       .toLowerCase()
                       .includes(filterTerm.toLowerCase())) &&
                   statuses.toString().indexOf(scenario.status) > -1
-              )
+            )
           : []
       )
     );

@@ -102,8 +102,8 @@ export class ResultsComponent implements OnInit, OnDestroy {
     return !this.currentResults
       ? 0
       : status === 'all'
-      ? this.currentResults.length
-      : this.currentResults.filter((r) => r.status === status).length;
+        ? this.currentResults.length
+        : this.currentResults.filter((r) => r.status === status).length;
   }
 
   onTabChanged(index: number) {

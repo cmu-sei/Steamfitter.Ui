@@ -11,8 +11,8 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
-import { MatMenuTrigger } from '@angular/material/menu';
+import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
+import { MatLegacyMenuTrigger as MatMenuTrigger } from '@angular/material/legacy-menu';
 import {
   MatTreeFlatDataSource,
   MatTreeFlattener,
@@ -92,14 +92,12 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
   private unsubscribe = new Subject();
 
   // tree controls
-  private transformer = (node: TaskNode, level: number) => {
-    return {
-      expandable: !!node.children && node.children.length > 0,
-      level: level,
-      task: node.task,
-      results: node.results,
-    };
-  };
+  private transformer = (node: TaskNode, level: number) => ({
+    expandable: !!node.children && node.children.length > 0,
+    level: level,
+    task: node.task,
+    results: node.results,
+  });
   treeControl = new FlatTreeControl<FlatTaskNode>(
     (node) => node.level,
     (node) => node.expandable
@@ -171,9 +169,7 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
    * Creates a TaskNode to display in the tree
    */
   private createTaskNode(parentTask: Task): TaskNode {
-    const results = this.results.filter((result) => {
-      return result.taskId === parentTask.id;
-    });
+    const results = this.results.filter((result) => result.taskId === parentTask.id);
     const newNode: TaskNode = {
       task: parentTask,
       results: results,
@@ -250,7 +246,7 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
     this.taskSelected.emit(task.id);
     const dialogRef = this.dialog.open(TaskEditComponent, {
       data: { task: { ...task } },
-      minWidth: '90%',
+      width: '50%',
     });
     dialogRef.componentInstance.editComplete.subscribe((result) => {
       if (result.saveChanges && result.task) {

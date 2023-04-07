@@ -8,15 +8,14 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     class="mat-elevation-z8"
     [style.visibility]="vmApiResponded ? 'visible' : 'hidden'"
   >
-    <div fxLayout="column">
+    <div>
       <div class="header-row">
         <div class="search-span">
           <mat-icon
-            fxFlex="10%"
             class="icon-color icon-20px search-icon"
             svgIcon="ic_magnify_search"
           ></mat-icon>
-          <mat-form-field fxFlex="80%">
+          <mat-form-field>
             <input
               matInput
               name="vmSearch"
@@ -25,7 +24,6 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             />
           </mat-form-field>
           <button
-            fxFlex="10%"
             class="clear-button"
             mat-icon-button
             (click)="clearFilter()"
@@ -69,7 +67,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           </button>
         </div>
       </div>
-      <div fxLayout="row">
+      <div class="cssLayoutRowStartCenter">
         <div class="flex-container" *ngIf="!showSelectedOnly">
           <div class="item-container" *ngFor="let vm of vmList">
             <div>

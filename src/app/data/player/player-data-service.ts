@@ -2,9 +2,9 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { Injectable } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
-import { MatTableDataSource } from '@angular/material/table';
+import { UntypedFormControl } from '@angular/forms';
+import { MatLegacyPaginator as MatPaginator, LegacyPageEvent as PageEvent } from '@angular/material/legacy-paginator';
+import { MatLegacyTableDataSource as MatTableDataSource } from '@angular/material/legacy-table';
 import { View, PlayerService, Vm } from 'src/app/generated/steamfitter.api';
 import { map, take, switchMap } from 'rxjs/operators';
 import { Observable, combineLatest, BehaviorSubject } from 'rxjs';
@@ -18,14 +18,14 @@ export class PlayerDataService {
   private _viewMask: Observable<string>;
   readonly views = new BehaviorSubject<View[]>(this._views);
   readonly viewList: Observable<View[]>;
-  readonly viewFilter = new FormControl();
+  readonly viewFilter = new UntypedFormControl();
   readonly selectedView: Observable<View>;
   private _selectedViewId: string;
   private _vms: Vm[] = [];
   private _vmMask = new BehaviorSubject<string>('');
   readonly vms = new BehaviorSubject<Vm[]>(this._vms);
   readonly vmList: Observable<Vm[]>;
-  readonly vmFilter = new FormControl();
+  readonly vmFilter = new UntypedFormControl();
   private _selectedVms: string[] = [];
   readonly selectedVms = new BehaviorSubject<string[]>(this._selectedVms);
   private requestedViewId = this.activatedRoute.queryParamMap.pipe(
@@ -53,14 +53,14 @@ export class PlayerDataService {
       map(([items, filterTerm]) =>
         items
           ? (items as View[])
-              .sort((a: View, b: View) =>
-                a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1
-              )
-              .filter(
-                (item) =>
-                  item.name.toLowerCase().includes(filterTerm.toLowerCase()) ||
+            .sort((a: View, b: View) =>
+              a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1
+            )
+            .filter(
+              (item) =>
+                item.name.toLowerCase().includes(filterTerm.toLowerCase()) ||
                   item.id.toLowerCase().includes(filterTerm.toLowerCase())
-              )
+            )
           : []
       )
     );

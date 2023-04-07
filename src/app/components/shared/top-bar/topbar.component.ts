@@ -26,13 +26,10 @@ import { TopbarView } from './topbar.models';
 export class TopbarComponent implements OnInit, OnDestroy {
   @Input() title?: string;
   @Input() sidenav?;
-  @Input() teams?;
-  @Input() team?;
   @Input() topbarColor?;
   @Input() topbarTextColor?;
   @Input() topbarView?: TopbarView;
   @Output() sidenavToggle?: EventEmitter<boolean> = new EventEmitter<boolean>();
-  @Output() setTeam?: EventEmitter<string> = new EventEmitter<string>();
   @Output() editView?: EventEmitter<any> = new EventEmitter<any>();
   currentUser$: Observable<AuthUser>;
   theme$: Observable<Theme>;
@@ -50,12 +47,6 @@ export class TopbarComponent implements OnInit, OnDestroy {
       takeUntil(this.unsubscribe$)
     );
     this.theme$ = this.authQuery.userTheme$;
-  }
-
-  setTeamFn(id: string) {
-    if (this.setTeam && id) {
-      this.setTeam.emit(id);
-    }
   }
 
   themeFn(event) {
