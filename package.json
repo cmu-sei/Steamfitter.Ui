@@ -3,7 +3,7 @@
   "version": "3.6.3",
   "scripts": {
     "ng": "ng",
-    "start": "ng serve --aot",
+    "start": "ng serve",
     "build": "ng build",
     "test": "ng test",
     "lint": "eslint -c .eslintrc.js --ext .ts src/",
@@ -37,6 +37,7 @@
     "eslint": "^8.37.0",
     "ini": "^4.0.0",
     "luxon": "^3.2.1",
+    "material-design-icons": "^3.0.1",
     "ngx-clipboard": "^15.1.0",
     "oidc-client": "^1.11.5",
     "prettier": "^2.3.2",
