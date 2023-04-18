@@ -64,7 +64,7 @@
     "@typescript-eslint/parser": "5.48.2",
     "eslint": "^8.33.0",
     "eslint-plugin-import": "^2.27.5",
-    "eslint-plugin-jsdoc": "^40.1.1",
+    "eslint-plugin-jsdoc": "^43.0.0",
     "jasmine-core": "^4.6.0",
     "jasmine-spec-reporter": "^7.0.0",
     "karma": "^6.3.4",
