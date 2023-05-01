@@ -19,9 +19,6 @@ export class ConfirmDialogComponent {
     this.dialogRef.disableClose = true;
   }
   onClick(confirm: boolean): void {
-    this.data.artifacts && this.data.artifacts.length > 0
-      ? (this.data.removeArtifacts = this.removeArtifacts)
-      : (this.data.removeArtifacts = false);
     this.data.confirm = confirm;
     this.dialogRef.close(this.data);
   }
