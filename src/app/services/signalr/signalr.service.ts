@@ -44,7 +44,7 @@ export class SignalRService {
       .withUrl(
         `${this.settingsService.settings.ApiUrl}/hubs/engine?bearer=${token}`
       )
-      .withAutomaticReconnect(new RetryPolicy(60, 0, 5))
+      .withAutomaticReconnect(new RetryPolicy(120, 0, 5))
       .build();
 
     this.hubConnection.onreconnected(() => {
@@ -176,9 +176,8 @@ class RetryPolicy {
     retryContext: signalR.RetryContext
   ): number | null {
     let nextRetrySeconds = Math.pow(2, retryContext.previousRetryCount + 1);
-
-    if (nextRetrySeconds > this.maxSeconds) {
-      nextRetrySeconds = this.maxSeconds;
+    if (retryContext.elapsedMilliseconds / 1000 > this.maxSeconds) {
+      location.reload();
     }
 
     nextRetrySeconds +=

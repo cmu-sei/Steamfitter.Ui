@@ -4,7 +4,6 @@
 import { Injectable, Injector, ErrorHandler } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { SystemMessageService } from '../system-message/system-message.service';
-import { ApiError } from 'src/app/generated/steamfitter.api';
 
 @Injectable({
   providedIn: 'root',
@@ -13,22 +12,22 @@ export class ErrorService implements ErrorHandler {
   constructor(private injector: Injector) {}
 
   handleError(err: any) {
+    console.log(err);
     const messageService = this.injector.get(SystemMessageService);
     // Http failure response for (unknown url): 0 Unknown Error
     if (err instanceof HttpErrorResponse) {
-      const apiError = <ApiError>err.error;
-      if (apiError.title !== undefined) {
-        messageService.displayMessage(apiError.title, apiError.detail);
-        console.log(apiError.title + ' ==> ' + apiError.detail);
-      } else if (
-        err.message ===
-        'Http failure response for (unknown url): 0 Unknown Error'
+      if (
+        err.message.startsWith('Http failure response for') &&
+        err.message.endsWith('0 Unknown Error')
       ) {
         messageService.displayMessage(
-          'Player API Error',
-          'The Player API could not be reached.'
+          'API Error',
+          'The API could not be reached.'
         );
-        console.log('Player API Error', 'The Player API could not be reached.');
+        console.log('API Error', 'The API could not be reached.');
+      } else if (err.error && err.error.title) {
+        messageService.displayMessage(err.statusText, err.error.title);
+        console.log(err.statusText + ' ==> ' + err.error.title);
       } else {
         messageService.displayMessage(err.statusText, err.message);
         console.log(err.statusText + ' ==> ' + err.message);
@@ -39,17 +38,11 @@ export class ErrorService implements ErrorHandler {
           'Identity Server Error',
           'The Identity Server could not be reached for user authentication.'
         );
-        console.log(
-          'Identity Server Error',
-          'The Identity Server could not be reached for user authentication.'
-        );
       } else {
         messageService.displayMessage('Error', err.rejection.message);
-        console.log(err.rejection.message);
       }
     } else {
       messageService.displayMessage(err.name, err.message);
-      console.log(err.name + ' ==> ' + err.message);
     }
   }
 }
