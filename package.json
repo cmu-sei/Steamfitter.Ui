@@ -1,6 +1,6 @@
 {
   "name": "steamfitter-ui",
-  "version": "3.6.3",
+  "version": "3.7.4",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -26,7 +26,7 @@
     "@angular/platform-browser": "^15.2.6",
     "@angular/platform-browser-dynamic": "^15.2.6",
     "@angular/router": "^15.2.6",
-    "@cmusei/crucible-common": "^0.2.1",
+    "@cmusei/crucible-common": "^0.3.0",
     "@datorama/akita": "^8.0.0",
     "@datorama/akita-ng-router-store": "^8.0.0",
     "@datorama/akita-ngdevtools": "^7.0.0",
@@ -41,7 +41,7 @@
     "ngx-clipboard": "^15.1.0",
     "oidc-client": "^1.11.5",
     "prettier": "^2.3.2",
-    "rxjs": "^7.8.0",
+    "rxjs": "^7.8.1",
     "tslib": "^2.4.1",
     "zone.js": "~0.11.8"
   },
