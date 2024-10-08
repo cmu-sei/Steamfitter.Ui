@@ -45,6 +45,7 @@ export class SignalRService {
         `${this.settingsService.settings.ApiUrl}/hubs/engine?bearer=${token}`
       )
       .withAutomaticReconnect(new RetryPolicy(120, 0, 5))
+      .withStatefulReconnect()
       .build();
 
     this.hubConnection.onreconnected(() => {
