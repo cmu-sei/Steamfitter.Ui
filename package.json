@@ -33,6 +33,8 @@
     "@mdi/font": "^7.2.96",
     "@microsoft/signalr": "^8.0.7",
     "ajv": "^8.6.2",
+    "bootstrap-scss": "^5.2.2",
+    "bootstrap": "^5.3.3",
     "core-js": "^3.30.1",
     "eslint": "^8.37.0",
     "ini": "^4.0.0",
