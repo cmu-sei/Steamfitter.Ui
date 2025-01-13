@@ -54,6 +54,18 @@ export class UserDataService {
     );
   }
 
+  update(user: User) {
+    this.userService
+      .updateUser(user.id, user)
+      .pipe(
+        tap((u) => {
+          this.userStore.add(u);
+          this.userStore.ui.upsert(u.id, this.userQuery.ui.getEntity(u.id));
+        })
+      )
+      .subscribe();
+  }
+
   delete(userId: string): Observable<any> {
     return this.userService.deleteUser(userId).pipe(
       tap(() => {
@@ -62,18 +74,6 @@ export class UserDataService {
       })
     );
   }
-
-  // editUser(user: User) {
-  //   this.userService
-  //     .editUser(user.id, user)
-  //     .pipe(
-  //       tap((u) => {
-  //         this.userStore.add(u);
-  //         this.userStore.ui.upsert(u.id, this.userQuery.ui.getEntity(u.id));
-  //       })
-  //     )
-  //     .subscribe();
-  // }
 
   setCurrentUser() {
     const currentUser = {

@@ -18,7 +18,7 @@ import { CustomHttpParameterCodec }                          from '../encoder';
 import { Observable }                                        from 'rxjs';
 
 import { ProblemDetails } from '../model/models';
-import { User } from '../model/models';
+import { ScenarioTemplateMembership } from '../model/models';
 
 import { BASE_PATH, COLLECTION_FORMATS }                     from '../variables';
 import { Configuration }                                     from '../configuration';
@@ -28,7 +28,7 @@ import { Configuration }                                     from '../configurat
 @Injectable({
   providedIn: 'root'
 })
-export class UserService {
+export class ScenarioTemplateMembershipsService {
 
     protected basePath = 'http://localhost';
     public defaultHeaders = new HttpHeaders();
@@ -86,16 +86,19 @@ export class UserService {
     }
 
     /**
-     * Creates a new User
-     * Creates a new User with the attributes specified  &lt;para /&gt;  Accessible only to a SuperUser
-     * @param user The data to create the User with
+     * Create a new ScenarioTemplate Membership.
+     * @param scenarioTemplateId 
+     * @param scenarioTemplateMembership 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public createUser(user?: User, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<User>;
-    public createUser(user?: User, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<User>>;
-    public createUser(user?: User, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<User>>;
-    public createUser(user?: User, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+    public createScenarioTemplateMembership(scenarioTemplateId: string, scenarioTemplateMembership?: ScenarioTemplateMembership, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<ScenarioTemplateMembership>;
+    public createScenarioTemplateMembership(scenarioTemplateId: string, scenarioTemplateMembership?: ScenarioTemplateMembership, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<ScenarioTemplateMembership>>;
+    public createScenarioTemplateMembership(scenarioTemplateId: string, scenarioTemplateMembership?: ScenarioTemplateMembership, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<ScenarioTemplateMembership>>;
+    public createScenarioTemplateMembership(scenarioTemplateId: string, scenarioTemplateMembership?: ScenarioTemplateMembership, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+        if (scenarioTemplateId === null || scenarioTemplateId === undefined) {
+            throw new Error('Required parameter scenarioTemplateId was null or undefined when calling createScenarioTemplateMembership.');
+        }
 
         let headers = this.defaultHeaders;
 
@@ -137,8 +140,8 @@ export class UserService {
             responseType = 'text';
         }
 
-        return this.httpClient.post<User>(`${this.configuration.basePath}/api/users`,
-            user,
+        return this.httpClient.post<ScenarioTemplateMembership>(`${this.configuration.basePath}/api/scenariotemplates/${encodeURIComponent(String(scenarioTemplateId))}/memberships`,
+            scenarioTemplateMembership,
             {
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
@@ -150,18 +153,17 @@ export class UserService {
     }
 
     /**
-     * Deletes a User
-     * Deletes a User with the specified id  &lt;para /&gt;  Accessible only to a SuperUser
-     * @param id The id of the User to delete
+     * Delete a ScenarioTemplate Membership.
+     * @param id 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public deleteUser(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<any>;
-    public deleteUser(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<any>>;
-    public deleteUser(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<any>>;
-    public deleteUser(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
+    public deleteScenarioTemplateMembership(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<any>;
+    public deleteScenarioTemplateMembership(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpResponse<any>>;
+    public deleteScenarioTemplateMembership(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json'}): Observable<HttpEvent<any>>;
+    public deleteScenarioTemplateMembership(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json'}): Observable<any> {
         if (id === null || id === undefined) {
-            throw new Error('Required parameter id was null or undefined when calling deleteUser.');
+            throw new Error('Required parameter id was null or undefined when calling deleteScenarioTemplateMembership.');
         }
 
         let headers = this.defaultHeaders;
@@ -191,7 +193,7 @@ export class UserService {
             responseType = 'text';
         }
 
-        return this.httpClient.delete<any>(`${this.configuration.basePath}/api/users/${encodeURIComponent(String(id))}`,
+        return this.httpClient.delete<any>(`${this.configuration.basePath}/api/scenariotemplates/memberships/${encodeURIComponent(String(id))}`,
             {
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
@@ -203,18 +205,17 @@ export class UserService {
     }
 
     /**
-     * Gets a specific User by id
-     * Returns the User with the id specified  &lt;para /&gt;  Only accessible to a SuperUser
-     * @param id The id of the User
+     * Get all ScenarioTemplateMemberships.
+     * @param id 
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getUser(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<User>;
-    public getUser(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<User>>;
-    public getUser(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<User>>;
-    public getUser(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+    public getAllScenarioTemplateMemberships(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<Array<ScenarioTemplateMembership>>;
+    public getAllScenarioTemplateMemberships(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<Array<ScenarioTemplateMembership>>>;
+    public getAllScenarioTemplateMemberships(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<Array<ScenarioTemplateMembership>>>;
+    public getAllScenarioTemplateMemberships(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
         if (id === null || id === undefined) {
-            throw new Error('Required parameter id was null or undefined when calling getUser.');
+            throw new Error('Required parameter id was null or undefined when calling getAllScenarioTemplateMemberships.');
         }
 
         let headers = this.defaultHeaders;
@@ -246,7 +247,7 @@ export class UserService {
             responseType = 'text';
         }
 
-        return this.httpClient.get<User>(`${this.configuration.basePath}/api/users/${encodeURIComponent(String(id))}`,
+        return this.httpClient.get<Array<ScenarioTemplateMembership>>(`${this.configuration.basePath}/api/scenariotemplates/${encodeURIComponent(String(id))}/memberships`,
             {
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
@@ -258,15 +259,18 @@ export class UserService {
     }
 
     /**
-     * Gets all Users in the system
-     * Returns a list of all of the Users in the system.  &lt;para /&gt;  Only accessible to a SuperUser
+     * Get a single ScenarioTemplateMembership.
+     * @param id ID of a ScenarioTemplateMembership.
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public getUsers(observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<Array<User>>;
-    public getUsers(observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<Array<User>>>;
-    public getUsers(observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<Array<User>>>;
-    public getUsers(observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+    public getScenarioTemplateMembership(id: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<ScenarioTemplateMembership>;
+    public getScenarioTemplateMembership(id: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<ScenarioTemplateMembership>>;
+    public getScenarioTemplateMembership(id: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<ScenarioTemplateMembership>>;
+    public getScenarioTemplateMembership(id: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+        if (id === null || id === undefined) {
+            throw new Error('Required parameter id was null or undefined when calling getScenarioTemplateMembership.');
+        }
 
         let headers = this.defaultHeaders;
 
@@ -297,7 +301,7 @@ export class UserService {
             responseType = 'text';
         }
 
-        return this.httpClient.get<Array<User>>(`${this.configuration.basePath}/api/users`,
+        return this.httpClient.get<ScenarioTemplateMembership>(`${this.configuration.basePath}/api/scenariotemplates/memberships/${encodeURIComponent(String(id))}`,
             {
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,
@@ -309,19 +313,19 @@ export class UserService {
     }
 
     /**
-     * Updates a User
-     * Updates a User with the attributes specified
+     * Updates a ScenarioTemplateMembership
+     * Updates a ScenarioTemplateMembership with the attributes specified
      * @param id The Id of the Exericse to update
-     * @param user The updated User values
+     * @param scenarioTemplateMembership The updated ScenarioTemplateMembership values
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public updateUser(id: string, user?: User, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<User>;
-    public updateUser(id: string, user?: User, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<User>>;
-    public updateUser(id: string, user?: User, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<User>>;
-    public updateUser(id: string, user?: User, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
+    public updateScenarioTemplateMembership(id: string, scenarioTemplateMembership?: ScenarioTemplateMembership, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<ScenarioTemplateMembership>;
+    public updateScenarioTemplateMembership(id: string, scenarioTemplateMembership?: ScenarioTemplateMembership, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpResponse<ScenarioTemplateMembership>>;
+    public updateScenarioTemplateMembership(id: string, scenarioTemplateMembership?: ScenarioTemplateMembership, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<HttpEvent<ScenarioTemplateMembership>>;
+    public updateScenarioTemplateMembership(id: string, scenarioTemplateMembership?: ScenarioTemplateMembership, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'text/plain' | 'application/json' | 'text/json'}): Observable<any> {
         if (id === null || id === undefined) {
-            throw new Error('Required parameter id was null or undefined when calling updateUser.');
+            throw new Error('Required parameter id was null or undefined when calling updateScenarioTemplateMembership.');
         }
 
         let headers = this.defaultHeaders;
@@ -364,8 +368,8 @@ export class UserService {
             responseType = 'text';
         }
 
-        return this.httpClient.put<User>(`${this.configuration.basePath}/api/users/${encodeURIComponent(String(id))}`,
-            user,
+        return this.httpClient.put<ScenarioTemplateMembership>(`${this.configuration.basePath}/api/scenariotemplates/memberships/${encodeURIComponent(String(id))}`,
+            scenarioTemplateMembership,
             {
                 responseType: <any>responseType,
                 withCredentials: this.configuration.withCredentials,

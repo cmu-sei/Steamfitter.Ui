@@ -100,27 +100,6 @@ export class HistoryComponent implements OnInit, OnDestroy {
           console.log('API is not responding:', error.message);
         }
       );
-    this.userDataService.users
-      .pipe(
-        withLatestFrom(this.userDataService.loggedInUser),
-        takeUntil(this.unsubscribe$)
-      )
-      .subscribe(([users, user]) => {
-        this.userList =
-          !!users && users.length > 0
-            ? users.sort((a: User, b: User) =>
-              a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1
-            )
-            : [];
-
-        this.selectedUser = this.userList.find(
-          (u) => u.id === user.profile.sub
-        );
-        if (this.historyView === HistoryView.user) {
-          this.handleUserChange(this.selectedUser);
-        }
-      });
-    this.userDataService.getUsersFromApi();
     this.playerDataService.viewList
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((views) => {

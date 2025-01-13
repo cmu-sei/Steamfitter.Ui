@@ -58,6 +58,7 @@ import { ClipboardModule } from 'ngx-clipboard';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AdminContainerComponent } from './components/admin/admin-container/admin-container.component';
+import { AdminUserListComponent } from './components/admin/admin-users/admin-user-list/admin-user-list.component';
 import { AdminUsersComponent } from './components/admin/admin-users/admin-users.component';
 import { HistoryComponent } from './components/history/history.component';
 import { HomeAppComponent } from './components/home-app/home-app.component';
@@ -132,6 +133,7 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
     VmCredentialsComponent,
     AdminContainerComponent,
     AdminUsersComponent,
+    AdminUserListComponent,
     TopbarComponent,
     ManualTasksPageComponent,
     ManualTasksListComponent,
@@ -203,6 +205,6 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
     },
     { provide: MAT_TOOLTIP_DEFAULT_OPTIONS, useValue: myCustomTooltipDefaults },
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule {}

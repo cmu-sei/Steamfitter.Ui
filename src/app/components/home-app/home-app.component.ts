@@ -10,9 +10,12 @@ import {
   ComnSettingsService,
   Theme,
   ComnAuthQuery,
+  ComnAuthService,
 } from '@cmusei/crucible-common';
 import { SignalRService } from 'src/app/services/signalr/signalr.service';
 import { UserDataService } from '../../data/user/user-data.service';
+import { CurrentUserQuery } from 'src/app/data/user/user.query';
+import { CurrentUserState } from 'src/app/data/user/user.store';
 import { TopbarView } from './../shared/top-bar/topbar.models';
 import { HealthService } from 'src/app/generated/steamfitter.api';
 
@@ -35,7 +38,8 @@ export class HomeAppComponent implements OnDestroy {
   titleText = 'Steamfitter';
   section = Section;
   selectedSection: Section;
-  loggedInUser = this.userDataService.loggedInUser;
+  loggedInUser = this.currentUserQuery.select();
+  currentUser$: Observable<CurrentUserState>;
   isSuperUser = false;
   isAuthorizedUser = false;
   isSidebarOpen = true;
@@ -48,6 +52,8 @@ export class HomeAppComponent implements OnDestroy {
   theme$: Observable<Theme>;
 
   constructor(
+    private currentUserQuery: CurrentUserQuery,
+    private authService: ComnAuthService,
     private userDataService: UserDataService,
     private router: Router,
     activatedRoute: ActivatedRoute,
@@ -68,16 +74,6 @@ export class HomeAppComponent implements OnDestroy {
       .subscribe((params) => {
         this.selectedSection = (params.get('tab') ||
           Section.taskBuilder) as Section;
-      });
-    this.userDataService.isSuperUser
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe((isSuper) => {
-        this.isSuperUser = isSuper;
-      });
-    this.userDataService.isAuthorizedUser
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe((isAuthorized) => {
-        this.isAuthorizedUser = isAuthorized;
       });
     this.signalRService.joinSystem();
 
@@ -105,7 +101,7 @@ export class HomeAppComponent implements OnDestroy {
   }
 
   logout() {
-    this.userDataService.logout();
+    this.authService.logout();
   }
 
   inIframe() {
@@ -117,17 +113,15 @@ export class HomeAppComponent implements OnDestroy {
   }
 
   healthCheck() {
-    this.healthService
-      .healthGetReadiness('body')
-      .subscribe(
-        (message) => {
-          this.apiIsSick = message !== 'Healthy';
-          this.apiMessage = message;
-        },
-        (error) => {
-          this.apiIsSick = true;
-        }
-      );
+    this.healthService.healthGetReadiness('body').subscribe(
+      (message) => {
+        this.apiIsSick = message !== 'Healthy';
+        this.apiMessage = message;
+      },
+      (error) => {
+        this.apiIsSick = true;
+      }
+    );
   }
 
   ngOnDestroy() {

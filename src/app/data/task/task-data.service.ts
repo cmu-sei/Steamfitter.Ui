@@ -104,28 +104,10 @@ export class TaskDataService {
       })
     );
     this.selected = combineLatest([this.taskList, this._requestedTaskId$]).pipe(
-      map(([taskList, requestedTaskId]) => taskList.find((task) => task.id === requestedTaskId))
-    );
-  }
-
-  load() {
-    this.taskStore.setLoading(true);
-    this.taskService
-      .getTasks()
-      .pipe(
-        tap(() => {
-          this.taskStore.setLoading(false);
-        }),
-        take(1)
+      map(([taskList, requestedTaskId]) =>
+        taskList.find((task) => task.id === requestedTaskId)
       )
-      .subscribe(
-        (tasks) => {
-          this.taskStore.set(tasks);
-        },
-        (error) => {
-          this.taskStore.set([]);
-        }
-      );
+    );
   }
 
   loadByScenarioTemplate(scenarioTemplateId: string) {
@@ -172,7 +154,7 @@ export class TaskDataService {
   loadByUser(userId: string) {
     this.taskStore.setLoading(true);
     this.taskService
-      .getUserTasks(userId)
+      .getScenarioTasks(userId)
       .pipe(
         tap(() => {
           this.taskStore.setLoading(false);

@@ -40,16 +40,12 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         [matMenuTriggerFor]="menu"
         style="outline: none"
       >
-        <strong>{{ currentUser.profile.name }}</strong>
+        <strong>{{ currentUser.name }}</strong>
         <mat-icon class="icon-color" svgIcon="ic_expand_more"></mat-icon>
       </button>
       <mat-menu #menu="matMenu" [overlapTrigger]="false">
         <button
-          *ngIf="
-            currentUser.profile.isSystemAdmin !== null &&
-            currentUser.profile.isSystemAdmin &&
-            topbarView === TopbarView.STEAMFITTER_ADMIN
-          "
+          *ngIf="topbarView === TopbarView.STEAMFITTER_ADMIN"
           [routerLink]="['/']"
           mat-menu-item
         >
@@ -57,8 +53,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         </button>
         <button
           *ngIf="
-            currentUser.profile.isSystemAdmin !== null &&
-            currentUser.profile.isSystemAdmin &&
+            (canViewAdmin$ | async) &&
             topbarView !== TopbarView.STEAMFITTER_ADMIN
           "
           [routerLink]="['/admin']"
