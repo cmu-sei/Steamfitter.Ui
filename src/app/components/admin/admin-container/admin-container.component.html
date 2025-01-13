@@ -14,7 +14,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     mode="side"
     [(opened)]="isSidebarOpen"
   >
-    <mat-list>
+    <mat-list *ngIf="permissions$ | async as permissions" class="appitems-container">
       <mat-list-item class="appslist">
         <a class="nolink" [routerLink]="['/']">
           <div class="cssLayoutRowStartCenter">
@@ -30,7 +30,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       <mat-list-item
         class="showhand highlight"
         id="wrapper"
-        (click)="gotoUserSection()"
+        (click)="adminGotoUsers()"
       >
         <div class="lefticon">
           <mat-icon
@@ -48,6 +48,36 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           <button mat-icon-button aria-label="Users">
             <mat-icon class="icon-color" svgIcon="ic_chevron_right"></mat-icon>
           </button>
+        </div>
+      </mat-list-item>
+      <mat-list-item *ngIf="permissions.includes(SystemPermission.ViewRoles)">
+        <div class="showhand" id="wrapper" (click)="adminGotoRoles()">
+          <div id="lefticon">
+            <mat-icon class="mdi-24px" fontIcon="mdi-lock"></mat-icon>
+          </div>
+      
+          <div id="content">{{ rolesText }}</div>
+      
+          <div class="pull-right" id="rightcontext">
+            <button mat-icon-button style="outline: none">
+              <mat-icon class="mdi-24px" fontIcon="mdi-menu-right"></mat-icon>
+            </button>
+          </div>
+        </div>
+      </mat-list-item>
+      <mat-list-item *ngIf="permissions.includes(SystemPermission.ViewGroups)">
+        <div class="showhand" id="wrapper" (click)="adminGotoGroups()">
+          <div id="lefticon">
+            <mat-icon class="mdi-24px" fontIcon="mdi-account-group"></mat-icon>
+          </div>
+      
+          <div id="content">{{ groupsText }}</div>
+      
+          <div class="pull-right" id="rightcontext">
+            <button mat-icon-button style="outline: none">
+              <mat-icon class="mdi-24px" fontIcon="mdi-menu-right"></mat-icon>
+            </button>
+          </div>
         </div>
       </mat-list-item>
     </mat-list>
@@ -69,23 +99,25 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       [topbarColor]="topbarColor"
       [topbarTextColor]="topbarTextColor"
     ></app-topbar>
-    <span>
+    <span *ngIf="permissions$ | async as permissions">
       <app-admin-users
-        *ngIf="(showSection | async) === usersText"
-        [userList]="userList | async"
-        [permissionList]="permissionList | async"
-        [filterControl]="filterControl"
-        [pageSize]="pageSize | async"
-        [pageIndex]="pageIndex | async"
-        [filterString]="filterString | async"
-        (removeUserPermission)="removeUserPermissionHandler($event)"
-        (addUserPermission)="addUserPermissionHandler($event)"
-        (addUser)="addUserHandler($event)"
-        (deleteUser)="deleteUserHandler($event)"
-        (sortChange)="sortChangeHandler($event)"
-        (pageChange)="pageChangeHandler($event)"
-      >
-      </app-admin-users>
+        *ngIf="
+          showSection === usersText &&
+          permissions.includes(SystemPermission.ViewUsers)
+        "
+      ></app-admin-users>
+      <app-admin-roles
+        *ngIf="
+          showSection === rolesText &&
+          permissions.includes(SystemPermission.ViewRoles)
+        "
+      ></app-admin-roles>
+      <app-admin-groups
+        *ngIf="
+          showSection === groupsText &&
+          permissions.includes(SystemPermission.ViewGroups)
+        "
+      ></app-admin-groups>
     </span>
   </mat-sidenav-content>
 </mat-sidenav-container>

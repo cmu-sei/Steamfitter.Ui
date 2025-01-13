@@ -1,31 +1,39 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
 import { LegacyPageEvent as PageEvent } from '@angular/material/legacy-paginator';
 import { Sort } from '@angular/material/sort';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 import { PermissionService } from 'src/app/data/permission/permission-data.service';
 import { SystemPermission } from 'src/app/generated/steamfitter.api';
 import { UserDataService } from 'src/app/data/user/user-data.service';
 import { TopbarView } from './../../shared/top-bar/topbar.models';
+import { RouterQuery } from '@datorama/akita-ng-router-store';
 import {
   ComnSettingsService,
   ComnAuthQuery,
   ComnAuthService,
   Theme,
 } from '@cmusei/crucible-common';
+import { CurrentUserQuery } from 'src/app/data/user/user.query';
 
 @Component({
   selector: 'app-admin-container',
   templateUrl: './admin-container.component.html',
   styleUrls: ['./admin-container.component.scss'],
 })
-export class AdminContainerComponent implements OnDestroy {
+export class AdminContainerComponent implements OnDestroy, OnInit {
+  public username: string;
+  public titleText: string;
   usersText = 'Users';
-  showSection: Observable<string>;
+  rolesText = 'Roles';
+  groupsText = 'Groups';
+  scenarioTemplatesText = 'Scenario Templates';
+  scenariosText = 'Scenarios';
+  showSection = this.usersText;
   isSidebarOpen = true;
   isSuperUser = false;
   private unsubscribe$ = new Subject();
@@ -34,25 +42,23 @@ export class AdminContainerComponent implements OnDestroy {
   topbarColor = '#BB0000';
   topbarTextColor = '#FFFFFF';
   theme$: Observable<Theme>;
-  public permissions$ = this.permissionService.permissions$;
+  permissions$ = this.permissionService.permissions$;
   readonly SystemPermission = SystemPermission;
 
   constructor(
     private router: Router,
     private userDataService: UserDataService,
-    activatedRoute: ActivatedRoute,
+    private routerQuery: RouterQuery,
     private permissionService: PermissionService,
     private settingsService: ComnSettingsService,
     private authService: ComnAuthService,
-    private authQuery: ComnAuthQuery
+    private authQuery: ComnAuthQuery,
+    private currentUserQuery: CurrentUserQuery
   ) {
     this.theme$ = this.authQuery.userTheme$;
     this.hideTopbar = this.inIframe();
 
-    this.showSection = activatedRoute.queryParamMap.pipe(
-      map((params) => params.get('section') || this.usersText)
-    );
-    this.gotoUserSection();
+    this.adminGotoUsers();
     // Set the display settings from config file
     this.topbarColor = this.settingsService.settings.AppTopBarHexColor
       ? this.settingsService.settings.AppTopBarHexColor
@@ -62,11 +68,29 @@ export class AdminContainerComponent implements OnDestroy {
       : this.topbarTextColor;
   }
 
-  gotoUserSection() {
-    this.router.navigate([], {
-      queryParams: { section: this.usersText },
-      queryParamsHandling: 'merge',
-    });
+  ngOnInit() {
+    // Set the page title from configuration file
+    this.titleText = this.settingsService.settings.AppTopBarText;
+    this.topbarColor = this.settingsService.settings.AppTopBarHexColor;
+    this.topbarTextColor = this.settingsService.settings.AppTopBarHexTextColor;
+    this.currentUserQuery
+      .select()
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((cu) => {
+        this.username = cu.name;
+      });
+    this.userDataService.setCurrentUser();
+
+    this.routerQuery
+      .selectQueryParams<string>('section')
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((section) => {
+        if (section != null) {
+          this.showSection = section;
+        }
+      });
+
+    this.permissionService.load().subscribe();
   }
 
   logout() {
@@ -81,23 +105,44 @@ export class AdminContainerComponent implements OnDestroy {
     }
   }
 
-  selectUser(userId: string) {
-    this.router.navigate([], {
-      queryParams: { userId: userId },
-      queryParamsHandling: 'merge',
-    });
+  /**
+   * Set the display to Users
+   */
+  adminGotoUsers(): void {
+    this.navigateToSection(this.usersText);
   }
 
-  sortChangeHandler(sort: Sort) {
-    this.router.navigate([], {
-      queryParams: { sorton: sort.active, sortdir: sort.direction },
-      queryParamsHandling: 'merge',
-    });
+  /**
+   * Sets the display to Roles
+   */
+  adminGotoRoles(): void {
+    this.navigateToSection(this.rolesText);
   }
 
-  pageChangeHandler(page: PageEvent) {
+  /**
+   * Sets the display to Groups
+   */
+  adminGotoGroups(): void {
+    this.navigateToSection(this.groupsText);
+  }
+
+  /**
+   * Sets the display to ScenarioTemplates
+   */
+  adminGotoScenarioTemplates(): void {
+    this.navigateToSection(this.scenarioTemplatesText);
+  }
+
+  /**
+   * Sets the display to Scenarios
+   */
+  adminGotoScenarios(): void {
+    this.navigateToSection(this.scenariosText);
+  }
+
+  private navigateToSection(sectionName: string) {
     this.router.navigate([], {
-      queryParams: { pageindex: page.pageIndex, pagesize: page.pageSize },
+      queryParams: { section: sectionName },
       queryParamsHandling: 'merge',
     });
   }

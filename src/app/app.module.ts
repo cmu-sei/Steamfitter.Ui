@@ -58,14 +58,14 @@ import { ClipboardModule } from 'ngx-clipboard';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AdminContainerComponent } from './components/admin/admin-container/admin-container.component';
+import { AdminGroupsComponent } from './components/admin-groups/admin-groups.component';
 import { AdminUserListComponent } from './components/admin/admin-users/admin-user-list/admin-user-list.component';
 import { AdminUsersComponent } from './components/admin/admin-users/admin-users.component';
 import { HistoryComponent } from './components/history/history.component';
 import { HomeAppComponent } from './components/home-app/home-app.component';
+import { NameDialogComponent } from './components/shared/name-dialog/name-dialog.component';
 import { ResultsComponent } from './components/results/results.component';
-import {
-  ScenarioTemplateEditDialogComponent
-} from './components/scenario-templates/scenario-template-edit-dialog/scenario-template-edit-dialog.component';
+import { ScenarioTemplateEditDialogComponent } from './components/scenario-templates/scenario-template-edit-dialog/scenario-template-edit-dialog.component';
 import { ScenarioTemplateEditComponent } from './components/scenario-templates/scenario-template-edit/scenario-template-edit.component';
 import { ScenarioTemplateListComponent } from './components/scenario-templates/scenario-template-list/scenario-template-list.component';
 import { ScenarioTemplatesComponent } from './components/scenario-templates/scenario-templates.component';
@@ -90,7 +90,11 @@ import { BASE_PATH } from './generated/steamfitter.api';
 import { ApiModule as SwaggerCodegenApiModule } from './generated/steamfitter.api/api.module';
 import { ManualTasksPageComponent } from './components/manual-tasks-page/manual-tasks-page.component';
 import { ManualTasksListComponent } from './components/tasks/manual-tasks/manual-tasks-list/manual-tasks-list.component';
-import { NgxMatDatetimePickerModule, NgxMatTimepickerModule, NgxMatNativeDateModule } from '@angular-material-components/datetime-picker';
+import {
+  NgxMatDatetimePickerModule,
+  NgxMatTimepickerModule,
+  NgxMatNativeDateModule,
+} from '@angular-material-components/datetime-picker';
 
 const settings: ComnSettingsConfig = {
   url: 'assets/config/settings.json',
@@ -132,11 +136,13 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
     TasksComponent,
     VmCredentialsComponent,
     AdminContainerComponent,
+    AdminGroupsComponent,
     AdminUsersComponent,
     AdminUserListComponent,
     TopbarComponent,
     ManualTasksPageComponent,
     ManualTasksListComponent,
+    NameDialogComponent,
   ],
   imports: [
     AkitaNgDevtools.forRoot(),
