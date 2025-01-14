@@ -1,9 +1,6 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { UntypedFormControl } from '@angular/forms';
-import { LegacyPageEvent as PageEvent } from '@angular/material/legacy-paginator';
-import { Sort } from '@angular/material/sort';
 import { Router } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';

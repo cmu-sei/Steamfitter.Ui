@@ -58,7 +58,11 @@ import { ClipboardModule } from 'ngx-clipboard';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AdminContainerComponent } from './components/admin/admin-container/admin-container.component';
-import { AdminGroupsComponent } from './components/admin-groups/admin-groups.component';
+import { AdminGroupsComponent } from './components/admin/admin-groups/admin-groups.component';
+import { AdminRolesComponent } from './components/admin/admin-roles/admin-roles.component';
+import { AdminScenarioRolesComponent } from './components/admin/admin-roles/admin-scenario-roles/admin-scenario-roles.component';
+import { AdminScenarioTemplateRolesComponent } from './components/admin/admin-roles/admin-scenario-template-roles/admin-scenario-template-roles.component';
+import { AdminSystemRolesComponent } from './components/admin/admin-roles/admin-system-roles/admin-system-roles.component';
 import { AdminUserListComponent } from './components/admin/admin-users/admin-user-list/admin-user-list.component';
 import { AdminUsersComponent } from './components/admin/admin-users/admin-users.component';
 import { HistoryComponent } from './components/history/history.component';
@@ -74,7 +78,7 @@ import { ScenarioEditComponent } from './components/scenarios/scenario-edit/scen
 import { ScenarioListComponent } from './components/scenarios/scenario-list/scenario-list.component';
 import { ScenariosComponent } from './components/scenarios/scenarios.component';
 import { AddDialogComponent } from './components/vm-credentials/add-dialog/add-dialog.component';
-import { ConfirmDialogComponent } from './components/shared/confirm-dialog/confirm-dialog.component';
+import { CwdDialogsModule } from './components/shared/confirm-dialog/cwd-dialogs.module';
 import { SystemMessageComponent } from './components/shared/system-message/system-message.component';
 import { TopbarComponent } from './components/shared/top-bar/topbar.component';
 import { TaskEditComponent } from './components/tasks/task-edit/task-edit.component';
@@ -129,7 +133,6 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
     ScenarioListComponent,
     ResultsComponent,
     AddDialogComponent,
-    ConfirmDialogComponent,
     HistoryComponent,
     TaskTreeComponent,
     TaskEditComponent,
@@ -137,6 +140,10 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
     VmCredentialsComponent,
     AdminContainerComponent,
     AdminGroupsComponent,
+    AdminRolesComponent,
+    AdminScenarioRolesComponent,
+    AdminScenarioTemplateRolesComponent,
+    AdminSystemRolesComponent,
     AdminUsersComponent,
     AdminUserListComponent,
     TopbarComponent,
@@ -198,6 +205,7 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
     ClipboardModule,
     ComnAuthModule.forRoot(),
     ComnSettingsModule.forRoot(),
+    CwdDialogsModule,
   ],
   exports: [MatSortModule],
   providers: [

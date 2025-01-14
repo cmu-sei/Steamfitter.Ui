@@ -15,7 +15,7 @@ import { MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { ConfirmDialogComponent } from 'src/app/components/shared/confirm-dialog/confirm-dialog.component';
+import { ConfirmDialogComponent } from 'src/app/components/shared/confirm-dialog/components/confirm-dialog.component';
 import { User } from 'src/app/generated/steamfitter.api';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';

@@ -16,8 +16,8 @@ import { map } from 'rxjs/operators';
 import { Group, SystemPermission } from 'src/app/generated/steamfitter.api';
 import { GroupDataService } from 'src/app/data/group/group-data.service';
 import { PermissionService } from 'src/app/data/permission/permission-data.service';
-import { ConfirmDialogComponent } from '../shared/confirm-dialog/confirm-dialog.component';
-import { NameDialogComponent } from '../shared/name-dialog/name-dialog.component';
+import { ConfirmDialogComponent } from 'src/app/components/shared/confirm-dialog/components/confirm-dialog.component';
+import { NameDialogComponent } from 'src/app/components/shared/name-dialog/name-dialog.component';
 import { UserDataService } from 'src/app/data/user/user-data.service';
 
 const WAS_CANCELLED = 'wasCancelled';
