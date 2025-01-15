@@ -1,0 +1,12 @@
+<!--
+Copyright 2024 Carnegie Mellon University. All Rights Reserved.
+ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
+-->
+
+<app-scenario-template-list *ngIf="!selectedScenarioTemplateId" class="background" fxFill fxLayout="row"
+  fxLayoutAlign="center start" [scenarioTemplates]="scenarioTemplates$ | async" [isLoading]="loading$ | async"
+  [manageMode]="true" (selectedScenarioTemplateId)="selectedScenarioTemplateId = $event">
+</app-scenario-template-list>
+
+<app-scenario-template-memberships *ngIf="selectedScenarioTemplateId" [scenarioTemplateId]="selectedScenarioTemplateId"
+  [embedded]="true" (goBack)="selectedScenarioTemplateId = null"></app-scenario-template-memberships>

@@ -1,4 +1,4 @@
-// Copyright 2021 Carnegie Mellon University. All Rights Reserved.
+// Copyright 2024 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import {
@@ -11,9 +11,12 @@ import {
   OnChanges,
   SimpleChanges,
 } from '@angular/core';
-import { MatDialogRef, MatDialog } from '@angular/material/dialog';
-import { MatPaginator, PageEvent } from '@angular/material/paginator';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSort, Sort } from '@angular/material/sort';
+import {
+  MatLegacyPaginator as MatPaginator,
+  LegacyPageEvent as PageEvent,
+} from '@angular/material/legacy-paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { ConfirmDialogComponent } from 'src/app/components/shared/confirm-dialog/components/confirm-dialog.component';
 import { User } from 'src/app/generated/steamfitter.api';
@@ -42,21 +45,22 @@ export interface Action {
   styleUrls: ['./admin-user-list.component.scss'],
 })
 export class AdminUserListComponent implements OnInit, OnChanges {
-  public displayedColumns: string[] = ['id', 'name'];
-  public filterString = '';
-  public savedFilterString = '';
-  public userDataSource = new MatTableDataSource<User>(new Array<User>());
-  public newUser: User = {};
+  displayedColumns: string[] = ['id', 'name'];
+  filterString = '';
+  savedFilterString = '';
+  userDataSource = new MatTableDataSource<User>(new Array<User>());
+  newUser: User = {};
 
   // MatPaginator Output
-  public defaultPageSize = 10;
-  public pageEvent: PageEvent;
-  public addingNewUser: boolean;
+  defaultPageSize = 10;
+  pageEvent: PageEvent;
+  addingNewUser: boolean;
   displayedRows$: Observable<User[]>;
   totalRows$: Observable<number>;
   sortEvents$: Observable<Sort>;
   pageEvents$: Observable<PageEvent>;
   roles$ = this.roleDataService.roles$;
+  topbarColor = '#BB0000';
 
   @Input() users: User[];
   @Input() isLoading: boolean;

@@ -4,7 +4,6 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 -->
 
 <mat-sidenav-container
-  *ngIf="isSuperUser"
   class="appcontent-container"
   autosize
 >
@@ -19,35 +18,57 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         <a class="nolink" [routerLink]="['/']">
           <div class="cssLayoutRowStartCenter">
             <mat-icon
-              class="icon-35px"
-              svgIcon="close-circle-outline"
-            ></mat-icon>
+            class="icon-35px"
+            svgIcon="ic_crucible_steamfitter"
+          ></mat-icon>
             <h2 class="icon-text">Administration</h2>
           </div>
         </a>
         <mat-divider></mat-divider>
       </mat-list-item>
-      <mat-list-item
-        class="showhand highlight"
-        id="wrapper"
-        (click)="adminGotoUsers()"
-      >
-        <div class="lefticon">
-          <mat-icon
-            class="icon-35px"
-            svgIcon="account_multiple"
-            [ngStyle]="{ color: topbarColor }"
-          ></mat-icon>
+      <mat-list-item *ngIf="permissions.includes(SystemPermission.ViewUsers)">
+        <div class="showhand" id="wrapper" (click)="adminGotoUsers()">
+          <div id="lefticon">
+            <mat-icon class="mdi-24px" fontIcon="mdi-account-multiple"></mat-icon>
+          </div>
+      
+          <div id="content">{{ usersText }}</div>
+      
+          <div class="pull-right" id="rightcontext">
+            <button mat-icon-button style="outline: none">
+              <mat-icon class="mdi-24px" fontIcon="mdi-menu-right"></mat-icon>
+            </button>
+          </div>
         </div>
+      </mat-list-item>
+      <mat-list-item *ngIf="permissions.includes(SystemPermission.ViewScenarioTemplates)">
+        <div class="showhand" id="wrapper" (click)="adminGotoScenarioTemplates()">
+          <div id="lefticon">
+            <mat-icon class="mdi-24px" fontIcon="mdi-view-list"></mat-icon>
+          </div>
 
-        <div class="application-name">
-          {{ usersText }}
-        </div>
+          <div id="content">{{ scenarioTemplatesText }}</div>
+          
+          <div class="pull-right" id="rightcontext">
+            <button mat-icon-button style="outline: none">
+              <mat-icon class="mdi-24px" fontIcon="mdi-menu-right"></mat-icon>
+            </button>
+          </div>
+          </div>
+          </mat-list-item>
+          <mat-list-item *ngIf="permissions.includes(SystemPermission.ViewScenarios)">
+            <div class="showhand" id="wrapper" (click)="adminGotoScenarios()">
+              <div id="lefticon">
+                <mat-icon class="mdi-24px" fontIcon="mdi-playlist-play"></mat-icon>
+              </div>
 
-        <div>
-          <button mat-icon-button aria-label="Users">
-            <mat-icon class="icon-color" svgIcon="ic_chevron_right"></mat-icon>
-          </button>
+          <div id="content">{{ scenariosText }}</div>
+          
+          <div class="pull-right" id="rightcontext">
+            <button mat-icon-button style="outline: none">
+              <mat-icon class="mdi-24px" fontIcon="mdi-menu-right"></mat-icon>
+            </button>
+          </div>
         </div>
       </mat-list-item>
       <mat-list-item *ngIf="permissions.includes(SystemPermission.ViewRoles)">
@@ -55,9 +76,9 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           <div id="lefticon">
             <mat-icon class="mdi-24px" fontIcon="mdi-lock"></mat-icon>
           </div>
-      
+
           <div id="content">{{ rolesText }}</div>
-      
+
           <div class="pull-right" id="rightcontext">
             <button mat-icon-button style="outline: none">
               <mat-icon class="mdi-24px" fontIcon="mdi-menu-right"></mat-icon>
@@ -70,9 +91,9 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           <div id="lefticon">
             <mat-icon class="mdi-24px" fontIcon="mdi-account-group"></mat-icon>
           </div>
-      
+
           <div id="content">{{ groupsText }}</div>
-      
+
           <div class="pull-right" id="rightcontext">
             <button mat-icon-button style="outline: none">
               <mat-icon class="mdi-24px" fontIcon="mdi-menu-right"></mat-icon>
@@ -94,7 +115,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   <mat-sidenav-content>
     <app-topbar
       *ngIf="!hideTopbar"
-      [title]="usersText"
+      [title]="showSection"
       [topbarView]="TopbarView.STEAMFITTER_ADMIN"
       [topbarColor]="topbarColor"
       [topbarTextColor]="topbarTextColor"

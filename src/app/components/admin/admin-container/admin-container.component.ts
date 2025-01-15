@@ -32,7 +32,6 @@ export class AdminContainerComponent implements OnDestroy, OnInit {
   scenariosText = 'Scenarios';
   showSection = this.usersText;
   isSidebarOpen = true;
-  isSuperUser = false;
   private unsubscribe$ = new Subject();
   TopbarView = TopbarView;
   hideTopbar = false;
