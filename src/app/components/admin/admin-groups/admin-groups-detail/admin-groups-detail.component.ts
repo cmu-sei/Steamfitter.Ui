@@ -78,8 +78,13 @@ export class AdminGroupsDetailComponent
     );
   }
 
+  createMembership(userId) {
+    this.groupMembershipService
+      .createMembership(this.groupId, { groupId: this.groupId, userId: userId })
+      .subscribe();
+  }
+
   deleteMembership(id: string) {
-    console.log(id);
     this.groupMembershipService.deleteMembership(id).subscribe();
   }
 }

@@ -14,7 +14,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         [isLoading]="isLoading | async"
         [filterControl]="filterControl"
         [filterString]="filterString | async"
-        (setActive)="setActive($event)"
+        (itemSelected)="setActive($event)"
         (saveScenarioTemplate)="saveScenarioTemplate($event)"
         (sortChange)="sortChangeHandler($event)"
         (pageChange)="pageChangeHandler($event)"

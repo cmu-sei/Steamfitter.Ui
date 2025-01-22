@@ -45,12 +45,13 @@ export class ScenarioTemplateListComponent implements OnInit {
   @Input() isLoading: boolean;
   @Input() filterControl: UntypedFormControl;
   @Input() filterString: string;
+  @Input() manageMode = false;
   @Output() saveScenarioTemplate = new EventEmitter<ScenarioTemplate>();
-  @Output() setActive = new EventEmitter<string>();
+  @Output() itemSelected = new EventEmitter<string>();
   @Output() sortChange = new EventEmitter<Sort>();
   @Output() pageChange = new EventEmitter<PageEvent>();
   @ViewChild(ScenarioTemplateEditComponent)
-    scenarioTemplateEditComponent: ScenarioTemplateEditComponent;
+  scenarioTemplateEditComponent: ScenarioTemplateEditComponent;
   topbarColor = '#BB0000';
   displayedColumns: string[] = ['name', 'description', 'durationHours'];
   editScenarioTemplateText = 'Edit ScenarioTemplate';
@@ -71,16 +72,16 @@ export class ScenarioTemplateListComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.filterControl.setValue(this.filterString);
+    // this.filterControl.setValue(this.filterString);
     const id = this.selectedScenarioTemplate
       ? this.selectedScenarioTemplate.id
       : '';
     // force already expanded scenarioTemplate to refresh details
     if (id) {
       const here = this;
-      this.setActive.emit('');
+      this.itemSelected.emit('');
       setTimeout(function () {
-        here.setActive.emit(id);
+        here.itemSelected.emit(id);
       }, 1);
     }
   }
@@ -188,14 +189,19 @@ export class ScenarioTemplateListComponent implements OnInit {
     });
   }
 
-  selectScenarioTemplate(scenarioTemplateId: string) {
-    if (
+  selectScenarioTemplate(event: any, scenarioTemplateId: string) {
+    if (this.manageMode) {
+      this.itemSelected.emit(scenarioTemplateId);
+      this.selectedScenarioTemplate.id = '';
+      event.stopPropagation();
+    } else if (
       !!this.selectedScenarioTemplate &&
       scenarioTemplateId === this.selectedScenarioTemplate.id
     ) {
-      this.setActive.emit('');
+      this.itemSelected.emit('');
+      this.selectedScenarioTemplate.id = '';
     } else {
-      this.setActive.emit(scenarioTemplateId);
+      this.itemSelected.emit(scenarioTemplateId);
     }
   }
 

@@ -5,6 +5,7 @@ import {
   Component,
   EventEmitter,
   NgZone,
+  Input,
   Output,
   ViewChild,
 } from '@angular/core';
@@ -37,6 +38,7 @@ export class UserErrorStateMatcher implements ErrorStateMatcher {
   styleUrls: ['./scenario-templates.component.scss'],
 })
 export class ScenarioTemplatesComponent {
+  @Input() manageMode = false;
   @Output() editComplete = new EventEmitter<boolean>();
   @ViewChild(ScenarioTemplatesComponent) child;
   @ViewChild('stepper') stepper: MatStepper;
@@ -47,7 +49,8 @@ export class ScenarioTemplatesComponent {
   selectedScenarioTemplate = this.scenarioTemplateDataService.selected;
   scenarioTemplatePageEvent = this.scenarioTemplateDataService.pageEvent;
   isLoading = this.scenarioTemplateQuery.selectLoading();
-  filterControl: UntypedFormControl = this.scenarioTemplateDataService.filterControl;
+  filterControl: UntypedFormControl =
+    this.scenarioTemplateDataService.filterControl;
   filterString: Observable<string>;
   pageSize: Observable<number>;
   pageIndex: Observable<number>;
@@ -71,8 +74,13 @@ export class ScenarioTemplatesComponent {
     );
   }
 
-  setActive(id: string) {
+  setActive(id: any) {
+    console.log(id);
     this.scenarioTemplateDataService.setActive(id);
+    if (this.manageMode) {
+      console.log('navigating ...');
+      this.router.navigate([`scenariotemplates/${id}/memberships`], {});
+    }
   }
 
   sortChangeHandler(sort: Sort) {

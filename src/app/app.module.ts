@@ -59,8 +59,13 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AdminContainerComponent } from './components/admin/admin-container/admin-container.component';
 import { AdminGroupsComponent } from './components/admin/admin-groups/admin-groups.component';
+import { AdminGroupsDetailComponent } from './components/admin/admin-groups/admin-groups-detail/admin-groups-detail.component';
+import { AdminGroupsMemberListComponent } from './components/admin/admin-groups/admin-groups-member-list/admin-groups-member-list.component';
+import { AdminGroupsMembershipListComponent } from './components/admin/admin-groups/admin-groups-membership-list/admin-groups-membership-list.component';
 import { AdminRolesComponent } from './components/admin/admin-roles/admin-roles.component';
 import { AdminScenarioRolesComponent } from './components/admin/admin-roles/admin-scenario-roles/admin-scenario-roles.component';
+import { AdminScenariosComponent } from './components/admin/admin-scenarios/admin-scenarios.component';
+import { AdminScenarioTemplatesComponent } from './components/admin/admin-scenario-templates/admin-scenario-templates.component';
 import { AdminScenarioTemplateRolesComponent } from './components/admin/admin-roles/admin-scenario-template-roles/admin-scenario-template-roles.component';
 import { AdminSystemRolesComponent } from './components/admin/admin-roles/admin-system-roles/admin-system-roles.component';
 import { AdminUserListComponent } from './components/admin/admin-users/admin-user-list/admin-user-list.component';
@@ -72,11 +77,19 @@ import { ResultsComponent } from './components/results/results.component';
 import { ScenarioTemplateEditDialogComponent } from './components/scenario-templates/scenario-template-edit-dialog/scenario-template-edit-dialog.component';
 import { ScenarioTemplateEditComponent } from './components/scenario-templates/scenario-template-edit/scenario-template-edit.component';
 import { ScenarioTemplateListComponent } from './components/scenario-templates/scenario-template-list/scenario-template-list.component';
+import { ScenarioTemplateMembershipsComponent } from './components/scenario-templates/scenario-template-memberships/scenario-template-memberships/scenario-template-memberships.component';
+import { ScenarioTemplateMemberListComponent } from './components/scenario-templates/scenario-template-memberships/scenario-template-member-list/scenario-template-member-list.component';
+import { ScenarioTemplateMembershipsPageComponent } from './components/scenario-templates/scenario-template-memberships/scenario-template-memberships-page/scenario-template-memberships-page.component';
+import { ScenarioTemplateMembershipListComponent } from './components/scenario-templates/scenario-template-memberships/scenario-template-membership-list/scenario-template-membership-list.component';
 import { ScenarioTemplatesComponent } from './components/scenario-templates/scenario-templates.component';
 import { ScenarioEditDialogComponent } from './components/scenarios/scenario-edit-dialog/scenario-edit-dialog.component';
 import { ScenarioEditComponent } from './components/scenarios/scenario-edit/scenario-edit.component';
 import { ScenarioListComponent } from './components/scenarios/scenario-list/scenario-list.component';
 import { ScenariosComponent } from './components/scenarios/scenarios.component';
+import { ScenarioMembershipsComponent } from './components/scenarios/scenario-memberships/scenario-memberships/scenario-memberships.component';
+import { ScenarioMemberListComponent } from './components/scenarios/scenario-memberships/scenario-member-list/scenario-member-list.component';
+import { ScenarioMembershipsPageComponent } from './components/scenarios/scenario-memberships/scenario-memberships-page/scenario-memberships-page.component';
+import { ScenarioMembershipListComponent } from './components/scenarios/scenario-memberships/scenario-membership-list/scenario-membership-list.component';
 import { AddDialogComponent } from './components/vm-credentials/add-dialog/add-dialog.component';
 import { CwdDialogsModule } from './components/shared/confirm-dialog/cwd-dialogs.module';
 import { SystemMessageComponent } from './components/shared/system-message/system-message.component';
@@ -127,10 +140,18 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
     ScenarioTemplateEditComponent,
     ScenarioTemplateEditDialogComponent,
     ScenarioTemplateListComponent,
+    ScenarioTemplateMemberListComponent,
+    ScenarioTemplateMembershipListComponent,
+    ScenarioTemplateMembershipsComponent,
+    ScenarioTemplateMembershipsPageComponent,
     ScenariosComponent,
     ScenarioEditComponent,
     ScenarioEditDialogComponent,
     ScenarioListComponent,
+    ScenarioMemberListComponent,
+    ScenarioMembershipListComponent,
+    ScenarioMembershipsComponent,
+    ScenarioMembershipsPageComponent,
     ResultsComponent,
     AddDialogComponent,
     HistoryComponent,
@@ -140,9 +161,14 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
     VmCredentialsComponent,
     AdminContainerComponent,
     AdminGroupsComponent,
+    AdminGroupsDetailComponent,
+    AdminGroupsMemberListComponent,
+    AdminGroupsMembershipListComponent,
     AdminRolesComponent,
     AdminScenarioRolesComponent,
     AdminScenarioTemplateRolesComponent,
+    AdminScenariosComponent,
+    AdminScenarioTemplatesComponent,
     AdminSystemRolesComponent,
     AdminUsersComponent,
     AdminUserListComponent,

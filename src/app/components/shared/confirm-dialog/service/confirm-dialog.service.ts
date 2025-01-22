@@ -2,7 +2,10 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { Injectable } from '@angular/core';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import {
+  MatLegacyDialog as MatDialog,
+  MatLegacyDialogRef as MatDialogRef,
+} from '@angular/material/legacy-dialog';
 import { ConfirmDialogComponent } from '../components/confirm-dialog.component';
 import { Observable } from 'rxjs';
 
@@ -15,8 +18,9 @@ export class ConfirmDialogService {
   constructor(public dialog: MatDialog) {}
 
   confirmDialog(title: string, message: string, data?: any): Observable<any> {
-    let dialogRef: MatDialogRef<ConfirmDialogComponent>;
-    dialogRef = this.dialog.open(ConfirmDialogComponent, { data: data || {} });
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: data || {},
+    });
     dialogRef.componentInstance.title = title;
     dialogRef.componentInstance.message = message;
 

@@ -13,15 +13,11 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatLegacyPaginator as MatPaginator } from '@angular/material/legacy-paginator';
+import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
 import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
-import {
-  CreateGroupMembershipCommand,
-  Group,
-  User,
-} from 'src/app/generated/steamfitter.api';
+import { MatLegacyTableDataSource as MatTableDataSource } from '@angular/material/legacy-table';
+import { User } from 'src/app/generated/steamfitter.api';
 
 @Component({
   selector: 'app-admin-groups-membership-list',
@@ -38,7 +34,7 @@ export class AdminGroupsMembershipListComponent
   canEdit: boolean;
 
   @Output()
-  createMembership = new EventEmitter<CreateGroupMembershipCommand>();
+  createMembership = new EventEmitter<string>();
 
   viewColumns = ['name'];
   editColumns = ['actions'];
@@ -68,7 +64,7 @@ export class AdminGroupsMembershipListComponent
   }
 
   add(id: string) {
-    this.createMembership.emit({ userId: id });
+    this.createMembership.emit(id);
   }
 
   applyFilter(event: Event) {

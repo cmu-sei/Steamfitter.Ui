@@ -42,16 +42,18 @@ export class ScenarioListComponent implements OnInit {
   @Input() filterControl: UntypedFormControl;
   @Input() filterString: string;
   @Input() views: Observable<View[]>;
+  @Input() manageMode: boolean;
   @Input() statuses: string;
   @Output() saveScenario = new EventEmitter<Scenario>();
-  @Output() setActive = new EventEmitter<string>();
+  @Output() itemSelected = new EventEmitter<string>();
   @Output() sortChange = new EventEmitter<Sort>();
   @Output() pageChange = new EventEmitter<PageEvent>();
   @Output() filterStatusChange = new EventEmitter<any>();
 
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
-  @ViewChild(ScenarioEditComponent) scenarioEditComponent: ScenarioEditComponent;
+  @ViewChild(ScenarioEditComponent)
+  scenarioEditComponent: ScenarioEditComponent;
   topbarColor = '#BB0000';
   displayedColumns: string[] = [
     'name',
@@ -92,21 +94,21 @@ export class ScenarioListComponent implements OnInit {
   ngOnInit() {
     this.showStatus.active = this.statuses.indexOf('active') > -1;
     this.showStatus.ended = this.statuses.indexOf('ended') > -1;
-    this.showStatus.ready = this.statuses.indexOf('ready') > -1;
-    this.filterControl.setValue(this.filterString);
+    // this.showStatus.ready = this.statuses.indexOf('ready') > -1;
+    // ?    this.filterControl.setValue(this.filterString);
     const id = this.selectedScenario ? this.selectedScenario.id : '';
     // force already expanded scenario to refresh details
     if (id) {
       const here = this;
-      this.setActive.emit('');
+      this.itemSelected.emit('');
       setTimeout(function () {
-        here.setActive.emit(id);
+        here.itemSelected.emit(id);
       }, 1);
     }
   }
 
   clearFilter() {
-    this.filterControl.setValue('');
+    // this.filterControl.setValue('');
   }
 
   onContextMenu(event: MouseEvent, scenario: Scenario) {
@@ -221,11 +223,18 @@ export class ScenarioListComponent implements OnInit {
     this.filterStatusChange.emit(this.showStatus);
   }
 
-  selectScenario(scenarioId: string) {
-    if (!!this.selectedScenario && scenarioId === this.selectedScenario.id) {
-      this.setActive.emit('');
+  selectScenario(event: any, scenarioId: string) {
+    if (this.manageMode) {
+      this.itemSelected.emit(scenarioId);
+      this.selectedScenario.id = '';
+      event.stopPropagation();
+    } else if (
+      !!this.selectedScenario &&
+      scenarioId === this.selectedScenario.id
+    ) {
+      this.itemSelected.emit('');
     } else {
-      this.setActive.emit(scenarioId);
+      this.itemSelected.emit(scenarioId);
     }
   }
 

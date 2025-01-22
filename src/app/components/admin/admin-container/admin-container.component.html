@@ -31,9 +31,9 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           <div id="lefticon">
             <mat-icon class="mdi-24px" fontIcon="mdi-account-multiple"></mat-icon>
           </div>
-      
+
           <div id="content">{{ usersText }}</div>
-      
+
           <div class="pull-right" id="rightcontext">
             <button mat-icon-button style="outline: none">
               <mat-icon class="mdi-24px" fontIcon="mdi-menu-right"></mat-icon>
@@ -48,7 +48,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           </div>
 
           <div id="content">{{ scenarioTemplatesText }}</div>
-          
+
           <div class="pull-right" id="rightcontext">
             <button mat-icon-button style="outline: none">
               <mat-icon class="mdi-24px" fontIcon="mdi-menu-right"></mat-icon>
@@ -63,7 +63,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
               </div>
 
           <div id="content">{{ scenariosText }}</div>
-          
+
           <div class="pull-right" id="rightcontext">
             <button mat-icon-button style="outline: none">
               <mat-icon class="mdi-24px" fontIcon="mdi-menu-right"></mat-icon>
@@ -121,6 +121,14 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       [topbarTextColor]="topbarTextColor"
     ></app-topbar>
     <span *ngIf="permissions$ | async as permissions">
+      <app-admin-scenario-templates *ngIf="
+                                                  showSection === scenarioTemplatesText &&
+                                                  permissions.includes(SystemPermission.ViewScenarioTemplates)">
+      </app-admin-scenario-templates>
+      <app-admin-scenarios *ngIf="
+                                                  showSection === scenariosText &&
+                                                  permissions.includes(SystemPermission.ViewScenarios)">
+      </app-admin-scenarios>
       <app-admin-users
         *ngIf="
           showSection === usersText &&

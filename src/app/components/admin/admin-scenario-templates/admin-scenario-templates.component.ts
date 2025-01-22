@@ -8,7 +8,7 @@ import { ScenarioTemplateDataService } from 'src/app/data/scenario-template/scen
 import { ScenarioTemplateQuery } from 'src/app/data/scenario-template/scenario-template.query';
 
 @Component({
-  selector: 'cas-admin-scenario-templates',
+  selector: 'app-admin-scenario-templates',
   templateUrl: './admin-scenario-templates.component.html',
   styleUrls: ['./admin-scenario-templates.component.scss'],
 })
@@ -18,9 +18,10 @@ export class AdminScenarioTemplatesComponent implements OnInit {
     private scenarioTemplateQuery: ScenarioTemplateQuery
   ) {}
 
-  public scenarioTemplates$ = this.scenarioTemplateQuery.selectAll();
-  public loading$ = this.scenarioTemplateQuery.selectLoading();
-  public selectedScenarioTemplateId: string;
+  scenarioTemplates$ = this.scenarioTemplateQuery.selectAll();
+  loading$ = this.scenarioTemplateQuery.selectLoading();
+  selectedScenarioTemplateId: string;
+  embedded = true;
 
   ngOnInit(): void {
     this.scenarioTemplateDataService.load();
