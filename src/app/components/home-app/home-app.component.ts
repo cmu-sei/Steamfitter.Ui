@@ -1,6 +1,7 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
-import { Component, OnDestroy, ViewChild } from '@angular/core';
+
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, Observable } from 'rxjs';
@@ -31,7 +32,7 @@ enum Section {
   templateUrl: './home-app.component.html',
   styleUrls: ['./home-app.component.scss'],
 })
-export class HomeAppComponent implements OnDestroy {
+export class HomeAppComponent implements OnDestroy, OnInit {
   @ViewChild('sidenav') sidenav: MatSidenav;
   apiIsSick = false;
   apiMessage = 'The API web service is not responding.';
@@ -50,6 +51,7 @@ export class HomeAppComponent implements OnDestroy {
   topbarTextColor = '#FFFFFF';
   TopbarView = TopbarView;
   theme$: Observable<Theme>;
+  username: string;
 
   constructor(
     private currentUserQuery: CurrentUserQuery,
@@ -87,6 +89,16 @@ export class HomeAppComponent implements OnDestroy {
     this.titleText = this.settingsService.settings.AppTitle
       ? this.settingsService.settings.AppTitle
       : this.titleText;
+  }
+
+  ngOnInit() {
+    this.currentUserQuery
+      .select()
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((cu) => {
+        this.username = cu.name;
+      });
+    this.userDataService.setCurrentUser();
   }
 
   selectTab(section: Section) {

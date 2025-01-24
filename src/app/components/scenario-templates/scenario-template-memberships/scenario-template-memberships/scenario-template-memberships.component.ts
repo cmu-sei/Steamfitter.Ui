@@ -70,7 +70,6 @@ export class ScenarioTemplateMembershipsComponent
 
   ngOnInit(): void {
     forkJoin([
-      this.scenarioTemplateDataService.loadById(this.scenarioTemplateId),
       this.scenarioTemplateMembershipDataService.loadMemberships(
         this.scenarioTemplateId
       ),
@@ -88,9 +87,6 @@ export class ScenarioTemplateMembershipsComponent
       .catch((err) => {
         console.log(err);
       });
-
-    console.log(this.scenarioTemplateId);
-    console.log(this.embedded);
   }
 
   ngOnDestroy() {
@@ -99,8 +95,6 @@ export class ScenarioTemplateMembershipsComponent
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    console.log('***********');
-    console.log(changes);
     this.scenarioTemplate$ = this.scenarioTemplateQuery
       .selectEntity(this.scenarioTemplateId)
       .pipe(

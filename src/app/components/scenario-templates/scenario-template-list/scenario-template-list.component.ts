@@ -192,7 +192,9 @@ export class ScenarioTemplateListComponent implements OnInit {
   selectScenarioTemplate(event: any, scenarioTemplateId: string) {
     if (this.manageMode) {
       this.itemSelected.emit(scenarioTemplateId);
-      this.selectedScenarioTemplate.id = '';
+      if (this.selectedScenarioTemplate) {
+        this.selectedScenarioTemplate.id = '';
+      }
       event.stopPropagation();
     } else if (
       !!this.selectedScenarioTemplate &&

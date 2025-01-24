@@ -4,7 +4,6 @@ Copyright 2025 Carnegie Mellon University. All Rights Reserved.
 */
 
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
@@ -31,7 +30,7 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ScenarioTemplateMembershipListComponent
-  implements OnInit, OnChanges, AfterViewInit
+  implements OnInit, OnChanges
 {
   @Input()
   users: User[];
@@ -55,15 +54,13 @@ export class ScenarioTemplateMembershipListComponent
 
   constructor(public snackBar: MatSnackBar) {}
 
-  ngOnInit(): void {}
-
-  @ViewChild(MatSort) sort: MatSort;
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-
-  ngAfterViewInit() {
+  ngOnInit(): void {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
   }
+
+  @ViewChild(MatSort) sort: MatSort;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 
   ngOnChanges() {
     this.dataSource.data = this.buildModel();

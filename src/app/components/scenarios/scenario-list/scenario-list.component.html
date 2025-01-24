@@ -15,7 +15,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     svgIcon="ic_magnify_search"
   ></mat-icon>
   <mat-form-field class="search-field">
-    <input matInput placeholder="Search" [formControl]="filterControl" />
+    <input matInput placeholder="Search" />
   </mat-form-field>
   <div class="clear-search">
     <button
@@ -27,7 +27,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       <mat-icon class="scale-85" svgIcon="ic_cancel_circle"></mat-icon>
     </button>
   </div>
-  <div>
+  <div class="button-end">
     <button mat-stroked-button (click)="editScenario(null)">
       Add Scenario
     </button>
@@ -61,7 +61,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   </div>
 </div>
 
-<mat-accordion displayMode="flat" multi>
+<mat-accordion displayMode="flat">
   <section
     matSort
     (matSortChange)="sortChanged($event)"
@@ -79,10 +79,16 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 
   <mat-expansion-panel
     *ngFor="
-      let item of paginateScenarios(scenarioList, pageIndex, pageSize);
+      let item of paginateScenarios(
+        scenarioList,
+        0,
+        100
+      );
       trackBy: trackByFn
     "
-    [expanded]="selectedScenario && item.id == selectedScenario.id"
+    [expanded]="
+      selectedScenario && item.id == selectedScenario.id
+    "
     (click)="selectScenario($event, item.id)"
   >
     <mat-expansion-panel-header
@@ -125,8 +131,8 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       <div class="mat-cell two-cell center-self">{{ item.description }}</div>
     </mat-expansion-panel-header>
     <ng-template matExpansionPanelContent>
-      <app-scenario-edit [scenario]="item"></app-scenario-edit>
-    </ng-template>
+      <app-scenario-edit [scenario]="selectedScenario"></app-scenario-edit>
+      </ng-template>
   </mat-expansion-panel>
 </mat-accordion>
 

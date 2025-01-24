@@ -29,9 +29,7 @@ import {
   templateUrl: './scenario-template-member-list.component.html',
   styleUrls: ['./scenario-template-member-list.component.scss'],
 })
-export class ScenarioTemplateMemberListComponent
-  implements OnInit, OnChanges, AfterViewInit
-{
+export class ScenarioTemplateMemberListComponent implements OnInit, OnChanges {
   @Input()
   memberships: ScenarioTemplateMembership[];
 
@@ -65,7 +63,7 @@ export class ScenarioTemplateMemberListComponent
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
-  ngAfterViewInit() {
+  ngOnInit(): void {
     this.dataSource.paginator = this.paginator;
     this.dataSource.sort = this.sort;
     this.dataSource.sortingDataAccessor = (item, property) => {
@@ -85,8 +83,6 @@ export class ScenarioTemplateMemberListComponent
       );
     };
   }
-
-  ngOnInit(): void {}
 
   ngOnChanges() {
     this.buildModel();

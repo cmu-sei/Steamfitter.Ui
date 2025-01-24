@@ -8,6 +8,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ScenarioDataService } from 'src/app/data/scenario/scenario-data.service';
 import { ScenarioQuery } from 'src/app/data/scenario/scenario.query';
+import { Scenario } from 'src/app/generated/steamfitter.api';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -17,9 +18,9 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class AdminScenariosComponent implements OnInit {
   constructor(
+    private activatedRoute: ActivatedRoute,
     private scenarioDataService: ScenarioDataService,
-    private scenarioQuery: ScenarioQuery,
-    private activatedRoute: ActivatedRoute
+    private scenarioQuery: ScenarioQuery
   ) {
     this.statuses = this.activatedRoute.queryParamMap.pipe(
       map((params) => params.get('statuses') || 'active,ready')
@@ -34,5 +35,9 @@ export class AdminScenariosComponent implements OnInit {
 
   ngOnInit(): void {
     this.scenarioDataService.load();
+    const statuses: string =
+      this.activatedRoute.snapshot.queryParamMap.get('statuses');
+    const secondParam: string =
+      this.activatedRoute.snapshot.queryParamMap.get('secondParamKey');
   }
 }

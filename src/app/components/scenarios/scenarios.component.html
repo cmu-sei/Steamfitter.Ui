@@ -16,7 +16,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         [filterString]="filterString | async"
         [views]="views | async"
         [statuses]="statuses | async"
-        (setActive)="setActive($event)"
+        (itemSelected)="setActive($event)"
         (saveScenario)="saveScenario($event)"
         (sortChange)="sortChangeHandler($event)"
         (pageChange)="pageChangeHandler($event)"
