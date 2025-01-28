@@ -75,10 +75,8 @@ export class ScenarioTemplatesComponent {
   }
 
   setActive(id: any) {
-    console.log(id);
     this.scenarioTemplateDataService.setActive(id);
     if (this.manageMode) {
-      console.log('navigating ...');
       this.router.navigate([`scenariotemplates/${id}/memberships`], {});
     }
   }

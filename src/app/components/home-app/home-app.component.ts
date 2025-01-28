@@ -19,6 +19,8 @@ import { CurrentUserQuery } from 'src/app/data/user/user.query';
 import { CurrentUserState } from 'src/app/data/user/user.store';
 import { TopbarView } from './../shared/top-bar/topbar.models';
 import { HealthService } from 'src/app/generated/steamfitter.api';
+import { PermissionService } from 'src/app/data/permission/permission-data.service';
+import { SystemPermission } from 'src/app/generated/steamfitter.api';
 
 enum Section {
   taskBuilder = 'Tasks',
@@ -52,10 +54,13 @@ export class HomeAppComponent implements OnDestroy, OnInit {
   TopbarView = TopbarView;
   theme$: Observable<Theme>;
   username: string;
+  permissions$ = this.permissionService.permissions$;
+  readonly SystemPermission = SystemPermission;
 
   constructor(
     private currentUserQuery: CurrentUserQuery,
     private authService: ComnAuthService,
+    private permissionService: PermissionService,
     private userDataService: UserDataService,
     private router: Router,
     activatedRoute: ActivatedRoute,
@@ -97,6 +102,7 @@ export class HomeAppComponent implements OnDestroy, OnInit {
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((cu) => {
         this.username = cu.name;
+        this.isAuthorizedUser = !!cu.id;
       });
     this.userDataService.setCurrentUser();
   }

@@ -84,9 +84,6 @@ export class ScenarioMembershipsComponent
       .catch((err) => {
         console.log(err);
       });
-
-    console.log(this.scenarioId);
-    console.log(this.embedded);
   }
 
   ngOnDestroy() {

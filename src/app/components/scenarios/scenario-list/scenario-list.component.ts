@@ -228,7 +228,7 @@ export class ScenarioListComponent implements OnInit, OnChanges {
       scenarioId === this.selectedScenario.id
     ) {
       this.itemSelected.emit('');
-      this.selectedScenario.id = '';
+      this.selectedScenario = null;
     } else {
       this.itemSelected.emit(scenarioId);
     }

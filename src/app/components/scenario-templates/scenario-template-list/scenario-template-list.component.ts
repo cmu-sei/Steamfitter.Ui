@@ -225,7 +225,7 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
       scenarioTemplateId === this.selectedScenarioTemplate.id
     ) {
       this.itemSelected.emit('');
-      this.selectedScenarioTemplate.id = '';
+      this.selectedScenarioTemplate = null;
     } else {
       this.itemSelected.emit(scenarioTemplateId);
     }
