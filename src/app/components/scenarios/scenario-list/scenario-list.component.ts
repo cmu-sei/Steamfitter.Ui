@@ -5,15 +5,20 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnChanges,
   OnInit,
   Output,
+  SimpleChanges,
   ViewChild,
 } from '@angular/core';
-import { UntypedFormControl } from '@angular/forms';
 import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { MatLegacyMenuTrigger as MatMenuTrigger } from '@angular/material/legacy-menu';
-import { LegacyPageEvent as PageEvent } from '@angular/material/legacy-paginator';
-import { Sort } from '@angular/material/sort';
+import {
+  MatLegacyPaginator as MatPaginator,
+  LegacyPageEvent as PageEvent,
+} from '@angular/material/legacy-paginator';
+import { MatSort, Sort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
 import { View } from 'src/app/generated/steamfitter.api';
 import { ScenarioEditComponent } from 'src/app/components/scenarios/scenario-edit/scenario-edit.component';
 import { ScenarioEditDialogComponent } from 'src/app/components/scenarios/scenario-edit-dialog/scenario-edit-dialog.component';
@@ -21,6 +26,14 @@ import { ScenarioDataService } from 'src/app/data/scenario/scenario-data.service
 import { DialogService } from 'src/app/services/dialog/dialog.service';
 import { Scenario } from 'src/app/generated/steamfitter.api';
 import { ComnSettingsService } from '@cmusei/crucible-common';
+import {
+  fromMatSort,
+  sortRows,
+  fromMatPaginator,
+  paginateRows,
+} from 'src/app/datasource-utils';
+import { Observable, of } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 export interface Action {
   Value: string;
@@ -32,21 +45,15 @@ export interface Action {
   templateUrl: './scenario-list.component.html',
   styleUrls: ['./scenario-list.component.scss'],
 })
-export class ScenarioListComponent implements OnInit {
+export class ScenarioListComponent implements OnInit, OnChanges {
   @Input() scenarioList: Scenario[];
   @Input() selectedScenario: Scenario;
-  @Input() pageSize: number;
-  @Input() pageIndex: number;
   @Input() isLoading: boolean;
-  @Input() filterControl: UntypedFormControl;
-  @Input() filterString: string;
   @Input() manageMode = false;
   @Input() statuses: string;
   @Input() views: View[];
   @Output() saveScenario = new EventEmitter<Scenario>();
   @Output() itemSelected = new EventEmitter<string>();
-  @Output() sortChange = new EventEmitter<Sort>();
-  @Output() pageChange = new EventEmitter<PageEvent>();
   @ViewChild(ScenarioEditComponent)
   scenarioEditComponent: ScenarioEditComponent;
   topbarColor = '#BB0000';
@@ -59,10 +66,21 @@ export class ScenarioListComponent implements OnInit {
     'description',
   ];
   showStatus = { active: true, ready: true, ended: false };
+  statusFilteredScenarios: Scenario[];
   editScenarioText = 'Edit Scenario';
   // context menu
   @ViewChild(MatMenuTrigger, { static: true }) contextMenu: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
+  @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: true }) sort: MatSort;
+  pageSize = 10;
+  pageIndex = 0;
+  displayedRows$: Observable<Scenario[]>;
+  totalRows$: Observable<number>;
+  sortEvents$: Observable<Sort>;
+  pageEvents$: Observable<PageEvent>;
+  scenarioDataSource = new MatTableDataSource<Scenario>(new Array<Scenario>());
+  filterString = '';
 
   constructor(
     private scenarioDataService: ScenarioDataService,
@@ -76,7 +94,8 @@ export class ScenarioListComponent implements OnInit {
   }
 
   ngOnInit() {
-    // this.filterControl.setValue(this.filterString);
+    this.sortEvents$ = fromMatSort(this.sort);
+    this.pageEvents$ = fromMatPaginator(this.paginator);
     const id = this.selectedScenario ? this.selectedScenario.id : '';
     // force already expanded scenario to refresh details
     if (id) {
@@ -86,10 +105,23 @@ export class ScenarioListComponent implements OnInit {
         here.itemSelected.emit(id);
       }, 1);
     }
+    this.filterAndSort();
   }
 
-  clearFilter() {
-    this.filterControl.setValue('');
+  ngOnChanges(changes: SimpleChanges): void {
+    if (!!changes.scenarioList && !!changes.scenarioList.currentValue) {
+      this.filterByStatus(changes.scenarioList.currentValue);
+    }
+  }
+
+  filterByStatus(scenarios: Scenario[]) {
+    this.statusFilteredScenarios = scenarios.filter(
+      (m) =>
+        (this.showStatus.active && m.status === 'active') ||
+        (this.showStatus.ended && m.status === 'ended') ||
+        (this.showStatus.ready && m.status === 'ready')
+    );
+    this.filterAndSort();
   }
 
   onContextMenu(event: MouseEvent, scenario: Scenario) {
@@ -184,13 +216,6 @@ export class ScenarioListComponent implements OnInit {
       });
   }
 
-  /**
-   * filters and sorts the displayed rows
-   */
-  filterStatus() {
-    // this.filterStatusChange.emit(this.showStatus);
-  }
-
   selectScenario(event: any, scenarioId: string) {
     if (this.manageMode) {
       this.itemSelected.emit(scenarioId);
@@ -209,25 +234,25 @@ export class ScenarioListComponent implements OnInit {
     }
   }
 
-  paginateScenarios(
-    scenarios: Scenario[],
-    pageIndex: number,
-    pageSize: number
-  ) {
-    if (!scenarios) {
-      return [];
+  applyFilter(value: string) {
+    this.filterString = value.toLowerCase();
+    this.filterAndSort();
+  }
+
+  /**
+   * filters and sorts the displayed rows
+   */
+  filterAndSort() {
+    this.scenarioDataSource.data = this.statusFilteredScenarios;
+    this.scenarioDataSource.filter = this.filterString;
+    const rows$ = of(this.scenarioDataSource.filteredData);
+    this.totalRows$ = rows$.pipe(map((rows) => rows.length));
+    if (!!this.sortEvents$ && !!this.pageEvents$) {
+      this.displayedRows$ = rows$.pipe(
+        sortRows(this.sortEvents$),
+        paginateRows(this.pageEvents$)
+      );
     }
-    const startIndex = pageIndex * pageSize;
-    const copy = scenarios.slice();
-    return copy.splice(startIndex, pageSize);
-  }
-
-  paginatorEvent(page: PageEvent) {
-    this.pageChange.emit(page);
-  }
-
-  sortChanged(sort: Sort) {
-    this.sortChange.emit(sort);
   }
 
   trackByFn(index, item) {

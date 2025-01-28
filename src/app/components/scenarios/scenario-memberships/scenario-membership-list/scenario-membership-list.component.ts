@@ -4,7 +4,6 @@ Copyright 2025 Carnegie Mellon University. All Rights Reserved.
 */
 
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
@@ -30,9 +29,7 @@ import {
   styleUrls: ['./scenario-membership-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ScenarioMembershipListComponent
-  implements OnInit, OnChanges, AfterViewInit
-{
+export class ScenarioMembershipListComponent implements OnInit, OnChanges {
   @Input()
   users: User[];
 
@@ -59,11 +56,6 @@ export class ScenarioMembershipListComponent
 
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;
-
-  ngAfterViewInit() {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
-  }
 
   ngOnChanges() {
     this.dataSource.data = this.buildModel();

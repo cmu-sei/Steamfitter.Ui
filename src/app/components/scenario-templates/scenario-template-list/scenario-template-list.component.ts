@@ -5,27 +5,36 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnChanges,
   OnInit,
   Output,
+  SimpleChanges,
   ViewChild,
 } from '@angular/core';
-import { UntypedFormControl } from '@angular/forms';
 import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { MatLegacyMenuTrigger as MatMenuTrigger } from '@angular/material/legacy-menu';
-import { LegacyPageEvent as PageEvent } from '@angular/material/legacy-paginator';
-import { Sort } from '@angular/material/sort';
 import {
-  ScenarioTemplateEditDialogComponent
-} from 'src/app/components/scenario-templates/scenario-template-edit-dialog/scenario-template-edit-dialog.component';
-import {
-  ScenarioTemplateEditComponent
-} from 'src/app/components/scenario-templates/scenario-template-edit/scenario-template-edit.component';
+  MatLegacyPaginator as MatPaginator,
+  LegacyPageEvent as PageEvent,
+} from '@angular/material/legacy-paginator';
+import { MatSort, Sort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
+import { ScenarioTemplateEditDialogComponent } from 'src/app/components/scenario-templates/scenario-template-edit-dialog/scenario-template-edit-dialog.component';
+import { ScenarioTemplateEditComponent } from 'src/app/components/scenario-templates/scenario-template-edit/scenario-template-edit.component';
 import { ScenarioEditDialogComponent } from 'src/app/components/scenarios/scenario-edit-dialog/scenario-edit-dialog.component';
 import { ScenarioTemplateDataService } from 'src/app/data/scenario-template/scenario-template-data.service';
 import { ScenarioDataService } from 'src/app/data/scenario/scenario-data.service';
 import { DialogService } from 'src/app/services/dialog/dialog.service';
 import { Scenario, ScenarioTemplate } from 'src/app/generated/steamfitter.api';
 import { ComnSettingsService } from '@cmusei/crucible-common';
+import {
+  fromMatSort,
+  sortRows,
+  fromMatPaginator,
+  paginateRows,
+} from 'src/app/datasource-utils';
+import { Observable, of } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 export interface Action {
   Value: string;
@@ -37,19 +46,13 @@ export interface Action {
   templateUrl: './scenario-template-list.component.html',
   styleUrls: ['./scenario-template-list.component.scss'],
 })
-export class ScenarioTemplateListComponent implements OnInit {
+export class ScenarioTemplateListComponent implements OnInit, OnChanges {
   @Input() scenarioTemplateList: ScenarioTemplate[];
   @Input() selectedScenarioTemplate: ScenarioTemplate;
-  @Input() pageSize: number;
-  @Input() pageIndex: number;
   @Input() isLoading: boolean;
-  @Input() filterControl: UntypedFormControl;
-  @Input() filterString: string;
   @Input() manageMode = false;
   @Output() saveScenarioTemplate = new EventEmitter<ScenarioTemplate>();
   @Output() itemSelected = new EventEmitter<string>();
-  @Output() sortChange = new EventEmitter<Sort>();
-  @Output() pageChange = new EventEmitter<PageEvent>();
   @ViewChild(ScenarioTemplateEditComponent)
   scenarioTemplateEditComponent: ScenarioTemplateEditComponent;
   topbarColor = '#BB0000';
@@ -58,6 +61,18 @@ export class ScenarioTemplateListComponent implements OnInit {
   // context menu
   @ViewChild(MatMenuTrigger, { static: true }) contextMenu: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
+  @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: true }) sort: MatSort;
+  pageSize = 10;
+  pageIndex = 0;
+  displayedRows$: Observable<ScenarioTemplate[]>;
+  totalRows$: Observable<number>;
+  sortEvents$: Observable<Sort>;
+  pageEvents$: Observable<PageEvent>;
+  scenarioTemplateDataSource = new MatTableDataSource<ScenarioTemplate>(
+    new Array<ScenarioTemplate>()
+  );
+  filterString = '';
 
   constructor(
     public dialogService: DialogService,
@@ -72,7 +87,8 @@ export class ScenarioTemplateListComponent implements OnInit {
   }
 
   ngOnInit() {
-    // this.filterControl.setValue(this.filterString);
+    this.sortEvents$ = fromMatSort(this.sort);
+    this.pageEvents$ = fromMatPaginator(this.paginator);
     const id = this.selectedScenarioTemplate
       ? this.selectedScenarioTemplate.id
       : '';
@@ -84,10 +100,18 @@ export class ScenarioTemplateListComponent implements OnInit {
         here.itemSelected.emit(id);
       }, 1);
     }
+    this.filterAndSort();
   }
 
-  clearFilter() {
-    this.filterControl.setValue('');
+  ngOnChanges(changes: SimpleChanges): void {
+    if (
+      !!changes.scenarioTemplateList &&
+      !!changes.scenarioTemplateList.currentValue
+    ) {
+      this.scenarioTemplateDataSource.data =
+        changes.scenarioTemplateList.currentValue;
+      this.filterAndSort();
+    }
   }
 
   onContextMenu(event: MouseEvent, scenarioTemplate: ScenarioTemplate) {
@@ -207,25 +231,24 @@ export class ScenarioTemplateListComponent implements OnInit {
     }
   }
 
-  paginateScenarioTemplates(
-    scenarioTemplates: ScenarioTemplate[],
-    pageIndex: number,
-    pageSize: number
-  ) {
-    if (!scenarioTemplates) {
-      return [];
+  applyFilter(value: string) {
+    this.filterString = value.toLowerCase();
+    this.filterAndSort();
+  }
+
+  /**
+   * filters and sorts the displayed rows
+   */
+  filterAndSort() {
+    this.scenarioTemplateDataSource.filter = this.filterString;
+    const rows$ = of(this.scenarioTemplateDataSource.filteredData);
+    this.totalRows$ = rows$.pipe(map((rows) => rows.length));
+    if (!!this.sortEvents$ && !!this.pageEvents$) {
+      this.displayedRows$ = rows$.pipe(
+        sortRows(this.sortEvents$),
+        paginateRows(this.pageEvents$)
+      );
     }
-    const startIndex = pageIndex * pageSize;
-    const copy = scenarioTemplates.slice();
-    return copy.splice(startIndex, pageSize);
-  }
-
-  paginatorEvent(page: PageEvent) {
-    this.pageChange.emit(page);
-  }
-
-  sortChanged(sort: Sort) {
-    this.sortChange.emit(sort);
   }
 
   trackByFn(index, item) {

@@ -36,10 +36,6 @@ export class ScenariosComponent implements OnInit {
   selectedScenario = this.scenarioDataService.selected;
   scenarioPageEvent = this.scenarioDataService.pageEvent;
   isLoading = this.scenarioQuery.selectLoading();
-  filterControl: UntypedFormControl = this.scenarioDataService.filterControl;
-  filterString: Observable<string>;
-  pageSize: Observable<number>;
-  pageIndex: Observable<number>;
   views = this.playerDataService.viewList;
   statuses: Observable<string>;
 
@@ -52,15 +48,6 @@ export class ScenariosComponent implements OnInit {
     private activatedRoute: ActivatedRoute
   ) {
     this.scenarioDataService.load();
-    this.filterString = activatedRoute.queryParamMap.pipe(
-      map((params) => params.get('scenariomask') || '')
-    );
-    this.pageSize = activatedRoute.queryParamMap.pipe(
-      map((params) => parseInt(params.get('pagesize') || '20', 10))
-    );
-    this.pageIndex = activatedRoute.queryParamMap.pipe(
-      map((params) => parseInt(params.get('pageindex') || '0', 10))
-    );
     this.statuses = activatedRoute.queryParamMap.pipe(
       map((params) => params.get('statuses') || 'active,ready')
     );

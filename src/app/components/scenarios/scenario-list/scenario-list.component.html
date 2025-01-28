@@ -15,12 +15,12 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     svgIcon="ic_magnify_search"
   ></mat-icon>
   <mat-form-field class="search-field">
-    <input matInput placeholder="Search" />
+    <input matInput [(ngModel)]="filterString" (keyup)="applyFilter($event.target.value)" placeholder="Search" />
   </mat-form-field>
   <div class="clear-search">
     <button
       mat-icon-button
-      (click)="clearFilter()"
+      (click)="applyFilter('')"
       class="no-outline"
       title="Clear Search"
     >
@@ -34,17 +34,20 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   </div>
   <div class="status-div">
     <mat-checkbox
-      (change)="filterStatus()"
+      [(ngModel)]="showStatus.active"
+      (change)="filterByStatus(scenarioList)"
       class="checkbox-text"
       >Active</mat-checkbox
     ><br />
     <mat-checkbox
-      (change)="filterStatus()"
+      [(ngModel)]="showStatus.ended"
+      (change)="filterByStatus(scenarioList)"
       class="checkbox-text"
       >Ended</mat-checkbox
     ><br />
     <mat-checkbox
-      (change)="filterStatus()"
+      [(ngModel)]="showStatus.ready"
+      (change)="filterByStatus(scenarioList)"
       class="checkbox-text"
       >Ready</mat-checkbox
     >
@@ -52,11 +55,10 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   <div class="button-end">
     <mat-paginator
       #paginator
-      [length]="scenarioList?.length"
+      [length]="totalRows$ | async"
       [pageIndex]="0"
-      [pageSize]="100"
+      [pageSize]="20"
       [pageSizeOptions]="[5, 10, 15, 20, 25, 50, 100, 200]"
-      (page)="paginatorEvent($event)"
     ></mat-paginator>
   </div>
 </div>
@@ -64,7 +66,6 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 <mat-accordion displayMode="flat">
   <section
     matSort
-    (matSortChange)="sortChanged($event)"
     class="mat-elevation-z2 mat-header-row"
   >
     <span class="mat-header-cell four-cell" mat-sort-header="name"><span class="name-header">Name</span></span>
@@ -79,11 +80,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 
   <mat-expansion-panel
     *ngFor="
-      let item of paginateScenarios(
-        scenarioList,
-        0,
-        100
-      );
+      let item of displayedRows$ | async;
       trackBy: trackByFn
     "
     [expanded]="

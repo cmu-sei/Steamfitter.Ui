@@ -52,7 +52,6 @@ export class AdminUserListComponent implements OnInit, OnChanges {
   newUser: User = {};
 
   // MatPaginator Output
-  defaultPageSize = 10;
   pageEvent: PageEvent;
   addingNewUser: boolean;
   displayedRows$: Observable<User[]>;
@@ -100,13 +99,6 @@ export class AdminUserListComponent implements OnInit, OnChanges {
   applyFilter(filterValue: string) {
     this.filterString = filterValue.toLowerCase();
     this.filterAndSort(this.filterString);
-  }
-
-  /**
-   * Clears the search string
-   */
-  clearFilter() {
-    this.applyFilter('');
   }
 
   /**

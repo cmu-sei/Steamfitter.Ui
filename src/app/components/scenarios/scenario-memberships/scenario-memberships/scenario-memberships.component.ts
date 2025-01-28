@@ -69,7 +69,6 @@ export class ScenarioMembershipsComponent
 
   ngOnInit(): void {
     forkJoin([
-      this.scenarioDataService.loadById(this.scenarioId),
       this.scenarioMembershipDataService.loadMemberships(this.scenarioId),
       this.userDataService.load(),
       this.scenarioRolesDataService.loadRoles(),
@@ -96,8 +95,6 @@ export class ScenarioMembershipsComponent
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    console.log('***********');
-    console.log(changes);
     this.scenario$ = this.scenarioQuery.selectEntity(this.scenarioId).pipe(
       filter((x) => x != null),
       tap((x) => (this.canEdit$ = this.permissionService.canEditScenario(x.id)))
