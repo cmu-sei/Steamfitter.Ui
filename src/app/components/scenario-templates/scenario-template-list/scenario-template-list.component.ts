@@ -19,6 +19,8 @@ import {
 } from '@angular/material/legacy-paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { PermissionDataService } from 'src/app/data/permission/permission-data.service';
+import { SystemPermission } from 'src/app/generated/steamfitter.api';
 import { ScenarioTemplateEditDialogComponent } from 'src/app/components/scenario-templates/scenario-template-edit-dialog/scenario-template-edit-dialog.component';
 import { ScenarioTemplateEditComponent } from 'src/app/components/scenario-templates/scenario-template-edit/scenario-template-edit.component';
 import { ScenarioEditDialogComponent } from 'src/app/components/scenarios/scenario-edit-dialog/scenario-edit-dialog.component';
@@ -33,7 +35,7 @@ import {
   fromMatPaginator,
   paginateRows,
 } from 'src/app/datasource-utils';
-import { Observable, of } from 'rxjs';
+import { Observable, of, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 export interface Action {
@@ -50,7 +52,7 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
   @Input() scenarioTemplateList: ScenarioTemplate[];
   @Input() selectedScenarioTemplate: ScenarioTemplate;
   @Input() isLoading: boolean;
-  @Input() manageMode = false;
+  @Input() adminMode = false;
   @Output() saveScenarioTemplate = new EventEmitter<ScenarioTemplate>();
   @Output() itemSelected = new EventEmitter<string>();
   @ViewChild(ScenarioTemplateEditComponent)
@@ -73,9 +75,12 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
     new Array<ScenarioTemplate>()
   );
   filterString = '';
+  permissions$ = this.permissionDataService.permissions$;
+  readonly SystemPermission = SystemPermission;
 
   constructor(
     public dialogService: DialogService,
+    private permissionDataService: PermissionDataService,
     private scenarioTemplateDataService: ScenarioTemplateDataService,
     private scenarioDataService: ScenarioDataService,
     private dialog: MatDialog,
@@ -121,6 +126,21 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
     this.contextMenu.menuData = { item: scenarioTemplate };
     this.contextMenu.menu.focusFirstItem('mouse');
     this.contextMenu.openMenu();
+  }
+
+  canManage(id: string): Observable<boolean> {
+    return this.permissionDataService.canManageScenarioTemplate(id);
+  }
+
+  canEdit(id: string): Observable<boolean> {
+    return this.permissionDataService.canEditScenarioTemplate(id);
+  }
+
+  canDoAnything(id: string): Observable<boolean> {
+    return combineLatest([
+      this.permissionDataService.canManageScenarioTemplate(id),
+      this.permissionDataService.canEditScenarioTemplate(id),
+    ]).pipe(map(([canManage, canEdit]) => canManage || canEdit));
   }
 
   /**
@@ -214,7 +234,7 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
   }
 
   selectScenarioTemplate(event: any, scenarioTemplateId: string) {
-    if (this.manageMode) {
+    if (this.adminMode) {
       this.itemSelected.emit(scenarioTemplateId);
       if (this.selectedScenarioTemplate) {
         this.selectedScenarioTemplate.id = '';

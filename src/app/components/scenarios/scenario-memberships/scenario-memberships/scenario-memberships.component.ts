@@ -26,7 +26,7 @@ import {
   Scenario,
 } from 'src/app/generated/steamfitter.api';
 import { GroupDataService } from 'src/app/data/group/group-data.service';
-import { PermissionService } from 'src/app/data/permission/permission-data.service';
+import { PermissionDataService } from 'src/app/data/permission/permission-data.service';
 import { SignalRService } from 'src/app/services/signalr/signalr.service';
 
 @Component({
@@ -63,7 +63,7 @@ export class ScenarioMembershipsComponent
     private userDataService: UserDataService,
     private userQuery: UserQuery,
     private groupDataService: GroupDataService,
-    private permissionService: PermissionService,
+    private permissionDataService: PermissionDataService,
     private signalRService: SignalRService
   ) {}
 
@@ -94,7 +94,10 @@ export class ScenarioMembershipsComponent
   ngOnChanges(changes: SimpleChanges) {
     this.scenario$ = this.scenarioQuery.selectEntity(this.scenarioId).pipe(
       filter((x) => x != null),
-      tap((x) => (this.canEdit$ = this.permissionService.canEditScenario(x.id)))
+      tap(
+        (x) =>
+          (this.canEdit$ = this.permissionDataService.canEditScenario(x.id))
+      )
     );
   }
 

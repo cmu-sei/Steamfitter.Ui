@@ -10,7 +10,7 @@ import {
   SystemPermission,
   SystemRole,
 } from 'src/app/generated/steamfitter.api';
-import { PermissionService } from 'src/app/data/permission/permission-data.service';
+import { PermissionDataService } from 'src/app/data/permission/permission-data.service';
 import { RoleDataService } from 'src/app/data/role/role-data.service';
 import { ConfirmDialogService } from 'src/app/components/shared/confirm-dialog/service/confirm-dialog.service';
 import { SystemRolesModel } from './admin-system-roles.models';
@@ -31,10 +31,10 @@ export class AdminSystemRolesComponent implements OnInit, OnDestroy {
   private roleService = inject(RoleDataService);
   private dialog = inject(MatDialog);
   private confirmService = inject(ConfirmDialogService);
-  private permissionService = inject(PermissionService);
+  private permissionDataService = inject(PermissionDataService);
   private signalRService = inject(SignalRService);
 
-  public canEdit$ = this.permissionService.hasPermission(
+  public canEdit$ = this.permissionDataService.hasPermission(
     SystemPermission.ManageRoles
   );
 

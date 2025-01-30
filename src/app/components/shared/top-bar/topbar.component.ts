@@ -21,7 +21,7 @@ import { Observable, Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 import { CurrentUserQuery } from 'src/app/data/user/user.query';
 import { CurrentUserState } from 'src/app/data/user/user.store';
-import { PermissionService } from 'src/app/data/permission/permission-data.service';
+import { PermissionDataService } from 'src/app/data/permission/permission-data.service';
 import { TopbarView } from './topbar.models';
 
 @Component({
@@ -42,18 +42,18 @@ export class TopbarComponent implements OnInit, OnDestroy {
   theme$: Observable<Theme>;
   unsubscribe$: Subject<null> = new Subject<null>();
   TopbarView = TopbarView;
-  canViewAdmin$ = this.permissionService.canViewAdiminstration();
+  canViewAdmin$ = this.permissionDataService.canViewAdiminstration();
 
   constructor(
     private authService: ComnAuthService,
     private currentUserQuery: CurrentUserQuery,
-    private permissionService: PermissionService,
+    private permissionDataService: PermissionDataService,
     private authQuery: ComnAuthQuery,
     private settingsService: ComnSettingsService
   ) {}
 
   ngOnInit() {
-    this.permissionService.load().subscribe();
+    this.permissionDataService.load().subscribe();
 
     this.currentUser$ = this.currentUserQuery.select().pipe(
       filter((user) => user !== null),

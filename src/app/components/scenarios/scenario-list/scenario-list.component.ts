@@ -19,6 +19,8 @@ import {
 } from '@angular/material/legacy-paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { PermissionDataService } from 'src/app/data/permission/permission-data.service';
+import { SystemPermission } from 'src/app/generated/steamfitter.api';
 import { View } from 'src/app/generated/steamfitter.api';
 import { ScenarioEditComponent } from 'src/app/components/scenarios/scenario-edit/scenario-edit.component';
 import { ScenarioEditDialogComponent } from 'src/app/components/scenarios/scenario-edit-dialog/scenario-edit-dialog.component';
@@ -32,7 +34,7 @@ import {
   fromMatPaginator,
   paginateRows,
 } from 'src/app/datasource-utils';
-import { Observable, of } from 'rxjs';
+import { Observable, of, combineLatest } from 'rxjs';
 import { map } from 'rxjs/operators';
 
 export interface Action {
@@ -49,7 +51,7 @@ export class ScenarioListComponent implements OnInit, OnChanges {
   @Input() scenarioList: Scenario[];
   @Input() selectedScenario: Scenario;
   @Input() isLoading: boolean;
-  @Input() manageMode = false;
+  @Input() adminMode = false;
   @Input() statuses: string;
   @Input() views: View[];
   @Output() saveScenario = new EventEmitter<Scenario>();
@@ -81,9 +83,12 @@ export class ScenarioListComponent implements OnInit, OnChanges {
   pageEvents$: Observable<PageEvent>;
   scenarioDataSource = new MatTableDataSource<Scenario>(new Array<Scenario>());
   filterString = '';
+  permissions$ = this.permissionDataService.permissions$;
+  readonly SystemPermission = SystemPermission;
 
   constructor(
     private scenarioDataService: ScenarioDataService,
+    private permissionDataService: PermissionDataService,
     public dialogService: DialogService,
     private dialog: MatDialog,
     private settingsService: ComnSettingsService
@@ -131,6 +136,30 @@ export class ScenarioListComponent implements OnInit, OnChanges {
     this.contextMenu.menuData = { item: scenario };
     this.contextMenu.menu.focusFirstItem('mouse');
     this.contextMenu.openMenu();
+  }
+
+  canManage(id: string): Observable<boolean> {
+    return this.permissionDataService.canManageScenario(id);
+  }
+
+  canEdit(id: string): Observable<boolean> {
+    return this.permissionDataService.canEditScenario(id);
+  }
+
+  canExecute(id: string): Observable<boolean> {
+    return this.permissionDataService.canExecuteScenario(id);
+  }
+
+  canDoAnything(id: string): Observable<boolean> {
+    return combineLatest([
+      this.permissionDataService.canManageScenario(id),
+      this.permissionDataService.canEditScenario(id),
+      this.permissionDataService.canExecuteScenario(id),
+    ]).pipe(
+      map(
+        ([canManage, canEdit, canExecute]) => canManage || canEdit || canExecute
+      )
+    );
   }
 
   /**
@@ -217,7 +246,7 @@ export class ScenarioListComponent implements OnInit, OnChanges {
   }
 
   selectScenario(event: any, scenarioId: string) {
-    if (this.manageMode) {
+    if (this.adminMode) {
       this.itemSelected.emit(scenarioId);
       if (this.selectedScenario) {
         this.selectedScenario.id = '';

@@ -9,7 +9,7 @@ import { UserQuery } from 'src/app/data/user/user.query';
 import { SystemPermission, User } from 'src/app/generated/steamfitter.api';
 import { Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
-import { PermissionService } from 'src/app/data/permission/permission-data.service';
+import { PermissionDataService } from 'src/app/data/permission/permission-data.service';
 import { ComnSettingsService } from '@cmusei/crucible-common';
 
 @Component({
@@ -22,14 +22,16 @@ export class AdminUsersComponent implements OnInit {
   isLinear = false;
   users$: Observable<User[]>;
   isLoading$: Observable<boolean>;
-  canEdit$ = this.permissionService.hasPermission(SystemPermission.ManageUsers);
+  canEdit$ = this.permissionDataService.hasPermission(
+    SystemPermission.ManageUsers
+  );
   topbarColor;
 
   constructor(
     private userDataService: UserDataService,
     private userQuery: UserQuery,
     private settingsService: ComnSettingsService,
-    private permissionService: PermissionService
+    private permissionDataService: PermissionDataService
   ) {}
 
   /**

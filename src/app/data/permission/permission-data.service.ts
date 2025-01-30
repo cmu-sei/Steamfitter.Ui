@@ -18,7 +18,7 @@ import {
 @Injectable({
   providedIn: 'root',
 })
-export class PermissionService {
+export class PermissionDataService {
   private permissionsSubject = new BehaviorSubject<SystemPermission[]>([]);
   public permissions$ = this.permissionsSubject.asObservable();
 
@@ -96,6 +96,14 @@ export class PermissionService {
       SystemPermission.ManageScenarioTemplates,
       scenarioTemplateId,
       ScenarioTemplatePermission.ManageScenarioTemplate
+    );
+  }
+
+  canExecuteScenario(scenarioId: string): Observable<boolean> {
+    return this.canScenario(
+      SystemPermission.ExecuteScenarios,
+      scenarioId,
+      ScenarioPermission.ExecuteScenario
     );
   }
 

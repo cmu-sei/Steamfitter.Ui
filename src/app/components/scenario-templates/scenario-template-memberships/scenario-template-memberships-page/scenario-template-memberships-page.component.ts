@@ -5,7 +5,7 @@ Copyright 2025 Carnegie Mellon University. All Rights Reserved.
 
 import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { PermissionService } from 'src/app/data/permission/permission-data.service';
+import { PermissionDataService } from 'src/app/data/permission/permission-data.service';
 
 @Component({
   selector: 'app-scenario-template-memberships-page',
@@ -16,11 +16,11 @@ export class ScenarioTemplateMembershipsPageComponent implements OnInit {
   scenarioTemplateId: string;
 
   activatedRoute = inject(ActivatedRoute);
-  permissionService = inject(PermissionService);
+  permissionDataService = inject(PermissionDataService);
 
   ngOnInit(): void {
     this.scenarioTemplateId = this.activatedRoute.snapshot.paramMap.get('id');
-    this.permissionService
+    this.permissionDataService
       .loadScenarioTemplatePermissions(this.scenarioTemplateId)
       .subscribe();
   }

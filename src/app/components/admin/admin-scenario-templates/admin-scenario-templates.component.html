@@ -5,7 +5,7 @@ Copyright 2024 Carnegie Mellon University. All Rights Reserved.
 
 <app-scenario-template-list *ngIf="!selectedScenarioTemplateId" class="background" fxFill fxLayout="row"
   fxLayoutAlign="center start" [isLoading]="loading$ | async" [scenarioTemplateList]="scenarioTemplates$ | async"
-  [manageMode]="true" (itemSelected)="selectedScenarioTemplateId = $event">
+  [adminMode]="true" (itemSelected)="selectedScenarioTemplateId = $event">
 </app-scenario-template-list>
 
 <app-scenario-template-memberships *ngIf="selectedScenarioTemplateId" [scenarioTemplateId]="selectedScenarioTemplateId"

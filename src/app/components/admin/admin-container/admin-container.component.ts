@@ -4,7 +4,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
-import { PermissionService } from 'src/app/data/permission/permission-data.service';
+import { PermissionDataService } from 'src/app/data/permission/permission-data.service';
 import { SystemPermission } from 'src/app/generated/steamfitter.api';
 import { UserDataService } from 'src/app/data/user/user-data.service';
 import { TopbarView } from './../../shared/top-bar/topbar.models';
@@ -30,7 +30,7 @@ export class AdminContainerComponent implements OnDestroy, OnInit {
   groupsText = 'Groups';
   scenarioTemplatesText = 'Scenario Templates';
   scenariosText = 'Scenarios';
-  showSection = this.usersText;
+  showSection = '';
   isSidebarOpen = true;
   private unsubscribe$ = new Subject();
   TopbarView = TopbarView;
@@ -38,14 +38,14 @@ export class AdminContainerComponent implements OnDestroy, OnInit {
   topbarColor = '#BB0000';
   topbarTextColor = '#FFFFFF';
   theme$: Observable<Theme>;
-  permissions$ = this.permissionService.permissions$;
+  permissions$ = this.permissionDataService.permissions$;
   readonly SystemPermission = SystemPermission;
 
   constructor(
     private router: Router,
     private userDataService: UserDataService,
     private routerQuery: RouterQuery,
-    private permissionService: PermissionService,
+    private permissionDataService: PermissionDataService,
     private settingsService: ComnSettingsService,
     private authService: ComnAuthService,
     private authQuery: ComnAuthQuery,
@@ -53,8 +53,6 @@ export class AdminContainerComponent implements OnDestroy, OnInit {
   ) {
     this.theme$ = this.authQuery.userTheme$;
     this.hideTopbar = this.inIframe();
-
-    this.adminGotoUsers();
     // Set the display settings from config file
     this.topbarColor = this.settingsService.settings.AppTopBarHexColor
       ? this.settingsService.settings.AppTopBarHexColor
@@ -83,10 +81,11 @@ export class AdminContainerComponent implements OnDestroy, OnInit {
       .subscribe((section) => {
         if (section != null) {
           this.showSection = section;
+          this.navigateToSection(section);
         }
       });
 
-    this.permissionService.load().subscribe();
+    this.permissionDataService.load().subscribe();
   }
 
   logout() {

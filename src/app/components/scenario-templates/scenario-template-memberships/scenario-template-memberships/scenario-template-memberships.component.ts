@@ -26,7 +26,7 @@ import {
   ScenarioTemplate,
 } from 'src/app/generated/steamfitter.api';
 import { GroupDataService } from 'src/app/data/group/group-data.service';
-import { PermissionService } from 'src/app/data/permission/permission-data.service';
+import { PermissionDataService } from 'src/app/data/permission/permission-data.service';
 import { SignalRService } from 'src/app/services/signalr/signalr.service';
 
 @Component({
@@ -64,7 +64,7 @@ export class ScenarioTemplateMembershipsComponent
     private userDataService: UserDataService,
     private userQuery: UserQuery,
     private groupDataService: GroupDataService,
-    private permissionService: PermissionService,
+    private permissionDataService: PermissionDataService,
     private signalRService: SignalRService
   ) {}
 
@@ -101,7 +101,7 @@ export class ScenarioTemplateMembershipsComponent
         filter((x) => x != null),
         tap(
           (x) =>
-            (this.canEdit$ = this.permissionService.canEditScenarioTemplate(
+            (this.canEdit$ = this.permissionDataService.canEditScenarioTemplate(
               x.id
             ))
         )

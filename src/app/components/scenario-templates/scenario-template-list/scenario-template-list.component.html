@@ -25,7 +25,8 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     </button>
   </div>
   <div class="button-end">
-    <button mat-stroked-button (click)="editScenarioTemplate(null)">
+    <button *ngIf="!adminMode && (permissions$ | async).includes(SystemPermission.CreateScenarioTemplates)"
+      mat-stroked-button (click)="editScenarioTemplate(null)">
       Add Scenario Template
     </button>
   </div>
@@ -67,6 +68,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     >
       <div class="mat-cell flex-row-cell four-cell">
         <button
+        *ngIf="!adminMode && (permissions$ | async).includes(SystemPermission.CreateScenarioTemplates)"
           mat-icon-button
           class="copy-button"
           ngxClipboard
@@ -77,6 +79,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           <mat-icon class="mdi-20px copy-icon" fontIcon="mdi-content-copy"></mat-icon>
         </button>
         <button
+          *ngIf="!adminMode && (canDoAnything(item.id) | async)"
           mat-icon-button
           class="menu-button"
           ngxClipboard
@@ -116,16 +119,18 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 ></div>
 <mat-menu #contextMenu="matMenu">
   <ng-template matMenuContent let-item="item">
-    <button mat-menu-item (click)="editScenarioTemplate(item)">
+    <button mat-menu-item (click)="editScenarioTemplate(item)" *ngIf="(canEdit(item.id) | async)">
       Edit
     </button>
-    <button mat-menu-item (click)="copyScenarioTemplate(item)">
+    <button mat-menu-item (click)="copyScenarioTemplate(item)"
+      *ngIf="(permissions$ | async).includes(SystemPermission.CreateScenarioTemplates)">
       Copy
     </button>
-    <button mat-menu-item (click)="deleteScenarioTemplate(item)">
+    <button mat-menu-item (click)="deleteScenarioTemplate(item)" *ngIf="(canManage(item.id) | async)">
       Delete
     </button>
-    <button mat-menu-item (click)="createScenario(item)">
+    <button mat-menu-item (click)="createScenario(item)"
+      *ngIf="(permissions$ | async).includes(SystemPermission.CreateScenarios)">
       Create a Scenario
     </button>
   </ng-template>

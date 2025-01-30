@@ -10,7 +10,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     mode="side"
     [(opened)]="isSidebarOpen"
   >
-    <mat-list *ngIf="permissions$ | async as permissions">
+    <mat-list>
       <mat-list-item class="appslist">
         <div class="cssLayoutRowStartCenter">
           <mat-icon
@@ -22,7 +22,6 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           </h2>
         </div>
         <button
-          *ngIf="isSuperUser"
           aria-label="Show Administration Page"
           mat-icon-button
           [routerLink]="['/admin']"
@@ -34,7 +33,6 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         <mat-divider></mat-divider>
       </mat-list-item>
       <mat-list-item
-        *ngIf="permissions.includes(SystemPermission.ViewScenarioTemplates)"
         class="showhand highlight"
         title="Show {{ section.scenarioTemplates }}"
         (click)="selectTab(section.scenarioTemplates)"
@@ -58,7 +56,6 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         </div>
       </mat-list-item>
       <mat-list-item
-        *ngIf="permissions.includes(SystemPermission.ViewScenarios)"
         class="showhand highlight"
         title="Show {{ section.scenarios }}"
         (click)="selectTab(section.scenarios)"
@@ -82,7 +79,6 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         </div>
       </mat-list-item>
       <mat-list-item
-        *ngIf="permissions.includes(SystemPermission.ExecuteScenarios)"
         class="showhand highlight"
         title="Show {{ section.taskBuilder }}"
         (click)="selectTab(section.taskBuilder)"
@@ -106,7 +102,6 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         </div>
       </mat-list-item>
       <mat-list-item
-        *ngIf="permissions.includes(SystemPermission.ExecuteScenarios)"
         class="showhand highlight"
         title="Show {{ section.history }}"
         (click)="selectTab(section.history)"

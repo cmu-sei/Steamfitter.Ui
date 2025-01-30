@@ -15,7 +15,7 @@ import { forkJoin, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Group, SystemPermission } from 'src/app/generated/steamfitter.api';
 import { GroupDataService } from 'src/app/data/group/group-data.service';
-import { PermissionService } from 'src/app/data/permission/permission-data.service';
+import { PermissionDataService } from 'src/app/data/permission/permission-data.service';
 import { ConfirmDialogComponent } from 'src/app/components/shared/confirm-dialog/components/confirm-dialog.component';
 import { NameDialogComponent } from 'src/app/components/shared/name-dialog/name-dialog.component';
 import { UserDataService } from 'src/app/data/user/user-data.service';
@@ -40,7 +40,7 @@ export class AdminGroupsComponent implements OnInit, AfterViewInit {
     private groupDataService: GroupDataService,
     private userDataService: UserDataService,
     private dialog: MatDialog,
-    private permissionService: PermissionService
+    private permissionDataService: PermissionDataService
   ) {}
 
   dataSource$ = this.groupDataService.groups$.pipe(
@@ -50,7 +50,7 @@ export class AdminGroupsComponent implements OnInit, AfterViewInit {
     })
   );
 
-  canEdit$ = this.permissionService.hasPermission(
+  canEdit$ = this.permissionDataService.hasPermission(
     SystemPermission.ManageGroups
   );
 

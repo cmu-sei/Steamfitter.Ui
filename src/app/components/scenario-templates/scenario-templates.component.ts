@@ -38,7 +38,7 @@ export class UserErrorStateMatcher implements ErrorStateMatcher {
   styleUrls: ['./scenario-templates.component.scss'],
 })
 export class ScenarioTemplatesComponent {
-  @Input() manageMode = false;
+  @Input() adminMode = false;
   @Output() editComplete = new EventEmitter<boolean>();
   @ViewChild(ScenarioTemplatesComponent) child;
   @ViewChild('stepper') stepper: MatStepper;
@@ -76,7 +76,7 @@ export class ScenarioTemplatesComponent {
 
   setActive(id: any) {
     this.scenarioTemplateDataService.setActive(id);
-    if (this.manageMode) {
+    if (this.adminMode) {
       this.router.navigate([`scenariotemplates/${id}/memberships`], {});
     }
   }
