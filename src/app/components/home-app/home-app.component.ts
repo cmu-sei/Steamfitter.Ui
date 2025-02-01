@@ -140,6 +140,7 @@ export class HomeAppComponent implements OnDestroy, OnInit {
   }
 
   ngOnDestroy() {
+    this.signalRService.leaveSystem();
     this.unsubscribe$.next(null);
     this.unsubscribe$.complete();
   }

@@ -3,7 +3,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
-import { map, takeUntil } from 'rxjs/operators';
+import { takeUntil } from 'rxjs/operators';
 import { PermissionDataService } from 'src/app/data/permission/permission-data.service';
 import { SystemPermission } from 'src/app/generated/steamfitter.api';
 import { UserDataService } from 'src/app/data/user/user-data.service';
@@ -16,6 +16,7 @@ import {
   Theme,
 } from '@cmusei/crucible-common';
 import { CurrentUserQuery } from 'src/app/data/user/user.query';
+import { SignalRService } from 'src/app/services/signalr/signalr.service';
 
 @Component({
   selector: 'app-admin-container',
@@ -49,6 +50,7 @@ export class AdminContainerComponent implements OnDestroy, OnInit {
     private settingsService: ComnSettingsService,
     private authService: ComnAuthService,
     private authQuery: ComnAuthQuery,
+    private signalRService: SignalRService,
     private currentUserQuery: CurrentUserQuery
   ) {
     this.theme$ = this.authQuery.userTheme$;
@@ -60,6 +62,7 @@ export class AdminContainerComponent implements OnDestroy, OnInit {
     this.topbarTextColor = this.settingsService.settings.AppTopBarHexTextColor
       ? this.settingsService.settings.AppTopBarHexTextColor
       : this.topbarTextColor;
+    this.signalRService.joinSystem();
   }
 
   ngOnInit() {
@@ -147,6 +150,7 @@ export class AdminContainerComponent implements OnDestroy, OnInit {
   }
 
   ngOnDestroy() {
+    this.signalRService.leaveSystem();
     this.unsubscribe$.next(null);
     this.unsubscribe$.complete();
   }

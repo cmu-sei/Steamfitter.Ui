@@ -8,7 +8,6 @@ import {
   EventEmitter,
   Input,
   OnChanges,
-  OnDestroy,
   OnInit,
   Output,
   SimpleChanges,
@@ -27,16 +26,13 @@ import {
 } from 'src/app/generated/steamfitter.api';
 import { GroupDataService } from 'src/app/data/group/group-data.service';
 import { PermissionDataService } from 'src/app/data/permission/permission-data.service';
-import { SignalRService } from 'src/app/services/signalr/signalr.service';
 
 @Component({
   selector: 'app-scenario-memberships',
   templateUrl: './scenario-memberships.component.html',
   styleUrls: ['./scenario-memberships.component.scss'],
 })
-export class ScenarioMembershipsComponent
-  implements OnDestroy, OnInit, OnChanges
-{
+export class ScenarioMembershipsComponent implements OnInit, OnChanges {
   @Input() embedded: boolean;
   @Input() scenarioId: string;
   @Output() goBack = new EventEmitter();
@@ -56,15 +52,13 @@ export class ScenarioMembershipsComponent
   canEdit: boolean;
 
   constructor(
-    private scenarioDataService: ScenarioDataService,
     private scenarioQuery: ScenarioQuery,
     private scenarioMembershipDataService: ScenarioMembershipDataService,
     private scenarioRolesDataService: ScenarioRoleDataService,
     private userDataService: UserDataService,
     private userQuery: UserQuery,
     private groupDataService: GroupDataService,
-    private permissionDataService: PermissionDataService,
-    private signalRService: SignalRService
+    private permissionDataService: PermissionDataService
   ) {}
 
   ngOnInit(): void {
@@ -74,21 +68,6 @@ export class ScenarioMembershipsComponent
       this.scenarioRolesDataService.loadRoles(),
       this.groupDataService.load(),
     ]).subscribe();
-
-    this.signalRService
-      .startConnection()
-      // TODO:  add signalR join by scenario template
-      // .then(() => {
-      //   this.signalRService.joinScenarioAdmin(this.scenarioId);
-      // })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
-
-  ngOnDestroy() {
-    // TODO: add signalR leave
-    // this.signalRService.leaveScenarioAdmin(this.scenarioId);
   }
 
   ngOnChanges(changes: SimpleChanges) {

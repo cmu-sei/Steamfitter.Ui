@@ -75,4 +75,12 @@ export class ScenarioMembershipDataService {
     memberships = memberships.filter((x) => x.id !== id);
     this.scenarioMembershipsSubject.next(memberships);
   }
+
+  updateStore(scenarioMembership: ScenarioMembership) {
+    this.upsert(scenarioMembership.id, scenarioMembership);
+  }
+
+  deleteFromStore(id: string) {
+    this.remove(id);
+  }
 }

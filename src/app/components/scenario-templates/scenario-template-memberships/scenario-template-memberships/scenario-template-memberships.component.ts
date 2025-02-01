@@ -15,7 +15,6 @@ import {
 } from '@angular/core';
 import { combineLatest, forkJoin, Observable } from 'rxjs';
 import { filter, map, tap } from 'rxjs/operators';
-import { ScenarioTemplateDataService } from 'src/app/data/scenario-template/scenario-template-data.service';
 import { ScenarioTemplateQuery } from 'src/app/data/scenario-template/scenario-template.query';
 import { ScenarioTemplateMembershipDataService } from 'src/app/data/scenario-template/scenario-template-membership-data.service';
 import { ScenarioTemplateRoleDataService } from 'src/app/data/scenario-template/scenario-template-role-data.service';
@@ -27,16 +26,13 @@ import {
 } from 'src/app/generated/steamfitter.api';
 import { GroupDataService } from 'src/app/data/group/group-data.service';
 import { PermissionDataService } from 'src/app/data/permission/permission-data.service';
-import { SignalRService } from 'src/app/services/signalr/signalr.service';
 
 @Component({
   selector: 'app-scenario-template-memberships',
   templateUrl: './scenario-template-memberships.component.html',
   styleUrls: ['./scenario-template-memberships.component.scss'],
 })
-export class ScenarioTemplateMembershipsComponent
-  implements OnDestroy, OnInit, OnChanges
-{
+export class ScenarioTemplateMembershipsComponent implements OnInit, OnChanges {
   @Input() embedded: boolean;
   @Input() scenarioTemplateId: string;
   @Output() goBack = new EventEmitter();
@@ -57,15 +53,13 @@ export class ScenarioTemplateMembershipsComponent
   canEdit: boolean;
 
   constructor(
-    private scenarioTemplateDataService: ScenarioTemplateDataService,
     private scenarioTemplateQuery: ScenarioTemplateQuery,
     private scenarioTemplateMembershipDataService: ScenarioTemplateMembershipDataService,
     private scenarioTemplateRolesDataService: ScenarioTemplateRoleDataService,
     private userDataService: UserDataService,
     private userQuery: UserQuery,
     private groupDataService: GroupDataService,
-    private permissionDataService: PermissionDataService,
-    private signalRService: SignalRService
+    private permissionDataService: PermissionDataService
   ) {}
 
   ngOnInit(): void {
@@ -77,21 +71,6 @@ export class ScenarioTemplateMembershipsComponent
       this.scenarioTemplateRolesDataService.loadRoles(),
       this.groupDataService.load(),
     ]).subscribe();
-
-    this.signalRService
-      .startConnection()
-      // TODO:  add signalR join by scenario template
-      // .then(() => {
-      //   this.signalRService.joinScenarioTemplateAdmin(this.scenarioTemplateId);
-      // })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
-
-  ngOnDestroy() {
-    // TODO: add signalR leave
-    // this.signalRService.leaveScenarioTemplateAdmin(this.scenarioTemplateId);
   }
 
   ngOnChanges(changes: SimpleChanges) {

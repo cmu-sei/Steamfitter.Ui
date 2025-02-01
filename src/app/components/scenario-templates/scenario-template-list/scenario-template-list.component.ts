@@ -86,6 +86,9 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
     private dialog: MatDialog,
     private settingsService: ComnSettingsService
   ) {
+    if (!this.scenarioTemplateList || this.scenarioTemplateList.length === 0) {
+      this.scenarioTemplateDataService.load();
+    }
     this.topbarColor = this.settingsService.settings.AppTopBarHexColor
       ? this.settingsService.settings.AppTopBarHexColor
       : this.topbarColor;

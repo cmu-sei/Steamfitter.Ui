@@ -79,4 +79,12 @@ export class GroupMembershipService {
     memberships = memberships.filter((x) => x.id !== id);
     this.groupMembershipSubject.next(memberships);
   }
+
+  updateStore(groupMembership: GroupMembership) {
+    this.upsert(groupMembership.id, groupMembership);
+  }
+
+  deleteFromStore(id: string) {
+    this.remove(id);
+  }
 }

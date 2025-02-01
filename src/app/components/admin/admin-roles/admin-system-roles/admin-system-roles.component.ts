@@ -3,7 +3,7 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
  Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 */
 
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import {
@@ -27,7 +27,7 @@ const NAME_VALUE = 'nameValue';
   templateUrl: './admin-system-roles.component.html',
   styleUrls: ['./admin-system-roles.component.scss'],
 })
-export class AdminSystemRolesComponent implements OnInit, OnDestroy {
+export class AdminSystemRolesComponent implements OnInit {
   private roleService = inject(RoleDataService);
   private dialog = inject(MatDialog);
   private confirmService = inject(ConfirmDialogService);
@@ -70,20 +70,9 @@ export class AdminSystemRolesComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.roleService.getRoles().subscribe();
 
-    this.signalRService
-      .startConnection()
-      .then(() => {
-        // TODO:  add signalR join
-        // this.signalRService.joinRolesAdmin();
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }
-
-  ngOnDestroy() {
-    // TODO: add signalR leave
-    // this.signalRService.leaveRolesAdmin();
+    this.signalRService.startConnection().catch((err) => {
+      console.log(err);
+    });
   }
 
   trackById(index: number, item: any) {

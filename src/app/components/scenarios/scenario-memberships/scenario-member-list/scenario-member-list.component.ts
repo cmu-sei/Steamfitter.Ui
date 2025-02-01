@@ -108,11 +108,11 @@ export class ScenarioMemberListComponent
           role: role,
         } as ScenarioMembershipModel;
 
-        if (user !== null) {
+        if (!!user) {
           membership.user = user;
           membership.name = user.name;
           membership.type = 'User';
-        } else if (group !== null) {
+        } else if (!!group) {
           membership.group = group;
           membership.name = group.name;
           membership.type = 'Group';

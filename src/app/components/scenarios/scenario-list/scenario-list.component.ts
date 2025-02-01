@@ -93,6 +93,9 @@ export class ScenarioListComponent implements OnInit, OnChanges {
     private dialog: MatDialog,
     private settingsService: ComnSettingsService
   ) {
+    if (!this.scenarioList || this.scenarioList.length === 0) {
+      this.scenarioDataService.load();
+    }
     this.topbarColor = this.settingsService.settings.AppTopBarHexColor
       ? this.settingsService.settings.AppTopBarHexColor
       : this.topbarColor;
