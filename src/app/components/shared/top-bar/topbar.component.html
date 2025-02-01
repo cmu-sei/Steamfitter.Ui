@@ -52,10 +52,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           Exit Administration
         </button>
         <button
-          *ngIf="
-            (canViewAdmin$ | async) &&
-            topbarView !== TopbarView.STEAMFITTER_ADMIN
-          "
+          *ngIf="canViewAdmin && topbarView !== TopbarView.STEAMFITTER_ADMIN"
           [routerLink]="['/admin']"
           mat-menu-item
         >

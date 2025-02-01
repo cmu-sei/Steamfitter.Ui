@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ScenarioDataService } from 'src/app/data/scenario/scenario-data.service';
 import { ScenarioQuery } from 'src/app/data/scenario/scenario.query';
-import { Scenario } from 'src/app/generated/steamfitter.api';
+import { PlayerDataService } from 'src/app/data/player/player-data-service';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -20,11 +20,13 @@ export class AdminScenariosComponent implements OnInit {
   constructor(
     private activatedRoute: ActivatedRoute,
     private scenarioDataService: ScenarioDataService,
-    private scenarioQuery: ScenarioQuery
+    private scenarioQuery: ScenarioQuery,
+    private playerDataService: PlayerDataService
   ) {
     this.statuses = this.activatedRoute.queryParamMap.pipe(
       map((params) => params.get('statuses') || 'active,ready')
     );
+    this.playerDataService.getViewsFromApi();
   }
 
   scenarios$ = this.scenarioQuery.selectAll();
@@ -32,6 +34,7 @@ export class AdminScenariosComponent implements OnInit {
   selectedScenarioId: string;
   embedded = true;
   statuses: Observable<string>;
+  viewList = this.playerDataService.viewList;
 
   ngOnInit(): void {
     this.scenarioDataService.load();

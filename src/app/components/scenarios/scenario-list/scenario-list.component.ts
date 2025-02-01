@@ -114,7 +114,6 @@ export class ScenarioListComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log('onchanges ' + this.scenarioList.length);
     this.permissions = this.permissionDataService.permissions;
     if (!!changes.scenarioList && !!changes.scenarioList.currentValue) {
       this.filterByStatus(changes.scenarioList.currentValue);
@@ -122,6 +121,7 @@ export class ScenarioListComponent implements OnInit, OnChanges {
   }
 
   filterByStatus(scenarios: Scenario[]) {
+    this.paginator.pageIndex = 0;
     this.statusFilteredScenarios = scenarios.filter(
       (m) =>
         (this.showStatus.active && m.status === 'active') ||
@@ -163,7 +163,7 @@ export class ScenarioListComponent implements OnInit, OnChanges {
     scenario = !scenario ? <Scenario>{ name: '', description: '' } : scenario;
     const dialogRef = this.dialog.open(ScenarioEditDialogComponent, {
       width: '800px',
-      data: { scenario: scenario },
+      data: { scenario: { ...scenario }, views: this.views },
     });
     dialogRef.componentInstance.editComplete.subscribe((result) => {
       if (result.saveChanges && result.scenario) {
@@ -266,7 +266,6 @@ export class ScenarioListComponent implements OnInit, OnChanges {
    * filters and sorts the displayed rows
    */
   filterAndSort() {
-    console.log('filterandsort ' + this.statusFilteredScenarios.length);
     this.scenarioDataSource.data = this.statusFilteredScenarios;
     this.scenarioDataSource.filter = this.filterString;
     const rows$ = of(this.scenarioDataSource.filteredData);

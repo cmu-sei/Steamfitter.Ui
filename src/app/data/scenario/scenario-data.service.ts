@@ -39,7 +39,6 @@ export class ScenarioDataService {
   private filterTerm: Observable<string>;
   private sortColumn: Observable<string>;
   private sortIsAscending: Observable<boolean>;
-  private statuses: Observable<string>;
   private _pageEvent: PageEvent = { length: 0, pageIndex: 0, pageSize: 10 };
   readonly pageEvent = new BehaviorSubject<PageEvent>(this._pageEvent);
   private pageSize: Observable<number>;
@@ -64,9 +63,6 @@ export class ScenarioDataService {
     this.filterTerm = activatedRoute.queryParamMap.pipe(
       map((params) => params.get('scenariomask') || '')
     );
-    this.statuses = activatedRoute.queryParamMap.pipe(
-      map((params) => params.get('statuses') || 'active,ready')
-    );
     this.sortColumn = activatedRoute.queryParamMap.pipe(
       map((params) => params.get('sorton') || 'name')
     );
@@ -84,27 +80,25 @@ export class ScenarioDataService {
       this.filterTerm,
       this.sortColumn,
       this.sortIsAscending,
-      this.statuses,
     ]).pipe(
-      map(([items, filterTerm, sortColumn, sortIsAscending, statuses]) =>
+      map(([items, filterTerm, sortColumn, sortIsAscending]) =>
         items
           ? (items as Scenario[])
-            .sort((a: Scenario, b: Scenario) =>
-              this.sortScenarios(a, b, sortColumn, sortIsAscending)
-            )
-            .filter(
-              (scenario) =>
-                (('' + scenario.name)
-                  .toLowerCase()
-                  .includes(filterTerm.toLowerCase()) ||
-                    ('' + scenario.description)
-                      .toLowerCase()
-                      .includes(filterTerm.toLowerCase()) ||
-                    ('' + scenario.view)
-                      .toLowerCase()
-                      .includes(filterTerm.toLowerCase())) &&
-                  statuses.toString().indexOf(scenario.status) > -1
-            )
+              .sort((a: Scenario, b: Scenario) =>
+                this.sortScenarios(a, b, sortColumn, sortIsAscending)
+              )
+              .filter(
+                (scenario) =>
+                  ('' + scenario.name)
+                    .toLowerCase()
+                    .includes(filterTerm.toLowerCase()) ||
+                  ('' + scenario.description)
+                    .toLowerCase()
+                    .includes(filterTerm.toLowerCase()) ||
+                  ('' + scenario.view)
+                    .toLowerCase()
+                    .includes(filterTerm.toLowerCase())
+              )
           : []
       )
     );

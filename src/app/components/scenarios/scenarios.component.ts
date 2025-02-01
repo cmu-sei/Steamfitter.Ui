@@ -32,12 +32,12 @@ export class ScenariosComponent implements OnInit {
   @ViewChild('stepper') stepper: MatStepper;
 
   isLinear = false;
-  scenarioList = this.scenarioDataService.scenarioList;
-  selectedScenario = this.scenarioDataService.selected;
+  scenarioList$ = this.scenarioDataService.scenarioList;
+  selectedScenario$ = this.scenarioDataService.selected;
   scenarioPageEvent = this.scenarioDataService.pageEvent;
-  isLoading = this.scenarioQuery.selectLoading();
-  views = this.playerDataService.viewList;
-  statuses: Observable<string>;
+  isLoading$ = this.scenarioQuery.selectLoading();
+  views$ = this.playerDataService.viewList;
+  statuses$: Observable<string>;
 
   constructor(
     public zone: NgZone,
@@ -48,7 +48,7 @@ export class ScenariosComponent implements OnInit {
     private activatedRoute: ActivatedRoute
   ) {
     this.scenarioDataService.load();
-    this.statuses = activatedRoute.queryParamMap.pipe(
+    this.statuses$ = activatedRoute.queryParamMap.pipe(
       map((params) => params.get('statuses') || 'active,ready')
     );
   }

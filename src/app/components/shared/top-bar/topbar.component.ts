@@ -42,7 +42,7 @@ export class TopbarComponent implements OnInit, OnDestroy {
   theme$: Observable<Theme>;
   unsubscribe$: Subject<null> = new Subject<null>();
   TopbarView = TopbarView;
-  canViewAdmin$ = this.permissionDataService.canViewAdiminstration();
+  canViewAdmin = this.permissionDataService.canViewAdiminstration();
 
   constructor(
     private authService: ComnAuthService,
