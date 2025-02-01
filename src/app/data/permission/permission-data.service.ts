@@ -3,7 +3,7 @@
 
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, combineLatest, Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { map, tap, take } from 'rxjs/operators';
 import {
   ScenarioPermission,
   ScenarioPermissionClaim,
@@ -19,18 +19,20 @@ import {
   providedIn: 'root',
 })
 export class PermissionDataService {
-  private permissionsSubject = new BehaviorSubject<SystemPermission[]>([]);
-  public permissions$ = this.permissionsSubject.asObservable();
+  private _permissions: SystemPermission[] = [];
+  get permissions(): SystemPermission[] {
+    return this._permissions;
+  }
 
-  private scenarioPermissionsSubject = new BehaviorSubject<
-    ScenarioPermissionClaim[]
-  >([]);
-  public scenarioPermissions$ = this.scenarioPermissionsSubject.asObservable();
-  private scenarioTemplatePermissionsSubject = new BehaviorSubject<
-    ScenarioTemplatePermissionClaim[]
-  >([]);
-  public scenarioTemplatePermissions$ =
-    this.scenarioTemplatePermissionsSubject.asObservable();
+  private _scenarioPermissions: ScenarioPermissionClaim[] = [];
+  get scenarioPermissions(): ScenarioPermissionClaim[] {
+    return this._scenarioPermissions;
+  }
+
+  private _scenarioTemplatePermissions: ScenarioTemplatePermissionClaim[] = [];
+  get scenarioTemplatePermissions(): ScenarioTemplatePermissionClaim[] {
+    return this._scenarioTemplatePermissions;
+  }
 
   constructor(
     private permissionsService: SystemPermissionsService,
@@ -39,35 +41,43 @@ export class PermissionDataService {
   ) {}
 
   load(): Observable<SystemPermission[]> {
-    return this.permissionsService
-      .getMySystemPermissions()
-      .pipe(tap((x) => this.permissionsSubject.next(x)));
-  }
-
-  canViewAdiminstration() {
-    return this.permissions$.pipe(
-      map((x) => x.filter((y) => y.startsWith('View'))),
-      map((x) => x.length > 0)
+    return this.permissionsService.getMySystemPermissions().pipe(
+      take(1),
+      tap((x) => (this._permissions = x))
     );
   }
 
-  hasPermission(permission: SystemPermission) {
-    return this.permissions$.pipe(map((x) => x.includes(permission)));
+  canViewAdiminstration() {
+    return this._permissions.some((y) => y.startsWith('View'));
   }
 
-  loadScenarioPermissions(scenarioId?: string) {
+  hasPermission(permission: SystemPermission) {
+    return this._permissions.includes(permission);
+  }
+
+  loadScenarioPermissions(
+    scenarioId?: string
+  ): Observable<ScenarioPermissionClaim[]> {
     return this.scenarioPermissionsService
       .getMyScenarioPermissions(scenarioId)
-      .pipe(tap((x) => this.scenarioPermissionsSubject.next(x)));
+      .pipe(
+        take(1),
+        tap((x) => (this._scenarioPermissions = x))
+      );
   }
 
-  loadScenarioTemplatePermissions(scenarioTemplateId?: string) {
+  loadScenarioTemplatePermissions(
+    scenarioTemplateId?: string
+  ): Observable<ScenarioTemplatePermissionClaim[]> {
     return this.scenarioTemplatePermissionsService
       .getMyScenarioTemplatePermissions(scenarioTemplateId)
-      .pipe(tap((x) => this.scenarioTemplatePermissionsSubject.next(x)));
+      .pipe(
+        take(1),
+        tap((x) => (this._scenarioTemplatePermissions = x))
+      );
   }
 
-  canEditScenario(scenarioId: string): Observable<boolean> {
+  canEditScenario(scenarioId: string): boolean {
     return this.canScenario(
       SystemPermission.EditScenarios,
       scenarioId,
@@ -75,7 +85,7 @@ export class PermissionDataService {
     );
   }
 
-  canEditScenarioTemplate(scenarioTemplateId: string): Observable<boolean> {
+  canEditScenarioTemplate(scenarioTemplateId: string): boolean {
     return this.canScenarioTemplate(
       SystemPermission.EditScenarioTemplates,
       scenarioTemplateId,
@@ -83,7 +93,7 @@ export class PermissionDataService {
     );
   }
 
-  canManageScenario(scenarioId: string): Observable<boolean> {
+  canManageScenario(scenarioId: string): boolean {
     return this.canScenario(
       SystemPermission.ManageScenarios,
       scenarioId,
@@ -91,7 +101,7 @@ export class PermissionDataService {
     );
   }
 
-  canManageScenarioTemplate(scenarioTemplateId: string): Observable<boolean> {
+  canManageScenarioTemplate(scenarioTemplateId: string): boolean {
     return this.canScenarioTemplate(
       SystemPermission.ManageScenarioTemplates,
       scenarioTemplateId,
@@ -99,7 +109,7 @@ export class PermissionDataService {
     );
   }
 
-  canExecuteScenario(scenarioId: string): Observable<boolean> {
+  canExecuteScenario(scenarioId: string): boolean {
     return this.canScenario(
       SystemPermission.ExecuteScenarios,
       scenarioId,
@@ -112,26 +122,24 @@ export class PermissionDataService {
     scenarioId?: string,
     scenarioPermission?: ScenarioPermission
   ) {
-    return combineLatest([this.permissions$, this.scenarioPermissions$]).pipe(
-      map(([permissions, scenarioPermissionClaims]) => {
-        if (permissions.includes(permission)) {
-          return true;
-        } else if (scenarioId !== null && scenarioPermission !== null) {
-          const scenarioPermissionClaim = scenarioPermissionClaims.find(
-            (x) => x.scenarioId === scenarioId
-          );
+    const permissions = this._permissions;
+    const scenarioPermissionClaims = this._scenarioPermissions;
+    if (permissions.includes(permission)) {
+      return true;
+    } else if (scenarioId !== null && scenarioPermission !== null) {
+      const scenarioPermissionClaim = scenarioPermissionClaims.find(
+        (x) => x.scenarioId === scenarioId
+      );
 
-          if (
-            scenarioPermissionClaim !== null &&
-            scenarioPermissionClaim.permissions.includes(scenarioPermission)
-          ) {
-            return true;
-          }
-        }
+      if (
+        scenarioPermissionClaim &&
+        scenarioPermissionClaim.permissions.includes(scenarioPermission)
+      ) {
+        return true;
+      }
+    }
 
-        return false;
-      })
-    );
+    return false;
   }
 
   private canScenarioTemplate(
@@ -139,34 +147,29 @@ export class PermissionDataService {
     scenarioTemplateId?: string,
     scenarioTemplatePermission?: ScenarioTemplatePermission
   ) {
-    return combineLatest([
-      this.permissions$,
-      this.scenarioTemplatePermissions$,
-    ]).pipe(
-      map(([permissions, scenarioTemplatePermissionClaims]) => {
-        if (permissions.includes(permission)) {
-          return true;
-        } else if (
-          scenarioTemplateId !== null &&
-          scenarioTemplatePermission !== null
-        ) {
-          const scenarioTemplatePermissionClaim =
-            scenarioTemplatePermissionClaims.find(
-              (x) => x.scenarioTemplateId === scenarioTemplateId
-            );
+    const permissions = this._permissions;
+    const scenarioTemplatePermissionClaims = this._scenarioTemplatePermissions;
+    if (permissions.includes(permission)) {
+      return true;
+    } else if (
+      scenarioTemplateId !== null &&
+      scenarioTemplatePermission !== null
+    ) {
+      const scenarioTemplatePermissionClaim =
+        scenarioTemplatePermissionClaims.find(
+          (x) => x.scenarioTemplateId === scenarioTemplateId
+        );
 
-          if (
-            scenarioTemplatePermissionClaim !== null &&
-            scenarioTemplatePermissionClaim.permissions.includes(
-              scenarioTemplatePermission
-            )
-          ) {
-            return true;
-          }
-        }
+      if (
+        scenarioTemplatePermissionClaim &&
+        scenarioTemplatePermissionClaim.permissions.includes(
+          scenarioTemplatePermission
+        )
+      ) {
+        return true;
+      }
+    }
 
-        return false;
-      })
-    );
+    return false;
   }
 }

@@ -34,7 +34,7 @@ export class AdminSystemRolesComponent implements OnInit, OnDestroy {
   private permissionDataService = inject(PermissionDataService);
   private signalRService = inject(SignalRService);
 
-  public canEdit$ = this.permissionDataService.hasPermission(
+  public canEdit = this.permissionDataService.hasPermission(
     SystemPermission.ManageRoles
   );
 

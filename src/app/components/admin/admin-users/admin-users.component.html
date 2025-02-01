@@ -8,7 +8,7 @@ project root for license information or contact permission@sei.cmu.edu for full 
   <div fxLayout="row" class="add-margin">
     <div fxFlex>
       <app-admin-user-list *ngIf="!!users$ && !!isLoading$" [users]="users$ | async" [isLoading]="isLoading$ | async"
-        [canEdit]="canEdit$ | async" (create)="create($event)" (delete)="deleteUser($event)">
+        [canEdit]="canEdit" (create)="create($event)" (delete)="deleteUser($event)">
       </app-admin-user-list>
       </div>
   </div>

@@ -33,5 +33,6 @@ export interface Scenario {
     users?: Array<string> | null;
     score?: number;
     scoreEarned?: number;
+    scenarioPermissions?: Array<string> | null;
 }
 

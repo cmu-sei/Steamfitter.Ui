@@ -13,7 +13,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     mode="side"
     [(opened)]="isSidebarOpen"
   >
-    <mat-list *ngIf="permissions$ | async as permissions" class="appitems-container">
+    <mat-list *ngIf="permissions" class="appitems-container">
       <mat-list-item class="appslist">
         <a class="nolink" [routerLink]="['/']">
           <div class="cssLayoutRowStartCenter">
@@ -120,7 +120,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       [topbarColor]="topbarColor"
       [topbarTextColor]="topbarTextColor"
     ></app-topbar>
-    <span *ngIf="permissions$ | async as permissions">
+    <span *ngIf="permissions">
       <app-admin-scenario-templates *ngIf="
                                                   showSection === scenarioTemplatesText &&
                                                   permissions.includes(SystemPermission.ViewScenarioTemplates)">

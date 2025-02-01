@@ -77,13 +77,13 @@ export class ScenarioListComponent implements OnInit, OnChanges {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   pageSize = 10;
   pageIndex = 0;
-  displayedRows$: Observable<Scenario[]>;
+  displayedRows: Scenario[] = [];
   totalRows$: Observable<number>;
   sortEvents$: Observable<Sort>;
   pageEvents$: Observable<PageEvent>;
   scenarioDataSource = new MatTableDataSource<Scenario>(new Array<Scenario>());
   filterString = '';
-  permissions$ = this.permissionDataService.permissions$;
+  permissions: SystemPermission[] = [];
   readonly SystemPermission = SystemPermission;
 
   constructor(
@@ -114,6 +114,8 @@ export class ScenarioListComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    console.log('onchanges ' + this.scenarioList.length);
+    this.permissions = this.permissionDataService.permissions;
     if (!!changes.scenarioList && !!changes.scenarioList.currentValue) {
       this.filterByStatus(changes.scenarioList.currentValue);
     }
@@ -138,28 +140,20 @@ export class ScenarioListComponent implements OnInit, OnChanges {
     this.contextMenu.openMenu();
   }
 
-  canManage(id: string): Observable<boolean> {
+  canManage(id: string): boolean {
     return this.permissionDataService.canManageScenario(id);
   }
 
-  canEdit(id: string): Observable<boolean> {
+  canEdit(id: string): boolean {
     return this.permissionDataService.canEditScenario(id);
   }
 
-  canExecute(id: string): Observable<boolean> {
+  canExecute(id: string): boolean {
     return this.permissionDataService.canExecuteScenario(id);
   }
 
-  canDoAnything(id: string): Observable<boolean> {
-    return combineLatest([
-      this.permissionDataService.canManageScenario(id),
-      this.permissionDataService.canEditScenario(id),
-      this.permissionDataService.canExecuteScenario(id),
-    ]).pipe(
-      map(
-        ([canManage, canEdit, canExecute]) => canManage || canEdit || canExecute
-      )
-    );
+  canDoAnything(id: string): boolean {
+    return this.canManage(id) || this.canEdit(id) || this.canExecute(id);
   }
 
   /**
@@ -272,15 +266,15 @@ export class ScenarioListComponent implements OnInit, OnChanges {
    * filters and sorts the displayed rows
    */
   filterAndSort() {
+    console.log('filterandsort ' + this.statusFilteredScenarios.length);
     this.scenarioDataSource.data = this.statusFilteredScenarios;
     this.scenarioDataSource.filter = this.filterString;
     const rows$ = of(this.scenarioDataSource.filteredData);
     this.totalRows$ = rows$.pipe(map((rows) => rows.length));
     if (!!this.sortEvents$ && !!this.pageEvents$) {
-      this.displayedRows$ = rows$.pipe(
-        sortRows(this.sortEvents$),
-        paginateRows(this.pageEvents$)
-      );
+      rows$
+        .pipe(sortRows(this.sortEvents$), paginateRows(this.pageEvents$))
+        .subscribe((rows) => (this.displayedRows = rows));
     }
   }
 

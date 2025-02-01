@@ -50,7 +50,7 @@ export class AdminGroupsComponent implements OnInit, AfterViewInit {
     })
   );
 
-  canEdit$ = this.permissionDataService.hasPermission(
+  canEdit = this.permissionDataService.hasPermission(
     SystemPermission.ManageGroups
   );
 

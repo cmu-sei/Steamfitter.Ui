@@ -53,7 +53,7 @@ export class ScenarioMembershipsComponent
   groupNonMembers$ = this.selectGroups(false);
   groupMembers$ = this.selectGroups(true);
 
-  canEdit$: Observable<boolean>;
+  canEdit: boolean;
 
   constructor(
     private scenarioDataService: ScenarioDataService,
@@ -95,8 +95,7 @@ export class ScenarioMembershipsComponent
     this.scenario$ = this.scenarioQuery.selectEntity(this.scenarioId).pipe(
       filter((x) => x != null),
       tap(
-        (x) =>
-          (this.canEdit$ = this.permissionDataService.canEditScenario(x.id))
+        (x) => (this.canEdit = this.permissionDataService.canEditScenario(x.id))
       )
     );
   }

@@ -36,7 +36,7 @@ import {
   paginateRows,
 } from 'src/app/datasource-utils';
 import { Observable, of, combineLatest } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 
 export interface Action {
   Value: string;
@@ -67,7 +67,7 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   pageSize = 10;
   pageIndex = 0;
-  displayedRows$: Observable<ScenarioTemplate[]>;
+  displayedRows: ScenarioTemplate[] = [];
   totalRows$: Observable<number>;
   sortEvents$: Observable<Sort>;
   pageEvents$: Observable<PageEvent>;
@@ -75,7 +75,7 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
     new Array<ScenarioTemplate>()
   );
   filterString = '';
-  permissions$ = this.permissionDataService.permissions$;
+  permissions: SystemPermission[] = [];
   readonly SystemPermission = SystemPermission;
 
   constructor(
@@ -109,6 +109,7 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    this.permissions = this.permissionDataService.permissions;
     if (
       !!changes.scenarioTemplateList &&
       !!changes.scenarioTemplateList.currentValue
@@ -128,19 +129,16 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
     this.contextMenu.openMenu();
   }
 
-  canManage(id: string): Observable<boolean> {
+  canManage(id: string): boolean {
     return this.permissionDataService.canManageScenarioTemplate(id);
   }
 
-  canEdit(id: string): Observable<boolean> {
+  canEdit(id: string): boolean {
     return this.permissionDataService.canEditScenarioTemplate(id);
   }
 
-  canDoAnything(id: string): Observable<boolean> {
-    return combineLatest([
-      this.permissionDataService.canManageScenarioTemplate(id),
-      this.permissionDataService.canEditScenarioTemplate(id),
-    ]).pipe(map(([canManage, canEdit]) => canManage || canEdit));
+  canDoAnything(id: string): boolean {
+    return this.canManage(id) || this.canEdit(id);
   }
 
   /**
@@ -264,10 +262,13 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
     const rows$ = of(this.scenarioTemplateDataSource.filteredData);
     this.totalRows$ = rows$.pipe(map((rows) => rows.length));
     if (!!this.sortEvents$ && !!this.pageEvents$) {
-      this.displayedRows$ = rows$.pipe(
-        sortRows(this.sortEvents$),
-        paginateRows(this.pageEvents$)
-      );
+      rows$
+        .pipe(
+          sortRows(this.sortEvents$),
+          paginateRows(this.pageEvents$),
+          take(1)
+        )
+        .subscribe((rows) => (this.displayedRows = rows));
     }
   }
 

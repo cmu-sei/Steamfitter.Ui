@@ -25,5 +25,6 @@ export interface ScenarioTemplate {
     vmCredentials?: Array<VmCredential> | null;
     score?: number;
     scoreEarned?: number;
+    scenarioTemplatePermissions?: Array<string> | null;
 }
 

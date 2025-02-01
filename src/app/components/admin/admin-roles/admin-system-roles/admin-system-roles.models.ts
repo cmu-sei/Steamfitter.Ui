@@ -14,7 +14,7 @@ export class SystemRolesModel {
     ],
     [
       SystemPermission.EditScenarioTemplates,
-      'Allows performing most actions in a ScenarioTemplate. Can make changes to the contents of a ScenarioTemplate, including creating and editing Files, Directories, and Workspaces. Can Plan and Apply Workspace Runs.',
+      'Allows performing most actions in a ScenarioTemplate. Can make changes to the contents of a ScenarioTemplate.',
     ],
     [
       SystemPermission.ViewScenarioTemplates,
@@ -25,8 +25,36 @@ export class SystemRolesModel {
       'Allows for making changes to ScenarioTemplate Memberships.',
     ],
     [
+      SystemPermission.CreateScenarios,
+      'Allows creation of new Scenarios. The creating User will be added as a Manager to the new Scenario.',
+    ],
+    [
+      SystemPermission.EditScenarios,
+      'Allows performing most actions in a Scenario. Can make changes to the contents of a Scenario.',
+    ],
+    [
+      SystemPermission.ViewScenarios,
+      'Allows viewing all Scenarios and their Users and Groups. Implictly allows listing all Users and Groups. Enables the Scenarios Administration panel',
+    ],
+    [
+      SystemPermission.ManageScenarios,
+      'Allows for making changes to Scenario Memberships.',
+    ],
+    [
+      SystemPermission.ExecuteScenarios,
+      'Allows executing tasks in a Scenario.',
+    ],
+    [
+      SystemPermission.ManageTasks,
+      'Allows use of the Tasks tab for creating and running tasks independent of a scenario.',
+    ],
+    [
       SystemPermission.ViewGroups,
       'Allows viewing all Groups and Group Memberships. Implicitly allows listing of Users. Enables the Groups Administration panel. ',
+    ],
+    [
+      SystemPermission.ViewRoles,
+      'Allows viewing all Roles and Role Memberships.  Enables the Roles Administration panel. ',
     ],
     [
       SystemPermission.ManageGroups,

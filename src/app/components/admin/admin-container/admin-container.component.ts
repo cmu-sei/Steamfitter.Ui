@@ -38,7 +38,7 @@ export class AdminContainerComponent implements OnDestroy, OnInit {
   topbarColor = '#BB0000';
   topbarTextColor = '#FFFFFF';
   theme$: Observable<Theme>;
-  permissions$ = this.permissionDataService.permissions$;
+  permissions: SystemPermission[] = [];
   readonly SystemPermission = SystemPermission;
 
   constructor(
@@ -85,7 +85,11 @@ export class AdminContainerComponent implements OnDestroy, OnInit {
         }
       });
 
-    this.permissionDataService.load().subscribe();
+    this.permissionDataService
+      .load()
+      .subscribe(
+        (x) => (this.permissions = this.permissionDataService.permissions)
+      );
   }
 
   logout() {

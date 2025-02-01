@@ -11,9 +11,9 @@ Copyright 2025 Carnegie Mellon University. All Rights Reserved.
 </div>
 <div class="d-flex gap-5 justify-content-center">
   <app-scenario-membership-list [users]="nonMembers$ | async" [groups]="groupNonMembers$ | async"
-    [canEdit]="canEdit$ | async" (createMembership)="createMembership($event)"></app-scenario-membership-list>
+    [canEdit]="canEdit" (createMembership)="createMembership($event)"></app-scenario-membership-list>
 
   <app-scenario-member-list [memberships]="memberships$ | async" [users]="members$ | async"
-    [groups]="groupMembers$ | async" [roles]="roles$ | async" [canEdit]="canEdit$ | async"
+    [groups]="groupMembers$ | async" [roles]="roles$ | async" [canEdit]="canEdit"
     (deleteMembership)="deleteMembership($event)" (editMembership)="editMembership($event)"></app-scenario-member-list>
 </div>

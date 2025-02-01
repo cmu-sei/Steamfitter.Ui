@@ -54,7 +54,7 @@ export class ScenarioTemplateMembershipsComponent
   groupNonMembers$ = this.selectGroups(false);
   groupMembers$ = this.selectGroups(true);
 
-  canEdit$: Observable<boolean>;
+  canEdit: boolean;
 
   constructor(
     private scenarioTemplateDataService: ScenarioTemplateDataService,
@@ -101,7 +101,7 @@ export class ScenarioTemplateMembershipsComponent
         filter((x) => x != null),
         tap(
           (x) =>
-            (this.canEdit$ = this.permissionDataService.canEditScenarioTemplate(
+            (this.canEdit = this.permissionDataService.canEditScenarioTemplate(
               x.id
             ))
         )

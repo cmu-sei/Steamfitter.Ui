@@ -22,7 +22,7 @@ export class AdminUsersComponent implements OnInit {
   isLinear = false;
   users$: Observable<User[]>;
   isLoading$: Observable<boolean>;
-  canEdit$ = this.permissionDataService.hasPermission(
+  canEdit = this.permissionDataService.hasPermission(
     SystemPermission.ManageUsers
   );
   topbarColor;

@@ -207,8 +207,8 @@ export class ScenarioTemplateService {
     }
 
     /**
-     * Deletes an ScenarioTemplate
-     * Deletes an ScenarioTemplate with the specified id  &lt;para /&gt;  Accessible only to a SuperUser or a User on an Admin Team within the specified ScenarioTemplate
+     * Deletes a ScenarioTemplate
+     * Deletes a ScenarioTemplate with the specified id  &lt;para /&gt;  Accessible only to a SuperUser or a User on an Admin Team within the specified ScenarioTemplate
      * @param id The id of the ScenarioTemplate to delete
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
@@ -366,8 +366,8 @@ export class ScenarioTemplateService {
     }
 
     /**
-     * Updates an ScenarioTemplate
-     * Updates an ScenarioTemplate with the attributes specified  &lt;para /&gt;  Accessible only to a SuperUser or a User on an Admin Team within the specified ScenarioTemplate
+     * Updates a ScenarioTemplate
+     * Updates a ScenarioTemplate with the attributes specified  &lt;para /&gt;  Accessible only to a SuperUser or a User on an Admin Team within the specified ScenarioTemplate
      * @param id The Id of the Exericse to update
      * @param scenarioTemplateForm The updated ScenarioTemplate values
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
