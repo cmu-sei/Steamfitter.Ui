@@ -10,7 +10,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     mode="side"
     [(opened)]="isSidebarOpen"
   >
-    <mat-list>
+    <mat-list *ngIf="permissions">
       <mat-list-item class="appslist">
         <div class="cssLayoutRowStartCenter">
           <mat-icon
@@ -34,6 +34,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       </mat-list-item>
       <mat-list-item
         class="showhand highlight"
+        *ngIf="permissions.includes(SystemPermission.ViewScenarioTemplates)"
         title="Show {{ section.scenarioTemplates }}"
         (click)="selectTab(section.scenarioTemplates)"
       >
@@ -57,6 +58,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       </mat-list-item>
       <mat-list-item
         class="showhand highlight"
+        *ngIf="permissions.includes(SystemPermission.ViewScenarios)"
         title="Show {{ section.scenarios }}"
         (click)="selectTab(section.scenarios)"
       >
@@ -80,6 +82,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       </mat-list-item>
       <mat-list-item
         class="showhand highlight"
+        *ngIf="permissions.includes(SystemPermission.ManageTasks)"
         title="Show {{ section.taskBuilder }}"
         (click)="selectTab(section.taskBuilder)"
       >

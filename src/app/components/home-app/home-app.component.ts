@@ -20,6 +20,7 @@ import { CurrentUserState } from 'src/app/data/user/user.store';
 import { TopbarView } from './../shared/top-bar/topbar.models';
 import { HealthService } from 'src/app/generated/steamfitter.api';
 import { SystemPermission } from 'src/app/generated/steamfitter.api';
+import { PermissionDataService } from 'src/app/data/permission/permission-data.service';
 
 enum Section {
   taskBuilder = 'Tasks',
@@ -54,6 +55,7 @@ export class HomeAppComponent implements OnDestroy, OnInit {
   theme$: Observable<Theme>;
   username: string;
   readonly SystemPermission = SystemPermission;
+  permissions: SystemPermission[] = [];
 
   constructor(
     private currentUserQuery: CurrentUserQuery,
@@ -65,7 +67,8 @@ export class HomeAppComponent implements OnDestroy, OnInit {
     private settingsService: ComnSettingsService,
     private signalRService: SignalRService,
     private healthService: HealthService,
-    private authQuery: ComnAuthQuery
+    private authQuery: ComnAuthQuery,
+    private permissionDataService: PermissionDataService
   ) {
     this.healthCheck();
 
@@ -102,6 +105,11 @@ export class HomeAppComponent implements OnDestroy, OnInit {
         this.isAuthorizedUser = !!cu.id;
       });
     this.userDataService.setCurrentUser();
+    this.permissionDataService
+      .load()
+      .subscribe(
+        (x) => (this.permissions = this.permissionDataService.permissions)
+      );
   }
 
   selectTab(section: Section) {

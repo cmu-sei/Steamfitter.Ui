@@ -42,7 +42,7 @@ export class TopbarComponent implements OnInit, OnDestroy {
   theme$: Observable<Theme>;
   unsubscribe$: Subject<null> = new Subject<null>();
   TopbarView = TopbarView;
-  canViewAdmin = this.permissionDataService.canViewAdiminstration();
+  canViewAdmin = false;
 
   constructor(
     private authService: ComnAuthService,
@@ -53,7 +53,13 @@ export class TopbarComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.permissionDataService.load().subscribe();
+    this.permissionDataService
+      .load()
+      .subscribe(
+        (x) =>
+          (this.canViewAdmin =
+            this.permissionDataService.canViewAdiminstration())
+      );
 
     this.currentUser$ = this.currentUserQuery.select().pipe(
       filter((user) => user !== null),
