@@ -95,6 +95,14 @@ export class AdminContainerComponent implements OnDestroy, OnInit {
       );
   }
 
+  canViewScenarioTemplateList(): boolean {
+    return this.permissionDataService.canViewScenarioTemplateList();
+  }
+
+  canViewScenarioList(): boolean {
+    return this.permissionDataService.canViewScenarioList();
+  }
+
   logout() {
     this.authService.logout();
   }

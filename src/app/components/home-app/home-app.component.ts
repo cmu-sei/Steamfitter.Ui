@@ -123,6 +123,14 @@ export class HomeAppComponent implements OnDestroy, OnInit {
     this.sidenav.toggle();
   }
 
+  canViewScenarioTemplateList(): boolean {
+    return this.permissionDataService.canViewScenarioTemplateList();
+  }
+
+  canViewScenarioList(): boolean {
+    return this.permissionDataService.canViewScenarioList();
+  }
+
   logout() {
     this.authService.logout();
   }

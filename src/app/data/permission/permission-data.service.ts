@@ -51,6 +51,14 @@ export class PermissionDataService {
     return this._permissions.some((y) => y.startsWith('View'));
   }
 
+  canViewScenarioTemplateList() {
+    return this._permissions.some((y) => y.endsWith('ScenarioTemplates'));
+  }
+
+  canViewScenarioList() {
+    return this._permissions.some((y) => y.endsWith('Scenarios'));
+  }
+
   hasPermission(permission: SystemPermission) {
     return this._permissions.includes(permission);
   }

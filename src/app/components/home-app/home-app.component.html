@@ -34,7 +34,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       </mat-list-item>
       <mat-list-item
         class="showhand highlight"
-        *ngIf="permissions.includes(SystemPermission.ViewScenarioTemplates)"
+        *ngIf="canViewScenarioTemplateList()"
         title="Show {{ section.scenarioTemplates }}"
         (click)="selectTab(section.scenarioTemplates)"
       >
@@ -58,7 +58,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       </mat-list-item>
       <mat-list-item
         class="showhand highlight"
-        *ngIf="permissions.includes(SystemPermission.ViewScenarios)"
+        *ngIf="canViewScenarioList()"
         title="Show {{ section.scenarios }}"
         (click)="selectTab(section.scenarios)"
       >
@@ -163,13 +163,13 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 
     <span *ngIf="!apiIsSick && isAuthorizedUser">
       <app-scenario-templates
-        *ngIf="selectedSection === section.scenarioTemplates"
+        *ngIf="selectedSection === section.scenarioTemplates && canViewScenarioTemplateList()"
       ></app-scenario-templates>
       <app-scenarios
-        *ngIf="selectedSection === section.scenarios"
+        *ngIf="selectedSection === section.scenarios && canViewScenarioList()"
       ></app-scenarios>
       <app-vm-task-execute
-        *ngIf="selectedSection === section.taskBuilder"
+        *ngIf="selectedSection === section.taskBuilder && permissions.includes(SystemPermission.ManageTasks)"
       ></app-vm-task-execute>
       <app-history *ngIf="selectedSection === section.history"></app-history>
     </span>

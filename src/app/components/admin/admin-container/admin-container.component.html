@@ -41,7 +41,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           </div>
         </div>
       </mat-list-item>
-      <mat-list-item *ngIf="permissions.includes(SystemPermission.ViewScenarioTemplates)">
+      <mat-list-item *ngIf="canViewScenarioTemplateList()">
         <div class="showhand" id="wrapper" (click)="adminGotoScenarioTemplates()">
           <div id="lefticon">
             <mat-icon class="mdi-24px" fontIcon="mdi-view-list"></mat-icon>
@@ -56,7 +56,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           </div>
           </div>
           </mat-list-item>
-          <mat-list-item *ngIf="permissions.includes(SystemPermission.ViewScenarios)">
+          <mat-list-item *ngIf="canViewScenarioList()">
             <div class="showhand" id="wrapper" (click)="adminGotoScenarios()">
               <div id="lefticon">
                 <mat-icon class="mdi-24px" fontIcon="mdi-playlist-play"></mat-icon>
@@ -122,12 +122,12 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     ></app-topbar>
     <span *ngIf="permissions">
       <app-admin-scenario-templates *ngIf="
-                                                  showSection === scenarioTemplatesText &&
-                                                  permissions.includes(SystemPermission.ViewScenarioTemplates)">
+        showSection === scenarioTemplatesText &&
+        canViewScenarioTemplateList()">
       </app-admin-scenario-templates>
       <app-admin-scenarios *ngIf="
-                                                  showSection === scenariosText &&
-                                                  permissions.includes(SystemPermission.ViewScenarios)">
+        showSection === scenariosText &&
+        canViewScenarioList()">
       </app-admin-scenarios>
       <app-admin-users
         *ngIf="
