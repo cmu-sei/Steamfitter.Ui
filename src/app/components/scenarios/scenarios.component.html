@@ -7,20 +7,13 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   <div class="add-margin">
     <div>
       <app-scenario-list
-        [scenarioList]="scenarioList | async"
-        [pageSize]="pageSize | async"
-        [pageIndex]="pageIndex | async"
-        [selectedScenario]="selectedScenario | async"
-        [isLoading]="isLoading | async"
-        [filterControl]="filterControl"
-        [filterString]="filterString | async"
-        [views]="views | async"
-        [statuses]="statuses | async"
-        (setActive)="setActive($event)"
+        [scenarioList]="scenarioList$ | async"
+        [selectedScenario]="selectedScenario$ | async"
+        [isLoading]="isLoading$ | async"
+        [views]="views$ | async"
+        [statuses]="statuses$ | async"
+        (itemSelected)="setActive($event)"
         (saveScenario)="saveScenario($event)"
-        (sortChange)="sortChangeHandler($event)"
-        (pageChange)="pageChangeHandler($event)"
-        (filterStatusChange)="filterStatusChangeHandler($event)"
       ></app-scenario-list>
     </div>
   </div>

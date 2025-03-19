@@ -6,12 +6,18 @@ import { ComnAuthService, ComnSettingsService } from '@cmusei/crucible-common';
 import * as signalR from '@microsoft/signalr';
 import { ResultDataService } from 'src/app/data/result/result-data.service';
 import { ScenarioTemplateDataService } from 'src/app/data/scenario-template/scenario-template-data.service';
+import { ScenarioTemplateMembershipDataService } from 'src/app/data/scenario-template/scenario-template-membership-data.service';
 import { ScenarioDataService } from 'src/app/data/scenario/scenario-data.service';
+import { ScenarioMembershipDataService } from 'src/app/data/scenario/scenario-membership-data.service';
 import { TaskDataService } from 'src/app/data/task/task-data.service';
+import { GroupMembershipService } from 'src/app/data/group/group-membership.service';
 import {
+  GroupMembership,
   Result,
   Scenario,
+  ScenarioMembership,
   ScenarioTemplate,
+  ScenarioTemplateMembership,
   Task,
 } from 'src/app/generated/steamfitter.api';
 
@@ -28,7 +34,10 @@ export class SignalRService {
   constructor(
     private authService: ComnAuthService,
     private scenarioTemplateDataService: ScenarioTemplateDataService,
+    private scenarioTemplateMembershipDataService: ScenarioTemplateMembershipDataService,
     private scenarioDataService: ScenarioDataService,
+    private scenarioMembershipDataService: ScenarioMembershipDataService,
+    private groupMembershipDataService: GroupMembershipService,
     private taskDataService: TaskDataService,
     private resultDataService: ResultDataService,
     private settingsService: ComnSettingsService
@@ -68,9 +77,12 @@ export class SignalRService {
 
   private addHandlers() {
     this.addScenarioTemplateHandlers();
+    this.addScenarioTemplateMembershipHandlers();
     this.addScenarioHandlers();
+    this.addScenarioMembershipHandlers();
     this.addTaskHandlers();
     this.addResultHandlers();
+    this.addGroupMembershipHandlers();
   }
 
   private addScenarioTemplateHandlers() {
@@ -93,6 +105,30 @@ export class SignalRService {
     });
   }
 
+  private addScenarioTemplateMembershipHandlers() {
+    this.hubConnection.on(
+      'ScenarioTemplateMembershipCreated',
+      (scenarioTemplateMembership: ScenarioTemplateMembership) => {
+        this.scenarioTemplateMembershipDataService.updateStore(
+          scenarioTemplateMembership
+        );
+      }
+    );
+
+    this.hubConnection.on(
+      'ScenarioTemplateMembershipUpdated',
+      (scenarioTemplateMembership: ScenarioTemplateMembership) => {
+        this.scenarioTemplateMembershipDataService.updateStore(
+          scenarioTemplateMembership
+        );
+      }
+    );
+
+    this.hubConnection.on('ScenarioTemplateMembershipDeleted', (id: string) => {
+      this.scenarioTemplateMembershipDataService.deleteFromStore(id);
+    });
+  }
+
   private addScenarioHandlers() {
     this.hubConnection.on('ScenarioCreated', (scenario: Scenario) => {
       this.scenarioDataService.updateStore(scenario);
@@ -104,6 +140,46 @@ export class SignalRService {
 
     this.hubConnection.on('ScenarioDeleted', (id: string) => {
       this.scenarioDataService.deleteFromStore(id);
+    });
+  }
+
+  private addScenarioMembershipHandlers() {
+    this.hubConnection.on(
+      'ScenarioMembershipCreated',
+      (scenarioMembership: ScenarioMembership) => {
+        this.scenarioMembershipDataService.updateStore(scenarioMembership);
+      }
+    );
+
+    this.hubConnection.on(
+      'ScenarioMembershipUpdated',
+      (scenarioMembership: ScenarioMembership) => {
+        this.scenarioMembershipDataService.updateStore(scenarioMembership);
+      }
+    );
+
+    this.hubConnection.on('ScenarioMembershipDeleted', (id: string) => {
+      this.scenarioMembershipDataService.deleteFromStore(id);
+    });
+  }
+
+  private addGroupMembershipHandlers() {
+    this.hubConnection.on(
+      'GroupMembershipCreated',
+      (groupMembership: GroupMembership) => {
+        this.groupMembershipDataService.updateStore(groupMembership);
+      }
+    );
+
+    this.hubConnection.on(
+      'GroupMembershipUpdated',
+      (groupMembership: GroupMembership) => {
+        this.groupMembershipDataService.updateStore(groupMembership);
+      }
+    );
+
+    this.hubConnection.on('GroupMembershipDeleted', (id: string) => {
+      this.groupMembershipDataService.deleteFromStore(id);
     });
   }
 

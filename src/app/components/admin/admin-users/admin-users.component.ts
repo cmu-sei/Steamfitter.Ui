@@ -1,15 +1,15 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { UntypedFormControl } from '@angular/forms';
-import { LegacyPageEvent as PageEvent } from '@angular/material/legacy-paginator';
-import { Sort } from '@angular/material/sort';
-import {
-  Permission,
-  User,
-  UserPermission,
-} from 'src/app/generated/steamfitter.api/model/models';
+import { Component, OnInit } from '@angular/core';
+import { ErrorStateMatcher } from '@angular/material/core';
+import { UntypedFormControl, FormGroupDirective, NgForm } from '@angular/forms';
+import { UserDataService } from 'src/app/data/user/user-data.service';
+import { UserQuery } from 'src/app/data/user/user.query';
+import { SystemPermission, User } from 'src/app/generated/steamfitter.api';
+import { Observable } from 'rxjs';
+import { map, take } from 'rxjs/operators';
+import { PermissionDataService } from 'src/app/data/permission/permission-data.service';
 import { ComnSettingsService } from '@cmusei/crucible-common';
 
 @Component({
@@ -18,80 +18,48 @@ import { ComnSettingsService } from '@cmusei/crucible-common';
   styleUrls: ['./admin-users.component.scss'],
 })
 export class AdminUsersComponent implements OnInit {
-  @Input() filterControl: UntypedFormControl;
-  @Input() filterString: string;
-  @Input() userList: User[];
-  @Input() permissionList: Permission[];
-  @Input() pageSize: number;
-  @Input() pageIndex: number;
-  @Output() removeUserPermission = new EventEmitter<UserPermission>();
-  @Output() addUserPermission = new EventEmitter<UserPermission>();
-  @Output() addUser = new EventEmitter<User>();
-  @Output() deleteUser = new EventEmitter<User>();
-  @Output() sortChange = new EventEmitter<Sort>();
-  @Output() pageChange = new EventEmitter<PageEvent>();
-  addingNewUser = false;
-  newUser: User = { id: '', name: '' };
-  isLoading = false;
-  topbarColor = '#BB0000';
+  matcher = new UserErrorStateMatcher();
+  isLinear = false;
+  users$: Observable<User[]>;
+  isLoading$: Observable<boolean>;
+  canEdit = this.permissionDataService.hasPermission(
+    SystemPermission.ManageUsers
+  );
+  topbarColor;
 
-  constructor(private settingsService: ComnSettingsService) {
-    this.topbarColor = this.settingsService.settings.AppTopBarHexColor
-      ? this.settingsService.settings.AppTopBarHexColor
-      : this.topbarColor;
-  }
+  constructor(
+    private userDataService: UserDataService,
+    private userQuery: UserQuery,
+    private settingsService: ComnSettingsService,
+    private permissionDataService: PermissionDataService
+  ) {}
 
+  /**
+   * Initialize component
+   */
   ngOnInit() {
-    this.filterControl.setValue(this.filterString);
+    this.users$ = this.userQuery.selectAll();
+    this.userDataService.load().pipe(take(1)).subscribe();
+    this.isLoading$ = this.userQuery.selectLoading();
+    this.topbarColor = this.settingsService.settings.AppTopBarHexColor;
   }
 
-  hasPermission(permissionId: string, user: User) {
-    return user.permissions.some((p) => p.id === permissionId);
+  create(newUser: User) {
+    this.userDataService.create(newUser).pipe(take(1)).subscribe();
   }
 
-  toggleUserPermission(user: User, permissionId: string) {
-    const userPermission: UserPermission = {
-      userId: user.id,
-      permissionId: permissionId,
-    };
-    if (this.hasPermission(permissionId, user)) {
-      this.removeUserPermission.emit(userPermission);
-    } else {
-      this.addUserPermission.emit(userPermission);
-    }
+  deleteUser(userId: string) {
+    this.userDataService.delete(userId).pipe(take(1)).subscribe();
   }
+} // End Class
 
-  addUserRequest(isAdd: boolean) {
-    if (isAdd) {
-      this.addUser.emit(this.newUser);
-    }
-    this.newUser.id = '';
-    this.newUser.name = '';
-    this.addingNewUser = false;
-  }
-
-  deleteUserRequest(user: User) {
-    this.deleteUser.emit(user);
-  }
-
-  applyFilter(filterValue: string) {
-    this.filterControl.setValue(filterValue);
-  }
-
-  sortChanged(sort: Sort) {
-    this.sortChange.emit(sort);
-  }
-
-  paginatorEvent(page: PageEvent) {
-    this.pageChange.emit(page);
-  }
-
-  paginateUsers(users: User[], pageIndex: number, pageSize: number) {
-    if (!users) {
-      return [];
-    }
-    const startIndex = pageIndex * pageSize;
-    const copy = users.slice();
-    return copy.splice(startIndex, pageSize);
+/** Error when invalid control is dirty, touched, or submitted. */
+export class UserErrorStateMatcher implements ErrorStateMatcher {
+  isErrorState(
+    control: UntypedFormControl | null,
+    form: FormGroupDirective | NgForm | null
+  ): boolean {
+    const isSubmitted = form && form.submitted;
+    return !!(control && control.invalid && (control.dirty || isSubmitted));
   }
 }

@@ -97,23 +97,6 @@ export class ResultDataService {
     );
   }
 
-  load() {
-    this.resultStore.setLoading(true);
-    this.resetStore();
-    this.resultService
-      .getResults()
-      .pipe(
-        tap(() => {
-          this.resultStore.setLoading(false);
-        }),
-        take(1)
-      )
-      .subscribe((results) => {
-        results.forEach((r) => this.setAsDates(r));
-        this.setStore(results);
-      });
-  }
-
   loadByScenario(scenarioId: string) {
     this.resetStore();
     this.resultService

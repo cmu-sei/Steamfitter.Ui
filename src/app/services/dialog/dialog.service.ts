@@ -8,8 +8,7 @@ import {
   MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA,
 } from '@angular/material/legacy-dialog';
 import { Injectable } from '@angular/core';
-import { ConfirmDialogComponent } from '../../components/shared/confirm-dialog/confirm-dialog.component';
-
+import { ConfirmDialogComponent } from 'src/app/components/shared/confirm-dialog/components/confirm-dialog.component';
 @Injectable()
 export class DialogService {
   constructor(private dialog: MatDialog) {}
@@ -19,8 +18,9 @@ export class DialogService {
     message: string,
     data?: any
   ): Observable<boolean> {
-    let dialogRef: MatDialogRef<ConfirmDialogComponent>;
-    dialogRef = this.dialog.open(ConfirmDialogComponent, { data: data || {} });
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: data || {},
+    });
     dialogRef.componentInstance.title = title;
     dialogRef.componentInstance.message = message;
 

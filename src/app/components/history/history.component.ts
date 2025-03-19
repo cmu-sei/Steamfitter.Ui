@@ -12,8 +12,8 @@ import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatLegacyPaginator as MatPaginator, LegacyPageEvent as PageEvent } from '@angular/material/legacy-paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatLegacyTableDataSource as MatTableDataSource } from '@angular/material/legacy-table';
-import { Subject } from 'rxjs';
-import { takeUntil, withLatestFrom } from 'rxjs/operators';
+import { Subject, Observable } from 'rxjs';
+import { take, takeUntil } from 'rxjs/operators';
 import { PlayerDataService } from 'src/app/data/player/player-data-service';
 import { ResultDataService } from 'src/app/data/result/result-data.service';
 import { ResultQuery } from 'src/app/data/result/result.query';
@@ -21,6 +21,7 @@ import { TaskDataService } from 'src/app/data/task/task-data.service';
 import { UserDataService } from 'src/app/data/user/user-data.service';
 import { Result, User, View, Vm } from 'src/app/generated/steamfitter.api';
 import { ComnSettingsService } from '@cmusei/crucible-common';
+import { UserQuery } from 'src/app/data/user/user.query';
 
 enum HistoryView {
   user = 'User',
@@ -60,8 +61,9 @@ export class HistoryComponent implements OnInit, OnDestroy {
   loading = false;
   apiResponded = false;
   historyView = HistoryView.user;
-  filterValue = undefined;
-  userList: User[] = [];
+  filterValue = '';
+  users$: Observable<User[]>;
+  isLoading$: Observable<boolean>;
   selectedUser: User;
   viewList: View[] = [];
   selectedView: View;
@@ -76,10 +78,11 @@ export class HistoryComponent implements OnInit, OnDestroy {
   constructor(
     private resultQuery: ResultQuery,
     private taskDataService: TaskDataService,
-    private userDataService: UserDataService,
+    private userQuery: UserQuery,
     private playerDataService: PlayerDataService,
     private resultDataService: ResultDataService,
-    private settingsService: ComnSettingsService
+    private settingsService: ComnSettingsService,
+    private userDataService: UserDataService
   ) {
     this.loading = true;
     this.apiResponded = false;
@@ -100,35 +103,14 @@ export class HistoryComponent implements OnInit, OnDestroy {
           console.log('API is not responding:', error.message);
         }
       );
-    this.userDataService.users
-      .pipe(
-        withLatestFrom(this.userDataService.loggedInUser),
-        takeUntil(this.unsubscribe$)
-      )
-      .subscribe(([users, user]) => {
-        this.userList =
-          !!users && users.length > 0
-            ? users.sort((a: User, b: User) =>
-              a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1
-            )
-            : [];
-
-        this.selectedUser = this.userList.find(
-          (u) => u.id === user.profile.sub
-        );
-        if (this.historyView === HistoryView.user) {
-          this.handleUserChange(this.selectedUser);
-        }
-      });
-    this.userDataService.getUsersFromApi();
     this.playerDataService.viewList
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((views) => {
         this.viewList =
           !!views && views.length > 0
             ? views.sort((a: User, b: User) =>
-              a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1
-            )
+                a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1
+              )
             : [];
       });
     this.playerDataService.vms
@@ -137,8 +119,8 @@ export class HistoryComponent implements OnInit, OnDestroy {
         this.vmList =
           !!vms && vms.length > 0
             ? vms.sort((a: User, b: User) =>
-              a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1
-            )
+                a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1
+              )
             : [];
       });
     this.playerDataService.selectView('');
@@ -148,6 +130,10 @@ export class HistoryComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.users$ = this.userQuery.selectAll();
+    this.userDataService.load().pipe(take(1)).subscribe();
+    this.isLoading$ = this.userQuery.selectLoading();
+
     this.modelDataSource.paginator = this.paginator;
     this.modelDataSource.sort = this.sort;
 
@@ -157,8 +143,9 @@ export class HistoryComponent implements OnInit, OnDestroy {
   }
 
   applyFilter(filterValue: string) {
+    this.filterValue = filterValue.trim().toLowerCase();
     this.pageEvent.pageIndex = 0;
-    this.modelDataSource.filter = filterValue.trim().toLowerCase();
+    this.modelDataSource.filter = this.filterValue;
   }
 
   handleHistoryViewChange(historyView: HistoryView) {

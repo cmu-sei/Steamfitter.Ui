@@ -1,6 +1,7 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
-import { Component, OnDestroy, ViewChild } from '@angular/core';
+
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { MatSidenav } from '@angular/material/sidenav';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, Observable } from 'rxjs';
@@ -10,11 +11,16 @@ import {
   ComnSettingsService,
   Theme,
   ComnAuthQuery,
+  ComnAuthService,
 } from '@cmusei/crucible-common';
 import { SignalRService } from 'src/app/services/signalr/signalr.service';
 import { UserDataService } from '../../data/user/user-data.service';
+import { CurrentUserQuery } from 'src/app/data/user/user.query';
+import { CurrentUserState } from 'src/app/data/user/user.store';
 import { TopbarView } from './../shared/top-bar/topbar.models';
 import { HealthService } from 'src/app/generated/steamfitter.api';
+import { SystemPermission } from 'src/app/generated/steamfitter.api';
+import { PermissionDataService } from 'src/app/data/permission/permission-data.service';
 
 enum Section {
   taskBuilder = 'Tasks',
@@ -28,14 +34,15 @@ enum Section {
   templateUrl: './home-app.component.html',
   styleUrls: ['./home-app.component.scss'],
 })
-export class HomeAppComponent implements OnDestroy {
+export class HomeAppComponent implements OnDestroy, OnInit {
   @ViewChild('sidenav') sidenav: MatSidenav;
   apiIsSick = false;
   apiMessage = 'The API web service is not responding.';
   titleText = 'Steamfitter';
   section = Section;
   selectedSection: Section;
-  loggedInUser = this.userDataService.loggedInUser;
+  loggedInUser = this.currentUserQuery.select();
+  currentUser$: Observable<CurrentUserState>;
   isSuperUser = false;
   isAuthorizedUser = false;
   isSidebarOpen = true;
@@ -46,8 +53,13 @@ export class HomeAppComponent implements OnDestroy {
   topbarTextColor = '#FFFFFF';
   TopbarView = TopbarView;
   theme$: Observable<Theme>;
+  username: string;
+  readonly SystemPermission = SystemPermission;
+  permissions: SystemPermission[] = [];
 
   constructor(
+    private currentUserQuery: CurrentUserQuery,
+    private authService: ComnAuthService,
     private userDataService: UserDataService,
     private router: Router,
     activatedRoute: ActivatedRoute,
@@ -55,7 +67,8 @@ export class HomeAppComponent implements OnDestroy {
     private settingsService: ComnSettingsService,
     private signalRService: SignalRService,
     private healthService: HealthService,
-    private authQuery: ComnAuthQuery
+    private authQuery: ComnAuthQuery,
+    private permissionDataService: PermissionDataService
   ) {
     this.healthCheck();
 
@@ -68,16 +81,6 @@ export class HomeAppComponent implements OnDestroy {
       .subscribe((params) => {
         this.selectedSection = (params.get('tab') ||
           Section.taskBuilder) as Section;
-      });
-    this.userDataService.isSuperUser
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe((isSuper) => {
-        this.isSuperUser = isSuper;
-      });
-    this.userDataService.isAuthorizedUser
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe((isAuthorized) => {
-        this.isAuthorizedUser = isAuthorized;
       });
     this.signalRService.joinSystem();
 
@@ -93,6 +96,22 @@ export class HomeAppComponent implements OnDestroy {
       : this.titleText;
   }
 
+  ngOnInit() {
+    this.currentUserQuery
+      .select()
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((cu) => {
+        this.username = cu.name;
+        this.isAuthorizedUser = !!cu.id;
+      });
+    this.userDataService.setCurrentUser();
+    this.permissionDataService
+      .load()
+      .subscribe(
+        (x) => (this.permissions = this.permissionDataService.permissions)
+      );
+  }
+
   selectTab(section: Section) {
     this.router.navigate([], {
       queryParams: { tab: section },
@@ -104,8 +123,16 @@ export class HomeAppComponent implements OnDestroy {
     this.sidenav.toggle();
   }
 
+  canViewScenarioTemplateList(): boolean {
+    return this.permissionDataService.canViewScenarioTemplateList();
+  }
+
+  canViewScenarioList(): boolean {
+    return this.permissionDataService.canViewScenarioList();
+  }
+
   logout() {
-    this.userDataService.logout();
+    this.authService.logout();
   }
 
   inIframe() {
@@ -117,20 +144,19 @@ export class HomeAppComponent implements OnDestroy {
   }
 
   healthCheck() {
-    this.healthService
-      .healthGetReadiness('body')
-      .subscribe(
-        (message) => {
-          this.apiIsSick = message !== 'Healthy';
-          this.apiMessage = message;
-        },
-        (error) => {
-          this.apiIsSick = true;
-        }
-      );
+    this.healthService.healthGetReadiness('body').subscribe(
+      (message) => {
+        this.apiIsSick = message !== 'Healthy';
+        this.apiMessage = message;
+      },
+      (error) => {
+        this.apiIsSick = true;
+      }
+    );
   }
 
   ngOnDestroy() {
+    this.signalRService.leaveSystem();
     this.unsubscribe$.next(null);
     this.unsubscribe$.complete();
   }

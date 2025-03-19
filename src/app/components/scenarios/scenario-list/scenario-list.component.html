@@ -15,39 +15,40 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     svgIcon="ic_magnify_search"
   ></mat-icon>
   <mat-form-field class="search-field">
-    <input matInput placeholder="Search" [formControl]="filterControl" />
+    <input matInput [(ngModel)]="filterString" (keyup)="applyFilter($event.target.value)" placeholder="Search" />
   </mat-form-field>
   <div class="clear-search">
     <button
       mat-icon-button
-      (click)="clearFilter()"
+      (click)="applyFilter('')"
       class="no-outline"
       title="Clear Search"
     >
       <mat-icon class="scale-85" svgIcon="ic_cancel_circle"></mat-icon>
     </button>
   </div>
-  <div>
-    <button mat-stroked-button (click)="editScenario(null)">
+  <div class="button-end">
+    <button *ngIf="!adminMode && permissions.includes(SystemPermission.CreateScenarios)" mat-stroked-button
+      (click)="editScenario(null)">
       Add Scenario
     </button>
   </div>
   <div class="status-div">
     <mat-checkbox
       [(ngModel)]="showStatus.active"
-      (change)="filterStatus()"
+      (change)="filterByStatus(scenarioList)"
       class="checkbox-text"
       >Active</mat-checkbox
     ><br />
     <mat-checkbox
       [(ngModel)]="showStatus.ended"
-      (change)="filterStatus()"
+      (change)="filterByStatus(scenarioList)"
       class="checkbox-text"
       >Ended</mat-checkbox
     ><br />
     <mat-checkbox
       [(ngModel)]="showStatus.ready"
-      (change)="filterStatus()"
+      (change)="filterByStatus(scenarioList)"
       class="checkbox-text"
       >Ready</mat-checkbox
     >
@@ -55,19 +56,17 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   <div class="button-end">
     <mat-paginator
       #paginator
-      [length]="scenarioList?.length"
-      [pageIndex]="pageIndex"
-      [pageSize]="pageSize"
+      [length]="totalRows$ | async"
+      [pageIndex]="0"
+      [pageSize]="20"
       [pageSizeOptions]="[5, 10, 15, 20, 25, 50, 100, 200]"
-      (page)="paginatorEvent($event)"
     ></mat-paginator>
   </div>
 </div>
 
-<mat-accordion displayMode="flat" multi>
+<mat-accordion displayMode="flat">
   <section
     matSort
-    (matSortChange)="sortChanged($event)"
     class="mat-elevation-z2 mat-header-row"
   >
     <span class="mat-header-cell four-cell" mat-sort-header="name"><span class="name-header">Name</span></span>
@@ -82,11 +81,13 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 
   <mat-expansion-panel
     *ngFor="
-      let item of paginateScenarios(scenarioList, pageIndex, pageSize);
+      let item of displayedRows;
       trackBy: trackByFn
     "
-    [expanded]="selectedScenario && item.id == selectedScenario.id"
-    (click)="selectScenario(item.id)"
+    [expanded]="
+      selectedScenario && item.id == selectedScenario.id
+    "
+    (click)="selectScenario($event, item.id)"
   >
     <mat-expansion-panel-header
       class="mat-row"
@@ -94,6 +95,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     >
       <div class="mat-cell flex-row-cell four-cell">
         <button
+          *ngIf="!adminMode && permissions.includes(SystemPermission.CreateScenarios)"
           mat-icon-button
           class="copy-button"
           ngxClipboard
@@ -104,6 +106,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           <mat-icon class="mdi-20px copy-icon" fontIcon="mdi-content-copy"></mat-icon>
         </button>
         <button
+          *ngIf="!adminMode && canDoAnything(item.id)"
           mat-icon-button
           class="menu-button"
           ngxClipboard
@@ -128,8 +131,8 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       <div class="mat-cell two-cell center-self">{{ item.description }}</div>
     </mat-expansion-panel-header>
     <ng-template matExpansionPanelContent>
-      <app-scenario-edit [scenario]="item"></app-scenario-edit>
-    </ng-template>
+      <app-scenario-edit [scenario]="selectedScenario"></app-scenario-edit>
+      </ng-template>
   </mat-expansion-panel>
 </mat-accordion>
 
@@ -151,27 +154,28 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 ></div>
 <mat-menu #contextMenu="matMenu">
   <ng-template matMenuContent let-item="item">
-    <button mat-menu-item (click)="editScenario(item)">
+    <button mat-menu-item (click)="editScenario(item)" *ngIf="canEdit(item.id)">
       Edit
     </button>
-    <button mat-menu-item (click)="copyScenario(item)">
+    <button mat-menu-item (click)="copyScenario(item)"
+      *ngIf="permissions.includes(SystemPermission.CreateScenarios)">
       Copy
     </button>
     <button
       mat-menu-item
       (click)="startScenario(item)"
-      *ngIf="item.status === 'ready' && !!item.viewId"
+      *ngIf="item.status === 'ready' && !!item.viewId && canExecute(item.id)"
     >
       Start
     </button>
     <button
       mat-menu-item
       (click)="endScenario(item)"
-      *ngIf="item.status === 'active'"
+      *ngIf="item.status === 'active' && canExecute(item.id)"
     >
       End
     </button>
-    <button mat-menu-item (click)="deleteScenario(item)">
+    <button mat-menu-item (click)="deleteScenario(item)" *ngIf="canManage(item.id)">
       Delete
     </button>
   </ng-template>

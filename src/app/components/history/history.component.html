@@ -40,7 +40,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             [(value)]="selectedUser"
             (selectionChange)="handleUserChange($event.value)"
           >
-            <mat-option *ngFor="let user of userList" [value]="user">{{
+            <mat-option *ngFor="let user of users$ | async" [value]="user">{{
               user.name
             }}</mat-option>
           </mat-select>
@@ -81,10 +81,14 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         <mat-form-field>
           <input
             matInput
-            placeholder="Filter Results"
+            [(ngModel)]="filterValue"
+            placeholder="Search"
             (keyup)="applyFilter($event.target.value)"
           />
         </mat-form-field>
+        <button class="no-outline" mat-icon-button (click)="applyFilter('')" title="Clear Search">
+          <mat-icon class="scale-85" svgIcon="ic_cancel_circle"></mat-icon>
+        </button>
       </h4>
     </div>
   </div>

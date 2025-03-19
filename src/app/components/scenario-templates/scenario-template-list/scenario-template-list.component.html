@@ -12,39 +12,38 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     svgIcon="ic_magnify_search"
   ></mat-icon>
   <mat-form-field class="search-field">
-    <input matInput placeholder="Search" [formControl]="filterControl" />
+    <input matInput [(ngModel)]="filterString" (keyup)="applyFilter($event.target.value)" placeholder="Search" />
   </mat-form-field>
   <div class="clear-search">
     <button
       class="no-outline"
       mat-icon-button
-      (click)="clearFilter()"
+      (click)="applyFilter('')"
       title="Clear Search"
     >
       <mat-icon class="scale-85" svgIcon="ic_cancel_circle"></mat-icon>
     </button>
   </div>
   <div class="button-end">
-    <button mat-stroked-button (click)="editScenarioTemplate(null)">
+    <button *ngIf="!adminMode && permissions.includes(SystemPermission.CreateScenarioTemplates)"
+      mat-stroked-button (click)="editScenarioTemplate(null)">
       Add Scenario Template
     </button>
   </div>
   <div class="button-end">
     <mat-paginator
-      #paginator
-      [length]="scenarioTemplateList?.length"
-      [pageIndex]="pageIndex"
-      [pageSize]="pageSize"
-      [pageSizeOptions]="[5, 10, 15, 20, 25, 50, 100, 200]"
-      (page)="paginatorEvent($event)"
-    ></mat-paginator>
+    #paginator
+    [length]="totalRows$ | async"
+    [pageIndex]="0"
+    [pageSize]="20"
+    [pageSizeOptions]="[5, 10, 15, 20, 25, 50, 100, 200]"
+  ></mat-paginator>
   </div>
 </div>
 
 <mat-accordion displayMode="flat">
   <section
     matSort
-    (matSortChange)="sortChanged($event)"
     class="mat-elevation-z2 mat-header-row"
   >
     <span class="mat-header-cell four-cell" mat-sort-header="name"><span class="name-header">Name</span></span>
@@ -55,17 +54,13 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 
   <mat-expansion-panel
     *ngFor="
-      let item of paginateScenarioTemplates(
-        scenarioTemplateList,
-        pageIndex,
-        pageSize
-      );
+      let item of displayedRows;
       trackBy: trackByFn
     "
     [expanded]="
       selectedScenarioTemplate && item.id == selectedScenarioTemplate.id
     "
-    (click)="selectScenarioTemplate(item.id)"
+    (click)="selectScenarioTemplate($event, item.id)"
   >
     <mat-expansion-panel-header
       class="mat-row"
@@ -73,6 +68,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     >
       <div class="mat-cell flex-row-cell four-cell">
         <button
+        *ngIf="!adminMode && permissions.includes(SystemPermission.CreateScenarioTemplates)"
           mat-icon-button
           class="copy-button"
           ngxClipboard
@@ -83,6 +79,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           <mat-icon class="mdi-20px copy-icon" fontIcon="mdi-content-copy"></mat-icon>
         </button>
         <button
+          *ngIf="!adminMode && canDoAnything(item.id)"
           mat-icon-button
           class="menu-button"
           ngxClipboard
@@ -122,16 +119,18 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 ></div>
 <mat-menu #contextMenu="matMenu">
   <ng-template matMenuContent let-item="item">
-    <button mat-menu-item (click)="editScenarioTemplate(item)">
+    <button mat-menu-item (click)="editScenarioTemplate(item)" *ngIf="canEdit(item.id)">
       Edit
     </button>
-    <button mat-menu-item (click)="copyScenarioTemplate(item)">
+    <button mat-menu-item (click)="copyScenarioTemplate(item)"
+      *ngIf="permissions.includes(SystemPermission.CreateScenarioTemplates)">
       Copy
     </button>
-    <button mat-menu-item (click)="deleteScenarioTemplate(item)">
+    <button mat-menu-item (click)="deleteScenarioTemplate(item)" *ngIf="canManage(item.id)">
       Delete
     </button>
-    <button mat-menu-item (click)="createScenario(item)">
+    <button mat-menu-item (click)="createScenario(item)"
+      *ngIf="permissions.includes(SystemPermission.CreateScenarios)">
       Create a Scenario
     </button>
   </ng-template>

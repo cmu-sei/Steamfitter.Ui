@@ -1,89 +1,60 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
-import { Component, OnDestroy } from '@angular/core';
-import { UntypedFormControl } from '@angular/forms';
-import { LegacyPageEvent as PageEvent } from '@angular/material/legacy-paginator';
-import { Sort } from '@angular/material/sort';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
-import { map, takeUntil } from 'rxjs/operators';
-import { PermissionService } from 'src/app/generated/steamfitter.api/api/api';
-import {
-  Permission,
-  User,
-  UserPermission,
-} from 'src/app/generated/steamfitter.api/model/models';
-import { UserDataService } from '../../../data/user/user-data.service';
+import { takeUntil } from 'rxjs/operators';
+import { PermissionDataService } from 'src/app/data/permission/permission-data.service';
+import { SystemPermission } from 'src/app/generated/steamfitter.api';
+import { UserDataService } from 'src/app/data/user/user-data.service';
 import { TopbarView } from './../../shared/top-bar/topbar.models';
+import { RouterQuery } from '@datorama/akita-ng-router-store';
 import {
   ComnSettingsService,
   ComnAuthQuery,
+  ComnAuthService,
   Theme,
 } from '@cmusei/crucible-common';
+import { CurrentUserQuery } from 'src/app/data/user/user.query';
+import { SignalRService } from 'src/app/services/signalr/signalr.service';
 
 @Component({
   selector: 'app-admin-container',
   templateUrl: './admin-container.component.html',
   styleUrls: ['./admin-container.component.scss'],
 })
-export class AdminContainerComponent implements OnDestroy {
-  loggedInUser = this.userDataService.loggedInUser;
+export class AdminContainerComponent implements OnDestroy, OnInit {
+  public username: string;
+  public titleText: string;
   usersText = 'Users';
-  showSection: Observable<string>;
+  rolesText = 'Roles';
+  groupsText = 'Groups';
+  scenarioTemplatesText = 'Scenario Templates';
+  scenariosText = 'Scenarios';
+  showSection = '';
   isSidebarOpen = true;
-  isSuperUser = false;
-  userList: Observable<User[]>;
-  filterControl: UntypedFormControl = this.userDataService.filterControl;
-  filterString: Observable<string>;
-  permissionList: Observable<Permission[]>;
-  pageSize: Observable<number>;
-  pageIndex: Observable<number>;
   private unsubscribe$ = new Subject();
   TopbarView = TopbarView;
   hideTopbar = false;
   topbarColor = '#BB0000';
   topbarTextColor = '#FFFFFF';
   theme$: Observable<Theme>;
+  permissions: SystemPermission[] = [];
+  readonly SystemPermission = SystemPermission;
 
   constructor(
     private router: Router,
     private userDataService: UserDataService,
-    activatedRoute: ActivatedRoute,
-    private permissionService: PermissionService,
+    private routerQuery: RouterQuery,
+    private permissionDataService: PermissionDataService,
     private settingsService: ComnSettingsService,
-    private authQuery: ComnAuthQuery
+    private authService: ComnAuthService,
+    private authQuery: ComnAuthQuery,
+    private signalRService: SignalRService,
+    private currentUserQuery: CurrentUserQuery
   ) {
     this.theme$ = this.authQuery.userTheme$;
     this.hideTopbar = this.inIframe();
-
-    this.userDataService.isSuperUser
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe((result) => {
-        this.isSuperUser = result;
-        if (!result) {
-          router.navigate(['/']);
-        }
-      });
-    this.userList = this.userDataService.userList;
-    this.permissionList = this.permissionService.getPermissions();
-    this.filterString = activatedRoute.queryParamMap.pipe(
-      map((params) => params.get('filter') || '')
-    );
-    this.pageSize = activatedRoute.queryParamMap.pipe(
-      map((params) => parseInt(params.get('pagesize') || '20', 10))
-    );
-    this.pageIndex = activatedRoute.queryParamMap.pipe(
-      map((params) => parseInt(params.get('pageindex') || '0', 10))
-    );
-    this.showSection = activatedRoute.queryParamMap.pipe(
-      map((params) => params.get('section') || this.usersText)
-    );
-    this.userDataService.getUsersFromApi();
-    this.userDataService
-      .getPermissionsFromApi()
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe();
-    this.gotoUserSection();
     // Set the display settings from config file
     this.topbarColor = this.settingsService.settings.AppTopBarHexColor
       ? this.settingsService.settings.AppTopBarHexColor
@@ -91,17 +62,49 @@ export class AdminContainerComponent implements OnDestroy {
     this.topbarTextColor = this.settingsService.settings.AppTopBarHexTextColor
       ? this.settingsService.settings.AppTopBarHexTextColor
       : this.topbarTextColor;
+    this.signalRService.joinSystem();
   }
 
-  gotoUserSection() {
-    this.router.navigate([], {
-      queryParams: { section: this.usersText },
-      queryParamsHandling: 'merge',
-    });
+  ngOnInit() {
+    // Set the page title from configuration file
+    this.titleText = this.settingsService.settings.AppTopBarText;
+    this.topbarColor = this.settingsService.settings.AppTopBarHexColor;
+    this.topbarTextColor = this.settingsService.settings.AppTopBarHexTextColor;
+    this.currentUserQuery
+      .select()
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((cu) => {
+        this.username = cu.name;
+      });
+    this.userDataService.setCurrentUser();
+
+    this.routerQuery
+      .selectQueryParams<string>('section')
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((section) => {
+        if (section != null) {
+          this.showSection = section;
+          this.navigateToSection(section);
+        }
+      });
+
+    this.permissionDataService
+      .load()
+      .subscribe(
+        (x) => (this.permissions = this.permissionDataService.permissions)
+      );
+  }
+
+  canViewScenarioTemplateList(): boolean {
+    return this.permissionDataService.canViewScenarioTemplateList();
+  }
+
+  canViewScenarioList(): boolean {
+    return this.permissionDataService.canViewScenarioList();
   }
 
   logout() {
-    this.userDataService.logout();
+    this.authService.logout();
   }
 
   inIframe() {
@@ -112,44 +115,50 @@ export class AdminContainerComponent implements OnDestroy {
     }
   }
 
-  selectUser(userId: string) {
+  /**
+   * Set the display to Users
+   */
+  adminGotoUsers(): void {
+    this.navigateToSection(this.usersText);
+  }
+
+  /**
+   * Sets the display to Roles
+   */
+  adminGotoRoles(): void {
+    this.navigateToSection(this.rolesText);
+  }
+
+  /**
+   * Sets the display to Groups
+   */
+  adminGotoGroups(): void {
+    this.navigateToSection(this.groupsText);
+  }
+
+  /**
+   * Sets the display to ScenarioTemplates
+   */
+  adminGotoScenarioTemplates(): void {
+    this.navigateToSection(this.scenarioTemplatesText);
+  }
+
+  /**
+   * Sets the display to Scenarios
+   */
+  adminGotoScenarios(): void {
+    this.navigateToSection(this.scenariosText);
+  }
+
+  private navigateToSection(sectionName: string) {
     this.router.navigate([], {
-      queryParams: { userId: userId },
-      queryParamsHandling: 'merge',
-    });
-  }
-
-  addUserHandler(user: User) {
-    this.userDataService.addUser(user);
-  }
-
-  deleteUserHandler(user: User) {
-    this.userDataService.deleteUser(user);
-  }
-
-  addUserPermissionHandler(userPermission: UserPermission) {
-    this.userDataService.addUserPermission(userPermission);
-  }
-
-  removeUserPermissionHandler(userPermission: UserPermission) {
-    this.userDataService.deleteUserPermission(userPermission);
-  }
-
-  sortChangeHandler(sort: Sort) {
-    this.router.navigate([], {
-      queryParams: { sorton: sort.active, sortdir: sort.direction },
-      queryParamsHandling: 'merge',
-    });
-  }
-
-  pageChangeHandler(page: PageEvent) {
-    this.router.navigate([], {
-      queryParams: { pageindex: page.pageIndex, pagesize: page.pageSize },
+      queryParams: { section: sectionName },
       queryParamsHandling: 'merge',
     });
   }
 
   ngOnDestroy() {
+    this.signalRService.leaveSystem();
     this.unsubscribe$.next(null);
     this.unsubscribe$.complete();
   }

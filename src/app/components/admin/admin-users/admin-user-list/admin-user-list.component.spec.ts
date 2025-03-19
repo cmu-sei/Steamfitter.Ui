@@ -3,22 +3,22 @@
 
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
-import { ScenarioListComponent } from './scenario-list.component';
+import { UserListComponent } from './user-list.component';
 
-describe('ScenarioListComponent', () => {
-  let component: ScenarioListComponent;
-  let fixture: ComponentFixture<ScenarioListComponent>;
+describe('UserListComponent', () => {
+  let component: UserListComponent;
+  let fixture: ComponentFixture<UserListComponent>;
 
   beforeEach(
     waitForAsync(() => {
       TestBed.configureTestingModule({
-        declarations: [ScenarioListComponent],
+        declarations: [UserListComponent],
       }).compileComponents();
     })
   );
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ScenarioListComponent);
+    fixture = TestBed.createComponent(UserListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

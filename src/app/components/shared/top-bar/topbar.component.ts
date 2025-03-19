@@ -10,11 +10,18 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
-import { ComnAuthQuery, ComnAuthService, Theme } from '@cmusei/crucible-common';
+import {
+  ComnAuthQuery,
+  ComnAuthService,
+  ComnSettingsService,
+  Theme,
+} from '@cmusei/crucible-common';
 import { User as AuthUser } from 'oidc-client';
 import { Observable, Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
-import { UserDataService } from 'src/app/data/user/user-data.service';
+import { CurrentUserQuery } from 'src/app/data/user/user.query';
+import { CurrentUserState } from 'src/app/data/user/user.store';
+import { PermissionDataService } from 'src/app/data/permission/permission-data.service';
 import { TopbarView } from './topbar.models';
 
 @Component({
@@ -31,22 +38,44 @@ export class TopbarComponent implements OnInit, OnDestroy {
   @Input() topbarView?: TopbarView;
   @Output() sidenavToggle?: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() editView?: EventEmitter<any> = new EventEmitter<any>();
-  currentUser$: Observable<AuthUser>;
+  currentUser$: Observable<CurrentUserState>;
   theme$: Observable<Theme>;
   unsubscribe$: Subject<null> = new Subject<null>();
   TopbarView = TopbarView;
+  canViewAdmin = false;
+
   constructor(
     private authService: ComnAuthService,
-    private loggedInUserService: UserDataService,
-    private authQuery: ComnAuthQuery
+    private currentUserQuery: CurrentUserQuery,
+    private permissionDataService: PermissionDataService,
+    private authQuery: ComnAuthQuery,
+    private settingsService: ComnSettingsService
   ) {}
 
   ngOnInit() {
-    this.currentUser$ = this.loggedInUserService.loggedInUser.pipe(
+    this.permissionDataService
+      .load()
+      .subscribe(
+        (x) =>
+          (this.canViewAdmin =
+            this.permissionDataService.canViewAdiminstration())
+      );
+
+    this.currentUser$ = this.currentUserQuery.select().pipe(
       filter((user) => user !== null),
       takeUntil(this.unsubscribe$)
     );
+
     this.theme$ = this.authQuery.userTheme$;
+
+    if (!this.topbarColor) {
+      this.topbarColor = this.settingsService.settings.AppTopBarHexColor;
+    }
+
+    if (!this.topbarTextColor) {
+      this.topbarTextColor =
+        this.settingsService.settings.AppTopBarHexTextColor;
+    }
   }
 
   themeFn(event) {

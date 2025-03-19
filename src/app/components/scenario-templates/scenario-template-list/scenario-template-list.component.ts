@@ -5,27 +5,38 @@ import {
   Component,
   EventEmitter,
   Input,
+  OnChanges,
   OnInit,
   Output,
+  SimpleChanges,
   ViewChild,
 } from '@angular/core';
-import { UntypedFormControl } from '@angular/forms';
 import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { MatLegacyMenuTrigger as MatMenuTrigger } from '@angular/material/legacy-menu';
-import { LegacyPageEvent as PageEvent } from '@angular/material/legacy-paginator';
-import { Sort } from '@angular/material/sort';
 import {
-  ScenarioTemplateEditDialogComponent
-} from 'src/app/components/scenario-templates/scenario-template-edit-dialog/scenario-template-edit-dialog.component';
-import {
-  ScenarioTemplateEditComponent
-} from 'src/app/components/scenario-templates/scenario-template-edit/scenario-template-edit.component';
+  MatLegacyPaginator as MatPaginator,
+  LegacyPageEvent as PageEvent,
+} from '@angular/material/legacy-paginator';
+import { MatSort, Sort } from '@angular/material/sort';
+import { MatTableDataSource } from '@angular/material/table';
+import { PermissionDataService } from 'src/app/data/permission/permission-data.service';
+import { SystemPermission } from 'src/app/generated/steamfitter.api';
+import { ScenarioTemplateEditDialogComponent } from 'src/app/components/scenario-templates/scenario-template-edit-dialog/scenario-template-edit-dialog.component';
+import { ScenarioTemplateEditComponent } from 'src/app/components/scenario-templates/scenario-template-edit/scenario-template-edit.component';
 import { ScenarioEditDialogComponent } from 'src/app/components/scenarios/scenario-edit-dialog/scenario-edit-dialog.component';
 import { ScenarioTemplateDataService } from 'src/app/data/scenario-template/scenario-template-data.service';
 import { ScenarioDataService } from 'src/app/data/scenario/scenario-data.service';
 import { DialogService } from 'src/app/services/dialog/dialog.service';
 import { Scenario, ScenarioTemplate } from 'src/app/generated/steamfitter.api';
 import { ComnSettingsService } from '@cmusei/crucible-common';
+import {
+  fromMatSort,
+  sortRows,
+  fromMatPaginator,
+  paginateRows,
+} from 'src/app/datasource-utils';
+import { Observable, of, combineLatest } from 'rxjs';
+import { map, take } from 'rxjs/operators';
 
 export interface Action {
   Value: string;
@@ -37,56 +48,79 @@ export interface Action {
   templateUrl: './scenario-template-list.component.html',
   styleUrls: ['./scenario-template-list.component.scss'],
 })
-export class ScenarioTemplateListComponent implements OnInit {
+export class ScenarioTemplateListComponent implements OnInit, OnChanges {
   @Input() scenarioTemplateList: ScenarioTemplate[];
   @Input() selectedScenarioTemplate: ScenarioTemplate;
-  @Input() pageSize: number;
-  @Input() pageIndex: number;
   @Input() isLoading: boolean;
-  @Input() filterControl: UntypedFormControl;
-  @Input() filterString: string;
+  @Input() adminMode = false;
   @Output() saveScenarioTemplate = new EventEmitter<ScenarioTemplate>();
-  @Output() setActive = new EventEmitter<string>();
-  @Output() sortChange = new EventEmitter<Sort>();
-  @Output() pageChange = new EventEmitter<PageEvent>();
+  @Output() itemSelected = new EventEmitter<string>();
   @ViewChild(ScenarioTemplateEditComponent)
-    scenarioTemplateEditComponent: ScenarioTemplateEditComponent;
+  scenarioTemplateEditComponent: ScenarioTemplateEditComponent;
   topbarColor = '#BB0000';
   displayedColumns: string[] = ['name', 'description', 'durationHours'];
   editScenarioTemplateText = 'Edit ScenarioTemplate';
   // context menu
   @ViewChild(MatMenuTrigger, { static: true }) contextMenu: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
+  @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
+  @ViewChild(MatSort, { static: true }) sort: MatSort;
+  pageSize = 10;
+  pageIndex = 0;
+  displayedRows: ScenarioTemplate[] = [];
+  totalRows$: Observable<number>;
+  sortEvents$: Observable<Sort>;
+  pageEvents$: Observable<PageEvent>;
+  scenarioTemplateDataSource = new MatTableDataSource<ScenarioTemplate>(
+    new Array<ScenarioTemplate>()
+  );
+  filterString = '';
+  permissions: SystemPermission[] = [];
+  readonly SystemPermission = SystemPermission;
 
   constructor(
     public dialogService: DialogService,
+    private permissionDataService: PermissionDataService,
     private scenarioTemplateDataService: ScenarioTemplateDataService,
     private scenarioDataService: ScenarioDataService,
     private dialog: MatDialog,
     private settingsService: ComnSettingsService
   ) {
+    if (!this.scenarioTemplateList || this.scenarioTemplateList.length === 0) {
+      this.scenarioTemplateDataService.load();
+    }
     this.topbarColor = this.settingsService.settings.AppTopBarHexColor
       ? this.settingsService.settings.AppTopBarHexColor
       : this.topbarColor;
   }
 
   ngOnInit() {
-    this.filterControl.setValue(this.filterString);
+    this.sortEvents$ = fromMatSort(this.sort);
+    this.pageEvents$ = fromMatPaginator(this.paginator);
     const id = this.selectedScenarioTemplate
       ? this.selectedScenarioTemplate.id
       : '';
     // force already expanded scenarioTemplate to refresh details
     if (id) {
       const here = this;
-      this.setActive.emit('');
+      this.itemSelected.emit('');
       setTimeout(function () {
-        here.setActive.emit(id);
+        here.itemSelected.emit(id);
       }, 1);
     }
+    this.filterAndSort();
   }
 
-  clearFilter() {
-    this.filterControl.setValue('');
+  ngOnChanges(changes: SimpleChanges): void {
+    this.permissions = this.permissionDataService.permissions;
+    if (
+      !!changes.scenarioTemplateList &&
+      !!changes.scenarioTemplateList.currentValue
+    ) {
+      this.scenarioTemplateDataSource.data =
+        changes.scenarioTemplateList.currentValue;
+      this.filterAndSort();
+    }
   }
 
   onContextMenu(event: MouseEvent, scenarioTemplate: ScenarioTemplate) {
@@ -96,6 +130,18 @@ export class ScenarioTemplateListComponent implements OnInit {
     this.contextMenu.menuData = { item: scenarioTemplate };
     this.contextMenu.menu.focusFirstItem('mouse');
     this.contextMenu.openMenu();
+  }
+
+  canManage(id: string): boolean {
+    return this.permissionDataService.canManageScenarioTemplate(id);
+  }
+
+  canEdit(id: string): boolean {
+    return this.permissionDataService.canEditScenarioTemplate(id);
+  }
+
+  canDoAnything(id: string): boolean {
+    return this.canManage(id) || this.canEdit(id);
   }
 
   /**
@@ -188,36 +234,45 @@ export class ScenarioTemplateListComponent implements OnInit {
     });
   }
 
-  selectScenarioTemplate(scenarioTemplateId: string) {
-    if (
+  selectScenarioTemplate(event: any, scenarioTemplateId: string) {
+    if (this.adminMode) {
+      this.itemSelected.emit(scenarioTemplateId);
+      if (this.selectedScenarioTemplate) {
+        this.selectedScenarioTemplate.id = '';
+      }
+      event.stopPropagation();
+    } else if (
       !!this.selectedScenarioTemplate &&
       scenarioTemplateId === this.selectedScenarioTemplate.id
     ) {
-      this.setActive.emit('');
+      this.itemSelected.emit('');
+      this.selectedScenarioTemplate = null;
     } else {
-      this.setActive.emit(scenarioTemplateId);
+      this.itemSelected.emit(scenarioTemplateId);
     }
   }
 
-  paginateScenarioTemplates(
-    scenarioTemplates: ScenarioTemplate[],
-    pageIndex: number,
-    pageSize: number
-  ) {
-    if (!scenarioTemplates) {
-      return [];
+  applyFilter(value: string) {
+    this.filterString = value.toLowerCase();
+    this.filterAndSort();
+  }
+
+  /**
+   * filters and sorts the displayed rows
+   */
+  filterAndSort() {
+    this.scenarioTemplateDataSource.filter = this.filterString;
+    const rows$ = of(this.scenarioTemplateDataSource.filteredData);
+    this.totalRows$ = rows$.pipe(map((rows) => rows.length));
+    if (!!this.sortEvents$ && !!this.pageEvents$) {
+      rows$
+        .pipe(
+          sortRows(this.sortEvents$),
+          paginateRows(this.pageEvents$),
+          take(1)
+        )
+        .subscribe((rows) => (this.displayedRows = rows));
     }
-    const startIndex = pageIndex * pageSize;
-    const copy = scenarioTemplates.slice();
-    return copy.splice(startIndex, pageSize);
-  }
-
-  paginatorEvent(page: PageEvent) {
-    this.pageChange.emit(page);
-  }
-
-  sortChanged(sort: Sort) {
-    this.sortChange.emit(sort);
   }
 
   trackByFn(index, item) {

@@ -3,7 +3,12 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
  Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 */
 
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  ChangeDetectionStrategy,
+} from '@angular/core';
 import { RouterQuery } from '@datorama/akita-ng-router-store';
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
@@ -20,8 +25,9 @@ import { SignalRService } from 'src/app/services/signalr/signalr.service';
   styleUrls: ['./manual-tasks-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ManualTasksPageComponent implements OnInit {
+export class ManualTasksPageComponent implements OnInit, OnDestroy {
   viewId: string;
+  userId: string;
 
   public tasks$: Observable<Task[]>;
   public scenario$: Observable<Scenario>;
@@ -46,8 +52,13 @@ export class ManualTasksPageComponent implements OnInit {
         if (x) {
           this.tasks$ = this.taskQuery.selectAllUserExecutable(x.id);
           this.signalRService.joinScenario(x.id);
+          this.userId = x.id;
         }
       })
     );
+  }
+
+  ngOnDestroy() {
+    this.signalRService.leaveScenario(this.userId);
   }
 }
