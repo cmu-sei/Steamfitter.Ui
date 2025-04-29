@@ -81,24 +81,33 @@ export class PermissionDataService {
       .getMyScenarioTemplatePermissions(scenarioTemplateId)
       .pipe(
         take(1),
-        tap((x) => (this._scenarioTemplatePermissions = x))
+        tap((x) => {
+          this._scenarioTemplatePermissions = x;
+        })
       );
   }
 
   canEditScenario(scenarioId: string): boolean {
     return this.canScenario(
-      SystemPermission.EditScenarios,
-      scenarioId,
-      ScenarioPermission.EditScenario
-    );
+        SystemPermission.EditScenarios,
+        scenarioId,
+        ScenarioPermission.EditScenario) ||
+      this.canScenario(
+        SystemPermission.ManageScenarios,
+        scenarioId,
+        ScenarioPermission.ManageScenario);
   }
 
   canEditScenarioTemplate(scenarioTemplateId: string): boolean {
     return this.canScenarioTemplate(
-      SystemPermission.EditScenarioTemplates,
-      scenarioTemplateId,
-      ScenarioTemplatePermission.EditScenarioTemplate
-    );
+        SystemPermission.EditScenarioTemplates,
+        scenarioTemplateId,
+        ScenarioTemplatePermission.EditScenarioTemplate) ||
+      this.canScenarioTemplate(
+        SystemPermission.ManageScenarioTemplates,
+        scenarioTemplateId,
+        ScenarioTemplatePermission.ManageScenarioTemplate
+      );
   }
 
   canManageScenario(scenarioId: string): boolean {

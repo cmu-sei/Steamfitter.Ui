@@ -8,12 +8,11 @@ import {
   EventEmitter,
   Input,
   OnChanges,
-  OnDestroy,
   OnInit,
   Output,
   SimpleChanges,
 } from '@angular/core';
-import { combineLatest, forkJoin, Observable } from 'rxjs';
+import { combineLatest, forkJoin, Observable, of } from 'rxjs';
 import { filter, map, tap } from 'rxjs/operators';
 import { ScenarioTemplateQuery } from 'src/app/data/scenario-template/scenario-template.query';
 import { ScenarioTemplateMembershipDataService } from 'src/app/data/scenario-template/scenario-template-membership-data.service';
@@ -26,6 +25,7 @@ import {
 } from 'src/app/generated/steamfitter.api';
 import { GroupDataService } from 'src/app/data/group/group-data.service';
 import { PermissionDataService } from 'src/app/data/permission/permission-data.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-scenario-template-memberships',
@@ -50,7 +50,7 @@ export class ScenarioTemplateMembershipsComponent implements OnInit, OnChanges {
   groupNonMembers$ = this.selectGroups(false);
   groupMembers$ = this.selectGroups(true);
 
-  canEdit: boolean;
+  canEdit$: Observable<boolean>;
 
   constructor(
     private scenarioTemplateQuery: ScenarioTemplateQuery,
@@ -59,7 +59,8 @@ export class ScenarioTemplateMembershipsComponent implements OnInit, OnChanges {
     private userDataService: UserDataService,
     private userQuery: UserQuery,
     private groupDataService: GroupDataService,
-    private permissionDataService: PermissionDataService
+    private permissionDataService: PermissionDataService,
+    private activatedRoute: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
@@ -71,6 +72,10 @@ export class ScenarioTemplateMembershipsComponent implements OnInit, OnChanges {
       this.scenarioTemplateRolesDataService.loadRoles(),
       this.groupDataService.load(),
     ]).subscribe();
+    this.permissionDataService
+      .loadScenarioTemplatePermissions(this.scenarioTemplateId)
+      .subscribe((x) =>
+        this.canEdit$ = of(this.permissionDataService.canEditScenarioTemplate(this.scenarioTemplateId)));
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -79,11 +84,9 @@ export class ScenarioTemplateMembershipsComponent implements OnInit, OnChanges {
       .pipe(
         filter((x) => x != null),
         tap(
-          (x) =>
-            (this.canEdit = this.permissionDataService.canEditScenarioTemplate(
-              x.id
-            ))
-        )
+          (x) => {
+            this.canEdit$ = of(this.permissionDataService.canEditScenarioTemplate(this.scenarioTemplateId));
+          })
       );
   }
 
