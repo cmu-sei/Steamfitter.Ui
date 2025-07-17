@@ -20,7 +20,7 @@ import {
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { PermissionDataService } from 'src/app/data/permission/permission-data.service';
-import { SystemPermission } from 'src/app/generated/steamfitter.api';
+import { ScenarioTemplatePermission, SystemPermission } from 'src/app/generated/steamfitter.api';
 import { ScenarioTemplateEditDialogComponent } from 'src/app/components/scenario-templates/scenario-template-edit-dialog/scenario-template-edit-dialog.component';
 import { ScenarioTemplateEditComponent } from 'src/app/components/scenario-templates/scenario-template-edit/scenario-template-edit.component';
 import { ScenarioEditDialogComponent } from 'src/app/components/scenarios/scenario-edit-dialog/scenario-edit-dialog.component';
@@ -52,7 +52,7 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
   @Input() scenarioTemplateList: ScenarioTemplate[];
   @Input() selectedScenarioTemplate: ScenarioTemplate;
   @Input() isLoading: boolean;
-  @Input() adminMode = false;
+  @Input() adminMode: boolean;
   @Output() saveScenarioTemplate = new EventEmitter<ScenarioTemplate>();
   @Output() itemSelected = new EventEmitter<string>();
   @ViewChild(ScenarioTemplateEditComponent)
@@ -132,16 +132,22 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
     this.contextMenu.openMenu();
   }
 
-  canManage(id: string): boolean {
-    return this.permissionDataService.canManageScenarioTemplate(id);
+  hasPermission(permission: SystemPermission): boolean {
+    return this.permissionDataService.hasPermission(permission);
   }
 
-  canEdit(id: string): boolean {
-    return this.permissionDataService.canEditScenarioTemplate(id);
+  canManage(scenarioTemplate: ScenarioTemplate): boolean {
+    return scenarioTemplate.scenarioTemplatePermissions.some(m => m.includes(ScenarioTemplatePermission.ManageScenarioTemplate)) ||
+      this.permissionDataService.hasPermission(SystemPermission.ManageScenarioTemplates);
   }
 
-  canDoAnything(id: string): boolean {
-    return this.canManage(id) || this.canEdit(id);
+  canEdit(scenarioTemplate: ScenarioTemplate): boolean {
+    return scenarioTemplate.scenarioTemplatePermissions.some(m => m === ScenarioTemplatePermission.EditScenarioTemplate) ||
+      this.permissionDataService.hasPermission(SystemPermission.EditScenarioTemplates);
+  }
+
+  canDoSomething(scenarioTemplate: ScenarioTemplate): boolean {
+    return this.canManage(scenarioTemplate) || this.canEdit(scenarioTemplate);
   }
 
   /**

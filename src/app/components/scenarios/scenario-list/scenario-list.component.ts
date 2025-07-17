@@ -20,7 +20,7 @@ import {
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { PermissionDataService } from 'src/app/data/permission/permission-data.service';
-import { SystemPermission } from 'src/app/generated/steamfitter.api';
+import { ScenarioPermission, SystemPermission } from 'src/app/generated/steamfitter.api';
 import { View } from 'src/app/generated/steamfitter.api';
 import { ScenarioEditComponent } from 'src/app/components/scenarios/scenario-edit/scenario-edit.component';
 import { ScenarioEditDialogComponent } from 'src/app/components/scenarios/scenario-edit-dialog/scenario-edit-dialog.component';
@@ -143,20 +143,23 @@ export class ScenarioListComponent implements OnInit, OnChanges {
     this.contextMenu.openMenu();
   }
 
-  canManage(id: string): boolean {
-    return this.permissionDataService.canManageScenario(id);
+  canManage(scenario: Scenario): boolean {
+    return scenario.scenarioPermissions.some(m => m === ScenarioPermission.ManageScenario) ||
+      this.permissionDataService.hasPermission(SystemPermission.ManageScenarios);
   }
 
-  canEdit(id: string): boolean {
-    return this.permissionDataService.canEditScenario(id);
+  canEdit(scenario: Scenario): boolean {
+    return scenario.scenarioPermissions.some(m => m === ScenarioPermission.EditScenario) ||
+      this.permissionDataService.hasPermission(SystemPermission.EditScenarios);
   }
 
-  canExecute(id: string): boolean {
-    return this.permissionDataService.canExecuteScenario(id);
+  canExecute(scenario: Scenario): boolean {
+    return scenario.scenarioPermissions.some(m => m === ScenarioPermission.ExecuteScenario) ||
+      this.permissionDataService.hasPermission(SystemPermission.ExecuteScenarios);
   }
 
-  canDoAnything(id: string): boolean {
-    return this.canManage(id) || this.canEdit(id) || this.canExecute(id);
+  canDoSomething(scenario: Scenario): boolean {
+    return this.canManage(scenario) || this.canEdit(scenario) || this.canExecute(scenario);
   }
 
   /**
