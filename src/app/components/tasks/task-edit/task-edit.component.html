@@ -62,6 +62,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             *ngIf="param.inputType === 'text'"
             matInput
             placeholder="{{ param.display }}"
+            [(ngModel)]="param.value"
             [value]="param.value"
             (input)="param.value = $event.target.value"
             (change)="onCommandChange()"

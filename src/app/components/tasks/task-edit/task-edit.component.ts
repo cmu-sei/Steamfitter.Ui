@@ -122,7 +122,7 @@ export class TaskEditComponent implements OnInit, OnDestroy {
   onCommandChange() {
     const actionParameters: Record<string, string> = {};
     this.selectedCommand.parameters.forEach((param) => {
-      actionParameters[param.key] = param.value.toString();
+      actionParameters[param.key] = param.value?.toString();
       if (param.key.toLowerCase() === 'username') {
         this.username.next(param.value);
       } else if (param.key.toLowerCase() === 'password') {
