@@ -106,7 +106,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           <mat-icon class="mdi-20px copy-icon" fontIcon="mdi-content-copy"></mat-icon>
         </button>
         <button
-          *ngIf="!adminMode && canDoAnything(item.id)"
+          *ngIf="!adminMode && canDoSomething(item)"
           mat-icon-button
           class="menu-button"
           ngxClipboard
@@ -154,7 +154,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 ></div>
 <mat-menu #contextMenu="matMenu">
   <ng-template matMenuContent let-item="item">
-    <button mat-menu-item (click)="editScenario(item)" *ngIf="canEdit(item.id)">
+    <button mat-menu-item (click)="editScenario(item)" *ngIf="canEdit(item)">
       Edit
     </button>
     <button mat-menu-item (click)="copyScenario(item)"
@@ -164,7 +164,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     <button
       mat-menu-item
       (click)="startScenario(item)"
-      *ngIf="item.status === 'ready' && !!item.viewId && canExecute(item.id)"
+      *ngIf="item.status === 'ready' && !!item.viewId && canExecute(item)"
     >
       Start
     </button>
@@ -175,7 +175,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     >
       End
     </button>
-    <button mat-menu-item (click)="deleteScenario(item)" *ngIf="canManage(item.id)">
+    <button mat-menu-item (click)="deleteScenario(item)" *ngIf="canManage(item)">
       Delete
     </button>
   </ng-template>
