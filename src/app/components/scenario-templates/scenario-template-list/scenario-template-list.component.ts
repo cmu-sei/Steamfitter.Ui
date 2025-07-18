@@ -137,12 +137,12 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
   }
 
   canManage(scenarioTemplate: ScenarioTemplate): boolean {
-    return scenarioTemplate.scenarioTemplatePermissions.some(m => m.includes(ScenarioTemplatePermission.ManageScenarioTemplate)) ||
+    return scenarioTemplate?.scenarioTemplatePermissions?.some(m => m.includes(ScenarioTemplatePermission.ManageScenarioTemplate)) ||
       this.permissionDataService.hasPermission(SystemPermission.ManageScenarioTemplates);
   }
 
   canEdit(scenarioTemplate: ScenarioTemplate): boolean {
-    return scenarioTemplate.scenarioTemplatePermissions.some(m => m === ScenarioTemplatePermission.EditScenarioTemplate) ||
+    return scenarioTemplate?.scenarioTemplatePermissions?.some(m => m === ScenarioTemplatePermission.EditScenarioTemplate) ||
       this.permissionDataService.hasPermission(SystemPermission.EditScenarioTemplates);
   }
 

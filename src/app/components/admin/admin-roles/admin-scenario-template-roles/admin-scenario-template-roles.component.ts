@@ -55,9 +55,9 @@ export class AdminScenarioTemplateRolesComponent implements OnInit {
 
   hasPermission(permission: string, role: ScenarioTemplateRole) {
     if (permission === this.allPermission) {
-      return role.allPermissions;
+      return role?.allPermissions;
     }
 
-    return role.permissions.some((x) => x === permission);
+    return role?.permissions?.some((x) => x === permission);
   }
 }

@@ -144,17 +144,17 @@ export class ScenarioListComponent implements OnInit, OnChanges {
   }
 
   canManage(scenario: Scenario): boolean {
-    return scenario.scenarioPermissions.some(m => m === ScenarioPermission.ManageScenario) ||
+    return scenario?.scenarioPermissions?.some(m => m === ScenarioPermission.ManageScenario) ||
       this.permissionDataService.hasPermission(SystemPermission.ManageScenarios);
   }
 
   canEdit(scenario: Scenario): boolean {
-    return scenario.scenarioPermissions.some(m => m === ScenarioPermission.EditScenario) ||
+    return scenario?.scenarioPermissions?.some(m => m === ScenarioPermission.EditScenario) ||
       this.permissionDataService.hasPermission(SystemPermission.EditScenarios);
   }
 
   canExecute(scenario: Scenario): boolean {
-    return scenario.scenarioPermissions.some(m => m === ScenarioPermission.ExecuteScenario) ||
+    return scenario?.scenarioPermissions?.some(m => m === ScenarioPermission.ExecuteScenario) ||
       this.permissionDataService.hasPermission(SystemPermission.ExecuteScenarios);
   }
 
