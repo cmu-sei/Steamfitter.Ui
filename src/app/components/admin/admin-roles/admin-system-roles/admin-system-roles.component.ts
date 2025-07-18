@@ -81,10 +81,10 @@ export class AdminSystemRolesComponent implements OnInit {
 
   hasPermission(permission: string, role: SystemRole) {
     if (permission === this.allPermission) {
-      return role.allPermissions;
+      return role?.allPermissions;
     }
 
-    return role.permissions.some((x) => x === permission);
+    return role?.permissions?.some((x) => x === permission);
   }
 
   setPermission(
