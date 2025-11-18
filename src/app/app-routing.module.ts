@@ -8,7 +8,6 @@ import { ComnAuthGuardService } from '@cmusei/crucible-common';
 import { AdminContainerComponent } from './components/admin/admin-container/admin-container.component';
 import { HomeAppComponent } from './components/home-app/home-app.component';
 import { ManualTasksPageComponent } from './components/manual-tasks-page/manual-tasks-page.component';
-import { ScenarioTemplateMembershipsPageComponent } from './components/scenario-templates/scenario-template-memberships/scenario-template-memberships-page/scenario-template-memberships-page.component';
 
 export const ROUTES: Routes = [
   {
@@ -32,9 +31,8 @@ export const ROUTES: Routes = [
     canActivate: [ComnAuthGuardService],
   },
   {
-    path: 'scenariotemplates/:id/memberships',
-    component: ScenarioTemplateMembershipsPageComponent,
-    pathMatch: 'full',
+    path: 'scenario/:scenarioId',
+    component: ManualTasksPageComponent,
     canActivate: [ComnAuthGuardService],
   },
 ];
@@ -46,4 +44,4 @@ export const ROUTES: Routes = [
     RouterModule.forRoot(ROUTES, {}),
   ],
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

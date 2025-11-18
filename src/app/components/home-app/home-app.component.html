@@ -4,46 +4,25 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 -->
 
 <mat-sidenav-container class="appcontent-container mat-elevation-z8" autosize>
-  <mat-sidenav
-    class="appbarmenu-container"
-    #sidenav
-    mode="side"
-    [(opened)]="isSidebarOpen"
-  >
+  <mat-sidenav class="appbarmenu-container" #sidenav mode="side" [(opened)]="isSidebarOpen">
     <mat-list *ngIf="permissions">
       <mat-list-item class="appslist">
         <div class="cssLayoutRowStartCenter">
-          <mat-icon
-            class="steamfitter-icon"
-            svgIcon="ic_crucible_steamfitter"
-          ></mat-icon>
+          <mat-icon class="steamfitter-icon" svgIcon="ic_crucible_steamfitter"></mat-icon>
           <h2 class="icon-text">
             {{ titleText }}
           </h2>
         </div>
-        <button
-          aria-label="Show Administration Page"
-          mat-icon-button
-          [routerLink]="['/admin']"
-          style="outline: none;"
-          title="Administration"
-        >
+        <button aria-label="Show Administration Page" mat-icon-button [routerLink]="['/admin']" style="outline: none;"
+          title="Administration">
           <mat-icon aria-hidden="false" class="mdi-24px" fontIcon="mdi-cog"></mat-icon>
         </button>
         <mat-divider></mat-divider>
       </mat-list-item>
-      <mat-list-item
-        class="showhand highlight"
-        *ngIf="canViewScenarioTemplateList()"
-        title="Show {{ section.scenarioTemplates }}"
-        (click)="selectTab(section.scenarioTemplates)"
-      >
+      <mat-list-item class="showhand highlight" *ngIf="canViewScenarioTemplateList()"
+        title="Show {{ section.scenarioTemplates }}" (click)="selectTab(section.scenarioTemplates)">
         <div class="lefticon">
-          <mat-icon
-            class="icon-35px"
-            svgIcon="storage"
-            [ngStyle]="{ color: topbarColor }"
-          ></mat-icon>
+          <mat-icon class="icon-35px" svgIcon="storage" [ngStyle]="{ color: topbarColor }"></mat-icon>
         </div>
 
         <div class="application-name">
@@ -56,18 +35,10 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           </button>
         </div>
       </mat-list-item>
-      <mat-list-item
-        class="showhand highlight"
-        *ngIf="canViewScenarioList()"
-        title="Show {{ section.scenarios }}"
-        (click)="selectTab(section.scenarios)"
-      >
+      <mat-list-item class="showhand highlight" *ngIf="canViewScenarioList()" title="Show {{ section.scenarios }}"
+        (click)="selectTab(section.scenarios)">
         <div class="lefticon">
-          <mat-icon
-            class="icon-35px"
-            svgIcon="playlist_play"
-            [ngStyle]="{ color: topbarColor }"
-          ></mat-icon>
+          <mat-icon class="icon-35px" svgIcon="playlist_play" [ngStyle]="{ color: topbarColor }"></mat-icon>
         </div>
 
         <div class="application-name">
@@ -80,18 +51,10 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           </button>
         </div>
       </mat-list-item>
-      <mat-list-item
-        class="showhand highlight"
-        *ngIf="permissions.includes(SystemPermission.ManageTasks)"
-        title="Show {{ section.taskBuilder }}"
-        (click)="selectTab(section.taskBuilder)"
-      >
+      <mat-list-item class="showhand highlight" *ngIf="permissions.includes(SystemPermission.ManageTasks)"
+        title="Show {{ section.taskBuilder }}" (click)="selectTab(section.taskBuilder)">
         <div class="lefticon">
-          <mat-icon
-            class="icon-35px"
-            svgIcon="input"
-            [ngStyle]="{ color: topbarColor }"
-          ></mat-icon>
+          <mat-icon class="icon-35px" svgIcon="input" [ngStyle]="{ color: topbarColor }"></mat-icon>
         </div>
 
         <div class="application-name">
@@ -104,17 +67,9 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           </button>
         </div>
       </mat-list-item>
-      <mat-list-item
-        class="showhand highlight"
-        title="Show {{ section.history }}"
-        (click)="selectTab(section.history)"
-      >
+      <mat-list-item class="showhand highlight" title="Show {{ section.history }}" (click)="selectTab(section.history)">
         <div class="lefticon">
-          <mat-icon
-            class="icon-35px"
-            svgIcon="history"
-            [ngStyle]="{ color: topbarColor }"
-          ></mat-icon>
+          <mat-icon class="icon-35px" svgIcon="history" [ngStyle]="{ color: topbarColor }"></mat-icon>
         </div>
 
         <div class="application-name">
@@ -128,49 +83,30 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         </div>
       </mat-list-item>
     </mat-list>
-    <img
-      *ngIf="!hideTopbar"
-      title="crucible logo"
-      class="crucible-logo"
-      [src]="
+    <img *ngIf="!hideTopbar" title="crucible logo" class="crucible-logo" [src]="
         (theme$ | async) === 'light-theme'
           ? 'assets/img/crucible-logo-light.png'
           : 'assets/img/crucible-logo-dark.png'
-      "
-    />
+      " />
   </mat-sidenav>
   <mat-sidenav-content>
-    <app-topbar
-      *ngIf="!hideTopbar"
-      [title]="selectedSection"
-      [topbarView]="TopbarView.STEAMFITTER_HOME"
-      [topbarColor]="topbarColor"
-      [topbarTextColor]="topbarTextColor"
-      [sidenav]="sidenav"
-      (sidenavToggle)="sidenavToggleFn()"
-    ></app-topbar>
+    <app-topbar *ngIf="!hideTopbar" [title]="selectedSection" [topbarView]="TopbarView.STEAMFITTER_HOME"
+      [topbarColor]="topbarColor" [topbarTextColor]="topbarTextColor" [sidenav]="sidenav"
+      (sidenavToggle)="sidenavToggleFn()"></app-topbar>
 
-    <div
-      *ngIf="apiIsSick"
-      class="app-header-container mat-elevation-z8"
-      autosize
-    >
-    <h1>{{ apiMessage }}</h1>
-    <h2>Please refresh this page.</h2>
+    <div *ngIf="apiIsSick" class="app-header-container mat-elevation-z8" autosize>
+      <h1>{{ apiMessage }}</h1>
+      <h2>Please refresh this page.</h2>
       <h2>If the problem persists, please contact the site administrator.</h2>
     </div>
 
 
     <span *ngIf="!apiIsSick && isAuthorizedUser">
       <app-scenario-templates
-        *ngIf="selectedSection === section.scenarioTemplates && canViewScenarioTemplateList()"
-      ></app-scenario-templates>
-      <app-scenarios
-        *ngIf="selectedSection === section.scenarios && canViewScenarioList()"
-      ></app-scenarios>
+        *ngIf="selectedSection === section.scenarioTemplates && canViewScenarioTemplateList()"></app-scenario-templates>
+      <app-scenarios *ngIf="selectedSection === section.scenarios && canViewScenarioList()"></app-scenarios>
       <app-vm-task-execute
-        *ngIf="selectedSection === section.taskBuilder && permissions.includes(SystemPermission.ManageTasks)"
-      ></app-vm-task-execute>
+        *ngIf="selectedSection === section.taskBuilder && permissions.includes(SystemPermission.ManageTasks)"></app-vm-task-execute>
       <app-history *ngIf="selectedSection === section.history"></app-history>
     </span>
   </mat-sidenav-content>
