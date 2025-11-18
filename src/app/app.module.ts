@@ -79,7 +79,6 @@ import { ScenarioTemplateEditComponent } from './components/scenario-templates/s
 import { ScenarioTemplateListComponent } from './components/scenario-templates/scenario-template-list/scenario-template-list.component';
 import { ScenarioTemplateMembershipsComponent } from './components/scenario-templates/scenario-template-memberships/scenario-template-memberships/scenario-template-memberships.component';
 import { ScenarioTemplateMemberListComponent } from './components/scenario-templates/scenario-template-memberships/scenario-template-member-list/scenario-template-member-list.component';
-import { ScenarioTemplateMembershipsPageComponent } from './components/scenario-templates/scenario-template-memberships/scenario-template-memberships-page/scenario-template-memberships-page.component';
 import { ScenarioTemplateMembershipListComponent } from './components/scenario-templates/scenario-template-memberships/scenario-template-membership-list/scenario-template-membership-list.component';
 import { ScenarioTemplatesComponent } from './components/scenario-templates/scenario-templates.component';
 import { ScenarioEditDialogComponent } from './components/scenarios/scenario-edit-dialog/scenario-edit-dialog.component';
@@ -88,7 +87,6 @@ import { ScenarioListComponent } from './components/scenarios/scenario-list/scen
 import { ScenariosComponent } from './components/scenarios/scenarios.component';
 import { ScenarioMembershipsComponent } from './components/scenarios/scenario-memberships/scenario-memberships/scenario-memberships.component';
 import { ScenarioMemberListComponent } from './components/scenarios/scenario-memberships/scenario-member-list/scenario-member-list.component';
-import { ScenarioMembershipsPageComponent } from './components/scenarios/scenario-memberships/scenario-memberships-page/scenario-memberships-page.component';
 import { ScenarioMembershipListComponent } from './components/scenarios/scenario-memberships/scenario-membership-list/scenario-membership-list.component';
 import { AddDialogComponent } from './components/vm-credentials/add-dialog/add-dialog.component';
 import { CwdDialogsModule } from './components/shared/confirm-dialog/cwd-dialogs.module';
@@ -143,7 +141,6 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
     ScenarioTemplateMemberListComponent,
     ScenarioTemplateMembershipListComponent,
     ScenarioTemplateMembershipsComponent,
-    ScenarioTemplateMembershipsPageComponent,
     ScenariosComponent,
     ScenarioEditComponent,
     ScenarioEditDialogComponent,
@@ -151,7 +148,6 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
     ScenarioMemberListComponent,
     ScenarioMembershipListComponent,
     ScenarioMembershipsComponent,
-    ScenarioMembershipsPageComponent,
     ResultsComponent,
     AddDialogComponent,
     HistoryComponent,
@@ -247,4 +243,4 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule { }
