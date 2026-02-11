@@ -8,7 +8,6 @@
     "test": "ng test",
     "lint": "eslint -c .eslintrc.js --ext .ts src/",
     "e2e": "ng e2e",
-    "postinstall": "ngcc",
     "swagger-gen": "curl --insecure http://host.docker.internal:4400/swagger/v1/swagger.json --output swagger.json && node_modules/@openapitools/openapi-generator-cli/bin/openapi-generator generate -i ./swagger.json -g typescript-angular -o src/app/generated/steamfitter.api --additional-properties ngVersion=11.2.1 --additional-properties useRxJS6=true --additional-properties modelPropertyNaming=original --type-mappings=DateTime=Date --skip-validate-spec",
     "swagger-gen-win": "docker run --rm -v %CD%:/local openapitools/openapi-generator-cli:v5.1.0 generate -i http://host.docker.internal:4400/swagger/v1/swagger.json -g typescript-angular -o /local/src/app/generated/steamfitter.api --additional-properties ngVersion=11.2.1 --additional-properties useRxJS6=true --additional-properties modelPropertyNaming=original --type-mappings=DateTime=Date --skip-validate-spec"
   },
@@ -69,12 +68,6 @@
     "eslint-plugin-jsdoc": "^43.1.1",
     "jasmine-core": "^4.6.0",
     "jasmine-spec-reporter": "^7.0.0",
-    "karma": "^6.3.4",
-    "karma-chrome-launcher": "^3.1.0",
-    "karma-coverage-istanbul-reporter": "^3.0.3",
-    "karma-jasmine": "^4.0.1",
-    "karma-jasmine-html-reporter": "^1.7.0",
-    "protractor": "^7.0.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.8.3"
   }
