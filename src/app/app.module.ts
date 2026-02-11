@@ -105,11 +105,6 @@ import { BASE_PATH } from './generated/steamfitter.api';
 import { ApiModule as SwaggerCodegenApiModule } from './generated/steamfitter.api/api.module';
 import { ManualTasksPageComponent } from './components/manual-tasks-page/manual-tasks-page.component';
 import { ManualTasksListComponent } from './components/tasks/manual-tasks/manual-tasks-list/manual-tasks-list.component';
-import {
-  NgxMatDatetimePickerModule,
-  NgxMatTimepickerModule,
-  NgxMatNativeDateModule,
-} from '@angular-material-components/datetime-picker';
 
 const settings: ComnSettingsConfig = {
   url: 'assets/config/settings.json',
@@ -218,9 +213,6 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
     MatBadgeModule,
     MatFormFieldModule,
     MatDatepickerModule,
-    NgxMatTimepickerModule,
-    NgxMatDatetimePickerModule,
-    NgxMatNativeDateModule,
     CdkTableModule,
     MatTreeModule,
     CdkTreeModule,

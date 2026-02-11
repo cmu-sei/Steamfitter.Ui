@@ -79,27 +79,10 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       <mat-form-field>
         <input
           matInput
-          [ngxMatDatetimePicker]="startDatePicker"
-          placeholder="Start Date / Time"
+          placeholder="datetime-picker"
           [formControl]="startDateFormControl"
-          (inputChange)="saveScenario('startDate')"
-          (dateChange)="saveScenario('startDate')"
+          (change)="saveScenario('startDate')"
         >
-        <mat-datepicker-toggle
-          matSuffix
-          [for]="$any(startDatePicker)">
-        </mat-datepicker-toggle>
-        <ngx-mat-datetime-picker #startDatePicker
-          [showSpinners]=true
-          [showSeconds]=true
-          [stepHour]=1
-          [stepMinute]=1
-          [stepSecond]=1
-          [touchUi]=false
-          [enableMeridian]=true
-          [disableMinute]=false
-          [hideTime]=false>
-        </ngx-mat-datetime-picker>
       </mat-form-field>
     </div>
   </div>
@@ -109,27 +92,10 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       <mat-form-field>
         <input
           matInput
-          [ngxMatDatetimePicker]="endDatePicker"
-          placeholder="End Date / Time"
+          placeholder="datetime-picker"
           [formControl]="endDateFormControl"
-          (inputChange)="saveScenario('endDate')"
-          (dateChange)="saveScenario('endDate')"
+          (change)="saveScenario('endDate')"
         >
-        <mat-datepicker-toggle
-          matSuffix
-          [for]="$any(endDatePicker)">
-        </mat-datepicker-toggle>
-        <ngx-mat-datetime-picker #endDatePicker
-          [showSpinners]=true
-          [showSeconds]=true
-          [stepHour]=1
-          [stepMinute]=1
-          [stepSecond]=1
-          [touchUi]=false
-          [enableMeridian]=true
-          [disableMinute]=false
-          [hideTime]=false>
-        </ngx-mat-datetime-picker>
       </mat-form-field>
     </div>
   </div>

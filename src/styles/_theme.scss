@@ -217,17 +217,6 @@ $custom-typography: mat.define-typography-config(
     }
   }
 
-  .ngx-timepicker-control__input {
-    background: map-get($background, 'background');
-  }
-  .ngx-timepicker-control__arrow {
-    color: map-get($foreground, 'text') !important;
-  }
-
-  .ngx-material-timepicker-toggle {
-    color: map-get($foreground, 'text') !important;
-  }
-
   .mat-header-cell,
   .mat-form-field-label,
   .mat-sort-header-content,
