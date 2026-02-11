@@ -14,7 +14,7 @@
 @include mat.all-component-typographies();
 @include mat.elevation-classes();
 @include mat.app-background();
-$mdi-font-path: '~@mdi/font/fonts';
+$mdi-font-path: '@mdi/font/fonts';
 @import '@mdi/font/scss/materialdesignicons';
 @import 'material-design-icons/iconfont/material-icons.css';
 
