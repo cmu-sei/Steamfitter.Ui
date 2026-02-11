@@ -200,7 +200,7 @@ $custom-typography: mat.define-typography-config(
     color: map-get($foreground, 'text');
   }
 
-  .mat-tooltip {
+  .mat-mdc-tooltip {
     background-color: map-get($background, hover);
     color: map-get($foreground, text);
   }
@@ -216,7 +216,7 @@ $custom-typography: mat.define-typography-config(
       color: map-get($foreground, disabled);
     }
   }
-
+  /* TODO(mdc-migration): The following rule targets internal classes of form-field that may no longer apply for the MDC version.*/
   .mat-header-cell,
   .mat-form-field-label,
   .mat-sort-header-content,
@@ -224,14 +224,14 @@ $custom-typography: mat.define-typography-config(
   .mat-paginator-range-label {
     color: map-get($foreground, 'text') !important;
   }
-  .mat-header-row {
+  .mat-mdc-header-row {
     background-color: map-get($background, 'expansion-panel') !important;
   }
   .mat-drawer {
     background-color: map-get($background, 'background') !important;
   }
 
-  .mat-paginator {
+  .mat-mdc-paginator {
     background-color: map-get($background, 'background') !important;
   }
 }

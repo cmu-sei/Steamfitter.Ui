@@ -3,7 +3,7 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
 
-<mat-card flex="100" *ngIf="!(isLoading | async)">
+<mat-card appearance="outlined" flex="100" *ngIf="!(isLoading | async)">
   <div (contextmenu)="onContextMenu($event, null)">
     <div>
       <div>
@@ -154,7 +154,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     </div>
   </div>
 </mat-card>
-<mat-card flex *ngIf="isLoading | async">
+<mat-card appearance="outlined" flex *ngIf="isLoading | async">
   <div class="cssLayoutColumnCenterCenter">
     <div flex>
       <mat-progress-spinner color="accent" mode="indeterminate">

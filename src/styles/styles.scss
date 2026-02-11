@@ -49,15 +49,15 @@ $mdi-font-path: '~@mdi/font/fonts';
 }
 
 /* The following overrides transparent select options after upgrading to Angular 7 */
-.mat-select-panel {
+.mat-mdc-select-panel {
   background: #fff;
 }
-.mat-select-panel:not([class*='mat-elevation-z']) {
+.mat-mdc-select-panel:not([class*='mat-elevation-z']) {
   box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14),
     0 1px 10px 0 rgba(0, 0, 0, 0.12);
 }
 
-.mat-datepicker-content .mat-stroked-button {
+.mat-datepicker-content .mat-mdc-outlined-button {
   font-family: 'Material Icons';
 }
 
