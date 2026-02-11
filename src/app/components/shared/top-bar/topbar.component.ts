@@ -16,7 +16,7 @@ import {
   ComnSettingsService,
   Theme,
 } from '@cmusei/crucible-common';
-import { User as AuthUser } from 'oidc-client';
+import { User as AuthUser } from 'oidc-client-ts';
 import { Observable, Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 import { CurrentUserQuery } from 'src/app/data/user/user.query';

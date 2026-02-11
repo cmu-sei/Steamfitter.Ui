@@ -1,7 +1,7 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 @use '@angular/material' as mat;
-@import '@angular/material/theming';
+@use '@angular/material/core/m2/palette' as m2-palette;
 
 $mat-cmu-tartan: (
   50: #ff3838,
@@ -19,20 +19,20 @@ $mat-cmu-tartan: (
   A400: #247,
   A700: #085,
   contrast: (
-    50: $dark-primary-text,
-    100: $dark-primary-text,
-    200: $dark-primary-text,
-    300: $dark-primary-text,
-    400: $dark-primary-text,
-    500: $light-primary-text,
-    600: $light-primary-text,
-    700: $light-primary-text,
-    800: $light-primary-text,
-    900: $light-primary-text,
-    A100: $dark-primary-text,
-    A200: $light-primary-text,
-    A400: $light-primary-text,
-    A700: $light-primary-text,
+    50: m2-palette.$dark-primary-text,
+    100: m2-palette.$dark-primary-text,
+    200: m2-palette.$dark-primary-text,
+    300: m2-palette.$dark-primary-text,
+    400: m2-palette.$dark-primary-text,
+    500: m2-palette.$light-primary-text,
+    600: m2-palette.$light-primary-text,
+    700: m2-palette.$light-primary-text,
+    800: m2-palette.$light-primary-text,
+    900: m2-palette.$light-primary-text,
+    A100: m2-palette.$dark-primary-text,
+    A200: m2-palette.$light-primary-text,
+    A400: m2-palette.$light-primary-text,
+    A700: m2-palette.$light-primary-text,
   ),
 );
 
@@ -47,7 +47,7 @@ $cmu-light-theme-background: (
   expansion-panel: #f1f1f2,
   disabled-button: rgba(black, 0.12),
   raised-button: white,
-  focused-button: $dark-focused,
+  focused-button: m2-palette.$dark-focused,
   selected-button: map_get(mat.$m2-grey-palette, 300),
   selected-disabled-button: map_get(mat.$m2-grey-palette, 400),
   disabled-button-toggle: map_get(mat.$m2-grey-palette, 200),
@@ -58,13 +58,13 @@ $cmu-light-theme-background: (
 // Foreground palette for light themes.
 $cmu-light-theme-foreground: (
   base: black,
-  divider: $dark-dividers,
-  dividers: $dark-dividers,
-  disabled: $dark-disabled-text,
+  divider: m2-palette.$dark-dividers,
+  dividers: m2-palette.$dark-dividers,
+  disabled: m2-palette.$dark-disabled-text,
   disabled-button: rgba(black, 0.26),
-  disabled-text: $dark-disabled-text,
-  hint-text: $dark-disabled-text,
-  secondary-text: $dark-secondary-text,
+  disabled-text: m2-palette.$dark-disabled-text,
+  hint-text: m2-palette.$dark-disabled-text,
+  secondary-text: m2-palette.$dark-secondary-text,
   icon: rgba(black, 0.54),
   icons: rgba(black, 0.54),
   text: #242526,
@@ -85,7 +85,7 @@ $cmu-dark-theme-background: (
   disabled-button: rgba(white, 0.12),
   expansion-panel: map_get(mat.$m2-grey-palette, 900),
   raised-button: map-get(mat.$m2-grey-palette, 900),
-  focused-button: $light-focused,
+  focused-button: m2-palette.$light-focused,
   selected-button: map_get(mat.$m2-grey-palette, 900),
   selected-disabled-button: map_get(mat.$m2-grey-palette, 900),
   disabled-button-toggle: black,
@@ -96,14 +96,14 @@ $cmu-dark-theme-background: (
 // Foreground palette for dark themes.
 $cmu-dark-theme-foreground: (
   base: white,
-  divider: $light-dividers,
-  dividers: $light-dividers,
-  disabled: $light-disabled-text,
+  divider: m2-palette.$light-dividers,
+  dividers: m2-palette.$light-dividers,
+  disabled: m2-palette.$light-disabled-text,
   button: #5acde6,
   disabled-button: rgba(white, 0.3),
-  disabled-text: $light-disabled-text,
-  hint-text: $light-disabled-text,
-  secondary-text: $light-secondary-text,
+  disabled-text: m2-palette.$light-disabled-text,
+  hint-text: m2-palette.$light-disabled-text,
+  secondary-text: m2-palette.$light-secondary-text,
   icon: #5acde6,
   icons: #5acde6,
   text: #efefef,
