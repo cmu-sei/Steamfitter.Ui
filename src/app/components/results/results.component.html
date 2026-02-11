@@ -8,7 +8,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   animationDuration="0ms"
   (selectedTabChange)="onTabChanged($event.index)"
   (click)="$event.stopPropagation()"
->
+  >
   <mat-tab label="{{ resultCount('all') }} Total"> </mat-tab>
   <mat-tab label="{{ resultCount('succeeded') }} Succeeded"> </mat-tab>
   <mat-tab label="{{ resultCount('failed') }} Failed"> </mat-tab>
@@ -16,106 +16,122 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   <mat-tab label="{{ resultCount('queued') }} Queued"> </mat-tab>
 </mat-tab-group>
 <div class="flex-container">
-  <div class="flex-item" *ngFor="let result of filteredResults">
-    <div class="flex-container">
-      <div class="item-container">
-        <button
-          mat-button
-          class="result-button"
-          (click)="toggleResultDisplay(result.id); $event.stopPropagation()"
-          title="{{ result.status }}: Open/Close Details"
-        >
-          <mat-icon
-            svgIcon="{{ result.status || result.status }}"
-            class="icon-color icon-20px"
-          ></mat-icon>
-          {{ result.vmName }}
-        </button>
-        <button
-          mat-icon-button
-          class="open-vm-button"
-          (click)="openVmConsole(result.vmId); $event.stopPropagation()"
-          title="Open {{ result.vmName }}"
-          *ngIf="result.vmId"
-        >
-          <mat-icon
-            class="icon-color icon-20px"
-            svgIcon="open_in_new"
-          ></mat-icon>
-        </button>
-        <div *ngIf="showResults[result.id]">
-          id: {{ result.id }}<br />
-          <div *ngIf="showVmFields">
-          vmId: {{ result.vmId }}<br />
-          vmName: {{ result.vmName }}<br />
-          </div>
-          actionParameters:<br />
-          <span *ngFor="let k of result.actionParameters | keyvalue"
-            >&nbsp;&nbsp;&nbsp;&nbsp;{{ k.key }}:
-            {{ k.key.toLowerCase() === 'password' ? '**************' : k.value
-            }}<br
-          /></span>
-          expirationSeconds: {{ result.expirationSeconds }}<br />
-          iteration {{ result.currentIteration }} of {{ result.iterations
-          }}<br />
-          intervalSeconds: {{ result.intervalSeconds }}<br />
-          status: {{ result.status }}<br />
-          expectedOutput: {{ result.expectedOutput }}<br />
-          actualOutput: {{ result.actualOutput }}<br />
-          dateCreated: {{ result.dateCreated | date: 'yyyy/MM/dd HH:mm:ss'
-          }}<br />
-          statusDate: {{ result.statusDate | date: 'yyyy/MM/dd HH:mm:ss'
-          }}<br />
-          <div class="flex-container old-results">
-            <div
-              class="item-container"
-              *ngFor="let oldResult of oldResults(result)"
+  @for (result of filteredResults; track result) {
+    <div class="flex-item">
+      <div class="flex-container">
+        <div class="item-container">
+          <button
+            mat-button
+            class="result-button"
+            (click)="toggleResultDisplay(result.id); $event.stopPropagation()"
+            title="{{ result.status }}: Open/Close Details"
             >
-              <button
-                mat-button
-                class="result-button"
+            <mat-icon
+              svgIcon="{{ result.status || result.status }}"
+              class="icon-color icon-20px"
+            ></mat-icon>
+            {{ result.vmName }}
+          </button>
+          @if (result.vmId) {
+            <button
+              mat-icon-button
+              class="open-vm-button"
+              (click)="openVmConsole(result.vmId); $event.stopPropagation()"
+              title="Open {{ result.vmName }}"
+              >
+              <mat-icon
+                class="icon-color icon-20px"
+                svgIcon="open_in_new"
+              ></mat-icon>
+            </button>
+          }
+          @if (showResults[result.id]) {
+            <div>
+              id: {{ result.id }}<br />
+              @if (showVmFields) {
+                <div>
+                  vmId: {{ result.vmId }}<br />
+                  vmName: {{ result.vmName }}<br />
+                </div>
+              }
+              actionParameters:<br />
+              @for (k of result.actionParameters | keyvalue; track k) {
+                <span
+                  >&nbsp;&nbsp;&nbsp;&nbsp;{{ k.key }}:
+                  {{ k.key.toLowerCase() === 'password' ? '**************' : k.value
+                  }}<br
+                /></span>
+              }
+              expirationSeconds: {{ result.expirationSeconds }}<br />
+              iteration {{ result.currentIteration }} of {{ result.iterations
+              }}<br />
+              intervalSeconds: {{ result.intervalSeconds }}<br />
+              status: {{ result.status }}<br />
+              expectedOutput: {{ result.expectedOutput }}<br />
+              actualOutput: {{ result.actualOutput }}<br />
+              dateCreated: {{ result.dateCreated | date: 'yyyy/MM/dd HH:mm:ss'
+              }}<br />
+              statusDate: {{ result.statusDate | date: 'yyyy/MM/dd HH:mm:ss'
+              }}<br />
+              <div class="flex-container old-results">
+                @for (oldResult of oldResults(result); track oldResult) {
+                  <div
+                    class="item-container"
+                    >
+                    <button
+                      mat-button
+                      class="result-button"
                 (click)="
                   toggleResultDisplay(oldResult.id); $event.stopPropagation()
                 "
-                title="{{ oldResult.status }}: Open/Close Details"
-              >
-                <mat-icon
-                  svgIcon="{{ oldResult.status }}"
-                  class="icon-color icon-20px"
-                ></mat-icon>
-                {{ oldResult.dateCreated | date: 'yyyy/MM/dd HH:mm:ss' }}
-              </button>
-              <div *ngIf="showResults[oldResult.id]">
-                id: {{ oldResult.id }}<br />
-                <div *ngIf="showVmFields">
-                vmId: {{ oldResult.vmId }}<br />
-                vmName: {{ oldResult.vmName }}<br />
-                </div>
-                actionParameters:<br />
-                <span *ngFor="let k of result.actionParameters | keyvalue"
-                  >&nbsp;&nbsp;&nbsp;&nbsp;{{ k.key }}:
-                  {{
-                    k.key.toLowerCase() === 'password'
-                      ? '**************'
-                      : k.value
-                  }}<br
-                /></span>
-                expirationSeconds: {{ oldResult.expirationSeconds }}<br />
-                iteration {{ oldResult.currentIteration }} of
-                {{ oldResult.iterations }}<br />
-                intervalSeconds: {{ oldResult.intervalSeconds }}<br />
-                status: {{ oldResult.status }}<br />
-                expectedOutput: {{ oldResult.expectedOutput }}<br />
-                actualOutput: {{ oldResult.actualOutput }}<br />
-                dateCreated:
-                {{ oldResult.dateCreated | date: 'yyyy/MM/dd HH:mm:ss' }}<br />
-                statusDate:
-                {{ oldResult.statusDate | date: 'yyyy/MM/dd HH:mm:ss' }}<br />
+                      title="{{ oldResult.status }}: Open/Close Details"
+                      >
+                      <mat-icon
+                        svgIcon="{{ oldResult.status }}"
+                        class="icon-color icon-20px"
+                      ></mat-icon>
+                      {{ oldResult.dateCreated | date: 'yyyy/MM/dd HH:mm:ss' }}
+                    </button>
+                    @if (showResults[oldResult.id]) {
+                      <div>
+                        id: {{ oldResult.id }}<br />
+                        @if (showVmFields) {
+                          <div>
+                            vmId: {{ oldResult.vmId }}<br />
+                            vmName: {{ oldResult.vmName }}<br />
+                          </div>
+                        }
+                        actionParameters:<br />
+                        @for (k of result.actionParameters | keyvalue; track k) {
+                          <span
+                            >&nbsp;&nbsp;&nbsp;&nbsp;{{ k.key }}:
+                            {{
+                            k.key.toLowerCase() === 'password'
+                            ? '**************'
+                            : k.value
+                            }}<br
+                          /></span>
+                        }
+                        expirationSeconds: {{ oldResult.expirationSeconds }}<br />
+                        iteration {{ oldResult.currentIteration }} of
+                        {{ oldResult.iterations }}<br />
+                        intervalSeconds: {{ oldResult.intervalSeconds }}<br />
+                        status: {{ oldResult.status }}<br />
+                        expectedOutput: {{ oldResult.expectedOutput }}<br />
+                        actualOutput: {{ oldResult.actualOutput }}<br />
+                        dateCreated:
+                        {{ oldResult.dateCreated | date: 'yyyy/MM/dd HH:mm:ss' }}<br />
+                        statusDate:
+                        {{ oldResult.statusDate | date: 'yyyy/MM/dd HH:mm:ss' }}<br />
+                      </div>
+                    }
+                  </div>
+                }
               </div>
             </div>
-          </div>
+          }
         </div>
       </div>
     </div>
-  </div>
+  }
 </div>
