@@ -23,14 +23,14 @@
 // Define the palettes for your theme using the Material Design palettes available in palette.scss
 // (imported above). For each palette, you can optionally specify a default, lighter, and darker
 // hue. Available color palettes: https://material.io/design/color/
-$steamfitter-web-primary: mat.define-palette(mat.$indigo-palette);
-$steamfitter-web-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+$steamfitter-web-primary: mat.m2-define-palette(mat.$m2-indigo-palette);
+$steamfitter-web-accent: mat.m2-define-palette(mat.$m2-pink-palette, A200, A100, A400);
 
 // The warn palette is optional (defaults to red).
-$steamfitter-web-warn: mat.define-palette(mat.$red-palette);
+$steamfitter-web-warn: mat.m2-define-palette(mat.$m2-red-palette);
 
 // Create the theme object (a Sass map containing all of the palettes).
-$steamfitter-web-theme: mat.define-light-theme(
+$steamfitter-web-theme: mat.m2-define-light-theme(
   $steamfitter-web-primary,
   $steamfitter-web-accent,
   $steamfitter-web-warn
