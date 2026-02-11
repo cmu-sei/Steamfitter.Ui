@@ -14,7 +14,8 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
-import { MatNativeDateModule, MatRippleModule } from '@angular/material/core';
+import { MatNativeDateModule, MatRippleModule, provideNativeDateAdapter } from '@angular/material/core';
+import { NgxMatDatetimePickerV2, NgxMatDatetimePickerInputV2, NgxMatDatepickerToggle } from '@ngxmc/datetime-picker';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -217,6 +218,9 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
         ClipboardModule,
         ComnAuthModule.forRoot(),
         ComnSettingsModule.forRoot(),
+        NgxMatDatetimePickerV2,
+        NgxMatDatetimePickerInputV2,
+        NgxMatDatepickerToggle,
         CwdDialogsModule], providers: [
         DialogService,
         SystemMessageService,
@@ -227,6 +231,7 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
             deps: [ComnSettingsService],
         },
         { provide: MAT_TOOLTIP_DEFAULT_OPTIONS, useValue: myCustomTooltipDefaults },
+        provideNativeDateAdapter(),
         provideHttpClient(withInterceptorsFromDi()),
     ] })
 export class AppModule { }
