@@ -66,19 +66,19 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "steamfitter-web:build",
-            "port": 4401
+            "port": 4401,
+            "buildTarget": "steamfitter-web:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "steamfitter-web:build:production"
+              "buildTarget": "steamfitter-web:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "steamfitter-web:build"
+            "buildTarget": "steamfitter-web:build"
           }
         },
         "test": {
