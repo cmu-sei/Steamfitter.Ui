@@ -14,9 +14,10 @@ import { map } from 'rxjs/operators';
 import { ScenarioTemplateRoleDataService } from 'src/app/data/scenario-template/scenario-template-role-data.service';
 
 @Component({
-  selector: 'app-admin-scenario-template-roles',
-  templateUrl: './admin-scenario-template-roles.component.html',
-  styleUrls: ['./admin-scenario-template-roles.component.scss'],
+    selector: 'app-admin-scenario-template-roles',
+    templateUrl: './admin-scenario-template-roles.component.html',
+    styleUrls: ['./admin-scenario-template-roles.component.scss'],
+    standalone: false
 })
 export class AdminScenarioTemplateRolesComponent implements OnInit {
   private scenarioTemplateRoleService = inject(ScenarioTemplateRoleDataService);

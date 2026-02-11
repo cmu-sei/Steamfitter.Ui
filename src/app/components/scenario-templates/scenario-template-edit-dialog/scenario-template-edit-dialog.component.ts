@@ -47,9 +47,10 @@ export class NotIntegerErrorStateMatcher implements ErrorStateMatcher {
 }
 
 @Component({
-  selector: 'app-scenario-template-edit-dialog',
-  templateUrl: './scenario-template-edit-dialog.component.html',
-  styleUrls: ['./scenario-template-edit-dialog.component.scss'],
+    selector: 'app-scenario-template-edit-dialog',
+    templateUrl: './scenario-template-edit-dialog.component.html',
+    styleUrls: ['./scenario-template-edit-dialog.component.scss'],
+    standalone: false
 })
 export class ScenarioTemplateEditDialogComponent {
   @Output() editComplete = new EventEmitter<any>();

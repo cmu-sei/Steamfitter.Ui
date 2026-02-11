@@ -14,9 +14,10 @@ import { Observable } from 'rxjs';
 import { delay, tap } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-vm-credentials',
-  templateUrl: './vm-credentials.component.html',
-  styleUrls: ['./vm-credentials.component.scss'],
+    selector: 'app-vm-credentials',
+    templateUrl: './vm-credentials.component.html',
+    styleUrls: ['./vm-credentials.component.scss'],
+    standalone: false
 })
 export class VmCredentialsComponent implements OnInit {
   @Input() username: string;

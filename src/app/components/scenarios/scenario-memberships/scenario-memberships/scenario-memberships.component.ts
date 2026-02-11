@@ -28,9 +28,10 @@ import { GroupDataService } from 'src/app/data/group/group-data.service';
 import { PermissionDataService } from 'src/app/data/permission/permission-data.service';
 
 @Component({
-  selector: 'app-scenario-memberships',
-  templateUrl: './scenario-memberships.component.html',
-  styleUrls: ['./scenario-memberships.component.scss'],
+    selector: 'app-scenario-memberships',
+    templateUrl: './scenario-memberships.component.html',
+    styleUrls: ['./scenario-memberships.component.scss'],
+    standalone: false
 })
 export class ScenarioMembershipsComponent implements OnInit, OnChanges {
   @Input() embedded: boolean;

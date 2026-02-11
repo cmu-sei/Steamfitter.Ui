@@ -24,10 +24,11 @@ import {
 } from 'src/app/generated/steamfitter.api';
 
 @Component({
-  selector: 'app-scenario-template-membership-list',
-  templateUrl: './scenario-template-membership-list.component.html',
-  styleUrls: ['./scenario-template-membership-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-scenario-template-membership-list',
+    templateUrl: './scenario-template-membership-list.component.html',
+    styleUrls: ['./scenario-template-membership-list.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ScenarioTemplateMembershipListComponent
   implements OnInit, OnChanges

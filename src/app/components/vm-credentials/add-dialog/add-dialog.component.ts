@@ -5,8 +5,9 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { Component, Inject, Output, EventEmitter } from '@angular/core';
 
 @Component({
-  selector: 'app-add-dialog',
-  templateUrl: './add-dialog.component.html',
+    selector: 'app-add-dialog',
+    templateUrl: './add-dialog.component.html',
+    standalone: false
 })
 export class AddDialogComponent {
   @Output() editComplete = new EventEmitter<any>();

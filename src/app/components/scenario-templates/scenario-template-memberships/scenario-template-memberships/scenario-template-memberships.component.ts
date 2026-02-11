@@ -28,9 +28,10 @@ import { PermissionDataService } from 'src/app/data/permission/permission-data.s
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
-  selector: 'app-scenario-template-memberships',
-  templateUrl: './scenario-template-memberships.component.html',
-  styleUrls: ['./scenario-template-memberships.component.scss'],
+    selector: 'app-scenario-template-memberships',
+    templateUrl: './scenario-template-memberships.component.html',
+    styleUrls: ['./scenario-template-memberships.component.scss'],
+    standalone: false
 })
 export class ScenarioTemplateMembershipsComponent implements OnInit, OnChanges {
   @Input() embedded: boolean;

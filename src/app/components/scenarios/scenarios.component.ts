@@ -22,9 +22,10 @@ import { ScenarioQuery } from 'src/app/data/scenario/scenario.query';
 import { Scenario } from 'src/app/generated/steamfitter.api';
 
 @Component({
-  selector: 'app-scenarios',
-  templateUrl: './scenarios.component.html',
-  styleUrls: ['./scenarios.component.scss'],
+    selector: 'app-scenarios',
+    templateUrl: './scenarios.component.html',
+    styleUrls: ['./scenarios.component.scss'],
+    standalone: false
 })
 export class ScenariosComponent implements OnInit {
   @Output() editComplete = new EventEmitter<boolean>();

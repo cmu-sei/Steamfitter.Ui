@@ -21,10 +21,11 @@ import { SignalRService } from 'src/app/services/signalr/signalr.service';
 import { ErrorService } from 'src/app/services/error/error.service';
 
 @Component({
-  selector: 'app-manual-tasks-page',
-  templateUrl: './manual-tasks-page.component.html',
-  styleUrls: ['./manual-tasks-page.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-manual-tasks-page',
+    templateUrl: './manual-tasks-page.component.html',
+    styleUrls: ['./manual-tasks-page.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ManualTasksPageComponent implements OnInit, OnDestroy {
   viewId: string;

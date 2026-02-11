@@ -12,9 +12,10 @@ import { PlayerDataService } from 'src/app/data/player/player-data-service';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
-  selector: 'app-admin-scenarios',
-  templateUrl: './admin-scenarios.component.html',
-  styleUrls: ['./admin-scenarios.component.scss'],
+    selector: 'app-admin-scenarios',
+    templateUrl: './admin-scenarios.component.html',
+    styleUrls: ['./admin-scenarios.component.scss'],
+    standalone: false
 })
 export class AdminScenariosComponent implements OnInit {
   constructor(

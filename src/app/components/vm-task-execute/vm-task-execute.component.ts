@@ -41,9 +41,10 @@ export class UserErrorStateMatcher implements ErrorStateMatcher {
 }
 
 @Component({
-  selector: 'app-vm-task-execute',
-  templateUrl: './vm-task-execute.component.html',
-  styleUrls: ['./vm-task-execute.component.scss'],
+    selector: 'app-vm-task-execute',
+    templateUrl: './vm-task-execute.component.html',
+    styleUrls: ['./vm-task-execute.component.scss'],
+    standalone: false
 })
 export class VmTaskExecuteComponent implements OnDestroy {
   @Output() editComplete = new EventEmitter<boolean>();

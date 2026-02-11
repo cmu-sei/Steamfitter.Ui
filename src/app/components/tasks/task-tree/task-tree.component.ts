@@ -61,9 +61,10 @@ const BLANK_TASK: Task = {
 };
 
 @Component({
-  selector: 'app-task-tree',
-  templateUrl: './task-tree.component.html',
-  styleUrls: ['./task-tree.component.scss'],
+    selector: 'app-task-tree',
+    templateUrl: './task-tree.component.html',
+    styleUrls: ['./task-tree.component.scss'],
+    standalone: false
 })
 export class TaskTreeComponent implements OnInit, OnDestroy {
   @Input() taskList: Observable<Task[]>;

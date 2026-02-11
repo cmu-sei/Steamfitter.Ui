@@ -16,9 +16,10 @@ import { ScenarioTemplate } from 'src/app/generated/steamfitter.api';
 import { TasksComponent } from '../../tasks/tasks.component';
 
 @Component({
-  selector: 'app-scenario-template-edit',
-  templateUrl: './scenario-template-edit.component.html',
-  styleUrls: ['./scenario-template-edit.component.scss'],
+    selector: 'app-scenario-template-edit',
+    templateUrl: './scenario-template-edit.component.html',
+    styleUrls: ['./scenario-template-edit.component.scss'],
+    standalone: false
 })
 export class ScenarioTemplateEditComponent {
   @Input() scenarioTemplate: ScenarioTemplate;

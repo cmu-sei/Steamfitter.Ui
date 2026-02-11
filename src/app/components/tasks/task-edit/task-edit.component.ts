@@ -23,9 +23,10 @@ import {
 } from 'src/app/generated/steamfitter.api';
 
 @Component({
-  selector: 'app-task-edit',
-  templateUrl: './task-edit.component.html',
-  styleUrls: ['./task-edit.component.scss'],
+    selector: 'app-task-edit',
+    templateUrl: './task-edit.component.html',
+    styleUrls: ['./task-edit.component.scss'],
+    standalone: false
 })
 export class TaskEditComponent implements OnInit, OnDestroy {
   @Output() editComplete = new EventEmitter<any>();

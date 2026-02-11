@@ -25,9 +25,10 @@ import {
 } from 'src/app/generated/steamfitter.api';
 
 @Component({
-  selector: 'app-scenario-member-list',
-  templateUrl: './scenario-member-list.component.html',
-  styleUrls: ['./scenario-member-list.component.scss'],
+    selector: 'app-scenario-member-list',
+    templateUrl: './scenario-member-list.component.html',
+    styleUrls: ['./scenario-member-list.component.scss'],
+    standalone: false
 })
 export class ScenarioMemberListComponent
   implements OnInit, OnChanges, AfterViewInit

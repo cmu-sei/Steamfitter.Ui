@@ -33,9 +33,10 @@ export class UserErrorStateMatcher implements ErrorStateMatcher {
 }
 
 @Component({
-  selector: 'app-scenario-templates',
-  templateUrl: './scenario-templates.component.html',
-  styleUrls: ['./scenario-templates.component.scss'],
+    selector: 'app-scenario-templates',
+    templateUrl: './scenario-templates.component.html',
+    styleUrls: ['./scenario-templates.component.scss'],
+    standalone: false
 })
 export class ScenarioTemplatesComponent {
   @Input() adminMode = false;

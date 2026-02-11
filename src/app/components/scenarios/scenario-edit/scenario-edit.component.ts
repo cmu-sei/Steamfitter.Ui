@@ -20,9 +20,10 @@ import {
 } from 'src/app/generated/steamfitter.api/model/models';
 
 @Component({
-  selector: 'app-scenario-edit',
-  templateUrl: './scenario-edit.component.html',
-  styleUrls: ['./scenario-edit.component.scss'],
+    selector: 'app-scenario-edit',
+    templateUrl: './scenario-edit.component.html',
+    styleUrls: ['./scenario-edit.component.scss'],
+    standalone: false
 })
 export class ScenarioEditComponent {
   @Input() scenario: Scenario;

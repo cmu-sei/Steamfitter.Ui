@@ -43,9 +43,10 @@ export interface Action {
 }
 
 @Component({
-  selector: 'app-scenario-list',
-  templateUrl: './scenario-list.component.html',
-  styleUrls: ['./scenario-list.component.scss'],
+    selector: 'app-scenario-list',
+    templateUrl: './scenario-list.component.html',
+    styleUrls: ['./scenario-list.component.scss'],
+    standalone: false
 })
 export class ScenarioListComponent implements OnInit, OnChanges {
   @Input() scenarioList: Scenario[];

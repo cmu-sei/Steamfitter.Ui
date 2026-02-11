@@ -24,9 +24,10 @@ export class UserErrorStateMatcher implements ErrorStateMatcher {
 }
 
 @Component({
-  selector: 'app-scenario-edit-dialog',
-  templateUrl: './scenario-edit-dialog.component.html',
-  styleUrls: ['./scenario-edit-dialog.component.scss'],
+    selector: 'app-scenario-edit-dialog',
+    templateUrl: './scenario-edit-dialog.component.html',
+    styleUrls: ['./scenario-edit-dialog.component.scss'],
+    standalone: false
 })
 export class ScenarioEditDialogComponent {
   @Output() editComplete = new EventEmitter<any>();

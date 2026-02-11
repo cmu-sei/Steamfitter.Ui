@@ -14,10 +14,11 @@ import { Scenario, Task } from 'src/app/generated/steamfitter.api';
 import { MatIcon } from '@angular/material/icon';
 
 @Component({
-  selector: 'app-manual-tasks-list',
-  templateUrl: './manual-tasks-list.component.html',
-  styleUrls: ['./manual-tasks-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-manual-tasks-list',
+    templateUrl: './manual-tasks-list.component.html',
+    styleUrls: ['./manual-tasks-list.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ManualTasksListComponent implements OnInit {
   @Input() tasks: Array<Task>;
