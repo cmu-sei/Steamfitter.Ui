@@ -26,7 +26,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           matTooltip="Open Sidebar"
           aria-label="Open Sidebar"
           >
-          <mat-icon class="icon-color" svgIcon="ic_chevron_right"></mat-icon>
+          <mat-icon class="menu-trigger" svgIcon="ic_chevron_right"></mat-icon>
         </button>
       }
     </span>
@@ -38,12 +38,12 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         >
         <button
           mat-button
-          class="icon-color"
+          class="menu-trigger"
           [matMenuTriggerFor]="menu"
           style="outline: none"
           >
           <strong>{{ currentUser.name }}</strong>
-          <mat-icon class="icon-color" svgIcon="ic_expand_more"></mat-icon>
+          <mat-icon class="menu-trigger" svgIcon="ic_expand_more"></mat-icon>
         </button>
         <mat-menu #menu="matMenu" [overlapTrigger]="false">
           @if (topbarView === TopbarView.STEAMFITTER_ADMIN) {

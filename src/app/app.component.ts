@@ -1,11 +1,17 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { OverlayContainer } from '@angular/cdk/overlay';
 import { Component, HostBinding, OnDestroy } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
-import { ComnAuthQuery, ComnAuthService, Theme } from '@cmusei/crucible-common';
+import {
+  ComnAuthQuery,
+  ComnAuthService,
+  ComnDynamicThemeService,
+  ComnFaviconService,
+  ComnSettingsService,
+  Theme,
+} from '@cmusei/crucible-common';
 import { Subject, Observable } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -25,11 +31,13 @@ export class AppComponent implements OnDestroy {
   constructor(
     iconRegistry: MatIconRegistry,
     sanitizer: DomSanitizer,
-    private overlayContainer: OverlayContainer,
     private authQuery: ComnAuthQuery,
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    private authService: ComnAuthService
+    private authService: ComnAuthService,
+    private themeService: ComnDynamicThemeService,
+    private settingsService: ComnSettingsService,
+    private faviconService: ComnFaviconService
   ) {
     iconRegistry.setDefaultFontSetClass('mdi');
 
@@ -295,21 +303,25 @@ export class AppComponent implements OnDestroy {
   }
 
   setTheme(theme: Theme) {
-    const classList = this.overlayContainer.getContainerElement().classList;
+    const hexColor =
+      this.settingsService.settings.AppPrimaryThemeColor || '#BB0000';
+
     switch (theme) {
       case Theme.LIGHT:
-        this.componentCssClass = theme;
-        classList.add(theme);
-        classList.remove(Theme.DARK);
+        document.body.classList.toggle('darkMode', false);
+        this.themeService.applyLightTheme(hexColor);
+        this.faviconService.updateFavicon(hexColor);
         break;
       case Theme.DARK:
-        this.componentCssClass = theme;
-        classList.add(theme);
-        classList.remove(Theme.LIGHT);
+        document.body.classList.toggle('darkMode', true);
+        this.themeService.applyDarkTheme(hexColor);
+        this.faviconService.updateFavicon(hexColor);
+        break;
     }
   }
 
   ngOnDestroy(): void {
-    throw new Error('Method not implemented.');
+    this.unsubscribe$.next(null);
+    this.unsubscribe$.complete();
   }
 }

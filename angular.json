@@ -30,6 +30,7 @@
               "includePaths": ["src/styles", "./node_modules/bootstrap/scss"]
             },
             "scripts": [],
+            "preserveSymlinks": true,
             "extractLicenses": false,
             "sourceMap": true,
             "optimization": false,

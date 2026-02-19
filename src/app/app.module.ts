@@ -52,6 +52,7 @@ import {
   ComnSettingsConfig,
   ComnSettingsModule,
   ComnSettingsService,
+  provideCrucibleTheme,
 } from '@cmusei/crucible-common';
 import { AkitaNgRouterStoreModule } from '@datorama/akita-ng-router-store';
 import { AkitaNgDevtools } from '@datorama/akita-ngdevtools';
@@ -231,6 +232,10 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
             deps: [ComnSettingsService],
         },
         { provide: MAT_TOOLTIP_DEFAULT_OPTIONS, useValue: myCustomTooltipDefaults },
+        ...provideCrucibleTheme({
+            defaultThemeColor: '#BB0000',
+            faviconSvgPath: 'assets/svg-icons/ic_crucible_steamfitter.svg',
+        }),
         provideNativeDateAdapter(),
         provideHttpClient(withInterceptorsFromDi()),
     ] })
