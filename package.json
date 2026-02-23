@@ -33,7 +33,7 @@
     "@fortawesome/fontawesome-free": "^6.7.2",
     "@mdi/font": "^7.2.96",
     "@microsoft/signalr": "^8.0.7",
-    "ajv": "^8.6.2",
+    "ajv": "^8.18.0",
     "bootstrap": "^5.3.3",
     "bootstrap-scss": "^5.2.2",
     "core-js": "^3.30.1",
