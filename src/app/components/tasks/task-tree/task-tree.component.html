@@ -11,7 +11,6 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           <b>Tasks:</b>&nbsp;&nbsp;&nbsp;
           <button mat-icon-button title="Add a Task" (click)="onContextNew(null)">
             <mat-icon
-              class="icon-color"
               svgIcon="ic_plus_circle_outline"
             ></mat-icon>
           </button>
@@ -55,7 +54,6 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
                 }
                 @if (!treeControl.isExpanded(node)) {
                   <mat-icon
-                    class="icon-color"
                     svgIcon="ic_chevron_right"
                   ></mat-icon>
                 }
@@ -78,10 +76,10 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
                       onContextMenu($event, node); $event.stopPropagation()
                     "
                       >
-                      <mat-icon class="icon-color" svgIcon="menu"></mat-icon>
+                      <mat-icon svgIcon="menu"></mat-icon>
                     </button>
                     <mat-icon
-                      class="icon-color icon-20"
+                      class="icon-20"
                       svgIcon="{{ node.task.triggerCondition.toLowerCase() }}"
                       title="Runs on {{ node.task.triggerCondition }}"
                     ></mat-icon>

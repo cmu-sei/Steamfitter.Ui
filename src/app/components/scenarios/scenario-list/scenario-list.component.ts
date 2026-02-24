@@ -19,6 +19,7 @@ import {
 } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { UntypedFormControl } from '@angular/forms';
 import { PermissionDataService } from 'src/app/data/permission/permission-data.service';
 import { ScenarioPermission, SystemPermission } from 'src/app/generated/steamfitter.api';
 import { View } from 'src/app/generated/steamfitter.api';
@@ -68,7 +69,7 @@ export class ScenarioListComponent implements OnInit, OnChanges {
     'endDate',
     'description',
   ];
-  showStatus = { active: true, ready: true, ended: false };
+  selectedStatuses: string[] = ['active', 'ready'];
   statusFilteredScenarios: Scenario[];
   editScenarioText = 'Edit Scenario';
   // context menu
@@ -83,6 +84,7 @@ export class ScenarioListComponent implements OnInit, OnChanges {
   sortEvents$: Observable<Sort>;
   pageEvents$: Observable<PageEvent>;
   scenarioDataSource = new MatTableDataSource<Scenario>(new Array<Scenario>());
+  filterControl = new UntypedFormControl();
   filterString = '';
   permissions: SystemPermission[] = [];
   readonly SystemPermission = SystemPermission;
@@ -105,6 +107,10 @@ export class ScenarioListComponent implements OnInit, OnChanges {
   ngOnInit() {
     this.sortEvents$ = fromMatSort(this.sort);
     this.pageEvents$ = fromMatPaginator(this.paginator);
+    this.filterControl.valueChanges.subscribe((term) => {
+      this.filterString = (term || '').trim().toLowerCase();
+      this.filterAndSort();
+    });
     const id = this.selectedScenario ? this.selectedScenario.id : '';
     // force already expanded scenario to refresh details
     if (id) {
@@ -127,10 +133,7 @@ export class ScenarioListComponent implements OnInit, OnChanges {
   filterByStatus(scenarios: Scenario[]) {
     this.paginator.pageIndex = 0;
     this.statusFilteredScenarios = scenarios.filter(
-      (m) =>
-        (this.showStatus.active && m.status === 'active') ||
-        (this.showStatus.ended && m.status === 'ended') ||
-        (this.showStatus.ready && m.status === 'ready')
+      (m) => this.selectedStatuses.includes(m.status)
     );
     this.filterAndSort();
   }
@@ -166,7 +169,7 @@ export class ScenarioListComponent implements OnInit, OnChanges {
   /**
    * Edits or adds a scenario
    */
-  editScenario(scenario: Scenario) {
+  editScenario(scenario: Scenario | null) {
     scenario = !scenario ? <Scenario>{ name: '', description: '' } : scenario;
     const dialogRef = this.dialog.open(ScenarioEditDialogComponent, {
       width: '800px',
@@ -246,9 +249,9 @@ export class ScenarioListComponent implements OnInit, OnChanges {
       });
   }
 
-  selectScenario(event: any, scenarioId: string) {
+  selectScenario(event: any, scenarioId: string | undefined) {
     if (this.adminMode) {
-      this.itemSelected.emit(scenarioId);
+      this.itemSelected.emit(scenarioId ?? '');
       if (this.selectedScenario) {
         this.selectedScenario.id = '';
       }
@@ -260,8 +263,12 @@ export class ScenarioListComponent implements OnInit, OnChanges {
       this.itemSelected.emit('');
       this.selectedScenario = null;
     } else {
-      this.itemSelected.emit(scenarioId);
+      this.itemSelected.emit(scenarioId ?? '');
     }
+  }
+
+  clearFilter() {
+    this.filterControl.setValue('');
   }
 
   applyFilter(value: string) {

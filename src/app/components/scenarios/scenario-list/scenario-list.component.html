@@ -10,75 +10,49 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       [ngStyle]="{ color: topbarColor }"
     ></mat-icon>
   </div>
-  <mat-icon
-    class="icon-color search-icon"
-    svgIcon="ic_magnify_search"
-  ></mat-icon>
-  <mat-form-field class="search-field">
-    <input matInput [(ngModel)]="filterString" (keyup)="applyFilter($event.target.value)" placeholder="Search" />
-  </mat-form-field>
-  <div class="clear-search">
-    <button
-      mat-icon-button
-      (click)="applyFilter('')"
-      class="no-outline"
-      title="Clear Search"
-      >
-      <mat-icon class="scale-85" svgIcon="ic_cancel_circle"></mat-icon>
-    </button>
-  </div>
-  <div class="button-end">
-    @if (!adminMode && permissions.includes(SystemPermission.CreateScenarios)) {
-      <button mat-stroked-button
-        (click)="editScenario(null)">
-        Add Scenario
+  <mat-form-field style="width: 200px;">
+    <input matInput [formControl]="filterControl" placeholder="Search" />
+    @if (filterControl.value) {
+      <button mat-icon-button matSuffix (click)="clearFilter()" title="Clear Search">
+        <mat-icon style="transform: scale(0.85)" fontIcon="mdi-close-circle-outline"></mat-icon>
       </button>
     }
+  </mat-form-field>
+  <mat-form-field style="width: 230px; margin-left: 20px;">
+    <mat-label>Status</mat-label>
+    <mat-select multiple [(ngModel)]="selectedStatuses" (selectionChange)="filterByStatus(scenarioList)">
+      <mat-option value="active">Active</mat-option>
+      <mat-option value="ready">Ready</mat-option>
+      <mat-option value="ended">Ended</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <div style="margin-left: auto;">
+    <mat-paginator
+      #paginator
+      [length]="totalRows$ | async"
+      [pageIndex]="0"
+      [pageSize]="20"
+      [pageSizeOptions]="[5, 10, 15, 20, 25, 50, 100, 200]"
+    ></mat-paginator>
   </div>
-  <div class="status-div">
-    <mat-checkbox
-      [(ngModel)]="showStatus.active"
-      (change)="filterByStatus(scenarioList)"
-      class="checkbox-text"
-      >Active</mat-checkbox
-      ><br />
-      <mat-checkbox
-        [(ngModel)]="showStatus.ended"
-        (change)="filterByStatus(scenarioList)"
-        class="checkbox-text"
-        >Ended</mat-checkbox
-        ><br />
-        <mat-checkbox
-          [(ngModel)]="showStatus.ready"
-          (change)="filterByStatus(scenarioList)"
-          class="checkbox-text"
-          >Ready</mat-checkbox
-          >
-        </div>
-        <div class="button-end">
-          <mat-paginator
-            #paginator
-            [length]="totalRows$ | async"
-            [pageIndex]="0"
-            [pageSize]="20"
-            [pageSizeOptions]="[5, 10, 15, 20, 25, 50, 100, 200]"
-          ></mat-paginator>
-        </div>
       </div>
 
       <mat-accordion displayMode="flat">
-        <section
-          matSort
-          class="mat-elevation-z2 mat-header-row"
-          >
-          <span class="mat-header-cell four-cell" mat-sort-header="name"><span class="name-header">Name</span></span>
+        <section matSort class="header-row">
+          <span class="mat-header-cell first-cell">
+            @if (!adminMode && permissions.includes(SystemPermission.CreateScenarios)) {
+              <button mat-icon-button (click)="editScenario(null); $event.stopPropagation()"
+                style="outline: none; margin-left: 20px;" title="Add Scenario">
+                <mat-icon class="mdi-24px center-self" fontIcon="mdi-plus-circle"></mat-icon>
+              </button>
+            }
+          </span>
+          <span class="mat-header-cell name-cell" mat-sort-header="name">Name</span>
           <span class="mat-header-cell two-cell" mat-sort-header="view">View</span>
           <span class="mat-header-cell one-cell" mat-sort-header="status">Status</span>
           <span class="mat-header-cell one-cell" mat-sort-header="startDate">Start</span>
           <span class="mat-header-cell one-cell" mat-sort-header="endDate">End</span>
-          <span class="mat-header-cell two-cell" mat-sort-header="description"
-            >Description</span
-            >
+          <span class="mat-header-cell two-cell" mat-sort-header="description">Description</span>
           </section>
 
           @for (
@@ -91,50 +65,49 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
               (click)="selectScenario($event, item.id)"
               >
               <mat-expansion-panel-header
-                class="mat-row"
+                class="row"
                 (contextmenu)="onContextMenu($event, item)"
                 >
-                <div class="mat-cell flex-row-cell four-cell">
+                <div class="cell first-cell">
                   @if (!adminMode && permissions.includes(SystemPermission.CreateScenarios)) {
                     <button
                       mat-icon-button
-                      class="copy-button"
                       ngxClipboard
                       [cbContent]="item.id"
                       (click)="$event.stopPropagation()"
+                      style="outline: none;"
                       title="Copy ID:  {{ item.id }}"
                       >
-                      <mat-icon class="mdi-20px copy-icon" fontIcon="mdi-content-copy"></mat-icon>
+                      <mat-icon class="mdi-18px center-self" fontIcon="mdi-content-copy"></mat-icon>
                     </button>
                   }
                   @if (!adminMode && canDoSomething(item)) {
                     <button
                       mat-icon-button
-                      class="menu-button"
-                      ngxClipboard
                       (click)="onContextMenu($event, item); $event.stopPropagation()"
+                      style="outline: none;"
                       title="Scenario Menu"
                       >
-                      <mat-icon class="mdi-24px" fontIcon="mdi-menu"></mat-icon>
+                      <mat-icon class="mdi-18px center-self" fontIcon="mdi-menu"></mat-icon>
                     </button>
                   }
-                  {{ item.name }}
                 </div>
-                <div class="mat-cell two-cell center-self">{{ item.view }}</div>
+                <div class="cell name-cell center-self">{{ item.name }}</div>
+                <div class="cell two-cell center-self">{{ item.view }}</div>
                 @if (!!item.view || item.status !== 'ready') {
-                  <div class="mat-cell one-cell center-self">{{
+                  <div class="cell one-cell center-self">{{
                     item.status
                   }}</div>
                 }
                 @if (!item.view && item.status === 'ready') {
                   <div
-                    class="mat-cell warn-text one-cell center-self"
+                    class="cell warn-text one-cell center-self"
                     >Select a view!</div
                     >
                   }
-                  <div class="mat-cell one-cell center-self">{{ item.startDate | date: 'yyyy-MM-dd' }}</div>
-                  <div class="mat-cell one-cell center-self">{{ item.endDate | date: 'yyyy-MM-dd' }}</div>
-                  <div class="mat-cell two-cell center-self">{{ item.description }}</div>
+                  <div class="cell one-cell center-self">{{ item.startDate | date: 'yyyy-MM-dd' }}</div>
+                  <div class="cell one-cell center-self">{{ item.endDate | date: 'yyyy-MM-dd' }}</div>
+                  <div class="cell two-cell center-self">{{ item.description }}</div>
                 </mat-expansion-panel-header>
                 <ng-template matExpansionPanelContent>
                   <app-scenario-edit [scenario]="selectedScenario"></app-scenario-edit>

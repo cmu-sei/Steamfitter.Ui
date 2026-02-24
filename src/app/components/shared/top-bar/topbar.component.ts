@@ -34,8 +34,6 @@ import { TopbarView } from './topbar.models';
 export class TopbarComponent implements OnInit, OnDestroy {
   @Input() title?: string;
   @Input() sidenav?;
-  @Input() topbarColor?;
-  @Input() topbarTextColor?;
   @Input() topbarView?: TopbarView;
   @Output() sidenavToggle?: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() editView?: EventEmitter<any> = new EventEmitter<any>();
@@ -43,6 +41,7 @@ export class TopbarComponent implements OnInit, OnDestroy {
   theme$: Observable<Theme>;
   unsubscribe$: Subject<null> = new Subject<null>();
   TopbarView = TopbarView;
+  topbarTextColor: string;
   canViewAdmin = false;
 
   constructor(
@@ -68,15 +67,7 @@ export class TopbarComponent implements OnInit, OnDestroy {
     );
 
     this.theme$ = this.authQuery.userTheme$;
-
-    if (!this.topbarColor) {
-      this.topbarColor = this.settingsService.settings.AppTopBarHexColor;
-    }
-
-    if (!this.topbarTextColor) {
-      this.topbarTextColor =
-        this.settingsService.settings.AppTopBarHexTextColor;
-    }
+    this.topbarTextColor = this.settingsService.settings.AppTopBarHexTextColor;
   }
 
   themeFn(event) {

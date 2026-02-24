@@ -19,6 +19,7 @@ import {
 } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { UntypedFormControl } from '@angular/forms';
 import { PermissionDataService } from 'src/app/data/permission/permission-data.service';
 import { ScenarioTemplatePermission, SystemPermission } from 'src/app/generated/steamfitter.api';
 import { ScenarioTemplateEditDialogComponent } from 'src/app/components/scenario-templates/scenario-template-edit-dialog/scenario-template-edit-dialog.component';
@@ -75,6 +76,7 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
   scenarioTemplateDataSource = new MatTableDataSource<ScenarioTemplate>(
     new Array<ScenarioTemplate>()
   );
+  filterControl = new UntypedFormControl();
   filterString = '';
   permissions: SystemPermission[] = [];
   readonly SystemPermission = SystemPermission;
@@ -98,6 +100,10 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
   ngOnInit() {
     this.sortEvents$ = fromMatSort(this.sort);
     this.pageEvents$ = fromMatPaginator(this.paginator);
+    this.filterControl.valueChanges.subscribe((term) => {
+      this.filterString = (term || '').trim().toLowerCase();
+      this.filterAndSort();
+    });
     const id = this.selectedScenarioTemplate
       ? this.selectedScenarioTemplate.id
       : '';
@@ -154,7 +160,7 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
   /**
    * Edits or adds a scenarioTemplate
    */
-  editScenarioTemplate(scenarioTemplate: ScenarioTemplate) {
+  editScenarioTemplate(scenarioTemplate: ScenarioTemplate | null) {
     scenarioTemplate = !scenarioTemplate
       ? <ScenarioTemplate>{ name: '', description: '' }
       : scenarioTemplate;
@@ -241,9 +247,9 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
     });
   }
 
-  selectScenarioTemplate(event: any, scenarioTemplateId: string) {
+  selectScenarioTemplate(event: any, scenarioTemplateId: string | undefined) {
     if (this.adminMode) {
-      this.itemSelected.emit(scenarioTemplateId);
+      this.itemSelected.emit(scenarioTemplateId ?? '');
       if (this.selectedScenarioTemplate) {
         this.selectedScenarioTemplate.id = '';
       }
@@ -255,8 +261,12 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
       this.itemSelected.emit('');
       this.selectedScenarioTemplate = null;
     } else {
-      this.itemSelected.emit(scenarioTemplateId);
+      this.itemSelected.emit(scenarioTemplateId ?? '');
     }
+  }
+
+  clearFilter() {
+    this.filterControl.setValue('');
   }
 
   applyFilter(value: string) {

@@ -56,14 +56,17 @@ body {
   height: 20px !important;
 }
 
-// Utility classes using M3 CSS variables
-.icon-color {
-  color: var(--mat-sys-on-surface);
+// default all icons to the primary theme color
+mat-icon,
+.mat-icon {
+  --mat-icon-color: var(--mat-sys-primary);
 }
 
+// Utility classes using M3 CSS variables
 .selected {
   background: var(--mat-sys-primary);
   color: var(--mat-sys-on-primary);
+
   &:hover,
   &:focus {
     background: var(--mat-sys-primary) !important;
@@ -83,6 +86,7 @@ body {
 }
 
 .highlight {
+
   &:hover,
   &:focus {
     background: var(--mat-sys-surface-variant);
@@ -99,6 +103,7 @@ body {
 
 a {
   color: var(--mat-sys-on-surface);
+
   &:hover,
   &:focus {
     color: var(--mat-sys-on-surface-variant);
@@ -133,6 +138,7 @@ a {
 .mat-mdc-select-panel {
   background: var(--mat-sys-surface);
 }
+
 .mat-mdc-select-panel:not([class*='mat-elevation-z']) {
   box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14),
     0 1px 10px 0 rgba(0, 0, 0, 0.12);

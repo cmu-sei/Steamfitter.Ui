@@ -15,10 +15,22 @@
   margin-right: 10px;
 }
 .view-text {
-  font-size: 110%;
+  font-size: large;
   margin-left: 50px;
   margin-right: 40px;
+  font-weight: bold;
 }
-.menu-trigger {
-  color: var(--mat-sys-on-primary) !important;
+
+.username-text {
+  font-size: large;
+  font-weight: bold;
+}
+
+.mat-mdc-button:not(:disabled),
+.mat-mdc-icon-button:not(:disabled) {
+  color: inherit;
+}
+
+mat-icon, .mat-icon {
+  --mat-icon-color: currentColor;
 }
