@@ -96,6 +96,7 @@ export class HistoryComponent implements OnInit, OnDestroy {
               a.statusDate <= b.statusDate ? 1 : -1
             );
           }
+          this.paginator?.firstPage();
         },
         (error) => {
           console.log('API is not responding:', error.message);
@@ -171,6 +172,7 @@ export class HistoryComponent implements OnInit, OnDestroy {
     } else {
       this.resultDataService.loadByUser(user.id);
     }
+    this.paginator?.firstPage();
   }
 
   handleViewChange(view: View) {
@@ -180,6 +182,7 @@ export class HistoryComponent implements OnInit, OnDestroy {
     } else {
       this.resultDataService.loadByView(view.id);
     }
+    this.paginator?.firstPage();
   }
 
   handleVmChange(vm: Vm) {
@@ -189,6 +192,7 @@ export class HistoryComponent implements OnInit, OnDestroy {
     } else {
       this.resultDataService.loadByVm(vm.id);
     }
+    this.paginator?.firstPage();
   }
 
   copyTask(resultId: string) {

@@ -13,95 +13,85 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         alt="History"
       ></mat-icon>
     </div>
-    <div class="cssLayoutRowStartCenter">
-      <h4>
-        <mat-form-field>
-          <mat-label>Category</mat-label>
-          <mat-select
-            [(value)]="historyView"
-            (selectionChange)="handleHistoryViewChange($event.value)"
-            >
-            @for (view of HistoryView | keyvalue; track view) {
-              <mat-option
-                [value]="view.value"
-                >{{ view.value }}</mat-option
-                >
+    <div class="filter-row">
+      <mat-form-field>
+        <mat-label>Category</mat-label>
+        <mat-select
+          [(value)]="historyView"
+          (selectionChange)="handleHistoryViewChange($event.value)"
+          >
+          @for (view of HistoryView | keyvalue; track view) {
+            <mat-option
+              [value]="view.value"
+              >{{ view.value }}</mat-option
+              >
+            }
+          </mat-select>
+        </mat-form-field>
+        @if (historyView === HistoryView.user) {
+          <mat-form-field>
+            <mat-label>
+              <span>{{ historyView }}s</span>
+            </mat-label>
+            <mat-select
+              [(value)]="selectedUser"
+              (selectionChange)="handleUserChange($event.value)"
+              >
+              @for (user of users$ | async; track user) {
+                <mat-option [value]="user">{{
+                  user.name
+                }}</mat-option>
               }
             </mat-select>
           </mat-form-field>
-          &nbsp; &nbsp;
-          @if (historyView === HistoryView.user) {
-            <mat-form-field
-              class="add-margin"
-              >
-              <mat-label>
-                <span>{{ historyView }}s</span>
-              </mat-label>
-              <mat-select
-                [(value)]="selectedUser"
-                (selectionChange)="handleUserChange($event.value)"
-                >
-                @for (user of users$ | async; track user) {
-                  <mat-option [value]="user">{{
-                    user.name
-                  }}</mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-          }
-          @if (historyView === HistoryView.view) {
-            <mat-form-field
-              class="add-margin"
-              >
-              <mat-label>
-                <span>{{ historyView }}s</span>
-              </mat-label>
-              <mat-select
-                [(value)]="selectedView"
-                (selectionChange)="handleViewChange($event.value)"
-                >
-                @for (view of viewList; track view) {
-                  <mat-option [value]="view">{{
-                    view.name
-                  }}</mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-          }
-          @if (historyView === HistoryView.vm) {
-            <mat-form-field
-              class="add-margin"
-              >
-              <mat-label>
-                <span>{{ historyView }}s</span>
-              </mat-label>
-              <mat-select
-                [(value)]="selectedVm"
-                (selectionChange)="handleVmChange($event.value)"
-                >
-                @for (vm of vmList; track vm) {
-                  <mat-option [value]="vm">{{
-                    vm.name
-                  }}</mat-option>
-                }
-              </mat-select>
-            </mat-form-field>
-          }
-          &nbsp; &nbsp;
+        }
+        @if (historyView === HistoryView.view) {
           <mat-form-field>
-            <input
-              matInput
-              [(ngModel)]="filterValue"
-              placeholder="Search"
-              (keyup)="applyFilter($event.target.value)"
-              />
-            @if (filterValue) {
-            <button matSuffix mat-icon-button aria-label="Clear" (click)="applyFilter('')" title="Clear Search">
-              <mat-icon class="mdi-24px" fontIcon="mdi-close-circle-outline"></mat-icon>
-            </button>
-            }
+            <mat-label>
+              <span>{{ historyView }}s</span>
+            </mat-label>
+            <mat-select
+              [(value)]="selectedView"
+              (selectionChange)="handleViewChange($event.value)"
+              >
+              @for (view of viewList; track view) {
+                <mat-option [value]="view">{{
+                  view.name
+                }}</mat-option>
+              }
+            </mat-select>
           </mat-form-field>
-        </h4>
+        }
+        @if (historyView === HistoryView.vm) {
+          <mat-form-field>
+            <mat-label>
+              <span>{{ historyView }}s</span>
+            </mat-label>
+            <mat-select
+              [(value)]="selectedVm"
+              (selectionChange)="handleVmChange($event.value)"
+              >
+              @for (vm of vmList; track vm) {
+                <mat-option [value]="vm">{{
+                  vm.name
+                }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        }
+        <mat-form-field>
+          <mat-label>Search</mat-label>
+          <input
+            matInput
+            [(ngModel)]="filterValue"
+            (keyup)="applyFilter($event.target.value)"
+            />
+          @if (filterValue) {
+          <button matSuffix mat-icon-button aria-label="Clear" (click)="applyFilter('')" title="Clear Search">
+            <mat-icon class="mdi-24px" fontIcon="mdi-close-circle-outline"></mat-icon>
+          </button>
+          }
+        </mat-form-field>
       </div>
     </div>
 
