@@ -7,8 +7,6 @@ import { DomSanitizer } from '@angular/platform-browser';
 import {
   ComnAuthQuery,
   ComnAuthService,
-  ComnDynamicThemeService,
-  ComnFaviconService,
   ComnSettingsService,
   Theme,
 } from '@cmusei/crucible-common';
@@ -17,10 +15,10 @@ import { takeUntil } from 'rxjs/operators';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
-    selector: 'app-root',
-    templateUrl: './app.component.html',
-    styleUrls: ['./app.component.scss'],
-    standalone: false
+  selector: 'app-root',
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss'],
+  standalone: false
 })
 export class AppComponent implements OnDestroy {
   @HostBinding('class') componentCssClass: string;
@@ -35,9 +33,7 @@ export class AppComponent implements OnDestroy {
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private authService: ComnAuthService,
-    private themeService: ComnDynamicThemeService,
-    private settingsService: ComnSettingsService,
-    private faviconService: ComnFaviconService
+    private settingsService: ComnSettingsService
   ) {
     iconRegistry.setDefaultFontSetClass('mdi');
 
@@ -309,13 +305,9 @@ export class AppComponent implements OnDestroy {
     switch (theme) {
       case Theme.LIGHT:
         document.body.classList.toggle('darkMode', false);
-        this.themeService.applyLightTheme(hexColor);
-        this.faviconService.updateFavicon(hexColor);
         break;
       case Theme.DARK:
         document.body.classList.toggle('darkMode', true);
-        this.themeService.applyDarkTheme(hexColor);
-        this.faviconService.updateFavicon(hexColor);
         break;
     }
   }
