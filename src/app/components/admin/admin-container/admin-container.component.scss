@@ -26,6 +26,7 @@
 
 .appbarmenu-container {
   min-width: 50px;
+  max-width: 300px;
 }
 
 .pull-right {
@@ -45,7 +46,8 @@
   border-width: 0.25pt;
   border-color: darkgray;
 }
-#wrapper > div {
+
+#wrapper>div {
   display: table-cell;
 }
 
@@ -54,16 +56,19 @@
   font-size: 75%;
   padding: 0.5em;
 }
-#lefticon > img {
+
+#lefticon>img {
   height: 35px;
   width: 35px;
   text-align: center;
   cursor: pointer;
 }
+
 #rightcontext {
   width: 30px;
   font-size: 75%;
 }
+
 #content {
   text-align: left;
   vertical-align: middle;

@@ -82,8 +82,8 @@ export class AdminUserListComponent implements OnInit, OnChanges {
   ngOnInit() {
     this.sortEvents$ = fromMatSort(this.sort);
     this.pageEvents$ = fromMatPaginator(this.paginator);
-
     this.roleDataService.getRoles().subscribe();
+    this.filterAndSort(this.filterString);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -128,9 +128,9 @@ export class AdminUserListComponent implements OnInit, OnChanges {
       };
       this.savedFilterString = this.filterString;
       this.create.emit(user);
-    } else {
-      this.newUser = {};
     }
+    this.newUser = {};
+    this.addingNewUser = false;
   }
 
   deleteUser(user: User) {

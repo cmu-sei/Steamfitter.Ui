@@ -95,10 +95,12 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
               placeholder="Search"
               (keyup)="applyFilter($event.target.value)"
               />
+            @if (filterValue) {
+            <button matSuffix mat-icon-button aria-label="Clear" (click)="applyFilter('')" title="Clear Search">
+              <mat-icon class="mdi-24px" fontIcon="mdi-close-circle-outline"></mat-icon>
+            </button>
+            }
           </mat-form-field>
-          <button class="no-outline" mat-icon-button (click)="applyFilter('')" title="Clear Search">
-            <mat-icon class="scale-85" svgIcon="ic_cancel_circle"></mat-icon>
-          </button>
         </h4>
       </div>
     </div>

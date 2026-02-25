@@ -11,10 +11,6 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     <div>
       <div class="header-row">
         <div class="search-span">
-          <mat-icon
-            class="icon-20px search-icon"
-            svgIcon="ic_magnify_search"
-          ></mat-icon>
           <mat-form-field>
             <input
               matInput
@@ -22,18 +18,12 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
               placeholder="Search"
               [formControl]="filterControl"
               />
+            @if (filterControl.value) {
+            <button matSuffix mat-icon-button aria-label="Clear" (click)="clearFilter()">
+              <mat-icon class="mdi-24px" fontIcon="mdi-close-circle-outline"></mat-icon>
+            </button>
+            }
           </mat-form-field>
-          <button
-            class="clear-button"
-            mat-icon-button
-            (click)="clearFilter()"
-            title="Clear Search"
-            >
-            <mat-icon
-              class="icon-20px"
-              svgIcon="ic_cancel_circle"
-            ></mat-icon>
-          </button>
         </div>
         <div class="select-span">
           <mat-checkbox

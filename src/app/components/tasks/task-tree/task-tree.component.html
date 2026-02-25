@@ -4,285 +4,210 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 -->
 
 @if (!(isLoading | async)) {
-  <mat-card appearance="outlined" flex="100">
-    <div (contextmenu)="onContextMenu($event, null)">
-      <div>
-        <div>
-          <b>Tasks:</b>&nbsp;&nbsp;&nbsp;
-          <button mat-icon-button title="Add a Task" (click)="onContextNew(null)">
-            <mat-icon
-              svgIcon="ic_plus_circle_outline"
-            ></mat-icon>
-          </button>
-          @if (!!clipboard) {
-            <button
-              mat-icon-button
-              title="Paste a Task"
-              (click)="onContextPaste(null)"
-              >
-              <mat-icon svgIcon="content_paste"></mat-icon>
-            </button>
-          }
-        </div>
+<mat-card class="task-card" appearance="outlined" flex="100">
+  <div (contextmenu)="onContextMenu($event, null)">
+    <div class="header-row">
+      <div class="buttons-cell">
+        <button mat-icon-button title="Add a Task" (click)="onContextNew(null)">
+          <mat-icon svgIcon="ic_plus_circle_outline"></mat-icon>
+        </button>
+        @if (!!clipboard) {
+        <button mat-icon-button title="Paste a Task" (click)="onContextPaste(null)">
+          <mat-icon svgIcon="content_paste"></mat-icon>
+        </button>
+        }
+      </div>
+      <div class="tasks-cell">
+        <b>Tasks</b>
       </div>
     </div>
+  </div>
+  <div>
     <div>
-      <div>
-        <mat-tree
-          [dataSource]="dataSource"
-          [treeControl]="treeControl"
-          >
-          <mat-tree-node
-            *matTreeNodeDef="let node"
-            matTreeNodePadding
-            style="margin-top: 5px"
-            >
-            @if (!node.expandable) {
-              <button mat-icon-button disabled></button>
+      <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+        <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding style="margin-top: 5px">
+          @if (!node.expandable) {
+          <button mat-icon-button disabled></button>
+          }
+          @if (!!node.expandable) {
+          <button mat-icon-button matTreeNodeToggle [matTreeNodeToggleRecursive]="false"
+            [attr.aria-label]="'toggle ' + node.task.name">
+            @if (treeControl.isExpanded(node)) {
+            <mat-icon svgIcon="ic_chevron_down"></mat-icon>
             }
-            @if (!!node.expandable) {
-              <button
-                mat-icon-button
-                matTreeNodeToggle
-                [matTreeNodeToggleRecursive]="false"
-                [attr.aria-label]="'toggle ' + node.task.name"
-                >
-                @if (treeControl.isExpanded(node)) {
-                  <mat-icon
-                    svgIcon="ic_chevron_down"
-                  ></mat-icon>
-                }
-                @if (!treeControl.isExpanded(node)) {
-                  <mat-icon
-                    svgIcon="ic_chevron_right"
-                  ></mat-icon>
-                }
-              </button>
+            @if (!treeControl.isExpanded(node)) {
+            <mat-icon svgIcon="ic_chevron_right"></mat-icon>
             }
-            <mat-expansion-panel
-              style="width:100%"
-              [expanded]="areDetailsExpanded(node)"
-              (click)="toggleNodeDetails(node); $event.stopPropagation()"
-              >
-              <mat-expansion-panel-header
-                (contextmenu)="onContextMenu($event, node)"
-                >
-                <mat-panel-title>
-                  <div class="cssLayoutRowSpaceCenter">
-                    <button
-                      mat-icon-button
-                      title="Task Menu"
-                    (click)="
+          </button>
+          }
+          <mat-expansion-panel style="width:100%" [expanded]="areDetailsExpanded(node)"
+            (click)="toggleNodeDetails(node); $event.stopPropagation()">
+            <mat-expansion-panel-header (contextmenu)="onContextMenu($event, node)">
+              <mat-panel-title>
+                <div class="cssLayoutRowSpaceCenter">
+                  <button mat-icon-button title="Task Menu" (click)="
                       onContextMenu($event, node); $event.stopPropagation()
-                    "
-                      >
-                      <mat-icon svgIcon="menu"></mat-icon>
-                    </button>
-                    <mat-icon
-                      class="icon-20"
-                      svgIcon="{{ node.task.triggerCondition.toLowerCase() }}"
-                      title="Runs on {{ node.task.triggerCondition }}"
-                    ></mat-icon>
-                    <mat-label>&nbsp;{{ node.task.name }}</mat-label>
-                  </div>
-                </mat-panel-title>
-                @if (node.task.totalScore > 0) {
-                  <mat-panel-description>
-                    @if (node.task.scenarioTemplateId != null) {
-                      <div>
-                        <span> Score: {{ node.task.score }} </span>
-                        <span> Total Score: {{ node.task.totalScore }} </span>
-                      </div>
-                    }
-                    @if (node.task.scenarioId != null) {
-                      <div>
-                        <span>
-                          Score: {{ node.task.scoreEarned }}/{{ node.task.score }}
-                        </span>
-                        <span>
-                          Total Score: {{ node.task.totalScoreEarned }}/{{
-                          node.task.totalScore
-                          }}
-                        </span>
-                      </div>
-                    }
-                  </mat-panel-description>
+                    ">
+                    <mat-icon svgIcon="menu"></mat-icon>
+                  </button>
+                  <mat-icon class="icon-20" svgIcon="{{ node.task.triggerCondition.toLowerCase() }}"
+                    title="Runs on {{ node.task.triggerCondition }}"></mat-icon>
+                  <mat-label>&nbsp;{{ node.task.name }}</mat-label>
+                </div>
+              </mat-panel-title>
+              @if (node.task.totalScore > 0) {
+              <mat-panel-description>
+                @if (node.task.scenarioTemplateId != null) {
+                <div>
+                  <span> Score: {{ node.task.score }} </span>
+                  <span> Total Score: {{ node.task.totalScore }} </span>
+                </div>
                 }
-              </mat-expansion-panel-header>
-              <span (click)="$event.stopPropagation()">
-                <div class="taskText"></div>
-                <div class="taskText">
-                  <b>Description:</b> {{ node.task.description }}
+                @if (node.task.scenarioId != null) {
+                <div>
+                  <span>
+                    Score: {{ node.task.scoreEarned }}/{{ node.task.score }}
+                  </span>
+                  <span>
+                    Total Score: {{ node.task.totalScoreEarned }}/{{
+                    node.task.totalScore
+                    }}
+                  </span>
                 </div>
-                <div class="taskText"><b>API:</b> {{ node.task.apiUrl }}</div>
-                <div class="taskText"><b>Action:</b> {{ node.task.action }}</div>
-                <div class="taskText">
-                  <b>Action Parameters:</b><br />
-                  @for (k of node.task.actionParameters | keyvalue; track k) {
-                    <span
-                      >&nbsp;&nbsp;&nbsp;&nbsp;{{ k.key }}:
-                      {{
-                      k.key.toLowerCase() === 'password'
-                      ? '**************'
-                      : k.value
-                      }}<br
-                    /></span>
-                  }
-                </div>
-                <div class="taskText">
-                  <b>Expected Output:</b> {{ node.task.expectedOutput }}
-                </div>
-                <div class="taskText">
-                  <b>Delay (seconds):</b> {{ node.task.delaySeconds }}
-                </div>
-                <div class="taskText">
-                  <b>Iterations:</b> {{ node.task.iterations }}
-                </div>
-                <div class="taskText">
-                  <b>Iteration Interval (seconds):</b>
-                  {{ node.task.intervalSeconds }}
-                </div>
-                <div class="taskText">
-                  <b>Iteration Termination:</b>
-                  {{ node.task.iterationTermination }}
-                </div>
-                <div class="taskText">
-                  <b>Expiration (seconds):</b> {{ node.task.experationSeconds }}
-                </div>
-                @if (!!node.results && node.results.length > 0) {
-                  <div
-                    class="taskText"
-                    >
-                    <b>Results:</b>
-                    <app-results
-                      [results]="resultList"
-                      [taskId]="node.task.id"
-                      [taskAction]="node.task.action">
-                    </app-results>
-                  </div>
                 }
-              </span>
-            </mat-expansion-panel>
-          </mat-tree-node>
-        </mat-tree>
-      </div>
+              </mat-panel-description>
+              }
+            </mat-expansion-panel-header>
+            <span class="detail-span" (click)="$event.stopPropagation()">
+              <div class="taskText"></div>
+              <div class="taskText">
+                <b>Description:</b> {{ node.task.description }}
+              </div>
+              <div class="taskText"><b>API:</b> {{ node.task.apiUrl }}</div>
+              <div class="taskText"><b>Action:</b> {{ node.task.action }}</div>
+              <div class="taskText">
+                <b>Action Parameters:</b><br />
+                @for (k of node.task.actionParameters | keyvalue; track k) {
+                <span>&nbsp;&nbsp;&nbsp;&nbsp;{{ k.key }}:
+                  {{
+                  k.key.toLowerCase() === 'password'
+                  ? '**************'
+                  : k.value
+                  }}<br /></span>
+                }
+              </div>
+              <div class="taskText">
+                <b>Expected Output:</b> {{ node.task.expectedOutput }}
+              </div>
+              <div class="taskText">
+                <b>Delay (seconds):</b> {{ node.task.delaySeconds }}
+              </div>
+              <div class="taskText">
+                <b>Iterations:</b> {{ node.task.iterations }}
+              </div>
+              <div class="taskText">
+                <b>Iteration Interval (seconds):</b>
+                {{ node.task.intervalSeconds }}
+              </div>
+              <div class="taskText">
+                <b>Iteration Termination:</b>
+                {{ node.task.iterationTermination }}
+              </div>
+              <div class="taskText">
+                <b>Expiration (seconds):</b> {{ node.task.experationSeconds }}
+              </div>
+              @if (!!node.results && node.results.length > 0) {
+              <div class="taskText">
+                <b>Results:</b>
+                <app-results [results]="resultList" [taskId]="node.task.id" [taskAction]="node.task.action">
+                </app-results>
+              </div>
+              }
+            </span>
+          </mat-expansion-panel>
+        </mat-tree-node>
+      </mat-tree>
     </div>
-  </mat-card>
+  </div>
+</mat-card>
 }
 @if (isLoading | async) {
-  <mat-card appearance="outlined" flex>
-    <div class="cssLayoutColumnCenterCenter">
-      <div flex>
-        <mat-progress-spinner color="accent" mode="indeterminate">
-        </mat-progress-spinner>
-      </div>
+<mat-card appearance="outlined" flex>
+  <div class="cssLayoutColumnCenterCenter">
+    <div flex>
+      <mat-progress-spinner color="accent" mode="indeterminate">
+      </mat-progress-spinner>
     </div>
-  </mat-card>
+  </div>
+</mat-card>
 }
 
-<div
-  style="visibility: hidden; position: fixed"
-  [style.left]="contextMenuPosition.x"
-  [style.top]="contextMenuPosition.y"
-  [matMenuTriggerFor]="contextMenu"
-></div>
+<div style="visibility: hidden; position: fixed" [style.left]="contextMenuPosition.x"
+  [style.top]="contextMenuPosition.y" [matMenuTriggerFor]="contextMenu"></div>
 <mat-menu #contextMenu="matMenu">
   <ng-template matMenuContent let-item="item">
     @if (!item) {
-      <span>
-        @if (!!clipboard) {
-          <button
-            mat-menu-item
-            (click)="onContextPaste(item)"
-            >
-            Paste
-          </button>
-        }
-        <button mat-menu-item (click)="onContextNew(item)">
-          New
-        </button>
-      </span>
-    } @else {
-      @if (isEditableTask(item.task.id)) {
-        <span>
-          <button mat-menu-item (click)="onContextEdit(item.task)">
-            Edit
-          </button>
-          <button
-            mat-menu-item
-            (click)="onContextCopy(item.task.id)"
-            >
-            Copy
-          </button>
-          <button
-            mat-menu-item
-            (click)="onContextCut(item.task.id)"
-            >
-            Cut
-          </button>
-          @if (!!clipboard) {
-            <button
-              mat-menu-item
-              (click)="onContextPaste(item.task.id)"
-              >
-              Paste
-            </button>
-          }
-          <button mat-menu-item (click)="onContextNew(item.task)">
-            New
-          </button>
-          <button
-            mat-menu-item
-            (click)="onContextDelete(item.task)"
-            >
-            Delete
-          </button>
-          @if (isExecutableTask(item.task)) {
-            <button
-              mat-menu-item
-              (click)="onContextExecute(item.task)"
-              >
-              Execute
-            </button>
-          }
-          @if (isExecutableTask(item.task)) {
-            <button
-              mat-menu-item
-              (click)="onContextStopIterations(item.task)"
-              title="Stops task iterations after the current iteration completes"
-              >
-              Stop Iterations
-            </button>
-          }
-        </span>
-      } @else {
-        <button
-          mat-menu-item
-          (click)="onContextCopy(item.task.id)"
-          >
-          Copy
-        </button>
-        <button
-          mat-menu-item
-          (click)="onContextCut(item.task.id)"
-          >
-          Cut
-        </button>
-        <button
-          mat-menu-item
-          (click)="onContextDelete(item.task)"
-          >
-          Delete
-        </button>
-        @if (isExecutableTask(item.task)) {
-          <button
-            mat-menu-item
-            (click)="onContextExecute(item.task)"
-            >
-            Re-Execute
-          </button>
-        }
+    <span>
+      @if (!!clipboard) {
+      <button mat-menu-item (click)="onContextPaste(item)">
+        Paste
+      </button>
       }
+      <button mat-menu-item (click)="onContextNew(item)">
+        New
+      </button>
+    </span>
+    } @else {
+    @if (isEditableTask(item.task.id)) {
+    <span>
+      <button mat-menu-item (click)="onContextEdit(item.task)">
+        Edit
+      </button>
+      <button mat-menu-item (click)="onContextCopy(item.task.id)">
+        Copy
+      </button>
+      <button mat-menu-item (click)="onContextCut(item.task.id)">
+        Cut
+      </button>
+      @if (!!clipboard) {
+      <button mat-menu-item (click)="onContextPaste(item.task.id)">
+        Paste
+      </button>
+      }
+      <button mat-menu-item (click)="onContextNew(item.task)">
+        New
+      </button>
+      <button mat-menu-item (click)="onContextDelete(item.task)">
+        Delete
+      </button>
+      @if (isExecutableTask(item.task)) {
+      <button mat-menu-item (click)="onContextExecute(item.task)">
+        Execute
+      </button>
+      }
+      @if (isExecutableTask(item.task)) {
+      <button mat-menu-item (click)="onContextStopIterations(item.task)"
+        title="Stops task iterations after the current iteration completes">
+        Stop Iterations
+      </button>
+      }
+    </span>
+    } @else {
+    <button mat-menu-item (click)="onContextCopy(item.task.id)">
+      Copy
+    </button>
+    <button mat-menu-item (click)="onContextCut(item.task.id)">
+      Cut
+    </button>
+    <button mat-menu-item (click)="onContextDelete(item.task)">
+      Delete
+    </button>
+    @if (isExecutableTask(item.task)) {
+    <button mat-menu-item (click)="onContextExecute(item.task)">
+      Re-Execute
+    </button>
+    }
+    }
     }
   </ng-template>
 </mat-menu>
