@@ -35,6 +35,7 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class ScenarioTemplateMembershipsComponent implements OnInit, OnChanges {
   @Input() embedded: boolean;
+  @Input() showHeader = true;
   @Input() scenarioTemplateId: string;
   @Output() goBack = new EventEmitter();
 

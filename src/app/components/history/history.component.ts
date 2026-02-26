@@ -20,7 +20,6 @@ import { ResultQuery } from 'src/app/data/result/result.query';
 import { TaskDataService } from 'src/app/data/task/task-data.service';
 import { UserDataService } from 'src/app/data/user/user-data.service';
 import { Result, User, View, Vm } from 'src/app/generated/steamfitter.api';
-import { ComnSettingsService } from '@cmusei/crucible-common';
 import { UserQuery } from 'src/app/data/user/user.query';
 
 enum HistoryView {
@@ -71,7 +70,6 @@ export class HistoryComponent implements OnInit, OnDestroy {
   private unsubscribe$ = new Subject();
   @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
-  topbarColor = '#BB0000';
 
   constructor(
     private resultQuery: ResultQuery,
@@ -79,7 +77,6 @@ export class HistoryComponent implements OnInit, OnDestroy {
     private userQuery: UserQuery,
     private playerDataService: PlayerDataService,
     private resultDataService: ResultDataService,
-    private settingsService: ComnSettingsService,
     private userDataService: UserDataService
   ) {
     this.loading = true;
@@ -123,9 +120,6 @@ export class HistoryComponent implements OnInit, OnDestroy {
             : [];
       });
     this.playerDataService.selectView('');
-    this.topbarColor = this.settingsService.settings.AppTopBarHexColor
-      ? this.settingsService.settings.AppTopBarHexColor
-      : this.topbarColor;
   }
 
   ngOnInit() {
@@ -193,6 +187,26 @@ export class HistoryComponent implements OnInit, OnDestroy {
       this.resultDataService.loadByVm(vm.id);
     }
     this.paginator?.firstPage();
+  }
+
+  private static readonly STATUS_ICON_MAP: Record<string, string> = {
+    succeeded: 'mdi-star-circle-outline',
+    success: 'mdi-star-circle-outline',
+    failed: 'mdi-close-circle-outline',
+    failure: 'mdi-close-circle-outline',
+    pending: 'mdi-z-wave',
+    expired: 'mdi-clock-alert-outline',
+    expiration: 'mdi-clock-alert-outline',
+    error: 'mdi-alert-outline',
+    completion: 'mdi-check-circle-outline',
+    manual: 'mdi-gesture-tap-button',
+    queued: 'mdi-clock-time-three-outline',
+    sent: 'mdi-send',
+    time: 'mdi-alarm',
+  };
+
+  statusIcon(status: string): string {
+    return HistoryComponent.STATUS_ICON_MAP[status?.toLowerCase()] || 'mdi-help-circle-outline';
   }
 
   copyTask(resultId: string) {

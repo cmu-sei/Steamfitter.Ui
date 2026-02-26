@@ -3,7 +3,7 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
 <mat-toolbar class="toolbar" [style.backgroundColor]="'var(--mat-sys-primary)'"
-  [style.color]="topbarTextColor"
+  [style.color]="'var(--mat-sys-on-primary)'"
   >
   <mat-toolbar-row>
     <span class="margin-auto">
@@ -14,7 +14,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           matTooltip="Close Sidebar"
           aria-label="Close Sidebar"
           >
-          <mat-icon svgIcon="ic_chevron_left"></mat-icon>
+          <mat-icon fontIcon="mdi-chevron-left"></mat-icon>
         </button>
       }
       @if (sidenav && !sidenav?.opened) {
@@ -24,7 +24,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           matTooltip="Open Sidebar"
           aria-label="Open Sidebar"
           >
-          <mat-icon svgIcon="ic_chevron_right"></mat-icon>
+          <mat-icon fontIcon="mdi-chevron-right"></mat-icon>
         </button>
       }
     </span>
@@ -41,7 +41,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           style="outline: none"
           >
           <span class="username-text">{{ currentUser.name }}</span>
-          <mat-icon svgIcon="ic_expand_more"></mat-icon>
+          <mat-icon fontIcon="mdi-chevron-down"></mat-icon>
         </button>
         <mat-menu #menu="matMenu" [overlapTrigger]="false">
           @if (topbarView === TopbarView.STEAMFITTER_ADMIN) {

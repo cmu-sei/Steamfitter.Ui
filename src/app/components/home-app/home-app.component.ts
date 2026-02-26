@@ -50,8 +50,6 @@ export class HomeAppComponent implements OnDestroy, OnInit {
   viewList = this.playerDataService.viewList;
   private unsubscribe$ = new Subject();
   hideTopbar = false;
-  topbarColor = '#BB0000';
-  topbarTextColor = '#FFFFFF';
   TopbarView = TopbarView;
   theme$: Observable<Theme>;
   username: string;
@@ -86,12 +84,6 @@ export class HomeAppComponent implements OnDestroy, OnInit {
     this.signalRService.joinSystem();
 
     // Set the display settings from config file
-    this.topbarColor = this.settingsService.settings.AppTopBarHexColor
-      ? this.settingsService.settings.AppTopBarHexColor
-      : this.topbarColor;
-    this.topbarTextColor = this.settingsService.settings.AppTopBarHexTextColor
-      ? this.settingsService.settings.AppTopBarHexTextColor
-      : this.topbarTextColor;
     this.titleText = this.settingsService.settings.AppTitle
       ? this.settingsService.settings.AppTitle
       : this.titleText;

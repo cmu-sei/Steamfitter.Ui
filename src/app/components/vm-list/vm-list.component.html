@@ -5,7 +5,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 
 <div class="vm-list-container">
   <div
-    class="mat-elevation-z8"
+    class="elevate"
     [style.visibility]="vmApiResponded ? 'visible' : 'hidden'"
     >
     <div>
@@ -43,7 +43,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
               class="margin-left-100"
               [disabled]="showSelectedOnly"
               >
-              <mat-icon svgIcon="check_box"></mat-icon>
+              <mat-icon fontIcon="mdi-checkbox-marked"></mat-icon>
               All
             </button>
             <button
@@ -52,7 +52,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
               title="Unselect all displayed VMs"
               class="margin-left-50"
               >
-              <mat-icon svgIcon="check_box_outline_blank"></mat-icon>
+              <mat-icon fontIcon="mdi-checkbox-blank-outline"></mat-icon>
               None
             </button>
           </div>
@@ -78,7 +78,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
                           >
                           <mat-icon
                             class="icon-20px"
-                            svgIcon="open_in_new"
+                            fontIcon="mdi-open-in-new"
                           ></mat-icon>
                         </button>
                       </div>
@@ -110,7 +110,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
                       >
                       <mat-icon
                         class="icon-20px"
-                        svgIcon="open_in_new"
+                        fontIcon="mdi-open-in-new"
                       ></mat-icon>
                     </button>
                   </div>
@@ -122,7 +122,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       }
     </div>
     <div
-      class="mat-elevation-z8"
+      class="elevate"
       [style.visibility]="vmApiResponded ? 'hidden' : 'visible'"
       >
       <label>The Steamfitter API or VM API is not currently reachable.</label>

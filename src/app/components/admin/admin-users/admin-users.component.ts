@@ -10,7 +10,6 @@ import { SystemPermission, User } from 'src/app/generated/steamfitter.api';
 import { Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import { PermissionDataService } from 'src/app/data/permission/permission-data.service';
-import { ComnSettingsService } from '@cmusei/crucible-common';
 
 @Component({
     selector: 'app-admin-users',
@@ -26,12 +25,9 @@ export class AdminUsersComponent implements OnInit {
   canEdit = this.permissionDataService.hasPermission(
     SystemPermission.ManageUsers
   );
-  topbarColor;
-
   constructor(
     private userDataService: UserDataService,
     private userQuery: UserQuery,
-    private settingsService: ComnSettingsService,
     private permissionDataService: PermissionDataService
   ) {}
 
@@ -42,7 +38,6 @@ export class AdminUsersComponent implements OnInit {
     this.users$ = this.userQuery.selectAll();
     this.userDataService.load().pipe(take(1)).subscribe();
     this.isLoading$ = this.userQuery.selectLoading();
-    this.topbarColor = this.settingsService.settings.AppTopBarHexColor;
   }
 
   create(newUser: User) {

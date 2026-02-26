@@ -37,8 +37,6 @@ export class AdminContainerComponent implements OnDestroy, OnInit {
   private unsubscribe$ = new Subject();
   TopbarView = TopbarView;
   hideTopbar = false;
-  topbarColor = '#BB0000';
-  topbarTextColor = '#FFFFFF';
   theme$: Observable<Theme>;
   permissions: SystemPermission[] = [];
   readonly SystemPermission = SystemPermission;
@@ -56,21 +54,12 @@ export class AdminContainerComponent implements OnDestroy, OnInit {
   ) {
     this.theme$ = this.authQuery.userTheme$;
     this.hideTopbar = this.inIframe();
-    // Set the display settings from config file
-    this.topbarColor = this.settingsService.settings.AppTopBarHexColor
-      ? this.settingsService.settings.AppTopBarHexColor
-      : this.topbarColor;
-    this.topbarTextColor = this.settingsService.settings.AppTopBarHexTextColor
-      ? this.settingsService.settings.AppTopBarHexTextColor
-      : this.topbarTextColor;
     this.signalRService.joinSystem();
   }
 
   ngOnInit() {
     // Set the page title from configuration file
     this.titleText = this.settingsService.settings.AppTopBarText;
-    this.topbarColor = this.settingsService.settings.AppTopBarHexColor;
-    this.topbarTextColor = this.settingsService.settings.AppTopBarHexTextColor;
     this.currentUserQuery
       .select()
       .pipe(takeUntil(this.unsubscribe$))

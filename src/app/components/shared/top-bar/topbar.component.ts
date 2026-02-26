@@ -13,10 +13,8 @@ import {
 import {
   ComnAuthQuery,
   ComnAuthService,
-  ComnSettingsService,
   Theme,
 } from '@cmusei/crucible-common';
-import { User as AuthUser } from 'oidc-client-ts';
 import { Observable, Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 import { CurrentUserQuery } from 'src/app/data/user/user.query';
@@ -41,15 +39,13 @@ export class TopbarComponent implements OnInit, OnDestroy {
   theme$: Observable<Theme>;
   unsubscribe$: Subject<null> = new Subject<null>();
   TopbarView = TopbarView;
-  topbarTextColor: string;
   canViewAdmin = false;
 
   constructor(
     private authService: ComnAuthService,
     private currentUserQuery: CurrentUserQuery,
     private permissionDataService: PermissionDataService,
-    private authQuery: ComnAuthQuery,
-    private settingsService: ComnSettingsService
+    private authQuery: ComnAuthQuery
   ) {}
 
   ngOnInit() {
@@ -67,7 +63,6 @@ export class TopbarComponent implements OnInit, OnDestroy {
     );
 
     this.theme$ = this.authQuery.userTheme$;
-    this.topbarTextColor = this.settingsService.settings.AppTopBarHexTextColor;
   }
 
   themeFn(event) {

@@ -152,6 +152,26 @@ export class ResultsComponent implements OnInit, OnDestroy {
     }
   }
 
+  private static readonly STATUS_ICON_MAP: Record<string, string> = {
+    succeeded: 'mdi-star-circle-outline',
+    success: 'mdi-star-circle-outline',
+    failed: 'mdi-close-circle-outline',
+    failure: 'mdi-close-circle-outline',
+    pending: 'mdi-z-wave',
+    expired: 'mdi-clock-alert-outline',
+    expiration: 'mdi-clock-alert-outline',
+    error: 'mdi-alert-outline',
+    completion: 'mdi-check-circle-outline',
+    manual: 'mdi-gesture-tap-button',
+    queued: 'mdi-clock-time-three-outline',
+    sent: 'mdi-send',
+    time: 'mdi-alarm',
+  };
+
+  statusIcon(status: string): string {
+    return ResultsComponent.STATUS_ICON_MAP[status?.toLowerCase()] || 'mdi-help-circle-outline';
+  }
+
   openVmConsole(id: string) {
     const vms = this.playerDataService.vms.value;
     const vm = vms.find((v) => v.id === id);

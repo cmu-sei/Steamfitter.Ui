@@ -9,11 +9,11 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     <div class="header-row">
       <div class="buttons-cell">
         <button mat-icon-button title="Add a Task" (click)="onContextNew(null)">
-          <mat-icon svgIcon="ic_plus_circle_outline"></mat-icon>
+          <mat-icon fontIcon="mdi-plus-circle-outline"></mat-icon>
         </button>
         @if (!!clipboard) {
         <button mat-icon-button title="Paste a Task" (click)="onContextPaste(null)">
-          <mat-icon svgIcon="content_paste"></mat-icon>
+          <mat-icon fontIcon="mdi-content-paste"></mat-icon>
         </button>
         }
       </div>
@@ -33,10 +33,10 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           <button mat-icon-button matTreeNodeToggle [matTreeNodeToggleRecursive]="false"
             [attr.aria-label]="'toggle ' + node.task.name">
             @if (treeControl.isExpanded(node)) {
-            <mat-icon svgIcon="ic_chevron_down"></mat-icon>
+            <mat-icon fontIcon="mdi-chevron-down"></mat-icon>
             }
             @if (!treeControl.isExpanded(node)) {
-            <mat-icon svgIcon="ic_chevron_right"></mat-icon>
+            <mat-icon fontIcon="mdi-chevron-right"></mat-icon>
             }
           </button>
           }
@@ -48,9 +48,9 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
                   <button mat-icon-button title="Task Menu" (click)="
                       onContextMenu($event, node); $event.stopPropagation()
                     ">
-                    <mat-icon svgIcon="menu"></mat-icon>
+                    <mat-icon fontIcon="mdi-menu"></mat-icon>
                   </button>
-                  <mat-icon class="icon-20" svgIcon="{{ node.task.triggerCondition.toLowerCase() }}"
+                  <mat-icon class="icon-20" [fontIcon]="statusIcon(node.task.triggerCondition)"
                     title="Runs on {{ node.task.triggerCondition }}"></mat-icon>
                   <mat-label>&nbsp;{{ node.task.name }}</mat-label>
                 </div>

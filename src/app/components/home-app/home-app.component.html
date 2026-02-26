@@ -20,7 +20,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           <mat-list-item>
             <div class="showhand" id="wrapper" title="Show {{ section.scenarioTemplates }}" (click)="selectTab(section.scenarioTemplates)">
               <div id="lefticon">
-                <mat-icon class="mdi-24px" svgIcon="storage" [ngStyle]="{ color: topbarColor }"></mat-icon>
+                <mat-icon class="mdi-24px" fontIcon="mdi-database"></mat-icon>
               </div>
               <div id="content">{{ section.scenarioTemplates }}</div>
               <div class="pull-right" id="rightcontext">
@@ -35,7 +35,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           <mat-list-item>
             <div class="showhand" id="wrapper" title="Show {{ section.scenarios }}" (click)="selectTab(section.scenarios)">
               <div id="lefticon">
-                <mat-icon class="mdi-24px" svgIcon="playlist_play" [ngStyle]="{ color: topbarColor }"></mat-icon>
+                <mat-icon class="mdi-24px" fontIcon="mdi-playlist-play"></mat-icon>
               </div>
               <div id="content">{{ section.scenarios }}</div>
               <div class="pull-right" id="rightcontext">
@@ -50,7 +50,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           <mat-list-item>
             <div class="showhand" id="wrapper" title="Show {{ section.taskBuilder }}" (click)="selectTab(section.taskBuilder)">
               <div id="lefticon">
-                <mat-icon class="mdi-24px" svgIcon="input" [ngStyle]="{ color: topbarColor }"></mat-icon>
+                <mat-icon class="mdi-24px" fontIcon="mdi-login"></mat-icon>
               </div>
               <div id="content">{{ section.taskBuilder }}</div>
               <div class="pull-right" id="rightcontext">
@@ -64,7 +64,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         <mat-list-item>
           <div class="showhand" id="wrapper" title="Show {{ section.history }}" (click)="selectTab(section.history)">
             <div id="lefticon">
-              <mat-icon class="mdi-24px" svgIcon="history" [ngStyle]="{ color: topbarColor }"></mat-icon>
+              <mat-icon class="mdi-24px" fontIcon="mdi-history"></mat-icon>
             </div>
             <div id="content">{{ section.history }}</div>
             <div class="pull-right" id="rightcontext">
@@ -97,7 +97,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     }
 
     @if (apiIsSick) {
-      <div class="app-header-container mat-elevation-z8" autosize>
+      <div class="app-header-container elevate" autosize>
         <h1>{{ apiMessage }}</h1>
         <h2>Please refresh this page.</h2>
         <h2>If the problem persists, please contact the site administrator.</h2>

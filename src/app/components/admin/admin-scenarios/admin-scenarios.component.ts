@@ -32,16 +32,10 @@ export class AdminScenariosComponent implements OnInit {
 
   scenarios$ = this.scenarioQuery.selectAll();
   loading$ = this.scenarioQuery.selectLoading();
-  selectedScenarioId: string;
-  embedded = true;
   statuses: Observable<string>;
   viewList = this.playerDataService.viewList;
 
   ngOnInit(): void {
     this.scenarioDataService.load();
-    const statuses: string =
-      this.activatedRoute.snapshot.queryParamMap.get('statuses');
-    const secondParam: string =
-      this.activatedRoute.snapshot.queryParamMap.get('secondParamKey');
   }
 }

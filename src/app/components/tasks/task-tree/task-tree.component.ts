@@ -433,6 +433,26 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
     return null;
   }
 
+  private static readonly STATUS_ICON_MAP: Record<string, string> = {
+    succeeded: 'mdi-star-circle-outline',
+    success: 'mdi-star-circle-outline',
+    failed: 'mdi-close-circle-outline',
+    failure: 'mdi-close-circle-outline',
+    pending: 'mdi-z-wave',
+    expired: 'mdi-clock-alert-outline',
+    expiration: 'mdi-clock-alert-outline',
+    error: 'mdi-alert-outline',
+    completion: 'mdi-check-circle-outline',
+    manual: 'mdi-gesture-tap-button',
+    queued: 'mdi-clock-time-three-outline',
+    sent: 'mdi-send',
+    time: 'mdi-alarm',
+  };
+
+  statusIcon(status: string): string {
+    return TaskTreeComponent.STATUS_ICON_MAP[status?.toLowerCase()] || 'mdi-help-circle-outline';
+  }
+
   sortedResults(results: Result[], sortBy: string, sortDescending: boolean) {
     const sortValue = sortDescending ? 1 : -1;
     const sortedResults = results.sort((a, b) =>

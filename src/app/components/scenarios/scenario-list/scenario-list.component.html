@@ -5,17 +5,14 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 
 <div class="cssLayoutRowStartCenter">
   <div class="sp-icon">
-    <mat-icon
-      svgIcon="playlist_play"
-      [ngStyle]="{ color: topbarColor }"
-    ></mat-icon>
+    <mat-icon fontIcon="mdi-playlist-play"></mat-icon>
   </div>
   <mat-form-field style="width: 200px;">
     <input matInput [formControl]="filterControl" placeholder="Search" />
     @if (filterControl.value) {
-      <button mat-icon-button matSuffix (click)="clearFilter()" title="Clear Search">
-        <mat-icon style="transform: scale(0.85)" fontIcon="mdi-close-circle-outline"></mat-icon>
-      </button>
+    <button mat-icon-button matSuffix (click)="clearFilter()" title="Clear Search">
+      <mat-icon style="transform: scale(0.85)" fontIcon="mdi-close-circle-outline"></mat-icon>
+    </button>
     }
   </mat-form-field>
   <mat-form-field style="width: 230px; margin-left: 20px;">
@@ -27,145 +24,115 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     </mat-select>
   </mat-form-field>
   <div style="margin-left: auto;">
-    <mat-paginator
-      #paginator
-      [length]="totalRows$ | async"
-      [pageIndex]="0"
-      [pageSize]="20"
-      [pageSizeOptions]="[5, 10, 15, 20, 25, 50, 100, 200]"
-    ></mat-paginator>
+    <mat-paginator #paginator [length]="totalRows$ | async" [pageIndex]="0" [pageSize]="20"
+      [pageSizeOptions]="[5, 10, 15, 20, 25, 50, 100, 200]"></mat-paginator>
   </div>
-      </div>
+</div>
 
-      <mat-accordion displayMode="flat">
-        <section matSort class="header-row">
-          <span class="mat-header-cell first-cell">
-            @if (!adminMode && permissions.includes(SystemPermission.CreateScenarios)) {
-              <button mat-icon-button (click)="editScenario(null); $event.stopPropagation()"
-                style="outline: none; margin-left: 20px;" title="Add Scenario">
-                <mat-icon class="mdi-24px center-self" fontIcon="mdi-plus-circle"></mat-icon>
-              </button>
-            }
-          </span>
-          <span class="mat-header-cell name-cell" mat-sort-header="name">Name</span>
-          <span class="mat-header-cell two-cell" mat-sort-header="view">View</span>
-          <span class="mat-header-cell one-cell" mat-sort-header="status">Status</span>
-          <span class="mat-header-cell one-cell" mat-sort-header="startDate">Start</span>
-          <span class="mat-header-cell one-cell" mat-sort-header="endDate">End</span>
-          <span class="mat-header-cell two-cell" mat-sort-header="description">Description</span>
-          </section>
+<mat-accordion>
+  <section matSort class="header-row">
+    <span class="mat-header-cell first-cell">
+      @if (!adminMode && permissions.includes(SystemPermission.CreateScenarios)) {
+      <button mat-icon-button (click)="editScenario(null); $event.stopPropagation()"
+        style="outline: none; margin-left: 20px;" title="Add Scenario">
+        <mat-icon class="mdi-24px center-self" fontIcon="mdi-plus-circle"></mat-icon>
+      </button>
+      }
+    </span>
+    <span class="mat-header-cell name-cell" mat-sort-header="name">Name</span>
+    <span class="mat-header-cell two-cell" mat-sort-header="view">View</span>
+    <span class="mat-header-cell one-cell" mat-sort-header="status">Status</span>
+    <span class="mat-header-cell one-cell" mat-sort-header="startDate">Start</span>
+    <span class="mat-header-cell one-cell" mat-sort-header="endDate">End</span>
+    <span class="mat-header-cell two-cell" mat-sort-header="description">Description</span>
+  </section>
 
-          @for (
-            item of displayedRows; track trackByFn($index,
-            item)) {
-            <mat-expansion-panel
-    [expanded]="
+  @for (
+  item of displayedRows; track trackByFn($index,
+  item)) {
+  <mat-expansion-panel [expanded]="
       selectedScenario && item.id == selectedScenario.id
-    "
-              (click)="selectScenario($event, item.id)"
-              >
-              <mat-expansion-panel-header
-                class="row"
-                (contextmenu)="onContextMenu($event, item)"
-                >
-                <div class="cell first-cell">
-                  @if (!adminMode && permissions.includes(SystemPermission.CreateScenarios)) {
-                    <button
-                      mat-icon-button
-                      ngxClipboard
-                      [cbContent]="item.id"
-                      (click)="$event.stopPropagation()"
-                      style="outline: none;"
-                      title="Copy ID:  {{ item.id }}"
-                      >
-                      <mat-icon class="mdi-18px center-self" fontIcon="mdi-content-copy"></mat-icon>
-                    </button>
-                  }
-                  @if (!adminMode && canDoSomething(item)) {
-                    <button
-                      mat-icon-button
-                      (click)="onContextMenu($event, item); $event.stopPropagation()"
-                      style="outline: none;"
-                      title="Scenario Menu"
-                      >
-                      <mat-icon class="mdi-18px center-self" fontIcon="mdi-menu"></mat-icon>
-                    </button>
-                  }
-                </div>
-                <div class="cell name-cell center-self">{{ item.name }}</div>
-                <div class="cell two-cell center-self">{{ item.view }}</div>
-                @if (!!item.view || item.status !== 'ready') {
-                  <div class="cell one-cell center-self">{{
-                    item.status
-                  }}</div>
-                }
-                @if (!item.view && item.status === 'ready') {
-                  <div
-                    class="cell warn-text one-cell center-self"
-                    >Select a view!</div
-                    >
-                  }
-                  <div class="cell one-cell center-self">{{ item.startDate | date: 'yyyy-MM-dd' }}</div>
-                  <div class="cell one-cell center-self">{{ item.endDate | date: 'yyyy-MM-dd' }}</div>
-                  <div class="cell two-cell center-self">{{ item.description }}</div>
-                </mat-expansion-panel-header>
-                <ng-template matExpansionPanelContent>
-                  <app-scenario-edit [scenario]="selectedScenario"></app-scenario-edit>
-                </ng-template>
-              </mat-expansion-panel>
-            }
-          </mat-accordion>
+    " (click)="selectScenario($event, item.id)">
+    <mat-expansion-panel-header class="row" (contextmenu)="onContextMenu($event, item)">
+      <div class="cell first-cell">
+        @if (!adminMode && permissions.includes(SystemPermission.CreateScenarios)) {
+        <button mat-icon-button ngxClipboard [cbContent]="item.id" (click)="$event.stopPropagation()"
+          style="outline: none;" title="Copy ID:  {{ item.id }}">
+          <mat-icon class="mdi-18px center-self" fontIcon="mdi-content-copy"></mat-icon>
+        </button>
+        }
+        @if (!adminMode && canDoSomething(item)) {
+        <button mat-icon-button (click)="onContextMenu($event, item); $event.stopPropagation()" style="outline: none;"
+          title="Scenario Menu">
+          <mat-icon class="mdi-18px center-self" fontIcon="mdi-menu"></mat-icon>
+        </button>
+        }
+      </div>
+      <div class="cell name-cell center-self">{{ item.name }}</div>
+      <div class="cell two-cell center-self">{{ item.view }}</div>
+      @if (!!item.view || item.status !== 'ready') {
+      <div class="cell one-cell center-self">{{
+        item.status
+        }}</div>
+      }
+      @if (!item.view && item.status === 'ready') {
+      <div class="cell warn-text one-cell center-self">Select a view!</div>
+      }
+      <div class="cell one-cell center-self">{{ item.startDate | date: 'yyyy-MM-dd' }}</div>
+      <div class="cell one-cell center-self">{{ item.endDate | date: 'yyyy-MM-dd' }}</div>
+      <div class="cell two-cell center-self">{{ item.description }}</div>
+    </mat-expansion-panel-header>
+    <ng-template matExpansionPanelContent>
+      @if (adminMode) {
+      <div class="memberships-container">
+        <label class="memberships-label">Memberships</label>
+        <app-scenario-memberships [scenarioId]="item.id" [showHeader]="false"></app-scenario-memberships>
+      </div>
+      } @else {
+      <app-scenario-edit [scenario]="selectedScenario"></app-scenario-edit>
+      }
+    </ng-template>
+  </mat-expansion-panel>
+  }
+</mat-accordion>
 
-          @if (isLoading) {
-            <div
-              class="cssLayoutRowStartCenter"
-              >
-              <div flex>
-                <mat-progress-spinner color="accent" mode="indeterminate">
-                </mat-progress-spinner>
-              </div>
-            </div>
-          }
+@if (isLoading) {
+<div class="cssLayoutRowStartCenter">
+  <div flex>
+    <mat-progress-spinner color="accent" mode="indeterminate">
+    </mat-progress-spinner>
+  </div>
+</div>
+}
 
-          <div
-            style="visibility: hidden; position: fixed"
-            [style.left]="contextMenuPosition.x"
-            [style.top]="contextMenuPosition.y"
-            [matMenuTriggerFor]="contextMenu"
-          ></div>
-          <mat-menu #contextMenu="matMenu">
-            <ng-template matMenuContent let-item="item">
-              @if (canEdit(item)) {
-                <button mat-menu-item (click)="editScenario(item)">
-                  Edit
-                </button>
-              }
-              @if (permissions.includes(SystemPermission.CreateScenarios)) {
-                <button mat-menu-item (click)="copyScenario(item)"
-                  >
-                  Copy
-                </button>
-              }
-              @if (item.status === 'ready' && !!item.viewId && canExecute(item)) {
-                <button
-                  mat-menu-item
-                  (click)="startScenario(item)"
-                  >
-                  Start
-                </button>
-              }
-              @if (item.status === 'active' && canExecute(item.id)) {
-                <button
-                  mat-menu-item
-                  (click)="endScenario(item)"
-                  >
-                  End
-                </button>
-              }
-              @if (canManage(item)) {
-                <button mat-menu-item (click)="deleteScenario(item)">
-                  Delete
-                </button>
-              }
-            </ng-template>
-          </mat-menu>
+<div style="visibility: hidden; position: fixed" [style.left]="contextMenuPosition.x"
+  [style.top]="contextMenuPosition.y" [matMenuTriggerFor]="contextMenu"></div>
+<mat-menu #contextMenu="matMenu">
+  <ng-template matMenuContent let-item="item">
+    @if (canEdit(item)) {
+    <button mat-menu-item (click)="editScenario(item)">
+      Edit
+    </button>
+    }
+    @if (permissions.includes(SystemPermission.CreateScenarios)) {
+    <button mat-menu-item (click)="copyScenario(item)">
+      Copy
+    </button>
+    }
+    @if (item.status === 'ready' && !!item.viewId && canExecute(item)) {
+    <button mat-menu-item (click)="startScenario(item)">
+      Start
+    </button>
+    }
+    @if (item.status === 'active' && canExecute(item.id)) {
+    <button mat-menu-item (click)="endScenario(item)">
+      End
+    </button>
+    }
+    @if (canManage(item)) {
+    <button mat-menu-item (click)="deleteScenario(item)">
+      Delete
+    </button>
+    }
+  </ng-template>
+</mat-menu>

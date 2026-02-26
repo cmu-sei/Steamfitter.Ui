@@ -29,7 +29,6 @@ import { ScenarioTemplateDataService } from 'src/app/data/scenario-template/scen
 import { ScenarioDataService } from 'src/app/data/scenario/scenario-data.service';
 import { DialogService } from 'src/app/services/dialog/dialog.service';
 import { Scenario, ScenarioTemplate } from 'src/app/generated/steamfitter.api';
-import { ComnSettingsService } from '@cmusei/crucible-common';
 import {
   fromMatSort,
   sortRows,
@@ -59,7 +58,6 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
   @Output() itemSelected = new EventEmitter<string>();
   @ViewChild(ScenarioTemplateEditComponent)
   scenarioTemplateEditComponent: ScenarioTemplateEditComponent;
-  topbarColor = '#BB0000';
   displayedColumns: string[] = ['name', 'description', 'durationHours'];
   editScenarioTemplateText = 'Edit ScenarioTemplate';
   // context menu
@@ -86,15 +84,11 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
     private permissionDataService: PermissionDataService,
     private scenarioTemplateDataService: ScenarioTemplateDataService,
     private scenarioDataService: ScenarioDataService,
-    private dialog: MatDialog,
-    private settingsService: ComnSettingsService
+    private dialog: MatDialog
   ) {
     if (!this.scenarioTemplateList || this.scenarioTemplateList.length === 0) {
       this.scenarioTemplateDataService.load();
     }
-    this.topbarColor = this.settingsService.settings.AppTopBarHexColor
-      ? this.settingsService.settings.AppTopBarHexColor
-      : this.topbarColor;
   }
 
   ngOnInit() {
@@ -249,11 +243,8 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
 
   selectScenarioTemplate(event: any, scenarioTemplateId: string | undefined) {
     if (this.adminMode) {
-      this.itemSelected.emit(scenarioTemplateId ?? '');
-      if (this.selectedScenarioTemplate) {
-        this.selectedScenarioTemplate.id = '';
-      }
-      event.stopPropagation();
+      // In admin mode, let the expansion panel handle its own state
+      return;
     } else if (
       !!this.selectedScenarioTemplate &&
       scenarioTemplateId === this.selectedScenarioTemplate.id

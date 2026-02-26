@@ -77,3 +77,18 @@
 .center-self {
   align-self: center;
 }
+
+.memberships-container {
+  width: 90%;
+  margin: 1rem auto;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 4px;
+  padding: 1rem;
+  overflow: hidden;
+}
+
+.memberships-label {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}

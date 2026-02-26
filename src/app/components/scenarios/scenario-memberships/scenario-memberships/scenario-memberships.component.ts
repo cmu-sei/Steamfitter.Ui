@@ -35,6 +35,7 @@ import { PermissionDataService } from 'src/app/data/permission/permission-data.s
 })
 export class ScenarioMembershipsComponent implements OnInit, OnChanges {
   @Input() embedded: boolean;
+  @Input() showHeader = true;
   @Input() scenarioId: string;
   @Output() goBack = new EventEmitter();
 

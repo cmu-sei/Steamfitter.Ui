@@ -21,8 +21,6 @@ export class AdminScenarioTemplatesComponent implements OnInit {
 
   scenarioTemplates$ = this.scenarioTemplateQuery.selectAll();
   loading$ = this.scenarioTemplateQuery.selectLoading();
-  selectedScenarioTemplateId: string;
-  embedded = true;
 
   ngOnInit(): void {
     this.scenarioTemplateDataService.load();

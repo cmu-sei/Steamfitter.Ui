@@ -28,7 +28,6 @@ import { ScenarioEditDialogComponent } from 'src/app/components/scenarios/scenar
 import { ScenarioDataService } from 'src/app/data/scenario/scenario-data.service';
 import { DialogService } from 'src/app/services/dialog/dialog.service';
 import { Scenario } from 'src/app/generated/steamfitter.api';
-import { ComnSettingsService } from '@cmusei/crucible-common';
 import {
   fromMatSort,
   sortRows,
@@ -60,7 +59,6 @@ export class ScenarioListComponent implements OnInit, OnChanges {
   @Output() itemSelected = new EventEmitter<string>();
   @ViewChild(ScenarioEditComponent)
   scenarioEditComponent: ScenarioEditComponent;
-  topbarColor = '#BB0000';
   displayedColumns: string[] = [
     'name',
     'view',
@@ -93,15 +91,11 @@ export class ScenarioListComponent implements OnInit, OnChanges {
     private scenarioDataService: ScenarioDataService,
     private permissionDataService: PermissionDataService,
     public dialogService: DialogService,
-    private dialog: MatDialog,
-    private settingsService: ComnSettingsService
+    private dialog: MatDialog
   ) {
     if (!this.scenarioList || this.scenarioList.length === 0) {
       this.scenarioDataService.load();
     }
-    this.topbarColor = this.settingsService.settings.AppTopBarHexColor
-      ? this.settingsService.settings.AppTopBarHexColor
-      : this.topbarColor;
   }
 
   ngOnInit() {
@@ -251,11 +245,8 @@ export class ScenarioListComponent implements OnInit, OnChanges {
 
   selectScenario(event: any, scenarioId: string | undefined) {
     if (this.adminMode) {
-      this.itemSelected.emit(scenarioId ?? '');
-      if (this.selectedScenario) {
-        this.selectedScenario.id = '';
-      }
-      event.stopPropagation();
+      // In admin mode, let the expansion panel handle its own state
+      return;
     } else if (
       !!this.selectedScenario &&
       scenarioId === this.selectedScenario.id

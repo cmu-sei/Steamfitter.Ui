@@ -27,7 +27,6 @@ import {
   TaskService,
   Vm,
 } from 'src/app/generated/steamfitter.api';
-import { ComnSettingsService } from '@cmusei/crucible-common';
 
 /** Error when invalid control is dirty, touched, or submitted. */
 export class UserErrorStateMatcher implements ErrorStateMatcher {
@@ -64,7 +63,6 @@ export class VmTaskExecuteComponent implements OnDestroy {
   loggedInUser = this.authService.user$;
   userScenario: Scenario;
   private unsubscribe$ = new Subject();
-  topbarColor = '#BB0000';
 
   constructor(
     public zone: NgZone,
@@ -75,8 +73,7 @@ export class VmTaskExecuteComponent implements OnDestroy {
     private resultDataService: ResultDataService,
     private taskQuery: TaskQuery,
     private authService: ComnAuthService,
-    private scenarioDataService: ScenarioDataService,
-    private settingsService: ComnSettingsService
+    private scenarioDataService: ScenarioDataService
   ) {
     this.scenarioDataService.selected
       .pipe(takeUntil(this.unsubscribe$))
@@ -85,9 +82,6 @@ export class VmTaskExecuteComponent implements OnDestroy {
       });
     this.scenarioDataService.loadTaskBuilderScenario();
     this.isExecuting = false;
-    this.topbarColor = this.settingsService.settings.AppTopBarHexColor
-      ? this.settingsService.settings.AppTopBarHexColor
-      : this.topbarColor;
   }
 
   setTaskVms() {
