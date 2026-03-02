@@ -140,6 +140,14 @@ export class AdminContainerComponent implements OnDestroy, OnInit {
     this.navigateToSection(this.scenariosText);
   }
 
+  getSelectedClass(section: string) {
+    if (section === this.showSection) {
+      return 'selected-item';
+    } else {
+      return 'showhand';
+    }
+  }
+
   private navigateToSection(sectionName: string) {
     this.router.navigate([], {
       queryParams: { section: sectionName },

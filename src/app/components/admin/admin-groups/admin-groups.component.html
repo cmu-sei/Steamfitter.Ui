@@ -11,12 +11,13 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     <mat-form-field class="search-field">
       <input matInput [(ngModel)]="filterString" (keyup)="applyFilter($event.target.value)"
         placeholder="Search Groups" />
-      @if (filterString) {
-      <button matSuffix mat-icon-button aria-label="Clear" (click)="clearFilter()">
-        <mat-icon class="mdi-24px" fontIcon="mdi-close-circle-outline"></mat-icon>
-      </button>
-      }
     </mat-form-field>
+    <div style="width: 24px;">
+      <button mat-icon-button style="outline: none;" title="Clear Search" (click)="clearFilter()"
+        [disabled]="!filterString">
+        <mat-icon class="mdi-18px" fontIcon="mdi-close-circle-outline"></mat-icon>
+      </button>
+    </div>
   </div>
   <mat-table [dataSource]="dataSource$ | async" matSort>
     <!-- Name Column -->
