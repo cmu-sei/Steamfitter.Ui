@@ -19,7 +19,6 @@ import {
 } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { UntypedFormControl } from '@angular/forms';
 import { PermissionDataService } from 'src/app/data/permission/permission-data.service';
 import { ScenarioTemplatePermission, SystemPermission } from 'src/app/generated/steamfitter.api';
 import { ScenarioTemplateEditDialogComponent } from 'src/app/components/scenario-templates/scenario-template-edit-dialog/scenario-template-edit-dialog.component';
@@ -63,7 +62,8 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
   // context menu
   @ViewChild(MatMenuTrigger, { static: true }) contextMenu: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
-  @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
+  @Input() paginator: MatPaginator;
+  @Input() filterString = '';
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   pageSize = 10;
   pageIndex = 0;
@@ -74,8 +74,6 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
   scenarioTemplateDataSource = new MatTableDataSource<ScenarioTemplate>(
     new Array<ScenarioTemplate>()
   );
-  filterControl = new UntypedFormControl();
-  filterString = '';
   permissions: SystemPermission[] = [];
   readonly SystemPermission = SystemPermission;
 
@@ -93,11 +91,10 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     this.sortEvents$ = fromMatSort(this.sort);
-    this.pageEvents$ = fromMatPaginator(this.paginator);
-    this.filterControl.valueChanges.subscribe((term) => {
-      this.filterString = (term || '').trim().toLowerCase();
-      this.filterAndSort();
-    });
+    if (this.paginator) {
+      this.pageEvents$ = fromMatPaginator(this.paginator);
+      this.paginator.pageIndex = 0;
+    }
     const id = this.selectedScenarioTemplate
       ? this.selectedScenarioTemplate.id
       : '';
@@ -114,12 +111,17 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.permissions = this.permissionDataService.permissions;
+    if (changes.paginator && this.paginator) {
+      this.pageEvents$ = fromMatPaginator(this.paginator);
+    }
     if (
       !!changes.scenarioTemplateList &&
       !!changes.scenarioTemplateList.currentValue
     ) {
       this.scenarioTemplateDataSource.data =
         changes.scenarioTemplateList.currentValue;
+      this.filterAndSort();
+    } else if (changes.filterString !== undefined && this.sortEvents$) {
       this.filterAndSort();
     }
   }
@@ -256,21 +258,17 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
     }
   }
 
-  clearFilter() {
-    this.filterControl.setValue('');
-  }
-
-  applyFilter(value: string) {
-    this.filterString = value.toLowerCase();
-    this.filterAndSort();
-  }
 
   /**
    * filters and sorts the displayed rows
    */
   filterAndSort() {
-    this.scenarioTemplateDataSource.filter = this.filterString;
-    const rows$ = of(this.scenarioTemplateDataSource.filteredData);
+    this.scenarioTemplateDataSource.filter = (this.filterString || '').trim().toLowerCase();
+    const filteredData = this.scenarioTemplateDataSource.filteredData;
+    if (this.paginator) {
+      this.paginator.length = filteredData.length;
+    }
+    const rows$ = of(filteredData);
     this.totalRows$ = rows$.pipe(map((rows) => rows.length));
     if (!!this.sortEvents$ && !!this.pageEvents$) {
       rows$

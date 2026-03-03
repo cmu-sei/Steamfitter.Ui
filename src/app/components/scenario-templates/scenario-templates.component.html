@@ -3,11 +3,12 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
 
-<div class="component-container elevate">
+<div class="component-container">
   <div class="add-margin">
     <div class="list-container">
       <app-scenario-template-list [scenarioTemplateList]="scenarioTemplateList | async"
         [selectedScenarioTemplate]="selectedScenarioTemplate | async" [isLoading]="isLoading | async"
+        [filterString]="filterString" [paginator]="paginator"
         (itemSelected)="setActive($event)"
         (saveScenarioTemplate)="saveScenarioTemplate($event)"></app-scenario-template-list>
     </div>

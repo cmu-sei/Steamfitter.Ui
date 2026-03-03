@@ -7,26 +7,9 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   >
   <mat-toolbar-row>
     <span class="margin-auto">
-      @if (sidenav && sidenav?.opened) {
-        <button
-          (click)="sidenavToggleFn()"
-          mat-icon-button
-          matTooltip="Close Sidebar"
-          aria-label="Close Sidebar"
-          >
-          <mat-icon fontIcon="mdi-chevron-left"></mat-icon>
-        </button>
-      }
-      @if (sidenav && !sidenav?.opened) {
-        <button
-          (click)="sidenavToggleFn()"
-          mat-icon-button
-          matTooltip="Open Sidebar"
-          aria-label="Open Sidebar"
-          >
-          <mat-icon fontIcon="mdi-chevron-right"></mat-icon>
-        </button>
-      }
+      <button mat-icon-button style="outline: none; background-color: var(--mat-sys-on-primary);" [routerLink]="['/']">
+        <mat-icon svgIcon="ic_crucible_steamfitter"></mat-icon>
+      </button>
     </span>
     <span class="view-text">{{ title }}</span>
     <span class="spacer"></span>

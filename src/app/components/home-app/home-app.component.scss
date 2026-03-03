@@ -1,24 +1,14 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-.appitems-container .mat-mdc-list-item {
-  height: auto;
-}
-
-.appslist {
-  margin-top: 10px;
-  margin-bottom: 20px;
-}
-
-.nolink {
-  text-decoration: none;
-  color: inherit;
-  cursor: pointer;
-}
-
-.icon-text {
-  margin-left: 10px;
-  font-weight: bold;
+.app-container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
 }
 
 .app-header-container {
@@ -28,81 +18,71 @@
   text-align: center;
 }
 
-.appcontent-container {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-}
-
-.appbarmenu-container {
-  min-width: 50px;
-  max-width: 300px;
-}
-
-.pull-right {
-  position: absolute;
-  right: 35px;
-}
-
-.showhand {
-  cursor: pointer;
-}
-
-#wrapper {
-  display: table;
-  table-layout: fixed;
-  width: 220px;
-  margin-top: 5px;
-  border-width: 0.25pt;
-  border-color: darkgray;
-}
-
-#wrapper>div {
-  display: table-cell;
-}
-
-#lefticon {
-  width: 30px;
-  font-size: 75%;
-  padding: 0.5em;
-}
-
-#lefticon>img {
-  height: 35px;
-  width: 35px;
-  text-align: center;
-  cursor: pointer;
-}
-
-#rightcontext {
-  width: 30px;
-  font-size: 75%;
-}
-
-#content {
-  text-align: left;
-  vertical-align: middle;
-  width: 160px;
-  font-size: 90%;
-  padding: 0.5em;
-}
-
-.sidenav-bottom {
-  position: absolute;
-  bottom: 0;
+.top-row {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  width: 100%;
+  flex-direction: row;
+  align-items: center;
 }
 
-.crucible-logo {
-  display: block;
+.one-cell {
+  flex: 1;
+}
+
+.last-cell {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 8px;
+}
+
+.icon-text-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+  padding-top: 5px;
 }
 
 .steamfitter-icon {
   transform: scale(2);
   width: 60px;
+  color: var(--mat-sys-primary);
+}
+
+.title-text {
+  font-size: x-large;
+  font-weight: bold;
+}
+
+.search-field {
+  width: 200px;
+}
+
+.status-field {
+  width: 230px;
+}
+
+.view-field {
+  width: 230px;
+}
+
+.history-category-field {
+  width: 150px;
+}
+
+.history-select-field {
+  width: 230px;
+}
+
+.right-controls {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  gap: 8px;
+}
+
+.content-container {
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+  overflow: auto;
 }

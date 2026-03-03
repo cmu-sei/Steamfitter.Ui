@@ -3,125 +3,136 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
 
-<mat-sidenav-container class="appcontent-container" autosize>
-  <mat-sidenav class="appbarmenu-container" #sidenav mode="side" [(opened)]="isSidebarOpen">
-    @if (permissions) {
-      <mat-list class="appitems-container">
-        <mat-list-item class="appslist">
-          <div class="cssLayoutRowStartCenter">
-            <mat-icon class="steamfitter-icon" svgIcon="ic_crucible_steamfitter"></mat-icon>
-            <h2 class="icon-text">
-              {{ titleText }}
-            </h2>
-          </div>
-          <mat-divider></mat-divider>
-        </mat-list-item>
-        @if (canViewScenarioTemplateList()) {
-          <mat-list-item>
-            <div class="showhand" id="wrapper" title="Show {{ section.scenarioTemplates }}" (click)="selectTab(section.scenarioTemplates)">
-              <div id="lefticon">
-                <mat-icon class="mdi-24px" fontIcon="mdi-database"></mat-icon>
-              </div>
-              <div id="content">{{ section.scenarioTemplates }}</div>
-              <div class="pull-right" id="rightcontext">
-                <button mat-icon-button style="outline: none" aria-label="Scenario Templates">
-                  <mat-icon class="mdi-24px" fontIcon="mdi-menu-right"></mat-icon>
-                </button>
-              </div>
-            </div>
-          </mat-list-item>
-        }
-        @if (canViewScenarioList()) {
-          <mat-list-item>
-            <div class="showhand" id="wrapper" title="Show {{ section.scenarios }}" (click)="selectTab(section.scenarios)">
-              <div id="lefticon">
-                <mat-icon class="mdi-24px" fontIcon="mdi-playlist-play"></mat-icon>
-              </div>
-              <div id="content">{{ section.scenarios }}</div>
-              <div class="pull-right" id="rightcontext">
-                <button mat-icon-button style="outline: none" aria-label="Scenarios">
-                  <mat-icon class="mdi-24px" fontIcon="mdi-menu-right"></mat-icon>
-                </button>
-              </div>
-            </div>
-          </mat-list-item>
-        }
-        @if (permissions.includes(SystemPermission.ManageTasks)) {
-          <mat-list-item>
-            <div class="showhand" id="wrapper" title="Show {{ section.taskBuilder }}" (click)="selectTab(section.taskBuilder)">
-              <div id="lefticon">
-                <mat-icon class="mdi-24px" fontIcon="mdi-login"></mat-icon>
-              </div>
-              <div id="content">{{ section.taskBuilder }}</div>
-              <div class="pull-right" id="rightcontext">
-                <button mat-icon-button style="outline: none" aria-label="Tasks">
-                  <mat-icon class="mdi-24px" fontIcon="mdi-menu-right"></mat-icon>
-                </button>
-              </div>
-            </div>
-          </mat-list-item>
-        }
-        <mat-list-item>
-          <div class="showhand" id="wrapper" title="Show {{ section.history }}" (click)="selectTab(section.history)">
-            <div id="lefticon">
-              <mat-icon class="mdi-24px" fontIcon="mdi-history"></mat-icon>
-            </div>
-            <div id="content">{{ section.history }}</div>
-            <div class="pull-right" id="rightcontext">
-              <button mat-icon-button style="outline: none" aria-label="History">
-                <mat-icon class="mdi-24px" fontIcon="mdi-menu-right"></mat-icon>
-              </button>
-            </div>
-          </div>
-        </mat-list-item>
-      </mat-list>
-    }
-    <div class="sidenav-bottom">
-      <button aria-label="Show Administration Page" mat-icon-button [routerLink]="['/admin']" style="outline: none;"
-        title="Administration">
-        <mat-icon aria-hidden="false" class="mdi-24px" fontIcon="mdi-cog"></mat-icon>
-      </button>
-      @if (!hideTopbar) {
-        <img title="crucible logo" class="crucible-logo" [src]="
-          (theme$ | async) === 'light-theme'
-            ? 'assets/img/crucible-logo-light.png'
-            : 'assets/img/crucible-logo-dark.png'
-        " />
-      }
-    </div>
-  </mat-sidenav>
-  <mat-sidenav-content>
-    @if (!hideTopbar) {
-      <app-topbar [title]="selectedSection" [topbarView]="TopbarView.STEAMFITTER_HOME"
-        [sidenav]="sidenav" (sidenavToggle)="sidenavToggleFn()"></app-topbar>
-    }
+<div class="app-container" fxLayout="column" fxLayoutAlign="center stretch" fxFlexFill>
+  @if (!hideTopbar) {
+  <app-topbar [title]="titleText" [topbarView]="TopbarView.STEAMFITTER_HOME"></app-topbar>
+  }
 
-    @if (apiIsSick) {
-      <div class="app-header-container elevate" autosize>
-        <h1>{{ apiMessage }}</h1>
-        <h2>Please refresh this page.</h2>
-        <h2>If the problem persists, please contact the site administrator.</h2>
+  @if (apiIsSick) {
+  <div class="app-header-container elevate">
+    <h1>{{ apiMessage }}</h1>
+    <h2>Please refresh this page.</h2>
+    <h2>If the problem persists, please contact the site administrator.</h2>
+  </div>
+  }
+
+  @if (!apiIsSick && isAuthorizedUser && permissions) {
+  <span>
+    <div class="top-row">
+      <div class="one-cell last-cell">
+        @if (canViewAdministration) {
+        <button aria-label="Show Administration Page" mat-icon-button [routerLink]="['/admin']" style="outline: none;"
+          title="Administration">
+          <mat-icon class="mdi-24px center-self" fontIcon="mdi-cog"></mat-icon>
+        </button>
+        }
       </div>
-    }
-
-
-    @if (!apiIsSick && isAuthorizedUser) {
-      <span>
-        @if (selectedSection === section.scenarioTemplates && canViewScenarioTemplateList()) {
-          <app-scenario-templates
-          ></app-scenario-templates>
+    </div>
+    <div class="content-container elevate">
+      <div class="icon-text-container">
+        <mat-icon class="steamfitter-icon" svgIcon="ic_crucible_steamfitter"></mat-icon>
+        <span class="title-text">My</span>
+        <mat-form-field>
+          <mat-select [value]="selectedSection" (selectionChange)="selectTab($event.value)">
+            @if (canViewScenarioList()) {
+            <mat-option [value]="section.scenarios">{{ section.scenarios }}</mat-option>
+            }
+            @if (canViewScenarioTemplateList()) {
+            <mat-option [value]="section.scenarioTemplates">{{ section.scenarioTemplates }}</mat-option>
+            }
+            @if (permissions.includes(SystemPermission.ManageTasks)) {
+            <mat-option [value]="section.taskBuilder">{{ section.taskBuilder }}</mat-option>
+            }
+            <mat-option [value]="section.history">{{ section.history }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        @if (selectedSection === section.scenarios) {
+        <mat-form-field class="status-field">
+          <mat-label>Status</mat-label>
+          <mat-select multiple [(ngModel)]="selectedStatuses">
+            <mat-option value="active">Active</mat-option>
+            <mat-option value="ready">Ready</mat-option>
+            <mat-option value="ended">Ended</mat-option>
+          </mat-select>
+        </mat-form-field>
         }
-        @if (selectedSection === section.scenarios && canViewScenarioList()) {
-          <app-scenarios></app-scenarios>
-        }
-        @if (selectedSection === section.taskBuilder && permissions.includes(SystemPermission.ManageTasks)) {
-          <app-vm-task-execute
-          ></app-vm-task-execute>
+        @if (selectedSection === section.taskBuilder) {
+        <mat-form-field class="view-field">
+          <mat-label>Select a View</mat-label>
+          <mat-select [value]="selectedTaskView | async" (selectionChange)="onTaskViewChange($event)">
+            @for (view of viewList | async; track view) {
+            <mat-option [value]="view">{{ view.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
         }
         @if (selectedSection === section.history) {
-          <app-history></app-history>
+        <mat-form-field class="history-category-field">
+          <mat-label>Category</mat-label>
+          <mat-select [(value)]="historyView" (selectionChange)="onHistoryCategoryChange($event.value)">
+            @for (hv of HistoryView | keyvalue; track hv) {
+            <mat-option [value]="hv.value">{{ hv.value }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        @if (historyView === HistoryView.user) {
+        <mat-form-field class="history-select-field">
+          <mat-label>Users</mat-label>
+          <mat-select [(value)]="selectedHistoryUser">
+            @for (user of historyUsers$ | async; track user) {
+            <mat-option [value]="user">{{ user.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
         }
-      </span>
-    }
-  </mat-sidenav-content>
-</mat-sidenav-container>
+        @if (historyView === HistoryView.view) {
+        <mat-form-field class="history-select-field">
+          <mat-label>Views</mat-label>
+          <mat-select [(value)]="selectedHistoryView">
+            @for (view of viewList | async; track view) {
+            <mat-option [value]="view">{{ view.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        }
+        @if (historyView === HistoryView.vm) {
+        <mat-form-field class="history-select-field">
+          <mat-label>VMs</mat-label>
+          <mat-select [(value)]="selectedHistoryVm">
+            @for (vm of historyVmList; track vm) {
+            <mat-option [value]="vm">{{ vm.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        }
+        }
+        <div class="right-controls" [hidden]="selectedSection === section.taskBuilder">
+          <mat-form-field class="search-field">
+            <mat-label>Search</mat-label>
+            <input matInput [value]="filterString" (input)="applyFilter($any($event.target).value)" />
+            @if (filterString) {
+            <button matSuffix mat-icon-button (click)="applyFilter('')" title="Clear Search">
+              <mat-icon class="mdi-24px" fontIcon="mdi-close-circle-outline"></mat-icon>
+            </button>
+            }
+          </mat-form-field>
+          <mat-paginator #homePaginator [pageSize]="20" [pageSizeOptions]="[5, 10, 15, 20, 25, 50, 100, 200]"
+            [showFirstLastButtons]="true"></mat-paginator>
+        </div>
+      </div>
+      @if (selectedSection === section.scenarios && canViewScenarioList()) {
+      <app-scenarios [filterString]="filterString" [paginator]="homePaginator" [selectedStatuses]="selectedStatuses"></app-scenarios>
+      }
+      @if (selectedSection === section.scenarioTemplates && canViewScenarioTemplateList()) {
+      <app-scenario-templates [filterString]="filterString" [paginator]="homePaginator"></app-scenario-templates>
+      }
+      @if (selectedSection === section.taskBuilder && permissions.includes(SystemPermission.ManageTasks)) {
+      <app-vm-task-execute></app-vm-task-execute>
+      }
+      @if (selectedSection === section.history) {
+      <app-history [filterString]="filterString" [paginator]="homePaginator" [historyView]="historyView" [selectedUser]="selectedHistoryUser" [selectedView]="selectedHistoryView" [selectedVm]="selectedHistoryVm"></app-history>
+      }
+    </div>
+  </span>
+  }
+</div>

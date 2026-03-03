@@ -31,9 +31,7 @@ import { TopbarView } from './topbar.models';
 })
 export class TopbarComponent implements OnInit, OnDestroy {
   @Input() title?: string;
-  @Input() sidenav?;
   @Input() topbarView?: TopbarView;
-  @Output() sidenavToggle?: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() editView?: EventEmitter<any> = new EventEmitter<any>();
   currentUser$: Observable<CurrentUserState>;
   theme$: Observable<Theme>;
@@ -71,10 +69,6 @@ export class TopbarComponent implements OnInit, OnDestroy {
   }
   editFn(event) {
     this.editView.emit(event);
-  }
-
-  sidenavToggleFn() {
-    this.sidenavToggle.emit(!this.sidenav.opened);
   }
 
   logout(): void {

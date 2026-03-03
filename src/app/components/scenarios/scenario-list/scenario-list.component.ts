@@ -19,7 +19,6 @@ import {
 } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { UntypedFormControl } from '@angular/forms';
 import { PermissionDataService } from 'src/app/data/permission/permission-data.service';
 import { ScenarioPermission, SystemPermission } from 'src/app/generated/steamfitter.api';
 import { View } from 'src/app/generated/steamfitter.api';
@@ -67,13 +66,14 @@ export class ScenarioListComponent implements OnInit, OnChanges {
     'endDate',
     'description',
   ];
-  selectedStatuses: string[] = ['active', 'ready'];
+  @Input() selectedStatuses: string[] = ['active', 'ready'];
   statusFilteredScenarios: Scenario[];
   editScenarioText = 'Edit Scenario';
   // context menu
   @ViewChild(MatMenuTrigger, { static: true }) contextMenu: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
-  @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
+  @Input() paginator: MatPaginator;
+  @Input() filterString = '';
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   pageSize = 10;
   pageIndex = 0;
@@ -82,8 +82,6 @@ export class ScenarioListComponent implements OnInit, OnChanges {
   sortEvents$: Observable<Sort>;
   pageEvents$: Observable<PageEvent>;
   scenarioDataSource = new MatTableDataSource<Scenario>(new Array<Scenario>());
-  filterControl = new UntypedFormControl();
-  filterString = '';
   permissions: SystemPermission[] = [];
   readonly SystemPermission = SystemPermission;
 
@@ -100,11 +98,10 @@ export class ScenarioListComponent implements OnInit, OnChanges {
 
   ngOnInit() {
     this.sortEvents$ = fromMatSort(this.sort);
-    this.pageEvents$ = fromMatPaginator(this.paginator);
-    this.filterControl.valueChanges.subscribe((term) => {
-      this.filterString = (term || '').trim().toLowerCase();
-      this.filterAndSort();
-    });
+    if (this.paginator) {
+      this.pageEvents$ = fromMatPaginator(this.paginator);
+      this.paginator.pageIndex = 0;
+    }
     const id = this.selectedScenario ? this.selectedScenario.id : '';
     // force already expanded scenario to refresh details
     if (id) {
@@ -119,13 +116,22 @@ export class ScenarioListComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.permissions = this.permissionDataService.permissions;
+    if (changes.paginator && this.paginator) {
+      this.pageEvents$ = fromMatPaginator(this.paginator);
+    }
     if (!!changes.scenarioList && !!changes.scenarioList.currentValue) {
       this.filterByStatus(changes.scenarioList.currentValue);
+    } else if (changes.selectedStatuses && this.scenarioList) {
+      this.filterByStatus(this.scenarioList);
+    } else if (changes.filterString !== undefined && this.sortEvents$) {
+      this.filterAndSort();
     }
   }
 
   filterByStatus(scenarios: Scenario[]) {
-    this.paginator.pageIndex = 0;
+    if (this.paginator) {
+      this.paginator.pageIndex = 0;
+    }
     this.statusFilteredScenarios = scenarios.filter(
       (m) => this.selectedStatuses.includes(m.status)
     );
@@ -258,22 +264,18 @@ export class ScenarioListComponent implements OnInit, OnChanges {
     }
   }
 
-  clearFilter() {
-    this.filterControl.setValue('');
-  }
-
-  applyFilter(value: string) {
-    this.filterString = value.toLowerCase();
-    this.filterAndSort();
-  }
 
   /**
    * filters and sorts the displayed rows
    */
   filterAndSort() {
     this.scenarioDataSource.data = this.statusFilteredScenarios;
-    this.scenarioDataSource.filter = this.filterString;
-    const rows$ = of(this.scenarioDataSource.filteredData);
+    this.scenarioDataSource.filter = (this.filterString || '').trim().toLowerCase();
+    const filteredData = this.scenarioDataSource.filteredData;
+    if (this.paginator) {
+      this.paginator.length = filteredData.length;
+    }
+    const rows$ = of(filteredData);
     this.totalRows$ = rows$.pipe(map((rows) => rows.length));
     if (!!this.sortEvents$ && !!this.pageEvents$) {
       rows$

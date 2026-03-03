@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import { UntypedFormControl, FormGroupDirective, NgForm } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
-import { PageEvent } from '@angular/material/paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { Sort } from '@angular/material/sort';
 import { MatStepper } from '@angular/material/stepper';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -39,6 +39,8 @@ export class UserErrorStateMatcher implements ErrorStateMatcher {
     standalone: false
 })
 export class ScenarioTemplatesComponent {
+  @Input() filterString = '';
+  @Input() paginator: MatPaginator;
   @Input() adminMode = false;
   @Output() editComplete = new EventEmitter<boolean>();
   @ViewChild(ScenarioTemplatesComponent) child;
@@ -52,9 +54,6 @@ export class ScenarioTemplatesComponent {
   isLoading = this.scenarioTemplateQuery.selectLoading();
   filterControl: UntypedFormControl =
     this.scenarioTemplateDataService.filterControl;
-  filterString: Observable<string>;
-  pageSize: Observable<number>;
-  pageIndex: Observable<number>;
 
   constructor(
     public zone: NgZone,
@@ -64,15 +63,6 @@ export class ScenarioTemplatesComponent {
     private activatedRoute: ActivatedRoute
   ) {
     this.scenarioTemplateDataService.load();
-    this.filterString = activatedRoute.queryParamMap.pipe(
-      map((params) => params.get('scenarioTemplatemask') || '')
-    );
-    this.pageSize = activatedRoute.queryParamMap.pipe(
-      map((params) => parseInt(params.get('pagesize') || '20', 10))
-    );
-    this.pageIndex = activatedRoute.queryParamMap.pipe(
-      map((params) => parseInt(params.get('pageindex') || '0', 10))
-    );
   }
 
   setActive(id: any) {

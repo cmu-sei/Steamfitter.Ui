@@ -4,13 +4,14 @@
 import {
   Component,
   EventEmitter,
+  Input,
   NgZone,
   OnInit,
   Output,
   ViewChild,
 } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
-import { PageEvent } from '@angular/material/paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { Sort } from '@angular/material/sort';
 import { MatStepper } from '@angular/material/stepper';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -28,6 +29,9 @@ import { Scenario } from 'src/app/generated/steamfitter.api';
     standalone: false
 })
 export class ScenariosComponent implements OnInit {
+  @Input() filterString = '';
+  @Input() paginator: MatPaginator;
+  @Input() selectedStatuses: string[] = ['active', 'ready'];
   @Output() editComplete = new EventEmitter<boolean>();
   @ViewChild(ScenariosComponent) child;
   @ViewChild('stepper') stepper: MatStepper;

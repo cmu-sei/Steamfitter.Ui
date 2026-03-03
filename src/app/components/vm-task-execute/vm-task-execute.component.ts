@@ -80,6 +80,15 @@ export class VmTaskExecuteComponent implements OnDestroy {
       .subscribe((scenario) => {
         this.userScenario = scenario;
       });
+    this.playerDataService.selectedView
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((view) => {
+        if (view && this.userScenario && view.id !== this.userScenario.viewId) {
+          const scenario = { ...this.userScenario };
+          scenario.viewId = view.id;
+          this.scenarioDataService.updateScenario(scenario);
+        }
+      });
     this.scenarioDataService.loadTaskBuilderScenario();
     this.isExecuting = false;
   }
@@ -121,15 +130,6 @@ export class VmTaskExecuteComponent implements OnDestroy {
 
   deleteTask(id: string) {
     this.taskDataService.delete(id);
-  }
-
-  onViewChange(event: any) {
-    if (event && event.value && event.value.id) {
-      const scenario = { ...this.userScenario };
-      scenario.viewId = event.value.id;
-      this.scenarioDataService.updateScenario(scenario);
-      this.playerDataService.selectView(scenario.viewId);
-    }
   }
 
   ngOnDestroy() {
