@@ -2,6 +2,13 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import {
+  animate,
+  state,
+  style,
+  transition,
+  trigger,
+} from '@angular/animations';
+import {
   Component,
   EventEmitter,
   Input,
@@ -13,11 +20,8 @@ import {
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatMenuTrigger } from '@angular/material/menu';
-import {
-  MatPaginator,
-  PageEvent,
-} from '@angular/material/paginator';
-import { MatSort, Sort } from '@angular/material/sort';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { PermissionDataService } from 'src/app/data/permission/permission-data.service';
 import { ScenarioPermission, SystemPermission } from 'src/app/generated/steamfitter.api';
@@ -27,14 +31,6 @@ import { ScenarioEditDialogComponent } from 'src/app/components/scenarios/scenar
 import { ScenarioDataService } from 'src/app/data/scenario/scenario-data.service';
 import { DialogService } from 'src/app/services/dialog/dialog.service';
 import { Scenario } from 'src/app/generated/steamfitter.api';
-import {
-  fromMatSort,
-  sortRows,
-  fromMatPaginator,
-  paginateRows,
-} from 'src/app/datasource-utils';
-import { Observable, of, combineLatest } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 export interface Action {
   Value: string;
@@ -45,6 +41,13 @@ export interface Action {
     selector: 'app-scenario-list',
     templateUrl: './scenario-list.component.html',
     styleUrls: ['./scenario-list.component.scss'],
+    animations: [
+        trigger('detailExpand', [
+            state('collapsed', style({ height: '0px', minHeight: '0' })),
+            state('expanded', style({ height: '*' })),
+            transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+        ]),
+    ],
     standalone: false
 })
 export class ScenarioListComponent implements OnInit, OnChanges {
@@ -59,6 +62,7 @@ export class ScenarioListComponent implements OnInit, OnChanges {
   @ViewChild(ScenarioEditComponent)
   scenarioEditComponent: ScenarioEditComponent;
   displayedColumns: string[] = [
+    'actions',
     'name',
     'view',
     'status',
@@ -75,12 +79,7 @@ export class ScenarioListComponent implements OnInit, OnChanges {
   @Input() paginator: MatPaginator;
   @Input() filterString = '';
   @ViewChild(MatSort, { static: true }) sort: MatSort;
-  pageSize = 10;
-  pageIndex = 0;
-  displayedRows: Scenario[] = [];
-  totalRows$: Observable<number>;
-  sortEvents$: Observable<Sort>;
-  pageEvents$: Observable<PageEvent>;
+  expandedScenarioId: string | null = null;
   scenarioDataSource = new MatTableDataSource<Scenario>(new Array<Scenario>());
   permissions: SystemPermission[] = [];
   readonly SystemPermission = SystemPermission;
@@ -97,17 +96,19 @@ export class ScenarioListComponent implements OnInit, OnChanges {
   }
 
   ngOnInit() {
-    this.sortEvents$ = fromMatSort(this.sort);
     if (this.paginator) {
-      this.pageEvents$ = fromMatPaginator(this.paginator);
+      this.scenarioDataSource.paginator = this.paginator;
       this.paginator.pageIndex = 0;
     }
+    this.scenarioDataSource.sort = this.sort;
     const id = this.selectedScenario ? this.selectedScenario.id : '';
     // force already expanded scenario to refresh details
     if (id) {
+      this.expandedScenarioId = null;
       const here = this;
       this.itemSelected.emit('');
       setTimeout(function () {
+        here.expandedScenarioId = id;
         here.itemSelected.emit(id);
       }, 1);
     }
@@ -117,13 +118,13 @@ export class ScenarioListComponent implements OnInit, OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     this.permissions = this.permissionDataService.permissions;
     if (changes.paginator && this.paginator) {
-      this.pageEvents$ = fromMatPaginator(this.paginator);
+      this.scenarioDataSource.paginator = this.paginator;
     }
     if (!!changes.scenarioList && !!changes.scenarioList.currentValue) {
       this.filterByStatus(changes.scenarioList.currentValue);
     } else if (changes.selectedStatuses && this.scenarioList) {
       this.filterByStatus(this.scenarioList);
-    } else if (changes.filterString !== undefined && this.sortEvents$) {
+    } else if (changes.filterString !== undefined) {
       this.filterAndSort();
     }
   }
@@ -250,41 +251,25 @@ export class ScenarioListComponent implements OnInit, OnChanges {
   }
 
   selectScenario(event: any, scenarioId: string | undefined) {
-    if (this.adminMode) {
-      // In admin mode, let the expansion panel handle its own state
-      return;
-    } else if (
-      !!this.selectedScenario &&
-      scenarioId === this.selectedScenario.id
-    ) {
-      this.itemSelected.emit('');
-      this.selectedScenario = null;
+    if (this.expandedScenarioId === scenarioId) {
+      this.expandedScenarioId = null;
+      if (!this.adminMode) {
+        this.itemSelected.emit('');
+        this.selectedScenario = null;
+      }
     } else {
-      this.itemSelected.emit(scenarioId ?? '');
+      this.expandedScenarioId = scenarioId;
+      if (!this.adminMode) {
+        this.itemSelected.emit(scenarioId ?? '');
+      }
     }
   }
-
 
   /**
    * filters and sorts the displayed rows
    */
   filterAndSort() {
-    this.scenarioDataSource.data = this.statusFilteredScenarios;
+    this.scenarioDataSource.data = this.statusFilteredScenarios || [];
     this.scenarioDataSource.filter = (this.filterString || '').trim().toLowerCase();
-    const filteredData = this.scenarioDataSource.filteredData;
-    if (this.paginator) {
-      this.paginator.length = filteredData.length;
-    }
-    const rows$ = of(filteredData);
-    this.totalRows$ = rows$.pipe(map((rows) => rows.length));
-    if (!!this.sortEvents$ && !!this.pageEvents$) {
-      rows$
-        .pipe(sortRows(this.sortEvents$), paginateRows(this.pageEvents$))
-        .subscribe((rows) => (this.displayedRows = rows));
-    }
-  }
-
-  trackByFn(index, item) {
-    return item.id;
   }
 }

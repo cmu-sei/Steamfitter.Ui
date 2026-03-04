@@ -17,7 +17,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   }
 
   @if (!apiIsSick && isAuthorizedUser && permissions) {
-  <span>
+  <div class="main-area">
     <div class="top-row">
       <div class="one-cell last-cell">
         @if (canViewAdministration) {
@@ -32,20 +32,22 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       <div class="icon-text-container">
         <mat-icon class="steamfitter-icon" svgIcon="ic_crucible_steamfitter"></mat-icon>
         <span class="title-text">My</span>
-        <mat-form-field>
-          <mat-select [value]="selectedSection" (selectionChange)="selectTab($event.value)">
-            @if (canViewScenarioList()) {
-            <mat-option [value]="section.scenarios">{{ section.scenarios }}</mat-option>
-            }
-            @if (canViewScenarioTemplateList()) {
-            <mat-option [value]="section.scenarioTemplates">{{ section.scenarioTemplates }}</mat-option>
-            }
-            @if (permissions.includes(SystemPermission.ManageTasks)) {
-            <mat-option [value]="section.taskBuilder">{{ section.taskBuilder }}</mat-option>
-            }
-            <mat-option [value]="section.history">{{ section.history }}</mat-option>
-          </mat-select>
-        </mat-form-field>
+        <button mat-button class="section-menu-trigger" [matMenuTriggerFor]="sectionMenu" style="outline: none;">
+          <span>{{ selectedSection }}</span>
+          <mat-icon fontIcon="mdi-chevron-down"></mat-icon>
+        </button>
+        <mat-menu #sectionMenu="matMenu">
+          @if (canViewScenarioList()) {
+          <button mat-menu-item (click)="selectTab(section.scenarios)">{{ section.scenarios }}</button>
+          }
+          @if (canViewScenarioTemplateList()) {
+          <button mat-menu-item (click)="selectTab(section.scenarioTemplates)">{{ section.scenarioTemplates }}</button>
+          }
+          @if (permissions.includes(SystemPermission.ManageTasks)) {
+          <button mat-menu-item (click)="selectTab(section.taskBuilder)">{{ section.taskBuilder }}</button>
+          }
+          <button mat-menu-item (click)="selectTab(section.history)">{{ section.history }}</button>
+        </mat-menu>
         @if (selectedSection === section.scenarios) {
         <mat-form-field class="status-field">
           <mat-label>Status</mat-label>
@@ -133,6 +135,6 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       <app-history [filterString]="filterString" [paginator]="homePaginator" [historyView]="historyView" [selectedUser]="selectedHistoryUser" [selectedView]="selectedHistoryView" [selectedVm]="selectedHistoryVm"></app-history>
       }
     </div>
-  </span>
+  </div>
   }
 </div>

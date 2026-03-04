@@ -3,63 +3,76 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
 
-
-<mat-accordion>
-  <section matSort class="header-row">
-    <span class="mat-header-cell first-cell">
+<table mat-table [dataSource]="scenarioTemplateDataSource" matSort multiTemplateDataRows>
+  <ng-container matColumnDef="actions">
+    <th mat-header-cell *matHeaderCellDef>
       @if (!adminMode && hasPermission(SystemPermission.CreateScenarioTemplates)) {
       <button mat-icon-button (click)="editScenarioTemplate(null); $event.stopPropagation()"
         style="outline: none; margin-left: 20px;" title="Add Scenario Template">
-        <mat-icon class="mdi-24px center-self" fontIcon="mdi-plus-circle"></mat-icon>
+        <mat-icon class="mdi-24px" fontIcon="mdi-plus-circle"></mat-icon>
       </button>
       }
-    </span>
-    <span class="mat-header-cell name-cell" mat-sort-header="name">Name</span>
-    <span class="mat-header-cell five-cell" mat-sort-header="description">Description</span>
-    <span class="mat-header-cell one-cell" mat-sort-header="durationHours">Duration</span>
-    <span class="mat-header-cell one-cell" mat-sort-header="dateCreated">Created</span>
-  </section>
-
-  @for (
-  item of displayedRows; track trackByFn($index,
-  item)) {
-  <mat-expansion-panel [expanded]="
-      selectedScenarioTemplate && item.id == selectedScenarioTemplate.id
-    " (click)="selectScenarioTemplate($event, item.id)">
-    <mat-expansion-panel-header class="row" (contextmenu)="onContextMenu($event, item)">
-      <div class="cell first-cell">
-        @if (!adminMode && hasPermission(SystemPermission.CreateScenarioTemplates)) {
-        <button mat-icon-button ngxClipboard [cbContent]="item.id" (click)="$event.stopPropagation()"
-          style="outline: none;" title="Copy ID:  {{ item.id }}">
-          <mat-icon class="mdi-18px center-self" fontIcon="mdi-content-copy"></mat-icon>
-        </button>
-        }
-        @if (!adminMode && canDoSomething(item)) {
-        <button mat-icon-button (click)="onContextMenu($event, item); $event.stopPropagation()" style="outline: none;"
-          title="Scenario Template Menu">
-          <mat-icon class="mdi-18px center-self" fontIcon="mdi-menu"></mat-icon>
-        </button>
-        }
-      </div>
-      <div class="cell name-cell center-self">{{ item.name }}</div>
-      <div class="cell five-cell center-self">{{ item.description }}</div>
-      <div class="cell one-cell center-self">{{ item.durationHours }}</div>
-      <div class="cell one-cell center-self">{{ item.dateCreated | date: 'yyyy-MM-dd' }}</div>
-    </mat-expansion-panel-header>
-    <ng-template matExpansionPanelContent>
-      @if (adminMode) {
-      <div class="memberships-container">
-        <label class="memberships-label">Memberships</label>
-        <app-scenario-template-memberships [scenarioTemplateId]="item.id"
-          [showHeader]="false"></app-scenario-template-memberships>
-      </div>
-      } @else {
-      <app-scenario-template-edit [scenarioTemplate]="selectedScenarioTemplate"></app-scenario-template-edit>
+    </th>
+    <td mat-cell *matCellDef="let element">
+      @if (!adminMode && hasPermission(SystemPermission.CreateScenarioTemplates)) {
+      <button mat-icon-button ngxClipboard [cbContent]="element.id" (click)="$event.stopPropagation()"
+        style="outline: none;" title="Copy ID:  {{ element.id }}">
+        <mat-icon class="mdi-18px" fontIcon="mdi-content-copy"></mat-icon>
+      </button>
       }
-    </ng-template>
-  </mat-expansion-panel>
-  }
-</mat-accordion>
+      @if (!adminMode && canDoSomething(element)) {
+      <button mat-icon-button (click)="onContextMenu($event, element); $event.stopPropagation()" style="outline: none;"
+        title="Scenario Template Menu">
+        <mat-icon class="mdi-18px" fontIcon="mdi-menu"></mat-icon>
+      </button>
+      }
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="name">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Name</th>
+    <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="description">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
+    <td mat-cell *matCellDef="let element">{{ element.description }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="durationHours">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Duration</th>
+    <td mat-cell *matCellDef="let element">{{ element.durationHours }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="dateCreated">
+    <th mat-header-cell *matHeaderCellDef mat-sort-header>Created</th>
+    <td mat-cell *matCellDef="let element">{{ element.dateCreated | date: 'yyyy-MM-dd' }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="expandedDetail">
+    <td mat-cell *matCellDef="let element" [attr.colspan]="displayedColumns.length">
+      <div [@detailExpand]="element.id === expandedScenarioTemplateId ? 'expanded' : 'collapsed'"
+        (click)="$event.stopPropagation()">
+        @if (element.id === expandedScenarioTemplateId) {
+          @if (adminMode) {
+          <div class="memberships-container">
+            <label class="memberships-label">Memberships</label>
+            <app-scenario-template-memberships [scenarioTemplateId]="element.id"
+              [showHeader]="false"></app-scenario-template-memberships>
+          </div>
+          } @else {
+          <app-scenario-template-edit [scenarioTemplate]="selectedScenarioTemplate"></app-scenario-template-edit>
+          }
+        }
+      </div>
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns" class="element-row"
+    (click)="selectScenarioTemplate($event, row.id)" (contextmenu)="onContextMenu($event, row)"></tr>
+  <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="detail-row"></tr>
+</table>
 
 @if (isLoading) {
 <div>

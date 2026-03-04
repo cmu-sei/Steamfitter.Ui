@@ -4,19 +4,8 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 -->
 
 @if (!!userScenario) {
-  <div
-    class="component-container elevate scroll-container"
-    >
-    <div>
-      <app-tasks
-        [taskList]="taskList"
-        [resultList]="results"
-        [scenarioId]="userScenario.id"
-        [isEditable]="true"
-        [isExecutable]="true"
-        (taskListChanged)="refreshTaskList()"
-        (deleteTaskRequested)="deleteTask($event)"
-      ></app-tasks>
-    </div>
-  </div>
+<div class="component-container scroll-container">
+  <app-tasks [taskList]="taskList" [resultList]="results" [scenarioId]="userScenario.id" [isEditable]="true"
+    [isExecutable]="true" (taskListChanged)="refreshTaskList()" (deleteTaskRequested)="deleteTask($event)"></app-tasks>
+</div>
 }
