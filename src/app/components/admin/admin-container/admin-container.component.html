@@ -26,8 +26,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       </mat-list-item>
       }
       @if (canViewScenarioList()) {
-      <mat-list-item [ngClass]="getSelectedClass(scenariosText)" id="wrapper showhand"
-        (click)="adminGotoScenarios()">
+      <mat-list-item [ngClass]="getSelectedClass(scenariosText)" id="wrapper showhand" (click)="adminGotoScenarios()">
         <mat-icon matListItemIcon class="mat-list-item-icon" fontIcon="mdi-playlist-play"></mat-icon>
         {{ scenariosText }}
         <button aria-labelledby="scenariosText" mat-icon-button class="pull-right">
@@ -36,8 +35,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       </mat-list-item>
       }
       @if (permissions.includes(SystemPermission.ViewUsers)) {
-      <mat-list-item [ngClass]="getSelectedClass(usersText)" id="wrapper showhand"
-        (click)="adminGotoUsers()">
+      <mat-list-item [ngClass]="getSelectedClass(usersText)" id="wrapper showhand" (click)="adminGotoUsers()">
         <mat-icon matListItemIcon class="mat-list-item-icon" fontIcon="mdi-account"></mat-icon>
         {{ usersText }}
         <button aria-labelledby="usersText" mat-icon-button class="pull-right">
@@ -46,8 +44,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       </mat-list-item>
       }
       @if (permissions.includes(SystemPermission.ViewRoles)) {
-      <mat-list-item [ngClass]="getSelectedClass(rolesText)" id="wrapper showhand"
-        (click)="adminGotoRoles()">
+      <mat-list-item [ngClass]="getSelectedClass(rolesText)" id="wrapper showhand" (click)="adminGotoRoles()">
         <mat-icon matListItemIcon class="mat-list-item-icon" fontIcon="mdi-lock"></mat-icon>
         {{ rolesText }}
         <button aria-labelledby="rolesText" mat-icon-button class="pull-right">
@@ -56,8 +53,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       </mat-list-item>
       }
       @if (permissions.includes(SystemPermission.ViewGroups)) {
-      <mat-list-item [ngClass]="getSelectedClass(groupsText)" id="wrapper showhand"
-        (click)="adminGotoGroups()">
+      <mat-list-item [ngClass]="getSelectedClass(groupsText)" id="wrapper showhand" (click)="adminGotoGroups()">
         <mat-icon matListItemIcon class="mat-list-item-icon" fontIcon="mdi-account-group"></mat-icon>
         {{ groupsText }}
         <button aria-labelledby="groupsText" mat-icon-button class="pull-right">

@@ -248,6 +248,8 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
     const dialogRef = this.dialog.open(TaskEditComponent, {
       data: { task: { ...task } },
       width: '50%',
+      minWidth: '400px',
+      maxWidth: '90vw',
     });
     dialogRef.componentInstance.editComplete.subscribe((result) => {
       if (result.saveChanges && result.task) {
@@ -289,6 +291,8 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
     }
     const dialogRef = this.dialog.open(TaskEditComponent, {
       data: { task: newTask },
+      minWidth: '400px',
+      maxWidth: '90vw',
     });
     dialogRef.componentInstance.editComplete.subscribe((result) => {
       if (result.saveChanges && result.task) {

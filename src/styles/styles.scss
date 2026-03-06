@@ -105,6 +105,10 @@ mat-icon.sp-icon {
   }
 }
 
+.element-row:hover td {
+  background-color: var(--mat-sys-surface-variant);
+}
+
 .text {
   color: var(--mat-sys-on-surface);
 }
@@ -132,10 +136,11 @@ a {
 
 .mat-mdc-header-row {
   background-color: var(--mat-sys-surface) !important;
-  position: sticky;
-  position: -webkit-sticky;
-  top: 0;
   z-index: 9 !important;
+}
+
+.mat-mdc-table .mat-mdc-header-cell {
+  background-color: var(--mat-sys-surface) !important;
 }
 
 .mat-drawer {

@@ -36,10 +36,11 @@ table {
 
 .status-column {
   min-width: 110px;
-  margin-top: 15px;
-  display: flex;
-  flex-flow: row;
-  align-items: center;
+  white-space: nowrap;
+
+  mat-icon {
+    vertical-align: middle;
+  }
 }
 
 tr.detail-row {

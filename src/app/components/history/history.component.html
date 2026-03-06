@@ -24,16 +24,6 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         <ng-container matColumnDef="id">
           <th mat-header-cell *matHeaderCellDef></th>
           <td mat-cell *matCellDef="let element">
-            @if (expandedResult !== element) {
-            <button mat-icon-button title="View Detail">
-              <mat-icon fontIcon="mdi-chevron-right"></mat-icon>
-            </button>
-            }
-            @if (expandedResult === element) {
-            <button mat-icon-button title="View Detail">
-              <mat-icon fontIcon="mdi-chevron-down"></mat-icon>
-            </button>
-            }
             <button mat-icon-button title="Copy Task" (click)="copyTask(element.id); $event.stopPropagation()">
               <mat-icon fontIcon="mdi-content-copy"></mat-icon>
             </button>
