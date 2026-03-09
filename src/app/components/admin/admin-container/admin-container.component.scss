@@ -3,6 +3,11 @@
 
 .appitems-container .mat-mdc-list-item {
   min-height: 48px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--mat-sys-surface-container-low);
+  }
 }
 
 .appslist {
