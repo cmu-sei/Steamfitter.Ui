@@ -2,11 +2,12 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { MatSidenav } from '@angular/material/sidenav';
+import { MatPaginator } from '@angular/material/paginator';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, Observable } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { take, takeUntil } from 'rxjs/operators';
 import { PlayerDataService } from 'src/app/data/player/player-data-service';
+import { HistoryView } from '../history/history.component';
 import {
   ComnSettingsService,
   Theme,
@@ -15,10 +16,10 @@ import {
 } from '@cmusei/crucible-common';
 import { SignalRService } from 'src/app/services/signalr/signalr.service';
 import { UserDataService } from '../../data/user/user-data.service';
-import { CurrentUserQuery } from 'src/app/data/user/user.query';
+import { CurrentUserQuery, UserQuery } from 'src/app/data/user/user.query';
 import { CurrentUserState } from 'src/app/data/user/user.store';
 import { TopbarView } from './../shared/top-bar/topbar.models';
-import { HealthService } from 'src/app/generated/steamfitter.api';
+import { HealthService, User, Vm } from 'src/app/generated/steamfitter.api';
 import { SystemPermission } from 'src/app/generated/steamfitter.api';
 import { PermissionDataService } from 'src/app/data/permission/permission-data.service';
 
@@ -30,12 +31,13 @@ enum Section {
 }
 
 @Component({
-  selector: 'app-home-app',
-  templateUrl: './home-app.component.html',
-  styleUrls: ['./home-app.component.scss'],
+    selector: 'app-home-app',
+    templateUrl: './home-app.component.html',
+    styleUrls: ['./home-app.component.scss'],
+    standalone: false
 })
 export class HomeAppComponent implements OnDestroy, OnInit {
-  @ViewChild('sidenav') sidenav: MatSidenav;
+  @ViewChild('homePaginator') homePaginator: MatPaginator;
   apiIsSick = false;
   apiMessage = 'The API web service is not responding.';
   titleText = 'Steamfitter';
@@ -45,17 +47,25 @@ export class HomeAppComponent implements OnDestroy, OnInit {
   currentUser$: Observable<CurrentUserState>;
   isSuperUser = false;
   isAuthorizedUser = false;
-  isSidebarOpen = true;
+  canViewAdministration = false;
   viewList = this.playerDataService.viewList;
+  selectedTaskView = this.playerDataService.selectedView;
   private unsubscribe$ = new Subject();
   hideTopbar = false;
-  topbarColor = '#BB0000';
-  topbarTextColor = '#FFFFFF';
   TopbarView = TopbarView;
   theme$: Observable<Theme>;
   username: string;
   readonly SystemPermission = SystemPermission;
   permissions: SystemPermission[] = [];
+  filterString = '';
+  selectedStatuses: string[] = ['active', 'ready'];
+  readonly HistoryView = HistoryView;
+  historyView = HistoryView.user;
+  historyUsers$: Observable<User[]>;
+  historyVmList: Vm[] = [];
+  selectedHistoryUser: User;
+  selectedHistoryView: any;
+  selectedHistoryVm: Vm;
 
   constructor(
     private currentUserQuery: CurrentUserQuery,
@@ -68,7 +78,8 @@ export class HomeAppComponent implements OnDestroy, OnInit {
     private signalRService: SignalRService,
     private healthService: HealthService,
     private authQuery: ComnAuthQuery,
-    private permissionDataService: PermissionDataService
+    private permissionDataService: PermissionDataService,
+    private userQuery: UserQuery
   ) {
     this.healthCheck();
 
@@ -80,17 +91,11 @@ export class HomeAppComponent implements OnDestroy, OnInit {
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((params) => {
         this.selectedSection = (params.get('tab') ||
-          Section.taskBuilder) as Section;
+          Section.scenarios) as Section;
       });
     this.signalRService.joinSystem();
 
     // Set the display settings from config file
-    this.topbarColor = this.settingsService.settings.AppTopBarHexColor
-      ? this.settingsService.settings.AppTopBarHexColor
-      : this.topbarColor;
-    this.topbarTextColor = this.settingsService.settings.AppTopBarHexTextColor
-      ? this.settingsService.settings.AppTopBarHexTextColor
-      : this.topbarTextColor;
     this.titleText = this.settingsService.settings.AppTitle
       ? this.settingsService.settings.AppTitle
       : this.titleText;
@@ -105,22 +110,50 @@ export class HomeAppComponent implements OnDestroy, OnInit {
         this.isAuthorizedUser = !!cu.id;
       });
     this.userDataService.setCurrentUser();
+    this.userDataService.load().pipe(take(1)).subscribe();
+    this.historyUsers$ = this.userQuery.selectAll();
+    this.playerDataService.vms
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((vms) => {
+        this.historyVmList =
+          !!vms && vms.length > 0
+            ? vms.sort((a, b) =>
+                a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1
+              )
+            : [];
+      });
     this.permissionDataService
       .load()
       .subscribe(
-        (x) => (this.permissions = this.permissionDataService.permissions)
+        (x) => {
+          this.permissions = this.permissionDataService.permissions;
+          this.canViewAdministration = this.permissionDataService.canViewAdiminstration();
+        }
       );
   }
 
   selectTab(section: Section) {
+    this.filterString = '';
     this.router.navigate([], {
       queryParams: { tab: section },
       queryParamsHandling: 'merge',
     });
   }
 
-  sidenavToggleFn() {
-    this.sidenav.toggle();
+  applyFilter(value: string) {
+    this.filterString = value;
+  }
+
+  onHistoryCategoryChange(value: HistoryView) {
+    if (value === HistoryView.vm) {
+      this.playerDataService.getAllVmsFromApi();
+    }
+  }
+
+  onTaskViewChange(event: any) {
+    if (event?.value?.id) {
+      this.playerDataService.selectView(event.value.id);
+    }
   }
 
   canViewScenarioTemplateList(): boolean {

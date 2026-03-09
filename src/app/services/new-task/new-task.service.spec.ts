@@ -9,7 +9,7 @@ describe('NewTaskService', () => {
   beforeEach(() => TestBed.configureTestingModule({}));
 
   it('should be created', () => {
-    const service: NewTaskService = TestBed.get(NewTaskService);
+    const service: NewTaskService = TestBed.inject(NewTaskService);
     expect(service).toBeTruthy();
   });
 });

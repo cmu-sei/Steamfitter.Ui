@@ -2,6 +2,13 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import {
+  animate,
+  state,
+  style,
+  transition,
+  trigger,
+} from '@angular/animations';
+import {
   Component,
   EventEmitter,
   Input,
@@ -11,13 +18,10 @@ import {
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
-import { MatLegacyMenuTrigger as MatMenuTrigger } from '@angular/material/legacy-menu';
-import {
-  MatLegacyPaginator as MatPaginator,
-  LegacyPageEvent as PageEvent,
-} from '@angular/material/legacy-paginator';
-import { MatSort, Sort } from '@angular/material/sort';
+import { MatDialog } from '@angular/material/dialog';
+import { MatMenuTrigger } from '@angular/material/menu';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { PermissionDataService } from 'src/app/data/permission/permission-data.service';
 import { ScenarioPermission, SystemPermission } from 'src/app/generated/steamfitter.api';
@@ -27,15 +31,6 @@ import { ScenarioEditDialogComponent } from 'src/app/components/scenarios/scenar
 import { ScenarioDataService } from 'src/app/data/scenario/scenario-data.service';
 import { DialogService } from 'src/app/services/dialog/dialog.service';
 import { Scenario } from 'src/app/generated/steamfitter.api';
-import { ComnSettingsService } from '@cmusei/crucible-common';
-import {
-  fromMatSort,
-  sortRows,
-  fromMatPaginator,
-  paginateRows,
-} from 'src/app/datasource-utils';
-import { Observable, of, combineLatest } from 'rxjs';
-import { map } from 'rxjs/operators';
 
 export interface Action {
   Value: string;
@@ -43,9 +38,17 @@ export interface Action {
 }
 
 @Component({
-  selector: 'app-scenario-list',
-  templateUrl: './scenario-list.component.html',
-  styleUrls: ['./scenario-list.component.scss'],
+    selector: 'app-scenario-list',
+    templateUrl: './scenario-list.component.html',
+    styleUrls: ['./scenario-list.component.scss'],
+    animations: [
+        trigger('detailExpand', [
+            state('collapsed', style({ height: '0px', minHeight: '0' })),
+            state('expanded', style({ height: '*' })),
+            transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+        ]),
+    ],
+    standalone: false
 })
 export class ScenarioListComponent implements OnInit, OnChanges {
   @Input() scenarioList: Scenario[];
@@ -58,8 +61,8 @@ export class ScenarioListComponent implements OnInit, OnChanges {
   @Output() itemSelected = new EventEmitter<string>();
   @ViewChild(ScenarioEditComponent)
   scenarioEditComponent: ScenarioEditComponent;
-  topbarColor = '#BB0000';
   displayedColumns: string[] = [
+    'actions',
     'name',
     'view',
     'status',
@@ -67,22 +70,17 @@ export class ScenarioListComponent implements OnInit, OnChanges {
     'endDate',
     'description',
   ];
-  showStatus = { active: true, ready: true, ended: false };
+  @Input() selectedStatuses: string[] = ['active', 'ready'];
   statusFilteredScenarios: Scenario[];
   editScenarioText = 'Edit Scenario';
   // context menu
   @ViewChild(MatMenuTrigger, { static: true }) contextMenu: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
-  @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
+  @Input() paginator: MatPaginator;
+  @Input() filterString = '';
   @ViewChild(MatSort, { static: true }) sort: MatSort;
-  pageSize = 10;
-  pageIndex = 0;
-  displayedRows: Scenario[] = [];
-  totalRows$: Observable<number>;
-  sortEvents$: Observable<Sort>;
-  pageEvents$: Observable<PageEvent>;
+  expandedScenarioId: string | null = null;
   scenarioDataSource = new MatTableDataSource<Scenario>(new Array<Scenario>());
-  filterString = '';
   permissions: SystemPermission[] = [];
   readonly SystemPermission = SystemPermission;
 
@@ -90,26 +88,27 @@ export class ScenarioListComponent implements OnInit, OnChanges {
     private scenarioDataService: ScenarioDataService,
     private permissionDataService: PermissionDataService,
     public dialogService: DialogService,
-    private dialog: MatDialog,
-    private settingsService: ComnSettingsService
+    private dialog: MatDialog
   ) {
     if (!this.scenarioList || this.scenarioList.length === 0) {
       this.scenarioDataService.load();
     }
-    this.topbarColor = this.settingsService.settings.AppTopBarHexColor
-      ? this.settingsService.settings.AppTopBarHexColor
-      : this.topbarColor;
   }
 
   ngOnInit() {
-    this.sortEvents$ = fromMatSort(this.sort);
-    this.pageEvents$ = fromMatPaginator(this.paginator);
+    if (this.paginator) {
+      this.scenarioDataSource.paginator = this.paginator;
+      this.paginator.pageIndex = 0;
+    }
+    this.scenarioDataSource.sort = this.sort;
     const id = this.selectedScenario ? this.selectedScenario.id : '';
     // force already expanded scenario to refresh details
     if (id) {
+      this.expandedScenarioId = null;
       const here = this;
       this.itemSelected.emit('');
       setTimeout(function () {
+        here.expandedScenarioId = id;
         here.itemSelected.emit(id);
       }, 1);
     }
@@ -118,18 +117,24 @@ export class ScenarioListComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.permissions = this.permissionDataService.permissions;
+    if (changes.paginator && this.paginator) {
+      this.scenarioDataSource.paginator = this.paginator;
+    }
     if (!!changes.scenarioList && !!changes.scenarioList.currentValue) {
       this.filterByStatus(changes.scenarioList.currentValue);
+    } else if (changes.selectedStatuses && this.scenarioList) {
+      this.filterByStatus(this.scenarioList);
+    } else if (changes.filterString !== undefined) {
+      this.filterAndSort();
     }
   }
 
   filterByStatus(scenarios: Scenario[]) {
-    this.paginator.pageIndex = 0;
+    if (this.paginator) {
+      this.paginator.pageIndex = 0;
+    }
     this.statusFilteredScenarios = scenarios.filter(
-      (m) =>
-        (this.showStatus.active && m.status === 'active') ||
-        (this.showStatus.ended && m.status === 'ended') ||
-        (this.showStatus.ready && m.status === 'ready')
+      (m) => this.selectedStatuses.includes(m.status)
     );
     this.filterAndSort();
   }
@@ -165,7 +170,7 @@ export class ScenarioListComponent implements OnInit, OnChanges {
   /**
    * Edits or adds a scenario
    */
-  editScenario(scenario: Scenario) {
+  editScenario(scenario: Scenario | null) {
     scenario = !scenario ? <Scenario>{ name: '', description: '' } : scenario;
     const dialogRef = this.dialog.open(ScenarioEditDialogComponent, {
       width: '800px',
@@ -245,45 +250,26 @@ export class ScenarioListComponent implements OnInit, OnChanges {
       });
   }
 
-  selectScenario(event: any, scenarioId: string) {
-    if (this.adminMode) {
-      this.itemSelected.emit(scenarioId);
-      if (this.selectedScenario) {
-        this.selectedScenario.id = '';
+  selectScenario(event: any, scenarioId: string | undefined) {
+    if (this.expandedScenarioId === scenarioId) {
+      this.expandedScenarioId = null;
+      if (!this.adminMode) {
+        this.itemSelected.emit('');
+        this.selectedScenario = null;
       }
-      event.stopPropagation();
-    } else if (
-      !!this.selectedScenario &&
-      scenarioId === this.selectedScenario.id
-    ) {
-      this.itemSelected.emit('');
-      this.selectedScenario = null;
     } else {
-      this.itemSelected.emit(scenarioId);
+      this.expandedScenarioId = scenarioId;
+      if (!this.adminMode) {
+        this.itemSelected.emit(scenarioId ?? '');
+      }
     }
-  }
-
-  applyFilter(value: string) {
-    this.filterString = value.toLowerCase();
-    this.filterAndSort();
   }
 
   /**
    * filters and sorts the displayed rows
    */
   filterAndSort() {
-    this.scenarioDataSource.data = this.statusFilteredScenarios;
-    this.scenarioDataSource.filter = this.filterString;
-    const rows$ = of(this.scenarioDataSource.filteredData);
-    this.totalRows$ = rows$.pipe(map((rows) => rows.length));
-    if (!!this.sortEvents$ && !!this.pageEvents$) {
-      rows$
-        .pipe(sortRows(this.sortEvents$), paginateRows(this.pageEvents$))
-        .subscribe((rows) => (this.displayedRows = rows));
-    }
-  }
-
-  trackByFn(index, item) {
-    return item.id;
+    this.scenarioDataSource.data = this.statusFilteredScenarios || [];
+    this.scenarioDataSource.filter = (this.filterString || '').trim().toLowerCase();
   }
 }

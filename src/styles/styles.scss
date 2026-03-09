@@ -1,25 +1,12 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-/* VENDER IMPORTS */
-@use '@angular/material' as mat;
-// TODO(v15): As of v15 mat.legacy-core no longer includes default typography styles.
-//  The following line adds:
-//    1. Default typography styles for all components
-//    2. Styles for typography hierarchy classes (e.g. .mat-headline-1)
-//  If you specify typography styles for the components you use elsewhere, you should delete this line.
-//  If you don't need the default component typographies but still want the hierarchy styles,
-//  you can delete this line and instead use:
-//    `@include mat.legacy-typography-hierarchy(mat.define-legacy-typography-config());`
-@include mat.all-legacy-component-typographies();
-@include mat.legacy-core();
-$mdi-font-path: '~@mdi/font/fonts';
-@import '@mdi/font/scss/materialdesignicons';
-@import '~material-design-icons/iconfont/material-icons.css';    // added for ngx-mat-datetimepicker
+@use "@angular/material" as mat;
+@use "./theme-colors" as theme;
+@use '@mdi/font/scss/materialdesignicons.scss';
 
-@import '~@fortawesome/fontawesome-free/css/all.css';
+@import '@fortawesome/fontawesome-free/css/all.css';
 @include mat.core();
-
 /* BOOTSTRAP IMPORTS */
 /* Required */
 @import '../../node_modules/bootstrap/scss/functions';
@@ -32,37 +19,158 @@ $mdi-font-path: '~@mdi/font/fonts';
 @import '../../node_modules/bootstrap/scss/utilities';
 /* END BOOTSRAP IMPORTS */
 
-/* END VENDER IMPORTS */
+@include mat.elevation-classes();
+@include mat.app-background();
 
-/* LOCAL IMPORTS */
-@import 'theme';
-/* END LOCAL IMPORTS */
-
-.light-theme {
-  @include mat.all-legacy-component-themes($light-theme);
-  @include globals($light-theme);
+.elevate {
+  @include mat.elevation(5);
 }
 
-.dark-theme {
-  @include mat.all-legacy-component-themes($dark-theme);
-  @include globals($dark-theme);
+html {
+  @include mat.theme((color: theme.$primary-palette,
+      typography: '"Open Sans", sans-serif',
+    ));
+  @include mat.icon-button-overrides((icon-color: var(--mat-sys-primary),
+    ));
+}
+
+.darkMode {
+  @include mat.theme((color: (primary: theme.$primary-palette,
+        typography: '"Open Sans", sans-serif',
+        theme-type: dark,
+      ),
+    ));
+}
+
+body {
+  font-family: "Open Sans", sans-serif;
+}
+
+// Icon sizing utility classes
+.icon-35px {
+  width: 35px !important;
+  height: 35px !important;
+}
+
+.icon-24px {
+  width: 24px !important;
+  height: 24px !important;
+}
+
+.icon-20px {
+  width: 20px !important;
+  height: 20px !important;
+}
+
+// support color="warn" on icon buttons
+.mat-mdc-icon-button.mat-warn {
+  --mat-icon-button-icon-color: var(--mat-sys-error);
+}
+
+// Color standalone icons in sidenav and section headers with primary color
+#lefticon mat-icon,
+.sp-icon mat-icon,
+mat-icon.sp-icon {
+  color: var(--mat-sys-primary);
+}
+
+// Utility classes using M3 CSS variables
+.selected {
+  background: var(--mat-sys-primary);
+  color: var(--mat-sys-on-primary);
+
+  &:hover,
+  &:focus {
+    background: var(--mat-sys-primary) !important;
+  }
+}
+
+.disabled-text {
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.warn-text {
+  color: var(--mat-sys-error);
+}
+
+.background {
+  background-color: var(--mat-sys-surface);
+}
+
+.highlight {
+
+  &:hover,
+  &:focus {
+    background: var(--mat-sys-surface-variant);
+  }
+}
+
+.element-row:hover td {
+  background-color: var(--mat-sys-surface-variant);
+}
+
+.text {
+  color: var(--mat-sys-on-surface);
+}
+
+.no-outline {
+  outline: none;
+}
+
+a {
+  color: var(--mat-sys-on-surface);
+
+  &:hover,
+  &:focus {
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+
+.mat-header-cell,
+.mat-form-field-label,
+.mat-sort-header-content,
+.mat-paginator-page-size-label,
+.mat-paginator-range-label {
+  color: var(--mat-sys-on-surface) !important;
+}
+
+.mat-mdc-header-row {
+  background-color: var(--mat-sys-surface) !important;
+  z-index: 9 !important;
+}
+
+.mat-mdc-table .mat-mdc-header-cell {
+  background-color: var(--mat-sys-surface) !important;
+}
+
+.mat-drawer {
+  background-color: var(--mat-sys-surface) !important;
+}
+
+.mat-mdc-paginator {
+  background-color: var(--mat-sys-surface) !important;
 }
 
 /* The following overrides transparent select options after upgrading to Angular 7 */
-.mat-select-panel {
-  background: #fff;
+.mat-mdc-select-panel {
+  background: var(--mat-sys-surface);
 }
-.mat-select-panel:not([class*='mat-elevation-z']) {
+
+.mat-mdc-select-panel:not([class*='mat-elevation-z']) {
   box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14),
     0 1px 10px 0 rgba(0, 0, 0, 0.12);
 }
 
-.ngx-mat-timepicker form .ngx-mat-timepicker-table .ngx-mat-timepicker-tbody tr td .mat-icon-button .mat-icon {
+.mat-datepicker-content .mat-mdc-outlined-button {
   font-family: 'Material Icons';
 }
 
-.mat-datepicker-content .mat-stroked-button {
-  font-family: 'Material Icons';
+// Remove border around paginator items per page selection
+mat-paginator {
+  --mat-form-field-outlined-outline-color: transparent;
+  --mat-form-field-outlined-hover-outline-color: transparent;
+  --mat-form-field-outlined-focus-outline-color: transparent;
+  min-width: 200px !important;
 }
 
 /* The following acts as drop in replacement for the deprecation of Angular FlexLayout */
@@ -136,4 +244,12 @@ $mdi-font-path: '~@mdi/font/fonts';
   justify-content: flex-end;
   align-items: center;
   align-content: center;
+}
+
+// shared styles
+.list-container {
+  margin-left: 40px;
+  margin-right: 40px;
+  padding-bottom: 10px;
+  padding-top: 10px;
 }

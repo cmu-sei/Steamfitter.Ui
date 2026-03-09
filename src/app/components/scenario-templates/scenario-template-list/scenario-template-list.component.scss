@@ -1,118 +1,67 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-.mat-header-row {
-  min-height: 40px;
+table {
+  width: 100%;
 }
 
-.mat-row {
-  min-height: 30px;
+.mat-mdc-header-row {
+  min-height: 56px;
 }
 
-.mat-row,
-.mat-header-row {
-  display: flex;
-  border-bottom-width: 1px;
-  border-bottom-style: solid;
-  align-items: center;
-  box-sizing: border-box;
+.mat-mdc-row {
+  min-height: 48px;
 }
 
-.mat-cell,
-.mat-header-cell {
-  flex: 1;
+.mat-mdc-cell,
+.mat-mdc-header-cell {
   overflow: hidden;
   word-wrap: break-word;
+  padding-right: 10px;
 }
 
-.mat-accordion .mat-header-row {
-  padding-left: 1.5rem;
-  padding-right: 2rem;
-  border-bottom: none;
+.mat-column-actions {
+  width: 140px;
+  white-space: nowrap;
 }
 
-.mat-expansion-panel-header.mat-row {
-  border-bottom: none;
+.mat-column-name {
+  flex: 3;
+  min-width: 200px;
 }
 
-.name-header {
-  margin-left: 80px;
-}
-
-.flex-row-cell {
-  display: flex;
-  flex-flow: row;
-  justify-content: flex-start;
-  align-items: center;
-  text-align: left;
-}
-
-.copy-button {
-  width: 24px;
-  height: 24px;
-}
-
-.menu-button {
-  width: 36px;
-  height: 36px;
-  margin-right: 20px;
-}
-
-.copy-icon {
-  margin-top: -8px;
-}
-
-.button-end {
-  margin-left: 100px;
-}
-
-.sp-icon {
-  margin-left: 10px;
-  margin-right: 20px;
-}
-
-.search-icon {
-  margin-left: 50px;
-  transform: scale(0.85);
-  margin-right: 5px;
-}
-
-.scale-85 {
-  transform: scale(0.85);
-}
-
-.search-field {
-  width: 320px;
-}
-
-.clear-search {
-  width: 50px;
-}
-
-.copy-icon {
-  margin-top: -8px;
-}
-
-.five-cell {
+.mat-column-description {
   flex: 5;
 }
 
-.four-cell {
-  flex: 4;
-}
-
-.three-cell {
-  flex: 3;
-}
-
-.two-cell {
-  flex: 2;
-}
-
-.one-cell {
+.mat-column-durationHours {
   flex: 1;
 }
 
-.center-self {
-  align-self: center;
+.mat-column-dateCreated {
+  flex: 1;
+}
+
+tr.detail-row {
+  height: 0;
+}
+
+.element-row td {
+  border-bottom-width: 0;
+  cursor: pointer;
+}
+
+.memberships-container {
+  width: 90%;
+  margin: 1rem auto;
+  border: 1px solid var(--mat-sys-outline-variant);
+  border-radius: 4px;
+  padding: 1rem;
+  overflow: hidden;
+}
+
+.memberships-label {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
 }

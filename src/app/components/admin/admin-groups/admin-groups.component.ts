@@ -2,15 +2,22 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import {
+  animate,
+  state,
+  style,
+  transition,
+  trigger,
+} from '@angular/animations';
+import {
   AfterViewInit,
   ChangeDetectionStrategy,
   Component,
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { MatSort } from '@angular/material/sort';
-import { MatLegacyTableDataSource as MatTableDataSource } from '@angular/material/legacy-table';
+import { MatTableDataSource } from '@angular/material/table';
 import { forkJoin, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Group, SystemPermission } from 'src/app/generated/steamfitter.api';
@@ -24,17 +31,26 @@ const WAS_CANCELLED = 'wasCancelled';
 const NAME_VALUE = 'nameValue';
 
 @Component({
-  selector: 'app-admin-groups',
-  templateUrl: './admin-groups.component.html',
-  styleUrls: ['./admin-groups.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-admin-groups',
+    templateUrl: './admin-groups.component.html',
+    styleUrls: ['./admin-groups.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    animations: [
+        trigger('detailExpand', [
+            state('collapsed', style({ height: '0px', minHeight: '0' })),
+            state('expanded', style({ height: '*' })),
+            transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+        ]),
+    ],
+    standalone: false
 })
 export class AdminGroupsComponent implements OnInit, AfterViewInit {
   @ViewChild(MatSort) sort: MatSort;
 
   filterString = '';
-  displayedColumns: string[] = ['name'];
+  displayedColumns: string[] = ['actions', 'name'];
   dataSource: MatTableDataSource<Group> = new MatTableDataSource();
+  expandedGroupId: string | null = null;
 
   constructor(
     private groupDataService: GroupDataService,
@@ -72,6 +88,10 @@ export class AdminGroupsComponent implements OnInit, AfterViewInit {
 
   clearFilter() {
     this.applyFilter('');
+  }
+
+  toggleExpand(groupId: string) {
+    this.expandedGroupId = this.expandedGroupId === groupId ? null : groupId;
   }
 
   createGroup() {
@@ -125,6 +145,8 @@ export class AdminGroupsComponent implements OnInit, AfterViewInit {
   nameDialog(title: string, message: string, data?: any): Observable<boolean> {
     const dialogRef = this.dialog.open(NameDialogComponent, {
       data: data || {},
+      minWidth: '400px',
+      maxWidth: '90vw',
     });
     dialogRef.componentInstance.title = title;
     dialogRef.componentInstance.message = message;

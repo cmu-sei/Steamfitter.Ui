@@ -1,18 +1,15 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-.appslist {
-  margin-top: 10px;
-  margin-bottom: 20px;
-}
-
-.nolink {
-  text-decoration: none;
-}
-
-.icon-text {
-  margin-left: 10px;
-  font-family: open_sansbold;
+.app-container {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  overflow: hidden;
 }
 
 .app-header-container {
@@ -22,40 +19,108 @@
   text-align: center;
 }
 
-.appcontent-container {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
+.top-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
-.appbarmenu-container {
-  min-width: 50px;
+.one-cell {
+  flex: 1;
 }
 
-.crucible-logo {
-  position: absolute;
-  bottom: 0;
+.last-cell {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 8px;
 }
 
-.showhand {
-  cursor: pointer;
-}
-
-.lefticon {
-  padding: 0.5em;
-}
-
-.righticon {
-  align-self: flex-end;
-}
-
-.application-name {
-  width: 160px;
+.icon-text-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+  padding-top: 5px;
+  flex-shrink: 0;
 }
 
 .steamfitter-icon {
   transform: scale(2);
   width: 60px;
+  color: var(--mat-sys-primary);
+}
+
+.title-text {
+  font-size: x-large;
+  font-weight: bold;
+}
+
+.section-menu-trigger {
+  font-size: x-large;
+  font-weight: bold;
+  --mat-icon-color: var(--mat-sys-on-surface);
+}
+
+::ng-deep .section-menu-trigger .mdc-button__label {
+  color: var(--mat-sys-on-surface) !important;
+}
+
+.search-field {
+  width: 200px;
+}
+
+.status-field {
+  width: 230px;
+}
+
+.view-field {
+  width: 230px;
+}
+
+.history-category-field {
+  width: 150px;
+}
+
+.history-select-field {
+  width: 230px;
+}
+
+.right-controls {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  gap: 8px;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.main-area {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 44px - 20px);
+  min-height: 0;
+  overflow: hidden;
+  padding-bottom: 8px;
+}
+
+.content-container {
+  width: 80%;
+  margin-left: auto;
+  margin-right: auto;
+  overflow: hidden;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+
+  app-scenarios,
+  app-scenario-templates,
+  app-vm-task-execute,
+  app-history {
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+  }
 }

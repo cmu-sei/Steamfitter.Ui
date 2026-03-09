@@ -16,9 +16,10 @@ import { Vm } from 'src/app/generated/steamfitter.api';
 import { MatIcon } from '@angular/material/icon';
 
 @Component({
-  selector: 'app-vm-list',
-  templateUrl: './vm-list.component.html',
-  styleUrls: ['./vm-list.component.scss'],
+    selector: 'app-vm-list',
+    templateUrl: './vm-list.component.html',
+    styleUrls: ['./vm-list.component.scss'],
+    standalone: false
 })
 export class VmListComponent implements OnDestroy {
   @Input() selectedVms: string[];

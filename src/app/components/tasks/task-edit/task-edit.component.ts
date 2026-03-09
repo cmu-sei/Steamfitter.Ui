@@ -9,7 +9,7 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
-import { MatLegacyDialogRef as MatDialogRef, MAT_LEGACY_DIALOG_DATA as MAT_DIALOG_DATA } from '@angular/material/legacy-dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { TaskDataService } from 'src/app/data/task/task-data.service';
@@ -23,9 +23,10 @@ import {
 } from 'src/app/generated/steamfitter.api';
 
 @Component({
-  selector: 'app-task-edit',
-  templateUrl: './task-edit.component.html',
-  styleUrls: ['./task-edit.component.scss'],
+    selector: 'app-task-edit',
+    templateUrl: './task-edit.component.html',
+    styleUrls: ['./task-edit.component.scss'],
+    standalone: false
 })
 export class TaskEditComponent implements OnInit, OnDestroy {
   @Output() editComplete = new EventEmitter<any>();

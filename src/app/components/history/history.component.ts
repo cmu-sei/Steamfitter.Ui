@@ -8,44 +8,43 @@ import {
   transition,
   trigger,
 } from '@angular/animations';
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { MatLegacyPaginator as MatPaginator, LegacyPageEvent as PageEvent } from '@angular/material/legacy-paginator';
+import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
-import { MatLegacyTableDataSource as MatTableDataSource } from '@angular/material/legacy-table';
-import { Subject, Observable } from 'rxjs';
-import { take, takeUntil } from 'rxjs/operators';
-import { PlayerDataService } from 'src/app/data/player/player-data-service';
+import { MatTableDataSource } from '@angular/material/table';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { ResultDataService } from 'src/app/data/result/result-data.service';
 import { ResultQuery } from 'src/app/data/result/result.query';
 import { TaskDataService } from 'src/app/data/task/task-data.service';
-import { UserDataService } from 'src/app/data/user/user-data.service';
 import { Result, User, View, Vm } from 'src/app/generated/steamfitter.api';
-import { ComnSettingsService } from '@cmusei/crucible-common';
-import { UserQuery } from 'src/app/data/user/user.query';
 
-enum HistoryView {
+export enum HistoryView {
   user = 'User',
   view = 'View',
   vm = 'VM',
 }
 
 @Component({
-  selector: 'app-history',
-  templateUrl: './history.component.html',
-  styleUrls: ['./history.component.scss'],
-  animations: [
-    trigger('detailExpand', [
-      state('collapsed', style({ height: '0px', minHeight: '0' })),
-      state('expanded', style({ height: '*' })),
-      transition(
-        'expanded <=> collapsed',
-        animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')
-      ),
-    ]),
-  ],
+    selector: 'app-history',
+    templateUrl: './history.component.html',
+    styleUrls: ['./history.component.scss'],
+    animations: [
+        trigger('detailExpand', [
+            state('collapsed', style({ height: '0px', minHeight: '0' })),
+            state('expanded', style({ height: '*' })),
+            transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+        ]),
+    ],
+    standalone: false
 })
-export class HistoryComponent implements OnInit, OnDestroy {
-  HistoryView = HistoryView;
+export class HistoryComponent implements OnInit, OnChanges, OnDestroy {
+  @Input() filterString = '';
+  @Input() paginator: MatPaginator;
+  @Input() historyView: HistoryView = HistoryView.user;
+  @Input() selectedUser: User;
+  @Input() selectedView: View;
+  @Input() selectedVm: Vm;
   displayedColumns: string[] = [
     'id',
     'statusDate',
@@ -60,29 +59,15 @@ export class HistoryComponent implements OnInit, OnDestroy {
   pageEvent: PageEvent;
   loading = false;
   apiResponded = false;
-  historyView = HistoryView.user;
   filterValue = '';
-  users$: Observable<User[]>;
-  isLoading$: Observable<boolean>;
-  selectedUser: User;
-  viewList: View[] = [];
-  selectedView: View;
-  vmList: Vm[] = [];
-  selectedVm: Vm;
   expandedResult: Result;
   private unsubscribe$ = new Subject();
-  @ViewChild(MatPaginator, { static: true }) paginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) sort: MatSort;
-  topbarColor = '#BB0000';
 
   constructor(
     private resultQuery: ResultQuery,
     private taskDataService: TaskDataService,
-    private userQuery: UserQuery,
-    private playerDataService: PlayerDataService,
-    private resultDataService: ResultDataService,
-    private settingsService: ComnSettingsService,
-    private userDataService: UserDataService
+    private resultDataService: ResultDataService
   ) {
     this.loading = true;
     this.apiResponded = false;
@@ -98,48 +83,46 @@ export class HistoryComponent implements OnInit, OnDestroy {
               a.statusDate <= b.statusDate ? 1 : -1
             );
           }
+          this.paginator?.firstPage();
         },
         (error) => {
           console.log('API is not responding:', error.message);
         }
       );
-    this.playerDataService.viewList
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe((views) => {
-        this.viewList =
-          !!views && views.length > 0
-            ? views.sort((a: User, b: User) =>
-                a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1
-              )
-            : [];
-      });
-    this.playerDataService.vms
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe((vms) => {
-        this.vmList =
-          !!vms && vms.length > 0
-            ? vms.sort((a: User, b: User) =>
-                a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1
-              )
-            : [];
-      });
-    this.playerDataService.selectView('');
-    this.topbarColor = this.settingsService.settings.AppTopBarHexColor
-      ? this.settingsService.settings.AppTopBarHexColor
-      : this.topbarColor;
   }
 
   ngOnInit() {
-    this.users$ = this.userQuery.selectAll();
-    this.userDataService.load().pipe(take(1)).subscribe();
-    this.isLoading$ = this.userQuery.selectLoading();
-
-    this.modelDataSource.paginator = this.paginator;
+    if (this.paginator) {
+      this.modelDataSource.paginator = this.paginator;
+      this.paginator.pageIndex = 0;
+    }
     this.modelDataSource.sort = this.sort;
 
     this.pageEvent = new PageEvent();
     this.pageEvent.pageIndex = 0;
     this.pageEvent.pageSize = this.defaultPageSize;
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.paginator && this.paginator) {
+      this.modelDataSource.paginator = this.paginator;
+    }
+    if (changes.filterString !== undefined) {
+      this.applyFilter(this.filterString || '');
+    }
+    if (changes.historyView) {
+      this.onCategoryChanged();
+    } else {
+      if (changes.selectedUser && this.historyView === HistoryView.user) {
+        this.loadByUser(this.selectedUser);
+      }
+      if (changes.selectedView && this.historyView === HistoryView.view) {
+        this.loadByView(this.selectedView);
+      }
+      if (changes.selectedVm && this.historyView === HistoryView.vm) {
+        this.loadByVm(this.selectedVm);
+      }
+    }
   }
 
   applyFilter(filterValue: string) {
@@ -148,49 +131,65 @@ export class HistoryComponent implements OnInit, OnDestroy {
     this.modelDataSource.filter = this.filterValue;
   }
 
-  handleHistoryViewChange(historyView: HistoryView) {
-    switch (historyView) {
+  private onCategoryChanged() {
+    switch (this.historyView) {
       case HistoryView.user:
-        this.handleUserChange(this.selectedUser);
+        this.loadByUser(this.selectedUser);
         break;
       case HistoryView.view:
-        this.handleViewChange(this.selectedView);
+        this.loadByView(this.selectedView);
         break;
       case HistoryView.vm:
-        this.playerDataService.getAllVmsFromApi();
-        this.handleVmChange(this.selectedVm);
-        break;
-      default:
-        this.vmList = [];
+        this.loadByVm(this.selectedVm);
         break;
     }
   }
 
-  handleUserChange(user: User) {
-    this.selectedUser = user;
+  private loadByUser(user: User) {
     if (!user || !user.id) {
       this.modelDataSource.data = [];
     } else {
       this.resultDataService.loadByUser(user.id);
     }
+    this.paginator?.firstPage();
   }
 
-  handleViewChange(view: View) {
-    this.selectedView = view;
+  private loadByView(view: View) {
     if (!view || !view.id) {
       this.modelDataSource.data = [];
     } else {
       this.resultDataService.loadByView(view.id);
     }
+    this.paginator?.firstPage();
   }
 
-  handleVmChange(vm: Vm) {
-    this.selectedVm = vm;
+  private loadByVm(vm: Vm) {
     if (!vm || !vm.id) {
       this.modelDataSource.data = [];
     } else {
       this.resultDataService.loadByVm(vm.id);
     }
+    this.paginator?.firstPage();
+  }
+
+  private static readonly STATUS_ICON_MAP: Record<string, string> = {
+    succeeded: 'mdi-star-circle-outline',
+    success: 'mdi-star-circle-outline',
+    failed: 'mdi-close-circle-outline',
+    failure: 'mdi-close-circle-outline',
+    pending: 'mdi-z-wave',
+    expired: 'mdi-clock-alert-outline',
+    expiration: 'mdi-clock-alert-outline',
+    error: 'mdi-alert-outline',
+    completion: 'mdi-check-circle-outline',
+    manual: 'mdi-gesture-tap-button',
+    queued: 'mdi-clock-time-three-outline',
+    sent: 'mdi-send',
+    time: 'mdi-alarm',
+  };
+
+  statusIcon(status: string): string {
+    return HistoryComponent.STATUS_ICON_MAP[status?.toLowerCase()] || 'mdi-help-circle-outline';
   }
 
   copyTask(resultId: string) {

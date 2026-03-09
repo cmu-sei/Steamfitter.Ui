@@ -14,16 +14,16 @@ table {
   width: 100%;
 }
 
-.mat-header-row {
+.mat-mdc-header-row {
   min-height: 56px;
 }
 
-.mat-row {
+.mat-mdc-row {
   min-height: 48px;
 }
 
-.mat-cell,
-.mat-header-cell {
+.mat-mdc-cell,
+.mat-mdc-header-cell {
   flex: 1;
   overflow: hidden;
   word-wrap: break-word;
@@ -36,10 +36,11 @@ table {
 
 .status-column {
   min-width: 110px;
-  margin-top: 15px;
-  display: flex;
-  flex-flow: row;
-  align-items: center;
+  white-space: nowrap;
+
+  mat-icon {
+    vertical-align: middle;
+  }
 }
 
 tr.detail-row {
@@ -65,3 +66,4 @@ tr.detail-row {
   margin-left: 10px;
   margin-right: 20px;
 }
+

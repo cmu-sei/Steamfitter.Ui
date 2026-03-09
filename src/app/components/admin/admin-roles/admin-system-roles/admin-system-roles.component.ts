@@ -4,7 +4,7 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 */
 
 import { Component, inject, OnInit } from '@angular/core';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
 import {
   SystemPermission,
@@ -23,9 +23,10 @@ import { SignalRService } from 'src/app/services/signalr/signalr.service';
 const NAME_VALUE = 'nameValue';
 
 @Component({
-  selector: 'app-admin-system-roles',
-  templateUrl: './admin-system-roles.component.html',
-  styleUrls: ['./admin-system-roles.component.scss'],
+    selector: 'app-admin-system-roles',
+    templateUrl: './admin-system-roles.component.html',
+    styleUrls: ['./admin-system-roles.component.scss'],
+    standalone: false
 })
 export class AdminSystemRolesComponent implements OnInit {
   private roleService = inject(RoleDataService);
@@ -148,6 +149,8 @@ export class AdminSystemRolesComponent implements OnInit {
   nameDialog(title: string, message: string, data?: any): Observable<boolean> {
     const dialogRef = this.dialog.open(NameDialogComponent, {
       data: data || {},
+      minWidth: '400px',
+      maxWidth: '90vw',
     });
     dialogRef.componentInstance.title = title;
     dialogRef.componentInstance.message = message;
