@@ -10,8 +10,8 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     title="Close"
     class="close-button"
     tabindex="-1"
-  >
-    <mat-icon svgIcon="ic_cancel_circle"></mat-icon>
+    >
+    <mat-icon fontIcon="mdi-close-circle"></mat-icon>
   </button>
 </h2>
 <mat-dialog-content>
@@ -22,7 +22,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         placeholder="Name"
         [value]="data.task.name"
         (input)="data.task.name = $event.target.value"
-      />
+        />
     </mat-form-field>
     <mat-form-field class="param-full-width">
       <input
@@ -30,7 +30,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         placeholder="Description"
         [value]="data.task.description"
         (input)="data.task.description = $event.target.value"
-      />
+        />
     </mat-form-field>
 
     <h2>Action</h2>
@@ -39,111 +39,126 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         placeholder="Select an Action"
         [(value)]="selectedCommand"
         (selectionChange)="onCommandChange()"
-      >
-        <mat-option *ngFor="let cmd of availableCommands" [value]="cmd">
-          {{ cmd.api }} - {{ cmd.display }}
-        </mat-option>
+        >
+        @for (cmd of availableCommands; track cmd) {
+          <mat-option [value]="cmd">
+            {{ cmd.api }} - {{ cmd.display }}
+          </mat-option>
+        }
       </mat-select>
     </mat-form-field>
-    <span *ngIf="selectedCommand != undefined">
-      <span
-        *ngFor="let param of selectedCommand.parameters"
-        class="param-indent"
-      >
-        <mat-form-field
-          class="param-full-width"
-          *ngIf="
-            (param.inputType === 'text' || param.inputType === 'textArea') &&
-            !(param.key.toLowerCase() === 'username' && param.requiresVm)
-          "
-        >
-          <mat-label>{{ param.display }}</mat-label>
-          <input
-            *ngIf="param.inputType === 'text'"
-            matInput
-            placeholder="{{ param.display }}"
-            [(ngModel)]="param.value"
-            [value]="param.value"
-            (input)="param.value = $event.target.value"
-            (change)="onCommandChange()"
-            [matTooltip]="param.hint"
-          />
-          <textarea
-            *ngIf="param.inputType === 'textArea'"
-            matInput
-            class="mdc-text-field__input"
-            rows="10"
-            cols="160"
-            placeholder="{{ param.display }}"
-            [value]="param.value"
-            (input)="param.value = $event.target.value"
-            (change)="onCommandChange()"
-            [matTooltip]="param.hint"
-          ></textarea>
-        </mat-form-field>
-        <mat-form-field
-          class="param-full-width"
-          *ngIf="param.inputType === 'select'"
-        >
-          <mat-label>{{ param.display }}</mat-label>
-          <mat-select
-            [(ngModel)]="param.value"
-            (selectionChange)="onCommandChange()"
-            name="{{ param.key }}"
-            [matTooltip]="param.hint"
-          >
-            <mat-option
-              *ngFor="let choice of param.choices"
-              [value]="choice.key"
+    @if (selectedCommand != undefined) {
+      <span>
+        @for (param of selectedCommand.parameters; track param) {
+          <span
+            class="param-indent"
             >
-              {{ choice.display }}
-            </mat-option>
-          </mat-select>
-        </mat-form-field>
-        <mat-checkbox
-          class="param-full-width"
-          *ngIf="param.inputType === 'checkbox'"
-          name="{{ param.key }}"
-          [matTooltip]="param.hint"
-          [(ngModel)]="param.value"
-          (change)="onCommandChange()"
-          >
-          {{ param.display }}
-        </mat-checkbox>
-        <span class="param-full-width" *ngIf="param.inputType === 'file'">
-          <input
-            #file
-            id="fileInput"
-            type="file"
-            multiple
-            style="display: none"
-            (change)="loadFileContent(param, file)"
-            [matTooltip]="param.hint"
-          />
-          <button mat-menu-item (click)="file.click()">
-            Select a Text File (... or enter text below)
-          </button>
-          <textarea
-            class="mdc-text-field__input"
-            rows="10"
-            cols="160"
-            placeholder="{{ param.display }}"
-            [(ngModel)]="param.value"
-            name="content"
-            (change)="onCommandChange()"
-          ></textarea>
-        </span>
+            @if (
+              (param.inputType === 'text' || param.inputType === 'textArea') &&
+              !(param.key.toLowerCase() === 'username' && param.requiresVm)
+              ) {
+              <mat-form-field
+                class="param-full-width"
+                >
+                <mat-label>{{ param.display }}</mat-label>
+                @if (param.inputType === 'text') {
+                  <input
+                    matInput
+                    placeholder="{{ param.display }}"
+                    [(ngModel)]="param.value"
+                    [value]="param.value"
+                    (input)="param.value = $event.target.value"
+                    (change)="onCommandChange()"
+                    [matTooltip]="param.hint"
+                    />
+                }
+                @if (param.inputType === 'textArea') {
+                  <textarea
+                    matInput
+                    class="mdc-text-field__input"
+                    rows="10"
+                    cols="160"
+                    placeholder="{{ param.display }}"
+                    [value]="param.value"
+                    (input)="param.value = $event.target.value"
+                    (change)="onCommandChange()"
+                    [matTooltip]="param.hint"
+                  ></textarea>
+                }
+              </mat-form-field>
+            }
+            @if (param.inputType === 'select') {
+              <mat-form-field
+                class="param-full-width"
+                >
+                <mat-label>{{ param.display }}</mat-label>
+                <mat-select
+                  [(ngModel)]="param.value"
+                  (selectionChange)="onCommandChange()"
+                  name="{{ param.key }}"
+                  [matTooltip]="param.hint"
+                  >
+                  @for (choice of param.choices; track choice) {
+                    <mat-option
+                      [value]="choice.key"
+                      >
+                      {{ choice.display }}
+                    </mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            }
+            @if (param.inputType === 'checkbox') {
+              <mat-checkbox
+                class="param-full-width"
+                name="{{ param.key }}"
+                [matTooltip]="param.hint"
+                [(ngModel)]="param.value"
+                (change)="onCommandChange()"
+                >
+                {{ param.display }}
+              </mat-checkbox>
+            }
+            @if (param.inputType === 'file') {
+              <span class="param-full-width">
+                <input
+                  #file
+                  id="fileInput"
+                  type="file"
+                  multiple
+                  style="display: none"
+                  (change)="loadFileContent(param, file)"
+                  [matTooltip]="param.hint"
+                  />
+                <button mat-menu-item (click)="file.click()">
+                  Select a Text File (... or enter text below)
+                </button>
+                <textarea
+                  class="mdc-text-field__input"
+                  rows="10"
+                  cols="160"
+                  placeholder="{{ param.display }}"
+                  [(ngModel)]="param.value"
+                  name="content"
+                  (change)="onCommandChange()"
+                ></textarea>
+              </span>
+            }
+          </span>
+        }
       </span>
-    </span>
+    }
     <mat-form-field class="param-full-width">
       <mat-label>Trigger Condition</mat-label>
       <mat-select
         [(ngModel)]="data.task.triggerCondition"
         name="triggerCondition"
-      >
-        <mat-option *ngFor="let choice of triggerConditions" [value]="choice">
-          {{ choice }}
-        </mat-option>
+        >
+        @for (choice of triggerConditions; track choice) {
+          <mat-option [value]="choice">
+            {{ choice }}
+          </mat-option>
+        }
       </mat-select>
     </mat-form-field>
     <mat-form-field class="param-full-width">
@@ -152,7 +167,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         placeholder="Expected Output"
         [value]="data.task.expectedOutput"
         (input)="data.task.expectedOutput = $event.target.value"
-      />
+        />
     </mat-form-field>
 
     <h2>Scoring</h2>
@@ -162,112 +177,120 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         type="number"
         placeholder="Points awarded for successful task completion"
         [(ngModel)]="data.task.score"
-      />
+        />
     </mat-form-field>
     <mat-checkbox
       [(ngModel)]="data.task.userExecutable"
       matTooltip="Can an unprivileged member of the Task's Scenario execute this Task?"
       >User Executable</mat-checkbox
-    >
-    <mat-checkbox
-      [(ngModel)]="data.task.repeatable"
-      matTooltip="Can this Task be executed again once successful?"
-      >Repeatable</mat-checkbox
-    >
-
-    <h2>Delay / Iteration / Expiration</h2>
-    <mat-form-field class="param-full-width">
-      <input
-        matInput
-        type="number"
-        placeholder="Delay (in seconds) Before Executing This Task"
-        [(ngModel)]="data.task.delaySeconds"
-      />
-    </mat-form-field>
-    <mat-form-field class="param-full-width">
-      <input
-        matInput
-        type="number"
-        placeholder="Number of Iterations"
-        [(ngModel)]="data.task.iterations"
-      />
-    </mat-form-field>
-    <mat-form-field class="param-full-width">
-      <input
-        matInput
-        type="number"
-        placeholder="Interval (in seconds) Between Iterations"
-        [(ngModel)]="data.task.intervalSeconds"
-      />
-    </mat-form-field>
-    <mat-form-field class="param-full-width">
-      <mat-label>IterationTermination</mat-label>
-      <mat-select
-        [(ngModel)]="data.task.iterationTermination"
-        name="iterationTermination"
       >
-        <mat-option
-          *ngFor="let choice of iterationTerminations"
-          [value]="choice"
-        >
-          {{ choice }}
-        </mat-option>
-      </mat-select>
-    </mat-form-field>
-    <mat-form-field class="param-full-width">
-      <input
-        matInput
-        type="number"
-        placeholder="Expiration Timeout (in seconds)"
-        [(ngModel)]="data.task.expirationSeconds"
-      />
-    </mat-form-field>
-
-    <span *ngIf="selectedCommand && selectedCommand.requiresVm">
-      <span *ngIf="credentialsAreRequired()">
-        <h2>VM Credentials</h2>
-        <app-vm-credentials
-          [scenarioTemplateId]="data.task.scenarioTemplateId"
-          [scenarioId]="data.task.scenarioId"
-          [username]="username | async"
-          [password]="password | async"
-          (selectedVmCredentialChanged)="handleVmCredentialChange($event)"
-        ></app-vm-credentials>
-      </span>
-
-      <h2>VM Selection</h2>
-      <mat-form-field class="param-full-width" *ngIf="!chooseVms">
-        <input
-          matInput
-          placeholder="VM Mask (VM name includes this text)"
-          [value]="data.task.vmMask"
-          (input)="data.task.vmMask = $event.target.value"
-        />
-      </mat-form-field>
       <mat-checkbox
-        [checked]="chooseVms"
-        (change)="switchChooseVmsMethod($event)"
-        style="margin-right: 20px"
-        *ngIf="!data.task.scenarioTemplateId"
-        >Choose Actual VMs</mat-checkbox
-      >
-      <app-vm-list
-        *ngIf="chooseVms"
-        [selectedVms]="data.task.vmList || []"
-        (updateVmList)="handleUpdateVmList($event)"
-      >
-      </app-vm-list>
-    </span>
-  </div>
-</mat-dialog-content>
-<mat-dialog-actions align-items="center">
-  <button
-    mat-stroked-button
-    (click)="handleEditComplete(true)"
-    [disabled]="!errorFree()"
-    style="margin-right: 400px"
-  >
-    Save
-  </button>
-  <button mat-stroked-button (click)="handleEditComplete(false)">Cancel</button>
-</mat-dialog-actions>
+        [(ngModel)]="data.task.repeatable"
+        matTooltip="Can this Task be executed again once successful?"
+        >Repeatable</mat-checkbox
+        >
+
+        <h2>Delay / Iteration / Expiration</h2>
+        <mat-form-field class="param-full-width">
+          <input
+            matInput
+            type="number"
+            placeholder="Delay (in seconds) Before Executing This Task"
+            [(ngModel)]="data.task.delaySeconds"
+            />
+        </mat-form-field>
+        <mat-form-field class="param-full-width">
+          <input
+            matInput
+            type="number"
+            placeholder="Number of Iterations"
+            [(ngModel)]="data.task.iterations"
+            />
+        </mat-form-field>
+        <mat-form-field class="param-full-width">
+          <input
+            matInput
+            type="number"
+            placeholder="Interval (in seconds) Between Iterations"
+            [(ngModel)]="data.task.intervalSeconds"
+            />
+        </mat-form-field>
+        <mat-form-field class="param-full-width">
+          <mat-label>IterationTermination</mat-label>
+          <mat-select
+            [(ngModel)]="data.task.iterationTermination"
+            name="iterationTermination"
+            >
+            @for (choice of iterationTerminations; track choice) {
+              <mat-option
+                [value]="choice"
+                >
+                {{ choice }}
+              </mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field class="param-full-width">
+          <input
+            matInput
+            type="number"
+            placeholder="Expiration Timeout (in seconds)"
+            [(ngModel)]="data.task.expirationSeconds"
+            />
+        </mat-form-field>
+
+        @if (selectedCommand && selectedCommand.requiresVm) {
+          <span>
+            @if (credentialsAreRequired()) {
+              <span>
+                <h2>VM Credentials</h2>
+                <app-vm-credentials
+                  [scenarioTemplateId]="data.task.scenarioTemplateId"
+                  [scenarioId]="data.task.scenarioId"
+                  [username]="username | async"
+                  [password]="password | async"
+                  (selectedVmCredentialChanged)="handleVmCredentialChange($event)"
+                ></app-vm-credentials>
+              </span>
+            }
+            <h2>VM Selection</h2>
+            @if (!chooseVms) {
+              <mat-form-field class="param-full-width">
+                <input
+                  matInput
+                  placeholder="VM Mask (VM name includes this text)"
+                  [value]="data.task.vmMask"
+                  (input)="data.task.vmMask = $event.target.value"
+                  />
+              </mat-form-field>
+            }
+            @if (!data.task.scenarioTemplateId) {
+              <mat-checkbox
+                [checked]="chooseVms"
+                (change)="switchChooseVmsMethod($event)"
+                style="margin-right: 20px"
+                >Choose Actual VMs</mat-checkbox
+                >
+              }
+              @if (chooseVms) {
+                <app-vm-list
+                  [selectedVms]="data.task.vmList || []"
+                  (updateVmList)="handleUpdateVmList($event)"
+                  >
+                </app-vm-list>
+              }
+            </span>
+          }
+        </div>
+      </mat-dialog-content>
+      <mat-dialog-actions align-items="center">
+        <button
+          mat-stroked-button
+          (click)="handleEditComplete(true)"
+          [disabled]="!errorFree()"
+          style="margin-right: 400px"
+          >
+          Save
+        </button>
+        <button mat-stroked-button (click)="handleEditComplete(false)">Cancel</button>
+      </mat-dialog-actions>

@@ -19,9 +19,10 @@ import { CurrentUserQuery } from 'src/app/data/user/user.query';
 import { SignalRService } from 'src/app/services/signalr/signalr.service';
 
 @Component({
-  selector: 'app-admin-container',
-  templateUrl: './admin-container.component.html',
-  styleUrls: ['./admin-container.component.scss'],
+    selector: 'app-admin-container',
+    templateUrl: './admin-container.component.html',
+    styleUrls: ['./admin-container.component.scss'],
+    standalone: false
 })
 export class AdminContainerComponent implements OnDestroy, OnInit {
   public username: string;
@@ -36,8 +37,6 @@ export class AdminContainerComponent implements OnDestroy, OnInit {
   private unsubscribe$ = new Subject();
   TopbarView = TopbarView;
   hideTopbar = false;
-  topbarColor = '#BB0000';
-  topbarTextColor = '#FFFFFF';
   theme$: Observable<Theme>;
   permissions: SystemPermission[] = [];
   readonly SystemPermission = SystemPermission;
@@ -55,21 +54,12 @@ export class AdminContainerComponent implements OnDestroy, OnInit {
   ) {
     this.theme$ = this.authQuery.userTheme$;
     this.hideTopbar = this.inIframe();
-    // Set the display settings from config file
-    this.topbarColor = this.settingsService.settings.AppTopBarHexColor
-      ? this.settingsService.settings.AppTopBarHexColor
-      : this.topbarColor;
-    this.topbarTextColor = this.settingsService.settings.AppTopBarHexTextColor
-      ? this.settingsService.settings.AppTopBarHexTextColor
-      : this.topbarTextColor;
     this.signalRService.joinSystem();
   }
 
   ngOnInit() {
     // Set the page title from configuration file
     this.titleText = this.settingsService.settings.AppTopBarText;
-    this.topbarColor = this.settingsService.settings.AppTopBarHexColor;
-    this.topbarTextColor = this.settingsService.settings.AppTopBarHexTextColor;
     this.currentUserQuery
       .select()
       .pipe(takeUntil(this.unsubscribe$))
@@ -148,6 +138,14 @@ export class AdminContainerComponent implements OnDestroy, OnInit {
    */
   adminGotoScenarios(): void {
     this.navigateToSection(this.scenariosText);
+  }
+
+  getSelectedClass(section: string) {
+    if (section === this.showSection) {
+      return 'selected-item';
+    } else {
+      return 'showhand';
+    }
   }
 
   private navigateToSection(sectionName: string) {

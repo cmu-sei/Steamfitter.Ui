@@ -13,10 +13,8 @@ import {
 import {
   ComnAuthQuery,
   ComnAuthService,
-  ComnSettingsService,
   Theme,
 } from '@cmusei/crucible-common';
-import { User as AuthUser } from 'oidc-client';
 import { Observable, Subject } from 'rxjs';
 import { filter, takeUntil } from 'rxjs/operators';
 import { CurrentUserQuery } from 'src/app/data/user/user.query';
@@ -25,18 +23,15 @@ import { PermissionDataService } from 'src/app/data/permission/permission-data.s
 import { TopbarView } from './topbar.models';
 
 @Component({
-  selector: 'app-topbar',
-  templateUrl: './topbar.component.html',
-  styleUrls: ['./topbar.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-topbar',
+    templateUrl: './topbar.component.html',
+    styleUrls: ['./topbar.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class TopbarComponent implements OnInit, OnDestroy {
   @Input() title?: string;
-  @Input() sidenav?;
-  @Input() topbarColor?;
-  @Input() topbarTextColor?;
   @Input() topbarView?: TopbarView;
-  @Output() sidenavToggle?: EventEmitter<boolean> = new EventEmitter<boolean>();
   @Output() editView?: EventEmitter<any> = new EventEmitter<any>();
   currentUser$: Observable<CurrentUserState>;
   theme$: Observable<Theme>;
@@ -48,8 +43,7 @@ export class TopbarComponent implements OnInit, OnDestroy {
     private authService: ComnAuthService,
     private currentUserQuery: CurrentUserQuery,
     private permissionDataService: PermissionDataService,
-    private authQuery: ComnAuthQuery,
-    private settingsService: ComnSettingsService
+    private authQuery: ComnAuthQuery
   ) {}
 
   ngOnInit() {
@@ -67,15 +61,6 @@ export class TopbarComponent implements OnInit, OnDestroy {
     );
 
     this.theme$ = this.authQuery.userTheme$;
-
-    if (!this.topbarColor) {
-      this.topbarColor = this.settingsService.settings.AppTopBarHexColor;
-    }
-
-    if (!this.topbarTextColor) {
-      this.topbarTextColor =
-        this.settingsService.settings.AppTopBarHexTextColor;
-    }
   }
 
   themeFn(event) {
@@ -84,10 +69,6 @@ export class TopbarComponent implements OnInit, OnDestroy {
   }
   editFn(event) {
     this.editView.emit(event);
-  }
-
-  sidenavToggleFn() {
-    this.sidenavToggle.emit(!this.sidenav.opened);
   }
 
   logout(): void {

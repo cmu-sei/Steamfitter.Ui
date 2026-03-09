@@ -2,20 +2,37 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 .margin-auto {
   margin: auto;
+  display: flex;
+  align-items: center;
 }
 .spacer {
   flex: 1 1 auto;
 }
 .toolbar {
-  max-height: 38px;
-  min-height: 38px;
+  max-height: 44px;
+  min-height: 44px;
 }
 .user-text {
   text-align: right;
   margin-right: 10px;
 }
 .view-text {
-  font-size: 110%;
+  font-size: large;
   margin-left: 50px;
   margin-right: 40px;
+  font-weight: bold;
+}
+
+.username-text {
+  font-size: large;
+  font-weight: bold;
+}
+
+.mat-mdc-button:not(:disabled),
+.mat-mdc-icon-button:not(:disabled) {
+  color: inherit;
+}
+
+mat-icon, .mat-icon {
+  --mat-icon-color: currentColor;
 }

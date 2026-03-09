@@ -7,9 +7,10 @@ import { TaskDataService } from 'src/app/data/task/task-data.service';
 import { Result, Task } from 'src/app/generated/steamfitter.api/model/models';
 
 @Component({
-  selector: 'app-tasks',
-  templateUrl: './tasks.component.html',
-  styleUrls: ['./tasks.component.scss'],
+    selector: 'app-tasks',
+    templateUrl: './tasks.component.html',
+    styleUrls: ['./tasks.component.scss'],
+    standalone: false
 })
 export class TasksComponent {
   @Input() taskList: Observable<Task[]>;

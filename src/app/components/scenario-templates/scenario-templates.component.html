@@ -3,16 +3,14 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
 
-<div class="component-container mat-elevation-z8">
+<div class="component-container">
   <div class="add-margin">
-    <div>
-      <app-scenario-template-list
-        [scenarioTemplateList]="scenarioTemplateList | async"
-        [selectedScenarioTemplate]="selectedScenarioTemplate | async"
-        [isLoading]="isLoading | async"
+    <div class="list-container">
+      <app-scenario-template-list [scenarioTemplateList]="scenarioTemplateList | async"
+        [selectedScenarioTemplate]="selectedScenarioTemplate | async" [isLoading]="isLoading | async"
+        [filterString]="filterString" [paginator]="paginator"
         (itemSelected)="setActive($event)"
-        (saveScenarioTemplate)="saveScenarioTemplate($event)"
-      ></app-scenario-template-list>
+        (saveScenarioTemplate)="saveScenarioTemplate($event)"></app-scenario-template-list>
     </div>
   </div>
 </div>

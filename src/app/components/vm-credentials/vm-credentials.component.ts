@@ -6,7 +6,7 @@ import { ScenarioQuery } from 'src/app/data/scenario/scenario.query';
 import { ScenarioTemplateQuery } from 'src/app/data/scenario-template/scenario-template.query';
 import { Scenario, ScenarioTemplate } from 'src/app/generated/steamfitter.api';
 import { DialogService } from 'src/app/services/dialog/dialog.service';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
+import { MatDialog } from '@angular/material/dialog';
 import { ScenarioTemplateDataService } from 'src/app/data/scenario-template/scenario-template-data.service';
 import { ScenarioDataService } from 'src/app/data/scenario/scenario-data.service';
 import { AddDialogComponent } from './add-dialog/add-dialog.component';
@@ -14,9 +14,10 @@ import { Observable } from 'rxjs';
 import { delay, tap } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-vm-credentials',
-  templateUrl: './vm-credentials.component.html',
-  styleUrls: ['./vm-credentials.component.scss'],
+    selector: 'app-vm-credentials',
+    templateUrl: './vm-credentials.component.html',
+    styleUrls: ['./vm-credentials.component.scss'],
+    standalone: false
 })
 export class VmCredentialsComponent implements OnInit {
   @Input() username: string;

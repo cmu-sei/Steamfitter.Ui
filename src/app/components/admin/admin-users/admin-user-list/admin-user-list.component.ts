@@ -11,23 +11,13 @@ import {
   OnChanges,
   SimpleChanges,
 } from '@angular/core';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
-import { MatSort, Sort } from '@angular/material/sort';
-import {
-  MatLegacyPaginator as MatPaginator,
-  LegacyPageEvent as PageEvent,
-} from '@angular/material/legacy-paginator';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSort } from '@angular/material/sort';
+import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { ConfirmDialogComponent } from 'src/app/components/shared/confirm-dialog/components/confirm-dialog.component';
 import { User } from 'src/app/generated/steamfitter.api';
-import { Observable, of } from 'rxjs';
-import { map } from 'rxjs/operators';
-import {
-  fromMatSort,
-  sortRows,
-  fromMatPaginator,
-  paginateRows,
-} from 'src/app/datasource-utils';
+import { Observable } from 'rxjs';
 import { RoleDataService } from 'src/app/data/role/role-data.service';
 import { MatSelectChange } from '@angular/material/select';
 import { UserDataService } from 'src/app/data/user/user-data.service';
@@ -40,26 +30,20 @@ export interface Action {
 }
 
 @Component({
-  selector: 'app-admin-user-list',
-  templateUrl: './admin-user-list.component.html',
-  styleUrls: ['./admin-user-list.component.scss'],
+    selector: 'app-admin-user-list',
+    templateUrl: './admin-user-list.component.html',
+    styleUrls: ['./admin-user-list.component.scss'],
+    standalone: false
 })
 export class AdminUserListComponent implements OnInit, OnChanges {
-  displayedColumns: string[] = ['id', 'name'];
+  displayedColumns: string[] = ['id', 'name', 'role'];
   filterString = '';
   savedFilterString = '';
   userDataSource = new MatTableDataSource<User>(new Array<User>());
   newUser: User = {};
 
-  // MatPaginator Output
-  pageEvent: PageEvent;
   addingNewUser: boolean;
-  displayedRows$: Observable<User[]>;
-  totalRows$: Observable<number>;
-  sortEvents$: Observable<Sort>;
-  pageEvents$: Observable<PageEvent>;
   roles$ = this.roleDataService.roles$;
-  topbarColor = '#BB0000';
 
   @Input() users: User[];
   @Input() isLoading: boolean;
@@ -75,14 +59,13 @@ export class AdminUserListComponent implements OnInit, OnChanges {
     private userDataService: UserDataService
   ) {}
 
-  /**
-   * Initialization
-   */
   ngOnInit() {
-    this.sortEvents$ = fromMatSort(this.sort);
-    this.pageEvents$ = fromMatPaginator(this.paginator);
-
+    if (this.paginator) {
+      this.userDataSource.paginator = this.paginator;
+    }
+    this.userDataSource.sort = this.sort;
     this.roleDataService.getRoles().subscribe();
+    this.filterAndSort(this.filterString);
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -92,33 +75,15 @@ export class AdminUserListComponent implements OnInit, OnChanges {
     }
   }
 
-  /**
-   * Called by UI to add a filter to the userDataSource
-   * @param filterValue
-   */
   applyFilter(filterValue: string) {
     this.filterString = filterValue.toLowerCase();
     this.filterAndSort(this.filterString);
   }
 
-  /**
-   * filters and sorts the displayed rows
-   */
   filterAndSort(filterValue: string) {
     this.userDataSource.filter = filterValue;
-    const rows$ = of(this.userDataSource.filteredData);
-    this.totalRows$ = rows$.pipe(map((rows) => rows.length));
-    if (!!this.sortEvents$ && !!this.pageEvents$) {
-      this.displayedRows$ = rows$.pipe(
-        sortRows(this.sortEvents$),
-        paginateRows(this.pageEvents$)
-      );
-    }
   }
 
-  /**
-   * Adds a new user
-   */
   addNewUser(addUser: boolean) {
     if (addUser) {
       const user = {
@@ -127,9 +92,9 @@ export class AdminUserListComponent implements OnInit, OnChanges {
       };
       this.savedFilterString = this.filterString;
       this.create.emit(user);
-    } else {
-      this.newUser = {};
     }
+    this.newUser = {};
+    this.addingNewUser = false;
   }
 
   deleteUser(user: User) {

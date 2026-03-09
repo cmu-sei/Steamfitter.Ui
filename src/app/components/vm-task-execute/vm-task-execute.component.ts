@@ -27,7 +27,6 @@ import {
   TaskService,
   Vm,
 } from 'src/app/generated/steamfitter.api';
-import { ComnSettingsService } from '@cmusei/crucible-common';
 
 /** Error when invalid control is dirty, touched, or submitted. */
 export class UserErrorStateMatcher implements ErrorStateMatcher {
@@ -41,9 +40,10 @@ export class UserErrorStateMatcher implements ErrorStateMatcher {
 }
 
 @Component({
-  selector: 'app-vm-task-execute',
-  templateUrl: './vm-task-execute.component.html',
-  styleUrls: ['./vm-task-execute.component.scss'],
+    selector: 'app-vm-task-execute',
+    templateUrl: './vm-task-execute.component.html',
+    styleUrls: ['./vm-task-execute.component.scss'],
+    standalone: false
 })
 export class VmTaskExecuteComponent implements OnDestroy {
   @Output() editComplete = new EventEmitter<boolean>();
@@ -63,7 +63,6 @@ export class VmTaskExecuteComponent implements OnDestroy {
   loggedInUser = this.authService.user$;
   userScenario: Scenario;
   private unsubscribe$ = new Subject();
-  topbarColor = '#BB0000';
 
   constructor(
     public zone: NgZone,
@@ -74,19 +73,24 @@ export class VmTaskExecuteComponent implements OnDestroy {
     private resultDataService: ResultDataService,
     private taskQuery: TaskQuery,
     private authService: ComnAuthService,
-    private scenarioDataService: ScenarioDataService,
-    private settingsService: ComnSettingsService
+    private scenarioDataService: ScenarioDataService
   ) {
     this.scenarioDataService.selected
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((scenario) => {
         this.userScenario = scenario;
       });
+    this.playerDataService.selectedView
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((view) => {
+        if (view && this.userScenario && view.id !== this.userScenario.viewId) {
+          const scenario = { ...this.userScenario };
+          scenario.viewId = view.id;
+          this.scenarioDataService.updateScenario(scenario);
+        }
+      });
     this.scenarioDataService.loadTaskBuilderScenario();
     this.isExecuting = false;
-    this.topbarColor = this.settingsService.settings.AppTopBarHexColor
-      ? this.settingsService.settings.AppTopBarHexColor
-      : this.topbarColor;
   }
 
   setTaskVms() {
@@ -126,15 +130,6 @@ export class VmTaskExecuteComponent implements OnDestroy {
 
   deleteTask(id: string) {
     this.taskDataService.delete(id);
-  }
-
-  onViewChange(event: any) {
-    if (event && event.value && event.value.id) {
-      const scenario = { ...this.userScenario };
-      scenario.viewId = event.value.id;
-      this.scenarioDataService.updateScenario(scenario);
-      this.playerDataService.selectView(scenario.viewId);
-    }
   }
 
   ngOnDestroy() {

@@ -14,7 +14,34 @@
   margin-right: 0;
 }
 
+.task-card {
+  padding-bottom: 20px;
+  padding-right: 10px;
+}
+
 mat-panel-description,
 span {
   display: block;
+}
+
+.header-row {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  align-items: center;
+  align-content: center;
+}
+
+.buttons-cell {
+  display: flex;
+  margin-left: 60px;
+  width: 90px;
+}
+
+.tasks-cell {
+  display: flex;
+}
+
+.detail-span {
+  margin-left: 60px;
 }

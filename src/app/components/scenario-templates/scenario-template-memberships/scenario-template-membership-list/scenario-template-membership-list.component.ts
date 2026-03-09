@@ -13,10 +13,10 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { MatLegacyPaginator as MatPaginator } from '@angular/material/legacy-paginator';
-import { MatLegacySnackBar as MatSnackBar } from '@angular/material/legacy-snack-bar';
+import { MatPaginator } from '@angular/material/paginator';
+import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatSort } from '@angular/material/sort';
-import { MatLegacyTableDataSource as MatTableDataSource } from '@angular/material/legacy-table';
+import { MatTableDataSource } from '@angular/material/table';
 import {
   ScenarioTemplateMembership,
   Group,
@@ -24,10 +24,11 @@ import {
 } from 'src/app/generated/steamfitter.api';
 
 @Component({
-  selector: 'app-scenario-template-membership-list',
-  templateUrl: './scenario-template-membership-list.component.html',
-  styleUrls: ['./scenario-template-membership-list.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+    selector: 'app-scenario-template-membership-list',
+    templateUrl: './scenario-template-membership-list.component.html',
+    styleUrls: ['./scenario-template-membership-list.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush,
+    standalone: false
 })
 export class ScenarioTemplateMembershipListComponent
   implements OnInit, OnChanges

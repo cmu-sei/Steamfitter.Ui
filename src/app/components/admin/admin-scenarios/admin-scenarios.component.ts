@@ -12,9 +12,10 @@ import { PlayerDataService } from 'src/app/data/player/player-data-service';
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
-  selector: 'app-admin-scenarios',
-  templateUrl: './admin-scenarios.component.html',
-  styleUrls: ['./admin-scenarios.component.scss'],
+    selector: 'app-admin-scenarios',
+    templateUrl: './admin-scenarios.component.html',
+    styleUrls: ['./admin-scenarios.component.scss'],
+    standalone: false
 })
 export class AdminScenariosComponent implements OnInit {
   constructor(
@@ -31,16 +32,10 @@ export class AdminScenariosComponent implements OnInit {
 
   scenarios$ = this.scenarioQuery.selectAll();
   loading$ = this.scenarioQuery.selectLoading();
-  selectedScenarioId: string;
-  embedded = true;
   statuses: Observable<string>;
   viewList = this.playerDataService.viewList;
 
   ngOnInit(): void {
     this.scenarioDataService.load();
-    const statuses: string =
-      this.activatedRoute.snapshot.queryParamMap.get('statuses');
-    const secondParam: string =
-      this.activatedRoute.snapshot.queryParamMap.get('secondParamKey');
   }
 }

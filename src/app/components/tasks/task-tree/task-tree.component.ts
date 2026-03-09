@@ -11,8 +11,8 @@ import {
   Output,
   ViewChild,
 } from '@angular/core';
-import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
-import { MatLegacyMenuTrigger as MatMenuTrigger } from '@angular/material/legacy-menu';
+import { MatDialog } from '@angular/material/dialog';
+import { MatMenuTrigger } from '@angular/material/menu';
 import {
   MatTreeFlatDataSource,
   MatTreeFlattener,
@@ -61,9 +61,10 @@ const BLANK_TASK: Task = {
 };
 
 @Component({
-  selector: 'app-task-tree',
-  templateUrl: './task-tree.component.html',
-  styleUrls: ['./task-tree.component.scss'],
+    selector: 'app-task-tree',
+    templateUrl: './task-tree.component.html',
+    styleUrls: ['./task-tree.component.scss'],
+    standalone: false
 })
 export class TaskTreeComponent implements OnInit, OnDestroy {
   @Input() taskList: Observable<Task[]>;
@@ -247,6 +248,8 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
     const dialogRef = this.dialog.open(TaskEditComponent, {
       data: { task: { ...task } },
       width: '50%',
+      minWidth: '400px',
+      maxWidth: '90vw',
     });
     dialogRef.componentInstance.editComplete.subscribe((result) => {
       if (result.saveChanges && result.task) {
@@ -288,6 +291,8 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
     }
     const dialogRef = this.dialog.open(TaskEditComponent, {
       data: { task: newTask },
+      minWidth: '400px',
+      maxWidth: '90vw',
     });
     dialogRef.componentInstance.editComplete.subscribe((result) => {
       if (result.saveChanges && result.task) {
@@ -430,6 +435,26 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
       }
     }
     return null;
+  }
+
+  private static readonly STATUS_ICON_MAP: Record<string, string> = {
+    succeeded: 'mdi-star-circle-outline',
+    success: 'mdi-star-circle-outline',
+    failed: 'mdi-close-circle-outline',
+    failure: 'mdi-close-circle-outline',
+    pending: 'mdi-z-wave',
+    expired: 'mdi-clock-alert-outline',
+    expiration: 'mdi-clock-alert-outline',
+    error: 'mdi-alert-outline',
+    completion: 'mdi-check-circle-outline',
+    manual: 'mdi-gesture-tap-button',
+    queued: 'mdi-clock-time-three-outline',
+    sent: 'mdi-send',
+    time: 'mdi-alarm',
+  };
+
+  statusIcon(status: string): string {
+    return TaskTreeComponent.STATUS_ICON_MAP[status?.toLowerCase()] || 'mdi-help-circle-outline';
   }
 
   sortedResults(results: Result[], sortBy: string, sortDescending: boolean) {
