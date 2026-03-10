@@ -59,6 +59,7 @@
   font-size: x-large;
   font-weight: bold;
   --mat-icon-color: var(--mat-sys-on-surface);
+  white-space: nowrap;
 }
 
 ::ng-deep .section-menu-trigger .mdc-button__label {

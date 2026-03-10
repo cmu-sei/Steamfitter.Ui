@@ -31,10 +31,9 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     <div class="content-container elevate">
       <div class="icon-text-container">
         <mat-icon class="steamfitter-icon" svgIcon="ic_crucible_steamfitter"></mat-icon>
-        <span class="title-text">My</span>
         <button mat-button class="section-menu-trigger" [matMenuTriggerFor]="sectionMenu" style="outline: none;">
-          <span>{{ selectedSection }}</span>
           <mat-icon fontIcon="mdi-chevron-down"></mat-icon>
+          My {{ selectedSection }}
         </button>
         <mat-menu #sectionMenu="matMenu">
           @if (canViewScenarioList()) {
@@ -123,7 +122,8 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         </div>
       </div>
       @if (selectedSection === section.scenarios && canViewScenarioList()) {
-      <app-scenarios [filterString]="filterString" [paginator]="homePaginator" [selectedStatuses]="selectedStatuses"></app-scenarios>
+      <app-scenarios [filterString]="filterString" [paginator]="homePaginator"
+        [selectedStatuses]="selectedStatuses"></app-scenarios>
       }
       @if (selectedSection === section.scenarioTemplates && canViewScenarioTemplateList()) {
       <app-scenario-templates [filterString]="filterString" [paginator]="homePaginator"></app-scenario-templates>
@@ -132,7 +132,9 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       <app-vm-task-execute></app-vm-task-execute>
       }
       @if (selectedSection === section.history) {
-      <app-history [filterString]="filterString" [paginator]="homePaginator" [historyView]="historyView" [selectedUser]="selectedHistoryUser" [selectedView]="selectedHistoryView" [selectedVm]="selectedHistoryVm"></app-history>
+      <app-history [filterString]="filterString" [paginator]="homePaginator" [historyView]="historyView"
+        [selectedUser]="selectedHistoryUser" [selectedView]="selectedHistoryView"
+        [selectedVm]="selectedHistoryVm"></app-history>
       }
     </div>
   </div>
