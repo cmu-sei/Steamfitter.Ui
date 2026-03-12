@@ -74,15 +74,28 @@ export class AdminContainerComponent implements OnDestroy, OnInit {
       .subscribe((section) => {
         if (section != null) {
           this.showSection = section;
-          this.navigateToSection(section);
         }
       });
 
     this.permissionDataService
       .load()
-      .subscribe(
-        (x) => (this.permissions = this.permissionDataService.permissions)
-      );
+      .subscribe((x) => {
+        this.permissions = this.permissionDataService.permissions;
+        // Set default section if none is selected
+        if (!this.showSection) {
+          if (this.canViewScenarioTemplateList()) {
+            this.showSection = this.scenarioTemplatesText;
+          } else if (this.canViewScenarioList()) {
+            this.showSection = this.scenariosText;
+          } else if (this.permissions.includes(SystemPermission.ViewUsers)) {
+            this.showSection = this.usersText;
+          } else if (this.permissions.includes(SystemPermission.ViewRoles)) {
+            this.showSection = this.rolesText;
+          } else if (this.permissions.includes(SystemPermission.ViewGroups)) {
+            this.showSection = this.groupsText;
+          }
+        }
+      });
   }
 
   canViewScenarioTemplateList(): boolean {
