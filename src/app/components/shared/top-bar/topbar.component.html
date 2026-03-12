@@ -23,8 +23,8 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           [matMenuTriggerFor]="menu"
           style="outline: none"
           >
-          <span class="username-text">{{ currentUser.name }}</span>
-          <mat-icon fontIcon="mdi-chevron-down"></mat-icon>
+          <strong>{{ currentUser.name }}</strong>
+          <mat-icon aria-hidden="false" class="menu-trigger" fontIcon="mdi-chevron-down"></mat-icon>
         </button>
         <mat-menu #menu="matMenu" [overlapTrigger]="false">
           @if (topbarView === TopbarView.STEAMFITTER_ADMIN) {

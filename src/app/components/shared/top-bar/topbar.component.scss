@@ -9,23 +9,21 @@
   flex: 1 1 auto;
 }
 .toolbar {
-  max-height: 44px;
-  min-height: 44px;
+  max-height: 46px;
+  min-height: 46px;
 }
 .user-text {
   text-align: right;
   margin-right: 10px;
 }
 .view-text {
-  font-size: large;
+  font-size: 110%;
   margin-left: 50px;
   margin-right: 40px;
-  font-weight: bold;
 }
 
 .username-text {
-  font-size: large;
-  font-weight: bold;
+  font-weight: normal;
 }
 
 .mat-mdc-button:not(:disabled),
