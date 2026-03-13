@@ -26,28 +26,33 @@ table {
 }
 
 .mat-column-name {
-  flex: 3;
-  min-width: 200px;
+  flex: 6;
+  min-width: 250px;
 }
 
 .mat-column-view {
-  flex: 2;
+  flex: 5;
+  min-width: 200px;
 }
 
 .mat-column-status {
-  flex: 1;
+  flex: 3;
+  min-width: 120px;
 }
 
 .mat-column-startDate {
-  flex: 1;
+  flex: 3.5;
+  min-width: 150px;
 }
 
 .mat-column-endDate {
-  flex: 1;
+  flex: 3.5;
+  min-width: 150px;
 }
 
 .mat-column-description {
-  flex: 2;
+  flex: 1;
+  min-width: 100px;
 }
 
 tr.detail-row {
