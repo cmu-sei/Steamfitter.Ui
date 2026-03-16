@@ -3,6 +3,7 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
 
+<div class="table-container">
 <table mat-table [dataSource]="scenarioDataSource" matSort multiTemplateDataRows>
   <ng-container matColumnDef="actions">
     <th mat-header-cell *matHeaderCellDef>
@@ -84,11 +85,12 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     </td>
   </ng-container>
 
-  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
   <tr mat-row *matRowDef="let row; columns: displayedColumns" class="element-row"
     (click)="selectScenario($event, row.id)" (contextmenu)="onContextMenu($event, row)"></tr>
   <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="detail-row"></tr>
 </table>
+</div>
 
 @if (isLoading) {
 <div class="cssLayoutRowStartCenter">
