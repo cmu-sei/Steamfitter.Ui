@@ -12,7 +12,7 @@ import {
   Output,
   SimpleChanges,
 } from '@angular/core';
-import { combineLatest, forkJoin, Observable } from 'rxjs';
+import { combineLatest, forkJoin, Observable, of } from 'rxjs';
 import { filter, map, tap } from 'rxjs/operators';
 import { ScenarioDataService } from 'src/app/data/scenario/scenario-data.service';
 import { ScenarioQuery } from 'src/app/data/scenario/scenario.query';
@@ -51,7 +51,7 @@ export class ScenarioMembershipsComponent implements OnInit, OnChanges {
   groupNonMembers$ = this.selectGroups(false);
   groupMembers$ = this.selectGroups(true);
 
-  canEdit: boolean;
+  canEdit$: Observable<boolean>;
 
   constructor(
     private scenarioQuery: ScenarioQuery,
@@ -70,14 +70,15 @@ export class ScenarioMembershipsComponent implements OnInit, OnChanges {
       this.scenarioRolesDataService.loadRoles(),
       this.groupDataService.load(),
     ]).subscribe();
+    this.permissionDataService
+      .loadScenarioPermissions(this.scenarioId)
+      .subscribe(() =>
+        this.canEdit$ = of(this.permissionDataService.canEditScenario(this.scenarioId)));
   }
 
   ngOnChanges(changes: SimpleChanges) {
     this.scenario$ = this.scenarioQuery.selectEntity(this.scenarioId).pipe(
-      filter((x) => x != null),
-      tap(
-        (x) => (this.canEdit = this.permissionDataService.canEditScenario(x.id))
-      )
+      filter((x) => x != null)
     );
   }
 
