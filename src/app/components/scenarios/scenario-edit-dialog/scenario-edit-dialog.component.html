@@ -80,13 +80,17 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     <div class="add-margin">
       <div>
         <mat-form-field>
+          <mat-label>Start Date / Time</mat-label>
           <input
             matInput
             [ngxMatDatetimePicker]="startDatePicker"
-            placeholder="Start Date / Time"
             [formControl]="startDateFormControl"
             (dateChange)="saveScenario('startDate')"
+            style="display: none;"
             >
+          <span (click)="startDatePicker.open()" style="cursor: pointer;">
+            {{ startDateFormControl.value | date: 'dd MMM yyyy HH:mm:ss' }}
+          </span>
           <ngx-mat-datepicker-toggle matSuffix [for]="startDatePicker">
           </ngx-mat-datepicker-toggle>
           <ngx-mat-datetime-picker #startDatePicker
@@ -99,6 +103,10 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             [enableMeridian]="true"
             [disableMinute]="false"
             [hideTime]="false">
+            <ngx-mat-datepicker-actions>
+              <button mat-stroked-button ngxMatDatepickerApply>Save</button>
+              <button mat-stroked-button ngxMatDatepickerCancel>Cancel</button>
+            </ngx-mat-datepicker-actions>
           </ngx-mat-datetime-picker>
         </mat-form-field>
       </div>
@@ -106,13 +114,17 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     <div class="add-margin">
       <div>
         <mat-form-field>
+          <mat-label>End Date / Time</mat-label>
           <input
             matInput
             [ngxMatDatetimePicker]="endDatePicker"
-            placeholder="End Date / Time"
             [formControl]="endDateFormControl"
             (dateChange)="saveScenario('endDate')"
+            style="display: none;"
             >
+          <span (click)="endDatePicker.open()" style="cursor: pointer;">
+            {{ endDateFormControl.value | date: 'dd MMM yyyy HH:mm:ss' }}
+          </span>
           <ngx-mat-datepicker-toggle matSuffix [for]="endDatePicker">
           </ngx-mat-datepicker-toggle>
           <ngx-mat-datetime-picker #endDatePicker
@@ -125,6 +137,10 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             [enableMeridian]="true"
             [disableMinute]="false"
             [hideTime]="false">
+            <ngx-mat-datepicker-actions>
+              <button mat-stroked-button ngxMatDatepickerApply>Save</button>
+              <button mat-stroked-button ngxMatDatepickerCancel>Cancel</button>
+            </ngx-mat-datepicker-actions>
           </ngx-mat-datetime-picker>
         </mat-form-field>
       </div>
