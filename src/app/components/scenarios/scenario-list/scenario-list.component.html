@@ -7,7 +7,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 <table mat-table [dataSource]="scenarioDataSource" matSort multiTemplateDataRows>
   <ng-container matColumnDef="actions">
     <th mat-header-cell *matHeaderCellDef>
-      @if (!adminMode && permissions.includes(SystemPermission.CreateScenarios)) {
+      @if (permissions.includes(SystemPermission.CreateScenarios)) {
       <button mat-icon-button (click)="editScenario(null); $event.stopPropagation()"
         style="outline: none; margin-left: 20px;" title="Add Scenario">
         <mat-icon class="mdi-24px" fontIcon="mdi-plus-circle"></mat-icon>
