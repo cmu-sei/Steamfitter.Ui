@@ -6,7 +6,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 <div class="component-container scroll-container">
   <div class="title">
     <div class="cssLayoutRowStartCenter"></div>
-    <div class="cssLayoutRowStartCenter">
+    <div class="cssLayoutRowStartCenter table-wrapper">
       @if (loading && !apiResponded) {
       <mat-card appearance="outlined" style="
           display: flex;
@@ -19,6 +19,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       </mat-card>
       }
 
+      <div class="table-container">
       <table mat-table [dataSource]="modelDataSource" matSort class="elevate" [hidden]="modelDataSource.data.length < 1"
         multiTemplateDataRows>
         <ng-container matColumnDef="id">
@@ -101,10 +102,11 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           </td>
         </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns" class="element-row" (click)="showDetail(row)"></tr>
         <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="detail-row" (click)="showDetail(row)"></tr>
       </table>
+      </div>
     </div>
     <div class="cssLayoutRowStartCenter"></div>
   </div>
