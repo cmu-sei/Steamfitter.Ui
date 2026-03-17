@@ -14,7 +14,16 @@
   margin-right: 0;
 }
 
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+
 .task-card {
+  flex: 1;
   padding-bottom: 20px;
   padding-right: 10px;
 }

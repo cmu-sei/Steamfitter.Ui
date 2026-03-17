@@ -56,7 +56,7 @@ export class HistoryComponent implements OnInit, OnChanges, OnDestroy {
   modelDataSource = new MatTableDataSource<Result>(new Array<Result>());
   // MatPaginator Output
   defaultPageSize = 10;
-  pageEvent: PageEvent;
+  pageEvent: PageEvent = new PageEvent();
   loading = false;
   apiResponded = false;
   filterValue = '';
@@ -98,7 +98,6 @@ export class HistoryComponent implements OnInit, OnChanges, OnDestroy {
     }
     this.modelDataSource.sort = this.sort;
 
-    this.pageEvent = new PageEvent();
     this.pageEvent.pageIndex = 0;
     this.pageEvent.pageSize = this.defaultPageSize;
   }
