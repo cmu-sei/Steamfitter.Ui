@@ -92,7 +92,7 @@ export class ScenarioEditDialogComponent {
       this.data.scenario.description = this.descriptionFormControl.value
         .toString()
         .trim();
-      if (this.errorFree) {
+      if (this.errorFree()) {
         this.editComplete.emit({
           saveChanges: saveChanges,
           scenario: this.data.scenario,
