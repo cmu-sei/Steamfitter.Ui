@@ -10,6 +10,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     <div class="add-margin">
       <div>
         <mat-form-field class="full-width">
+          <mat-label>Name (required)</mat-label>
           <input
             type="text"
             matInput
@@ -39,6 +40,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     <div class="add-margin">
       <div>
         <mat-form-field class="full-width">
+          <mat-label>Scenario Description (required)</mat-label>
           <textarea
             matInput
             placeholder="Scenario Description (required)"
@@ -58,6 +60,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     <div class="add-margin">
       <div>
         <mat-form-field>
+          <mat-label>View</mat-label>
           <mat-select
             placeholder="View"
             [(ngModel)]="data.scenario.viewId"
