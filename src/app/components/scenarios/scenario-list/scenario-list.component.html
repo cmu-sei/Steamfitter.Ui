@@ -62,11 +62,6 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     <td mat-cell *matCellDef="let element">{{ element.endDate | date: 'yyyy-MM-dd HH:mm' }}</td>
   </ng-container>
 
-  <ng-container matColumnDef="description">
-    <th mat-header-cell *matHeaderCellDef mat-sort-header>Description</th>
-    <td mat-cell *matCellDef="let element">{{ element.description }}</td>
-  </ng-container>
-
   <ng-container matColumnDef="expandedDetail">
     <td mat-cell *matCellDef="let element" [attr.colspan]="displayedColumns.length">
       <div [@detailExpand]="element.id === expandedScenarioId ? 'expanded' : 'collapsed'"
