@@ -3,7 +3,8 @@
 
 :host {
   display: block;
-  min-height: 100vh;
+  height: 100vh;
+  overflow-y: auto;
   background-color: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
 }
