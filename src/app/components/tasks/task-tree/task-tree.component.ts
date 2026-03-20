@@ -470,6 +470,7 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
     queued: 'mdi-clock-time-three-outline',
     sent: 'mdi-send',
     time: 'mdi-alarm',
+    cancelled: 'mdi-cancel',
   };
 
   statusIcon(status: string): string {
