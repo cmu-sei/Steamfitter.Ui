@@ -13,7 +13,6 @@
   flex-direction: column;
   flex: 1;
   min-height: 0;
-  min-width: 1000px;
 }
 
 .add-margin {
@@ -28,6 +27,8 @@
   flex-direction: column;
   flex: 1;
   min-height: 0;
+  margin: 0;
+  padding: 0;
 }
 
 .title {
