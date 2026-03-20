@@ -17,7 +17,10 @@
   padding-right: 3em;
   margin: 0.4em;
   word-wrap: break-word;
-
+  word-break: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+  max-width: 100%;
 }
 
 .open-vm-button {

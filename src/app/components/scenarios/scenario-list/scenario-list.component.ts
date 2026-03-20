@@ -68,7 +68,6 @@ export class ScenarioListComponent implements OnInit, OnChanges {
     'status',
     'startDate',
     'endDate',
-    'description',
   ];
   @Input() selectedStatuses: string[] = ['active', 'ready'];
   statusFilteredScenarios: Scenario[];
