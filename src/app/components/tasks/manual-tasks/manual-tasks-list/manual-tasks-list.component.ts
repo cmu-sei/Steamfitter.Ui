@@ -12,6 +12,7 @@ import {
 import { TaskDataService } from 'src/app/data/task/task-data.service';
 import { Scenario, Task } from 'src/app/generated/steamfitter.api';
 import { MatIcon } from '@angular/material/icon';
+import { ConfirmDialogService } from 'src/app/components/shared/confirm-dialog/service/confirm-dialog.service';
 
 @Component({
     selector: 'app-manual-tasks-list',
@@ -24,7 +25,10 @@ export class ManualTasksListComponent implements OnInit {
   @Input() tasks: Array<Task>;
   @Input() scenario: Scenario;
 
-  constructor(private taskDataService: TaskDataService) {}
+  constructor(
+    private taskDataService: TaskDataService,
+    private confirmDialogService: ConfirmDialogService
+  ) {}
 
   ngOnInit(): void {}
 
@@ -48,7 +52,16 @@ export class ManualTasksListComponent implements OnInit {
     return ManualTasksListComponent.STATUS_ICON_MAP[status?.toLowerCase()] || 'mdi-help-circle-outline';
   }
 
-  executeTask(taskId: string) {
-    this.taskDataService.execute(taskId);
+  executeTask(task: Task) {
+    this.confirmDialogService
+      .confirmDialog('Execute Task?', `Are you sure you want to execute "${task.name}"?`, {
+        buttonTrueText: 'Execute',
+        buttonFalseText: 'Cancel',
+      })
+      .subscribe((result) => {
+        if (!result.wasCancelled && result.confirm) {
+          this.taskDataService.execute(task.id);
+        }
+      });
   }
 }

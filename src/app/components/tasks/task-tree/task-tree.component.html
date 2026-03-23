@@ -41,7 +41,9 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           </button>
           }
           <mat-expansion-panel style="width:100%" [expanded]="areDetailsExpanded(node)"
-            (click)="toggleNodeDetails(node); $event.stopPropagation()">
+            (opened)="expandedDetails.add(node.task.id)"
+            (closed)="expandedDetails.delete(node.task.id)"
+            (click)="$event.stopPropagation()">
             <mat-expansion-panel-header (contextmenu)="onContextMenu($event, node)">
               <mat-panel-title>
                 <div class="cssLayoutRowSpaceCenter">
