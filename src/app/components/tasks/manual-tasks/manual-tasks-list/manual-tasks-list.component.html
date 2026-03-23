@@ -46,7 +46,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             <button
               mat-icon-button
               [disabled]="!task.executable"
-              (click)="executeTask(task.id)"
+              (click)="executeTask(task)"
               [matTooltip]="task.executable ? task.description : 'This Task cannot be executed again once successful'"
               >
               <mat-icon fontIcon="mdi-play"></mat-icon>
