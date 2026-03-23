@@ -25,7 +25,9 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       <thead>
         <tr>
           <th class="icon-cell">Status</th>
-          <th class="score-cell">Score</th>
+          @if (scenario?.score > 0) {
+            <th class="score-cell">Score</th>
+          }
           <th class="action-cell">Task</th>
         </tr>
       </thead>
@@ -37,11 +39,13 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
               matTooltip="{{ task.totalStatus == 'none' ? 'click to execute' : task.totalStatus }}"
             ></mat-icon>
           </td>
-          <td class="score-cell">
-            @if (task.totalScore > 0) {
-              {{ task.totalScoreEarned }}/{{ task.totalScore }}
-            }
-          </td>
+          @if (scenario?.score > 0) {
+            <td class="score-cell">
+              @if (task.totalScore > 0) {
+                {{ task.totalScoreEarned }}/{{ task.totalScore }}
+              }
+            </td>
+          }
           <td class="action-cell">
             <button
               mat-icon-button
