@@ -55,7 +55,12 @@ export class SignalRService {
       )
       .withAutomaticReconnect(new RetryPolicy(120, 0, 5))
       .withStatefulReconnect()
+      .configureLogging(signalR.LogLevel.Information)
       .build();
+
+    // Configure timeouts to match server settings (15s keepalive, 60s timeout)
+    this.hubConnection.serverTimeoutInMilliseconds = 60000; // 60 seconds
+    this.hubConnection.keepAliveIntervalInMilliseconds = 15000; // 15 seconds
 
     this.hubConnection.onreconnected(() => {
       this.joinGroups();
