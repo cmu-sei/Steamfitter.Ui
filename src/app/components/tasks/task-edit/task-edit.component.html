@@ -17,17 +17,17 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 <mat-dialog-content>
   <div class="content">
     <mat-form-field class="param-full-width">
+      <mat-label>Name</mat-label>
       <input
         matInput
-        placeholder="Name"
         [value]="data.task.name"
         (input)="data.task.name = $event.target.value"
         />
     </mat-form-field>
     <mat-form-field class="param-full-width">
+      <mat-label>Description</mat-label>
       <input
         matInput
-        placeholder="Description"
         [value]="data.task.description"
         (input)="data.task.description = $event.target.value"
         />
@@ -35,8 +35,8 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 
     <h2>Action</h2>
     <mat-form-field class="param-full-width">
+      <mat-label>Select an Action</mat-label>
       <mat-select
-        placeholder="Select an Action"
         [(value)]="selectedCommand"
         (selectionChange)="onCommandChange()"
         >
@@ -162,9 +162,9 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       </mat-select>
     </mat-form-field>
     <mat-form-field class="param-full-width">
+      <mat-label>Expected Output</mat-label>
       <input
         matInput
-        placeholder="Expected Output"
         [value]="data.task.expectedOutput"
         (input)="data.task.expectedOutput = $event.target.value"
         />
@@ -172,10 +172,10 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 
     <h2>Scoring</h2>
     <mat-form-field class="param-full-width">
+      <mat-label>Score</mat-label>
       <input
         matInput
         type="number"
-        placeholder="Points awarded for successful task completion"
         [(ngModel)]="data.task.score"
         />
     </mat-form-field>
@@ -192,26 +192,26 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 
         <h2>Delay / Iteration / Expiration</h2>
         <mat-form-field class="param-full-width">
+          <mat-label>Delay (seconds)</mat-label>
           <input
             matInput
             type="number"
-            placeholder="Delay (in seconds) Before Executing This Task"
             [(ngModel)]="data.task.delaySeconds"
             />
         </mat-form-field>
         <mat-form-field class="param-full-width">
+          <mat-label>Number of Iterations</mat-label>
           <input
             matInput
             type="number"
-            placeholder="Number of Iterations"
             [(ngModel)]="data.task.iterations"
             />
         </mat-form-field>
         <mat-form-field class="param-full-width">
+          <mat-label>Interval (seconds)</mat-label>
           <input
             matInput
             type="number"
-            placeholder="Interval (in seconds) Between Iterations"
             [(ngModel)]="data.task.intervalSeconds"
             />
         </mat-form-field>
@@ -231,10 +231,10 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           </mat-select>
         </mat-form-field>
         <mat-form-field class="param-full-width">
+          <mat-label>Expiration Timeout (seconds)</mat-label>
           <input
             matInput
             type="number"
-            placeholder="Expiration Timeout (in seconds)"
             [(ngModel)]="data.task.expirationSeconds"
             />
         </mat-form-field>
@@ -256,9 +256,9 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             <h2>VM Selection</h2>
             @if (!chooseVms) {
               <mat-form-field class="param-full-width">
+                <mat-label>VM Mask (VM name includes this text)</mat-label>
                 <input
                   matInput
-                  placeholder="VM Mask (VM name includes this text)"
                   [value]="data.task.vmMask"
                   (input)="data.task.vmMask = $event.target.value"
                   />

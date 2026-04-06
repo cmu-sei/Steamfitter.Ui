@@ -465,17 +465,6 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
     return sortedResults;
   }
 
-  toggleNodeDetails(node: FlatTaskNode) {
-    const id = !!node.task ? node.task.id : null;
-    if (!!id) {
-      if (this.expandedDetails.has(id)) {
-        this.expandedDetails.delete(id);
-      } else {
-        this.expandedDetails.add(id);
-      }
-    }
-  }
-
   areDetailsExpanded(node: FlatTaskNode) {
     const id = !!node.task ? node.task.id : null;
     const isExpanded = !!id && this.expandedDetails.has(id);
