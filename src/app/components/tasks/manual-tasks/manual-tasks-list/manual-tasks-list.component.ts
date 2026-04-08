@@ -46,6 +46,7 @@ export class ManualTasksListComponent implements OnInit {
     queued: 'mdi-clock-time-three-outline',
     sent: 'mdi-send',
     time: 'mdi-alarm',
+    cancelled: 'mdi-cancel',
   };
 
   statusIcon(status: string): string {
