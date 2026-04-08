@@ -1,11 +1,17 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
+:host {
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
 .app-container {
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 100vh;
+  height: 100%;
   background-color: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
   overflow: hidden;
@@ -99,7 +105,7 @@
 .main-area {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 44px - 20px);
+  height: calc(100% - 44px - 20px);
   min-height: 0;
   overflow: hidden;
   padding-bottom: 8px;
