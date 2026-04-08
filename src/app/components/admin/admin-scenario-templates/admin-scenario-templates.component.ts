@@ -6,6 +6,7 @@ Copyright 2024 Carnegie Mellon University. All Rights Reserved.
 import { Component, OnInit } from '@angular/core';
 import { ScenarioTemplateDataService } from 'src/app/data/scenario-template/scenario-template-data.service';
 import { ScenarioTemplateQuery } from 'src/app/data/scenario-template/scenario-template.query';
+import { ScenarioTemplate } from 'src/app/generated/steamfitter.api';
 
 @Component({
     selector: 'app-admin-scenario-templates',
@@ -24,5 +25,13 @@ export class AdminScenarioTemplatesComponent implements OnInit {
 
   ngOnInit(): void {
     this.scenarioTemplateDataService.load();
+  }
+
+  saveScenarioTemplate(scenarioTemplate: ScenarioTemplate) {
+    if (!scenarioTemplate.id) {
+      this.scenarioTemplateDataService.add(scenarioTemplate);
+    } else {
+      this.scenarioTemplateDataService.updateScenarioTemplate(scenarioTemplate);
+    }
   }
 }

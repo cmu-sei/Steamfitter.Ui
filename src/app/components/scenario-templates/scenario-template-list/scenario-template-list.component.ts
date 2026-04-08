@@ -111,6 +111,13 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.permissions = this.permissionDataService.permissions;
+    // When selectedScenarioTemplate arrives asynchronously (e.g. from URL query param
+    // on initial load), expand that scenario template's row.
+    if (!!changes.selectedScenarioTemplate && !!changes.selectedScenarioTemplate.currentValue &&
+        !!changes.selectedScenarioTemplate.currentValue.id &&
+        changes.selectedScenarioTemplate.currentValue.id !== this.expandedScenarioTemplateId) {
+      this.expandedScenarioTemplateId = changes.selectedScenarioTemplate.currentValue.id;
+    }
     if (changes.paginator && this.paginator) {
       this.scenarioTemplateDataSource.paginator = this.paginator;
     }
