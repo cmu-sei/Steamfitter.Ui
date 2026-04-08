@@ -4,5 +4,6 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 -->
 
 <app-scenario-template-list class="background" fxFill fxLayout="row" fxLayoutAlign="center start"
-  [isLoading]="loading$ | async" [scenarioTemplateList]="scenarioTemplates$ | async" [adminMode]="true">
+  [isLoading]="loading$ | async" [scenarioTemplateList]="scenarioTemplates$ | async" [adminMode]="true"
+  (saveScenarioTemplate)="saveScenarioTemplate($event)">
 </app-scenario-template-list>
