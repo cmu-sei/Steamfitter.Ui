@@ -57,6 +57,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {
   ComnAuthModule,
+  ComnHeaderBarModule,
   ComnSettingsConfig,
   ComnSettingsModule,
   ComnSettingsService
@@ -117,6 +118,7 @@ import { ManualTasksListComponent } from './components/tasks/manual-tasks/manual
 
 const settings: ComnSettingsConfig = {
   url: 'assets/config/settings.json',
+  sharedUrl: 'assets/config/settings.shared.json',
   envUrl: 'assets/config/settings.env.json',
 };
 
@@ -234,7 +236,8 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
     NgxMatDatepickerApply,
     NgxMatDatepickerCancel,
     NgxMatDatepickerClear,
-    CwdDialogsModule], providers: [
+    CwdDialogsModule,
+    ComnHeaderBarModule], providers: [
       DialogService,
       SystemMessageService,
       UserDataService,
