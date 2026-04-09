@@ -33,6 +33,7 @@ export interface PasteLocation {
 })
 export class TaskDataService {
   private _requestedTaskId$ = new BehaviorSubject<string>('');
+  readonly requestedTaskId$ = this._requestedTaskId$.asObservable();
   readonly taskList: Observable<Task[]>;
   readonly selected: Observable<Task>;
   readonly filterControl = new UntypedFormControl();
@@ -50,16 +51,16 @@ export class TaskDataService {
     private router: Router,
     activatedRoute: ActivatedRoute
   ) {
-    this.filterTerm = activatedRoute.queryParamMap.pipe(
-      tap((params) => {
-        const taskId = params.get('taskId') || '';
-        if (taskId !== this._requestedTaskId$.getValue()) {
-          if (!!taskId) {
-            this.loadById(taskId);
-          }
-          this._requestedTaskId$.next(taskId);
+    activatedRoute.queryParamMap.subscribe((params) => {
+      const taskId = params.get('taskId') || '';
+      if (taskId !== this._requestedTaskId$.getValue()) {
+        if (!!taskId) {
+          this.loadById(taskId);
         }
-      }),
+        this._requestedTaskId$.next(taskId);
+      }
+    });
+    this.filterTerm = activatedRoute.queryParamMap.pipe(
       map((params) => params.get('taskmask') || '')
     );
     this.filterControl.valueChanges.subscribe((term) => {
@@ -290,7 +291,7 @@ export class TaskDataService {
 
   setActive(id: string) {
     this.router.navigate([], {
-      queryParams: { taskId: id },
+      queryParams: { taskId: id || null },
       queryParamsHandling: 'merge',
     });
   }

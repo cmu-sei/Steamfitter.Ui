@@ -135,7 +135,14 @@ export class HomeAppComponent implements OnDestroy, OnInit {
   selectTab(section: Section) {
     this.filterString = '';
     this.router.navigate([], {
-      queryParams: { tab: section },
+      queryParams: {
+        tab: section,
+        scenarioId: null,
+        scenarioTemplateId: null,
+        viewId: null,
+        taskId: null,
+        resultId: null,
+      },
       queryParamsHandling: 'merge',
     });
   }

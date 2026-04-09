@@ -17,6 +17,15 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
   width: 40px;
   text-align: center;
   vertical-align: middle;
+
+  mat-icon {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+  }
 }
 
 .score-cell {

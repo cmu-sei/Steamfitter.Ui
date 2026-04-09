@@ -19,6 +19,7 @@ import {
 } from '@angular/material/tree';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { TaskDataService } from 'src/app/data/task/task-data.service';
 import { TaskEditComponent } from 'src/app/components/tasks/task-edit/task-edit.component';
 import { DialogService } from 'src/app/services/dialog/dialog.service';
 import {
@@ -115,12 +116,23 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
   @ViewChild(MatMenuTrigger, { static: true }) contextMenu: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
 
-  constructor(public dialogService: DialogService, private dialog: MatDialog) {}
+  constructor(public dialogService: DialogService, private dialog: MatDialog, private taskDataService: TaskDataService) {}
 
   ngOnInit() {
+    this.taskDataService.requestedTaskId$
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe((taskId) => {
+        if (!!taskId && taskId !== this.selectedTaskId) {
+          this.selectedTaskId = taskId;
+        }
+      });
     this.taskList.pipe(takeUntil(this.unsubscribe)).subscribe((tasks) => {
       this.tasks = !tasks ? [] : this.filterTasks(tasks);
       this.createTaskNodes();
+      // Expand the task details panel if it matches the URL taskId
+      if (this.selectedTaskId && this.tasks.some(t => t.id === this.selectedTaskId)) {
+        this.expandedDetails.add(this.selectedTaskId);
+      }
     });
     if (!!this.resultList) {
       this.resultList.pipe(takeUntil(this.unsubscribe)).subscribe((results) => {
@@ -187,6 +199,13 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
       }
     });
     return newNode;
+  }
+
+  deselectTask(taskId: string) {
+    this.expandedDetails.delete(taskId);
+    if (this.selectedTaskId === taskId) {
+      this.selectTask('');
+    }
   }
 
   /**
@@ -451,6 +470,7 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
     queued: 'mdi-clock-time-three-outline',
     sent: 'mdi-send',
     time: 'mdi-alarm',
+    cancelled: 'mdi-cancel',
   };
 
   statusIcon(status: string): string {
@@ -463,17 +483,6 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
       a[sortBy] < b[sortBy] ? sortValue : -1 * sortValue
     );
     return sortedResults;
-  }
-
-  toggleNodeDetails(node: FlatTaskNode) {
-    const id = !!node.task ? node.task.id : null;
-    if (!!id) {
-      if (this.expandedDetails.has(id)) {
-        this.expandedDetails.delete(id);
-      } else {
-        this.expandedDetails.add(id);
-      }
-    }
   }
 
   areDetailsExpanded(node: FlatTaskNode) {

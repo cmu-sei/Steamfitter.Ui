@@ -68,7 +68,6 @@ export class ScenarioListComponent implements OnInit, OnChanges {
     'status',
     'startDate',
     'endDate',
-    'description',
   ];
   @Input() selectedStatuses: string[] = ['active', 'ready'];
   statusFilteredScenarios: Scenario[];
@@ -117,6 +116,13 @@ export class ScenarioListComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     this.permissions = this.permissionDataService.permissions;
+    // When selectedScenario arrives asynchronously (e.g. from URL query param
+    // on initial load), expand that scenario's row.
+    if (!!changes.selectedScenario && !!changes.selectedScenario.currentValue &&
+        !!changes.selectedScenario.currentValue.id &&
+        changes.selectedScenario.currentValue.id !== this.expandedScenarioId) {
+      this.expandedScenarioId = changes.selectedScenario.currentValue.id;
+    }
     if (changes.paginator && this.paginator) {
       this.scenarioDataSource.paginator = this.paginator;
     }

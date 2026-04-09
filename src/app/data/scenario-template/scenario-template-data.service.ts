@@ -259,7 +259,7 @@ export class ScenarioTemplateDataService {
 
   setActive(id: string) {
     this.router.navigate([], {
-      queryParams: { scenarioTemplateId: id },
+      queryParams: { scenarioTemplateId: id || null, scenarioId: null, viewId: null },
       queryParamsHandling: 'merge',
     });
   }

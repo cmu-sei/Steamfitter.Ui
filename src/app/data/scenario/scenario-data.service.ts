@@ -342,7 +342,7 @@ export class ScenarioDataService {
 
   setActive(id: string) {
     this.router.navigate([], {
-      queryParams: { scenarioId: id },
+      queryParams: { scenarioId: id || null, scenarioTemplateId: null },
       queryParamsHandling: 'merge',
     });
   }
