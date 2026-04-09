@@ -28,15 +28,19 @@ export class PlayerDataService {
   readonly vmFilter = new UntypedFormControl();
   private _selectedVms: string[] = [];
   readonly selectedVms = new BehaviorSubject<string[]>(this._selectedVms);
-  private requestedViewId = this.activatedRoute.queryParamMap.pipe(
-    map((params) => params.get('viewId') || '')
-  );
+  private requestedViewId$ = new BehaviorSubject<string>('');
+  private requestedViewId = this.requestedViewId$.asObservable();
 
   constructor(
     private playerService: PlayerService,
     private router: Router,
     private activatedRoute: ActivatedRoute
   ) {
+    // Seed viewId from URL if present (for backward-compatible deep links)
+    const initialViewId = activatedRoute.snapshot.queryParamMap.get('viewId') || '';
+    if (initialViewId) {
+      this.requestedViewId$.next(initialViewId);
+    }
     this._viewMask = activatedRoute.queryParamMap.pipe(
       map((params) => params.get('exmask') || '')
     );
@@ -117,10 +121,7 @@ export class PlayerDataService {
   }
 
   selectView(viewId: string) {
-    this.router.navigate([], {
-      queryParams: { viewId: viewId },
-      queryParamsHandling: 'merge',
-    });
+    this.requestedViewId$.next(viewId);
   }
 
   getAllVmsFromApi() {

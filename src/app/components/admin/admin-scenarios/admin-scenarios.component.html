@@ -5,5 +5,5 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 
 <app-scenario-list class="background" fxFill fxLayout="row" fxLayoutAlign="center start"
   [isLoading]="loading$ | async" [scenarioList]="scenarios$ | async" [statuses]="statuses | async" [adminMode]="true"
-  [views]="viewList | async">
+  [views]="viewList | async" (saveScenario)="saveScenario($event)">
 </app-scenario-list>

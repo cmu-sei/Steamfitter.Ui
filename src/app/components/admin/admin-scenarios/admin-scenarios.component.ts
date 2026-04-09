@@ -10,6 +10,7 @@ import { ScenarioDataService } from 'src/app/data/scenario/scenario-data.service
 import { ScenarioQuery } from 'src/app/data/scenario/scenario.query';
 import { PlayerDataService } from 'src/app/data/player/player-data-service';
 import { ActivatedRoute } from '@angular/router';
+import { Scenario } from 'src/app/generated/steamfitter.api';
 
 @Component({
     selector: 'app-admin-scenarios',
@@ -37,5 +38,13 @@ export class AdminScenariosComponent implements OnInit {
 
   ngOnInit(): void {
     this.scenarioDataService.load();
+  }
+
+  saveScenario(scenario: Scenario) {
+    if (!scenario.id) {
+      this.scenarioDataService.add(scenario);
+    } else {
+      this.scenarioDataService.updateScenario(scenario);
+    }
   }
 }
