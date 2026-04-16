@@ -69,6 +69,9 @@
                   "maximumWarning": "6kb"
                 }
               ]
+            },
+            "localNPM": {
+              "tsConfig": "tsconfig.local-npm.json"
             }
           }
         },
@@ -81,6 +84,9 @@
           "configurations": {
             "production": {
               "buildTarget": "steamfitter-web:build:production"
+            },
+            "localNPM": {
+              "buildTarget": "steamfitter-web:build:development,localNPM"
             }
           }
         },
