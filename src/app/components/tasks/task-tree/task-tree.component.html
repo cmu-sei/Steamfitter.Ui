@@ -3,12 +3,6 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
 
-@if (isLoading | async) {
-<mat-card appearance="outlined" style="display: flex; justify-content: center; align-items: center; width: 100%">
-  <mat-progress-spinner color="primary" mode="indeterminate">
-  </mat-progress-spinner>
-</mat-card>
-}
 @if (!(isLoading | async)) {
 <mat-card class="task-card" appearance="outlined" flex="100">
   <div (contextmenu)="onContextMenu($event, null)">
@@ -137,6 +131,12 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       </mat-tree>
     </div>
   </div>
+</mat-card>
+}
+@if (isLoading | async) {
+<mat-card appearance="outlined" style="display: flex; justify-content: center; align-items: center; width: 100%">
+  <mat-progress-spinner color="primary" mode="indeterminate">
+  </mat-progress-spinner>
 </mat-card>
 }
 <div style="visibility: hidden; position: fixed" [style.left]="contextMenuPosition.x"
