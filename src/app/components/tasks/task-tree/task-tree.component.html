@@ -134,16 +134,11 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 </mat-card>
 }
 @if (isLoading | async) {
-<mat-card appearance="outlined" flex>
-  <div class="cssLayoutColumnCenterCenter">
-    <div flex>
-      <mat-progress-spinner color="accent" mode="indeterminate">
-      </mat-progress-spinner>
-    </div>
-  </div>
+<mat-card appearance="outlined" style="display: flex; justify-content: center; align-items: center; width: 100%">
+  <mat-progress-spinner color="primary" mode="indeterminate">
+  </mat-progress-spinner>
 </mat-card>
 }
-
 <div style="visibility: hidden; position: fixed" [style.left]="contextMenuPosition.x"
   [style.top]="contextMenuPosition.y" [matMenuTriggerFor]="contextMenu"></div>
 <mat-menu #contextMenu="matMenu">
