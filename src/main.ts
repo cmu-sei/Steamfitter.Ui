@@ -3,10 +3,15 @@
 
 import { enableProdMode, provideZoneChangeDetection } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-import { enableAkitaProdMode } from '@datorama/akita';
+import { enableAkitaProdMode, persistState } from '@datorama/akita';
 
 import { AppModule } from './app/app.module';
 import { environment } from './environments/environment';
+
+export const storage = persistState({
+  key: 'akita-steamfitter-ui',
+  include: ['auth.ui'],
+});
 
 if (environment.production) {
   enableProdMode();
