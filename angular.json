@@ -70,6 +70,16 @@
                 }
               ]
             },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": {
+                "scripts": true,
+                "styles": true,
+                "vendor": true
+              },
+              "namedChunks": true
+            },
             "localNPM": {
               "tsConfig": "tsconfig.local-npm.json"
             }
@@ -81,9 +91,13 @@
             "port": 4401,
             "buildTarget": "steamfitter-web:build"
           },
+          "defaultConfiguration": "development",
           "configurations": {
             "production": {
               "buildTarget": "steamfitter-web:build:production"
+            },
+            "development": {
+              "buildTarget": "steamfitter-web:build:development"
             },
             "localNPM": {
               "buildTarget": "steamfitter-web:build:development,localNPM"
