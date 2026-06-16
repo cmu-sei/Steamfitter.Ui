@@ -42,11 +42,11 @@ export class ScenarioEditDialogComponent {
   );
   public startDateFormControl = new UntypedFormControl(
     this.data.scenario.startDate ? this.data.scenario.startDate : '',
-    []
+    [Validators.required]
   );
   public endDateFormControl = new UntypedFormControl(
     this.data.scenario.endDate ? this.data.scenario.endDate : '',
-    []
+    [Validators.required]
   );
   public matcher = new UserErrorStateMatcher();
 
@@ -64,6 +64,8 @@ export class ScenarioEditDialogComponent {
       this.scenarioNameFormControl.hasError('minlength') ||
       this.descriptionFormControl.hasError('required') ||
       this.descriptionFormControl.hasError('minlength') ||
+      this.startDateFormControl.hasError('required') ||
+      this.endDateFormControl.hasError('required') ||
       !this.data.scenario.viewId
     );
   }
