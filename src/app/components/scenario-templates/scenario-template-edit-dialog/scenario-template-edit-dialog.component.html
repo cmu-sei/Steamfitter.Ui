@@ -69,6 +69,8 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           <input
             matInput
             type="number"
+            min="1"
+            step="1"
             placeholder="Duration Hours (required)"
             [formControl]="durationHoursFormControl"
             [errorStateMatcher]="notAnIntegerErrorState"
@@ -85,22 +87,17 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         </mat-form-field>
       </div>
     </div>
-    <div class="cssLayoutRowStartCenter bottom-button">
-      <div class="delete-button">
-        <button
-          mat-stroked-button
-          (click)="handleEditComplete(true)"
-          [disabled]="!errorFree()"
-          style="margin-left: 40px"
-          >
-          Save
-        </button>
-      </div>
-      <div class="delete-button">
-        <button mat-stroked-button (click)="handleEditComplete(false)">
-          Cancel
-        </button>
-      </div>
-    </div>
   </div>
+  <mat-dialog-actions align="end">
+    <button mat-stroked-button (click)="handleEditComplete(false)">
+      Cancel
+    </button>
+    <button
+      mat-stroked-button
+      (click)="handleEditComplete(true)"
+      [disabled]="!errorFree()"
+      >
+      Save
+    </button>
+  </mat-dialog-actions>
 }

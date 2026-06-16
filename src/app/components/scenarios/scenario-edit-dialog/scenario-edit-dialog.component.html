@@ -60,7 +60,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     </div>
     <div class="add-margin">
       <div>
-        <mat-form-field>
+        <mat-form-field class="full-width">
           <mat-label>View</mat-label>
           <mat-select
             placeholder="View"
@@ -83,8 +83,8 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     </div>
     <div class="add-margin">
       <div>
-        <mat-form-field>
-          <mat-label>Start Date / Time</mat-label>
+        <mat-form-field class="full-width">
+          <mat-label>Start Date / Time (required)</mat-label>
           <input
             matInput
             [ngxMatDatetimePicker]="startDatePicker"
@@ -97,6 +97,11 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           </span>
           <ngx-mat-datepicker-toggle matSuffix [for]="startDatePicker">
           </ngx-mat-datepicker-toggle>
+          @if (startDateFormControl.hasError('required')) {
+            <mat-error>
+              Start Date / Time is <strong>required</strong>
+            </mat-error>
+          }
           <ngx-mat-datetime-picker #startDatePicker
             [showSpinners]="true"
             [showSeconds]="true"
@@ -117,8 +122,8 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     </div>
     <div class="add-margin">
       <div>
-        <mat-form-field>
-          <mat-label>End Date / Time</mat-label>
+        <mat-form-field class="full-width">
+          <mat-label>End Date / Time (required)</mat-label>
           <input
             matInput
             [ngxMatDatetimePicker]="endDatePicker"
@@ -131,6 +136,11 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           </span>
           <ngx-mat-datepicker-toggle matSuffix [for]="endDatePicker">
           </ngx-mat-datepicker-toggle>
+          @if (endDateFormControl.hasError('required')) {
+            <mat-error>
+              End Date / Time is <strong>required</strong>
+            </mat-error>
+          }
           <ngx-mat-datetime-picker #endDatePicker
             [showSpinners]="true"
             [showSeconds]="true"
@@ -149,22 +159,17 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         </mat-form-field>
       </div>
     </div>
-    <div class="cssLayoutRowStartCenter bottom-button">
-      <div class="delete-button">
-        <button
-          mat-stroked-button
-          (click)="handleEditComplete(true)"
-          [disabled]="!errorFree()"
-          style="margin-left: 40px"
-          >
-          Save
-        </button>
-      </div>
-      <div class="delete-button">
-        <button mat-stroked-button (click)="handleEditComplete(false)">
-          Cancel
-        </button>
-      </div>
-    </div>
   </div>
+  <mat-dialog-actions align="end">
+    <button mat-stroked-button (click)="handleEditComplete(false)">
+      Cancel
+    </button>
+    <button
+      mat-stroked-button
+      (click)="handleEditComplete(true)"
+      [disabled]="!errorFree()"
+      >
+      Save
+    </button>
+  </mat-dialog-actions>
 }

@@ -283,14 +283,13 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           }
         </div>
       </mat-dialog-content>
-      <mat-dialog-actions align-items="center">
+      <mat-dialog-actions align="end">
+        <button mat-stroked-button (click)="handleEditComplete(false)">Cancel</button>
         <button
           mat-stroked-button
           (click)="handleEditComplete(true)"
           [disabled]="!errorFree()"
-          style="margin-right: 400px"
           >
           Save
         </button>
-        <button mat-stroked-button (click)="handleEditComplete(false)">Cancel</button>
       </mat-dialog-actions>
