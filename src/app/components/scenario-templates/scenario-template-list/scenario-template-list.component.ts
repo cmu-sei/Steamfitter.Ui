@@ -168,7 +168,7 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
       ? <ScenarioTemplate>{ name: '', description: '' }
       : scenarioTemplate;
     const dialogRef = this.dialog.open(ScenarioTemplateEditDialogComponent, {
-      width: '800px',
+      width: '480px',
       data: { scenarioTemplate: scenarioTemplate },
     });
     dialogRef.componentInstance.editComplete.subscribe((result) => {
@@ -242,7 +242,7 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
    */
   editNewScenario(scenario: Scenario) {
     const dialogRef = this.dialog.open(ScenarioEditDialogComponent, {
-      width: '800px',
+      width: '480px',
       data: { scenario: scenario },
     });
     dialogRef.componentInstance.editComplete.subscribe((newScenario) => {

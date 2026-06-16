@@ -179,7 +179,7 @@ export class ScenarioListComponent implements OnInit, OnChanges {
   editScenario(scenario: Scenario | null) {
     scenario = !scenario ? <Scenario>{ name: '', description: '' } : scenario;
     const dialogRef = this.dialog.open(ScenarioEditDialogComponent, {
-      width: '800px',
+      width: '480px',
       data: { scenario: { ...scenario }, views: this.views },
     });
     dialogRef.componentInstance.editComplete.subscribe((result) => {
