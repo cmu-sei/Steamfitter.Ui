@@ -61,6 +61,7 @@ export class TaskEditComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.data.task = this.formatTaskVmList({ ...this.data.task });
     this.taskService
       .getAvailableCommands()
       .pipe(takeUntil(this.unsubscribe$))
