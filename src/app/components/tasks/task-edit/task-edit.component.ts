@@ -12,7 +12,6 @@ import {
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { TaskDataService } from 'src/app/data/task/task-data.service';
 import { Command } from 'src/app/models/command';
 import {
   Task,
@@ -52,7 +51,6 @@ export class TaskEditComponent implements OnInit, OnDestroy {
 
   constructor(
     public taskService: TaskService,
-    private taskDataService: TaskDataService,
     dialogRef: MatDialogRef<TaskEditComponent>,
     @Inject(MAT_DIALOG_DATA)
     public data: { task: Task; vmCredentials: Array<VmCredential> }
@@ -62,6 +60,9 @@ export class TaskEditComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.data.task = this.formatTaskVmList({ ...this.data.task });
+    if (!this.data.task.iterationTermination) {
+      this.data.task.iterationTermination = TaskIterationTermination.IterationCount;
+    }
     this.taskService
       .getAvailableCommands()
       .pipe(takeUntil(this.unsubscribe$))
@@ -79,17 +80,6 @@ export class TaskEditComponent implements OnInit, OnDestroy {
           );
         }
       );
-    this.taskDataService.selected
-      .pipe(takeUntil(this.unsubscribe$))
-      .subscribe((t) => {
-        if (!!t && !!t.id) {
-          this.data.task = this.formatTaskVmList({ ...t });
-          if (!t.iterationTermination) {
-            t.iterationTermination = TaskIterationTermination.IterationCount;
-          }
-          this.selectTheTaskCommand();
-        }
-      });
   }
 
   formatTaskVmList(task: Task) {
