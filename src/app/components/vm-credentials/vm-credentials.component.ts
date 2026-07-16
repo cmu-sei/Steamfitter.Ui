@@ -5,13 +5,13 @@ import { VmCredential } from 'src/app/generated/steamfitter.api/model/vmCredenti
 import { ScenarioQuery } from 'src/app/data/scenario/scenario.query';
 import { ScenarioTemplateQuery } from 'src/app/data/scenario-template/scenario-template.query';
 import { Scenario, ScenarioTemplate } from 'src/app/generated/steamfitter.api';
-import { DialogService } from 'src/app/services/dialog/dialog.service';
 import { MatDialog } from '@angular/material/dialog';
 import { ScenarioTemplateDataService } from 'src/app/data/scenario-template/scenario-template-data.service';
 import { ScenarioDataService } from 'src/app/data/scenario/scenario-data.service';
 import { AddDialogComponent } from './add-dialog/add-dialog.component';
 import { Observable } from 'rxjs';
 import { delay, tap } from 'rxjs/operators';
+import { CrucibleDialogService } from '@cmusei/crucible-common';
 
 @Component({
     selector: 'app-vm-credentials',
@@ -35,7 +35,7 @@ export class VmCredentialsComponent implements OnInit {
   constructor(
     private scenarioTemplateQuery: ScenarioTemplateQuery,
     private scenarioQuery: ScenarioQuery,
-    private dialogService: DialogService,
+    private confirmService: CrucibleDialogService,
     private dialog: MatDialog,
     private scenarioTemplateDataService: ScenarioTemplateDataService,
     private scenarioDataService: ScenarioDataService
@@ -135,15 +135,17 @@ export class VmCredentialsComponent implements OnInit {
   }
 
   deleteVmCredential(vmCredential: VmCredential) {
-    this.dialogService
-      .confirm(
-        'Delete VM Credential',
-        'Are you sure that you want to delete VM Credential ' +
+    this.confirmService
+      .confirm({
+        title: 'Delete VM Credential',
+        message:
+          'Are you sure that you want to delete VM Credential ' +
           vmCredential.username +
-          '?'
-      )
-      .subscribe((result) => {
-        if (result['confirm']) {
+          '?',
+      })
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (confirmed) {
           if (this.scenarioTemplateId) {
             this.scenarioTemplateDataService.deleteVmCredential(
               this.scenarioTemplateId,

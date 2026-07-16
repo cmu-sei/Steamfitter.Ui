@@ -9,7 +9,7 @@ import {
   OnInit,
   Output,
 } from '@angular/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { Command } from 'src/app/models/command';
@@ -51,12 +51,9 @@ export class TaskEditComponent implements OnInit, OnDestroy {
 
   constructor(
     public taskService: TaskService,
-    dialogRef: MatDialogRef<TaskEditComponent>,
     @Inject(MAT_DIALOG_DATA)
     public data: { task: Task; vmCredentials: Array<VmCredential> }
-  ) {
-    dialogRef.disableClose = true;
-  }
+  ) {}
 
   ngOnInit() {
     this.data.task = this.formatTaskVmList({ ...this.data.task });

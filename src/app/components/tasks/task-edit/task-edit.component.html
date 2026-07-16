@@ -2,19 +2,15 @@
 Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
-<h2 mat-dialog-title>
-  Edit Task
-  <button
-    mat-icon-button
-    (click)="handleEditComplete(false)"
-    title="Close"
-    class="close-button"
-    tabindex="-1"
-    >
-    <mat-icon fontIcon="mdi-close-circle"></mat-icon>
-  </button>
-</h2>
-<mat-dialog-content>
+<crucible-dialog
+  dialogTitle="Edit Task"
+  submitLabel="Save"
+  [submitDisabled]="!errorFree()"
+  [guardUnsavedWork]="true"
+  (cancel)="handleEditComplete(false)"
+  (submit)="handleEditComplete(true)"
+>
+<div crucibleDialogContent>
   <div class="content">
     <mat-form-field class="param-full-width">
       <mat-label>Name</mat-label>
@@ -22,6 +18,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         matInput
         [value]="data.task.name"
         (input)="data.task.name = $event.target.value"
+        cdkFocusInitial
         />
     </mat-form-field>
     <mat-form-field class="param-full-width">
@@ -282,14 +279,5 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             </span>
           }
         </div>
-      </mat-dialog-content>
-      <mat-dialog-actions align="end">
-        <button mat-stroked-button (click)="handleEditComplete(false)">Cancel</button>
-        <button
-          mat-stroked-button
-          (click)="handleEditComplete(true)"
-          [disabled]="!errorFree()"
-          >
-          Save
-        </button>
-      </mat-dialog-actions>
+      </div>
+</crucible-dialog>

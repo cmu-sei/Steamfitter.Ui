@@ -29,8 +29,8 @@ import { View } from 'src/app/generated/steamfitter.api';
 import { ScenarioEditComponent } from 'src/app/components/scenarios/scenario-edit/scenario-edit.component';
 import { ScenarioEditDialogComponent } from 'src/app/components/scenarios/scenario-edit-dialog/scenario-edit-dialog.component';
 import { ScenarioDataService } from 'src/app/data/scenario/scenario-data.service';
-import { DialogService } from 'src/app/services/dialog/dialog.service';
 import { Scenario } from 'src/app/generated/steamfitter.api';
+import { CrucibleDialogService } from '@cmusei/crucible-common';
 
 export interface Action {
   Value: string;
@@ -86,7 +86,7 @@ export class ScenarioListComponent implements OnInit, OnChanges {
   constructor(
     private scenarioDataService: ScenarioDataService,
     private permissionDataService: PermissionDataService,
-    public dialogService: DialogService,
+    private confirmService: CrucibleDialogService,
     private dialog: MatDialog
   ) {
     if (!this.scenarioList || this.scenarioList.length === 0) {
@@ -194,13 +194,15 @@ export class ScenarioListComponent implements OnInit, OnChanges {
    * Delete a scenario after confirmation
    */
   deleteScenario(scenario: Scenario): void {
-    this.dialogService
-      .confirm(
-        'Delete Scenario',
-        'Are you sure that you want to delete scenario ' + scenario.name + '?'
-      )
-      .subscribe((result) => {
-        if (result['confirm']) {
+    this.confirmService
+      .confirm({
+        title: 'Delete Scenario',
+        message:
+          'Are you sure that you want to delete scenario ' + scenario.name + '?',
+      })
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (confirmed) {
           this.scenarioDataService.delete(scenario.id);
         }
       });
@@ -210,15 +212,17 @@ export class ScenarioListComponent implements OnInit, OnChanges {
    * Copy a scenario after confirmation
    */
   copyScenario(scenario: Scenario): void {
-    this.dialogService
-      .confirm(
-        'Copy Scenario',
-        'Are you sure that you want to create a new scenario from ' +
+    this.confirmService
+      .confirm({
+        title: 'Copy Scenario',
+        message:
+          'Are you sure that you want to create a new scenario from ' +
           scenario.name +
-          '?'
-      )
-      .subscribe((result) => {
-        if (result['confirm']) {
+          '?',
+      })
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (confirmed) {
           this.scenarioDataService.copyScenario(scenario.id);
         }
       });
@@ -228,13 +232,15 @@ export class ScenarioListComponent implements OnInit, OnChanges {
    * Start a scenario
    */
   startScenario(scenario: Scenario): void {
-    this.dialogService
-      .confirm(
-        'Start Scenario Now',
-        'Are you sure that you want to start scenario ' + scenario.name + '?'
-      )
-      .subscribe((result) => {
-        if (result['confirm']) {
+    this.confirmService
+      .confirm({
+        title: 'Start Scenario Now',
+        message:
+          'Are you sure that you want to start scenario ' + scenario.name + '?',
+      })
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (confirmed) {
           this.scenarioDataService.start(scenario.id);
         }
       });
@@ -244,13 +250,15 @@ export class ScenarioListComponent implements OnInit, OnChanges {
    * End a scenario
    */
   endScenario(scenario: Scenario): void {
-    this.dialogService
-      .confirm(
-        'End Scenario Now',
-        'Are you sure that you want to end scenario ' + scenario.name + '?'
-      )
-      .subscribe((result) => {
-        if (result['confirm']) {
+    this.confirmService
+      .confirm({
+        title: 'End Scenario Now',
+        message:
+          'Are you sure that you want to end scenario ' + scenario.name + '?',
+      })
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (confirmed) {
           this.scenarioDataService.end(scenario.id);
         }
       });

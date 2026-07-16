@@ -21,7 +21,6 @@ import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { TaskDataService } from 'src/app/data/task/task-data.service';
 import { TaskEditComponent } from 'src/app/components/tasks/task-edit/task-edit.component';
-import { DialogService } from 'src/app/services/dialog/dialog.service';
 import {
   Result,
   Task,
@@ -30,6 +29,7 @@ import {
   TaskStatus,
   TaskTrigger,
 } from 'src/app/generated/steamfitter.api';
+import { CrucibleDialogService } from '@cmusei/crucible-common';
 interface TaskNode {
   task: Task;
   results?: Result[];
@@ -116,7 +116,11 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
   @ViewChild(MatMenuTrigger, { static: true }) contextMenu: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
 
-  constructor(public dialogService: DialogService, private dialog: MatDialog, private taskDataService: TaskDataService) {}
+  constructor(
+    private confirmService: CrucibleDialogService,
+    private dialog: MatDialog,
+    private taskDataService: TaskDataService
+  ) {}
 
   ngOnInit() {
     this.taskDataService.requestedTaskId$
@@ -322,39 +326,42 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
   }
 
   onContextDelete(task: Task) {
-    this.dialogService
-      .confirm(
-        'Delete Task',
-        'Are you sure that you want to delete ' + task.name + '?'
-      )
-      .subscribe((result) => {
-        if (result['confirm']) {
+    this.confirmService
+      .confirm({
+        title: 'Delete Task',
+        message: 'Are you sure that you want to delete ' + task.name + '?',
+      })
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (confirmed) {
           this.deleteTaskRequested.emit(task.id);
         }
       });
   }
 
   onContextExecute(task: Task) {
-    this.dialogService
-      .confirm(
-        'Execute Task',
-        'Are you sure that you want to execute ' + task.name + '?'
-      )
-      .subscribe((result) => {
-        if (result['confirm']) {
+    this.confirmService
+      .confirm({
+        title: 'Execute Task',
+        message: 'Are you sure that you want to execute ' + task.name + '?',
+      })
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (confirmed) {
           this.executeRequested.emit(task.id);
         }
       });
   }
 
   onContextStopIterations(task: Task) {
-    this.dialogService
-      .confirm(
-        'Stop Task Iterations',
-        'Are you sure that you want to stop ' + task.name + '?'
-      )
-      .subscribe((result) => {
-        if (result['confirm']) {
+    this.confirmService
+      .confirm({
+        title: 'Stop Task Iterations',
+        message: 'Are you sure that you want to stop ' + task.name + '?',
+      })
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (confirmed) {
           this.stopIterationsRequested.emit(task.id);
         }
       });
