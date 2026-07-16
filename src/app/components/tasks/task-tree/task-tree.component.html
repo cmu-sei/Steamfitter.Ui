@@ -4,7 +4,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 -->
 
 @if (!(isLoading | async)) {
-<mat-card class="task-card" appearance="outlined" flex="100">
+<div class="task-table">
   <div (contextmenu)="onContextMenu($event, null)">
     <div class="header-row">
       <div class="buttons-cell">
@@ -18,7 +18,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         }
       </div>
       <div class="tasks-cell">
-        <b>Tasks</b>
+        <span>Tasks</span>
       </div>
     </div>
   </div>
@@ -131,7 +131,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       </mat-tree>
     </div>
   </div>
-</mat-card>
+</div>
 }
 @if (isLoading | async) {
 <mat-card appearance="outlined" style="display: flex; justify-content: center; align-items: center; width: 100%">
