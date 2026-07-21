@@ -19,13 +19,12 @@
   flex-direction: column;
   flex: 1;
   min-height: 0;
-  overflow: auto;
 }
 
-.task-card {
+.task-table {
   flex: 1;
+  overflow: auto;
   padding-bottom: 20px;
-  padding-right: 10px;
 }
 
 mat-panel-description,
@@ -36,19 +35,28 @@ span {
 .header-row {
   display: flex;
   flex-direction: row;
-  flex: 1;
   align-items: center;
-  align-content: center;
+  box-sizing: border-box;
+  min-height: 56px;
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
 }
 
 .buttons-cell {
   display: flex;
-  margin-left: 60px;
-  width: 90px;
+  flex: 0 0 140px;
+  box-sizing: border-box;
+  padding: 0 16px;
+
+  button {
+    margin-left: 20px;
+  }
 }
 
 .tasks-cell {
   display: flex;
+  flex: 1;
+  padding: 0 16px;
+  font-weight: 500;
 }
 
 .detail-span {
