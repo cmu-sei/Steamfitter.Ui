@@ -1,6 +1,7 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
+import { A11yModule } from '@angular/cdk/a11y';
 import { CdkTableModule } from '@angular/cdk/table';
 import { CdkTreeModule } from '@angular/cdk/tree';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
@@ -60,7 +61,8 @@ import {
   ComnHeaderBarModule,
   ComnSettingsConfig,
   ComnSettingsModule,
-  ComnSettingsService
+  ComnSettingsService,
+  CRUCIBLE_DIALOG_IMPORTS,
 } from '@cmusei/crucible-common';
 import { AkitaNgRouterStoreModule } from '@datorama/akita-ng-router-store';
 import { AkitaNgDevtools } from '@datorama/akita-ngdevtools';
@@ -99,7 +101,6 @@ import { ScenarioMembershipsComponent } from './components/scenarios/scenario-me
 import { ScenarioMemberListComponent } from './components/scenarios/scenario-memberships/scenario-member-list/scenario-member-list.component';
 import { ScenarioMembershipListComponent } from './components/scenarios/scenario-memberships/scenario-membership-list/scenario-membership-list.component';
 import { AddDialogComponent } from './components/vm-credentials/add-dialog/add-dialog.component';
-import { CwdDialogsModule } from './components/shared/confirm-dialog/cwd-dialogs.module';
 import { SystemMessageComponent } from './components/shared/system-message/system-message.component';
 import { TopbarComponent } from './components/shared/top-bar/topbar.component';
 import { TaskEditComponent } from './components/tasks/task-edit/task-edit.component';
@@ -109,7 +110,6 @@ import { VmListComponent } from './components/vm-list/vm-list.component';
 import { VmCredentialsComponent } from './components/vm-credentials/vm-credentials.component';
 import { VmTaskExecuteComponent } from './components/vm-task-execute/vm-task-execute.component';
 import { UserDataService } from './data/user/user-data.service';
-import { DialogService } from './services/dialog/dialog.service';
 import { SystemMessageService } from './services/system-message/system-message.service';
 import { BASE_PATH } from './generated/steamfitter.api';
 import { ApiModule as SwaggerCodegenApiModule } from './generated/steamfitter.api/api.module';
@@ -185,6 +185,7 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+    A11yModule,
     SwaggerCodegenApiModule,
     FormsModule,
     ReactiveFormsModule,
@@ -236,9 +237,8 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
     NgxMatDatepickerApply,
     NgxMatDatepickerCancel,
     NgxMatDatepickerClear,
-    CwdDialogsModule,
+    ...CRUCIBLE_DIALOG_IMPORTS,
     ComnHeaderBarModule], providers: [
-      DialogService,
       SystemMessageService,
       UserDataService,
       {

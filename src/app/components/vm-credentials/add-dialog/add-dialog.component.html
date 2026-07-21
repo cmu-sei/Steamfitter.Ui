@@ -2,10 +2,15 @@
 Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
-
-<div class="content">
-  <div class="content">
-    <h1 mat-dialog-title>Add VM Credentials</h1>
+<crucible-dialog
+  dialogTitle="Add VM Credentials"
+  submitLabel="Add"
+  cancelLabel="Cancel"
+  [guardUnsavedWork]="true"
+  (cancel)="onClick(false)"
+  (submit)="onClick(true)"
+>
+  <div crucibleDialogContent class="content">
     <mat-form-field class="param-full-width">
       <mat-label>Username</mat-label>
       <input
@@ -13,6 +18,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         placeholder="Username"
         [(ngModel)]="data.vmCredential.username"
         tabindex="1"
+        cdkFocusInitial
       />
     </mat-form-field>
     <mat-form-field class="param-full-width">
@@ -35,16 +41,4 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       />
     </mat-form-field>
   </div>
-  <div>
-    <div>
-      <button mat-stroked-button (click)="onClick(true)" tabindex="4">
-        ADD
-      </button>
-    </div>
-    <div>
-      <button mat-stroked-button (click)="onClick(false)" tabIndex="5">
-        CANCEL
-      </button>
-    </div>
-  </div>
-</div>
+</crucible-dialog>

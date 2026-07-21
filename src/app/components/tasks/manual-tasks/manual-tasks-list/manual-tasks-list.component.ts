@@ -11,8 +11,7 @@ import {
 } from '@angular/core';
 import { TaskDataService } from 'src/app/data/task/task-data.service';
 import { Scenario, Task } from 'src/app/generated/steamfitter.api';
-import { MatIcon } from '@angular/material/icon';
-import { ConfirmDialogService } from 'src/app/components/shared/confirm-dialog/service/confirm-dialog.service';
+import { CrucibleDialogService } from '@cmusei/crucible-common';
 
 @Component({
     selector: 'app-manual-tasks-list',
@@ -27,7 +26,7 @@ export class ManualTasksListComponent implements OnInit {
 
   constructor(
     private taskDataService: TaskDataService,
-    private confirmDialogService: ConfirmDialogService
+    private confirmDialogService: CrucibleDialogService
   ) {}
 
   ngOnInit(): void {}
@@ -55,12 +54,15 @@ export class ManualTasksListComponent implements OnInit {
 
   executeTask(task: Task) {
     this.confirmDialogService
-      .confirmDialog('Execute Task?', `Are you sure you want to execute "${task.name}"?`, {
-        buttonTrueText: 'Execute',
-        buttonFalseText: 'Cancel',
+      .confirm({
+        title: 'Execute Task?',
+        message: `Are you sure you want to execute "${task.name}"?`,
+        confirmText: 'Execute',
+        cancelText: 'Cancel',
       })
-      .subscribe((result) => {
-        if (!result.wasCancelled && result.confirm) {
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (confirmed) {
           this.taskDataService.execute(task.id);
         }
       });

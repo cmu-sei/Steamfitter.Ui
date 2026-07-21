@@ -13,7 +13,6 @@ import { ResultQuery } from 'src/app/data/result/result.query';
 import { ScenarioQuery } from 'src/app/data/scenario/scenario.query';
 import { TaskDataService } from 'src/app/data/task/task-data.service';
 import { TaskQuery } from 'src/app/data/task/task.query';
-import { DialogService } from 'src/app/services/dialog/dialog.service';
 import {
   Scenario,
   ScenarioStatus,
@@ -41,8 +40,7 @@ export class ScenarioEditComponent {
     private scenarioQuery: ScenarioQuery,
     private taskDataService: TaskDataService,
     private taskQuery: TaskQuery,
-    private resultQuery: ResultQuery,
-    public dialogService: DialogService
+    private resultQuery: ResultQuery
   ) {}
 
   refreshTaskList() {

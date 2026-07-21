@@ -9,8 +9,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { DialogService } from 'src/app/services/dialog/dialog.service';
+import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 /** Error when invalid control is dirty, touched, or submitted. */
 export class UserErrorStateMatcher implements ErrorStateMatcher {
@@ -73,12 +72,8 @@ export class ScenarioTemplateEditDialogComponent {
   notAnIntegerErrorState = new NotIntegerErrorStateMatcher();
 
   constructor(
-    public dialogService: DialogService,
-    dialogRef: MatDialogRef<ScenarioTemplateEditDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
-  ) {
-    dialogRef.disableClose = true;
-  }
+  ) {}
 
   errorFree() {
     const hasError =

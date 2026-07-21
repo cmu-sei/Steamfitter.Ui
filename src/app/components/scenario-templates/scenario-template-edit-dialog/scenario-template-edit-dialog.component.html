@@ -8,10 +8,15 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   data.scenarioTemplate !== undefined &&
   data.scenarioTemplate !== null
   ) {
-  <h2 mat-dialog-title>{{ data.scenarioTemplate.id ? 'Edit Scenario Template' : 'Add Scenario Template' }}</h2>
-  <div
-    mat-dialog-content
-    >
+  <crucible-dialog
+    [dialogTitle]="data.scenarioTemplate.id ? 'Edit Scenario Template' : 'Add Scenario Template'"
+    submitLabel="Save"
+    [submitDisabled]="!errorFree()"
+    [guardUnsavedWork]="true"
+    (cancel)="handleEditComplete(false)"
+    (submit)="handleEditComplete(true)"
+  >
+  <div crucibleDialogContent>
     <div class="add-margin">
       <div>
         <mat-form-field class="full-width">
@@ -23,6 +28,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             placeholder="Name (required)"
             value="{{ data.scenarioTemplate.name }}"
             [errorStateMatcher]="matcher"
+            cdkFocusInitial
             />
           @if (
             scenarioTemplateNameFormControl.hasError('required') ||
@@ -88,16 +94,5 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       </div>
     </div>
   </div>
-  <mat-dialog-actions align="end">
-    <button mat-stroked-button (click)="handleEditComplete(false)">
-      Cancel
-    </button>
-    <button
-      mat-stroked-button
-      (click)="handleEditComplete(true)"
-      [disabled]="!errorFree()"
-      >
-      Save
-    </button>
-  </mat-dialog-actions>
+  </crucible-dialog>
 }

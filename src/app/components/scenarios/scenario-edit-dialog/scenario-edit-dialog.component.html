@@ -4,10 +4,15 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 -->
 
 @if (!!data && data.scenario !== undefined && data.scenario !== null) {
-  <h2 mat-dialog-title>{{ data.scenario.id ? 'Edit Scenario' : 'Add Scenario' }}</h2>
-  <div
-    mat-dialog-content
-    >
+  <crucible-dialog
+    [dialogTitle]="data.scenario.id ? 'Edit Scenario' : 'Add Scenario'"
+    submitLabel="Save"
+    [submitDisabled]="!errorFree()"
+    [guardUnsavedWork]="true"
+    (cancel)="handleEditComplete(false)"
+    (submit)="handleEditComplete(true)"
+  >
+  <div crucibleDialogContent>
     <div class="add-margin">
       <div>
         <mat-form-field class="full-width">
@@ -20,6 +25,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             (blur)="saveScenario('name')"
             value="{{ data.scenario.name }}"
             [errorStateMatcher]="matcher"
+            cdkFocusInitial
             />
           @if (
             scenarioNameFormControl.hasError('minlength') &&
@@ -160,16 +166,5 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       </div>
     </div>
   </div>
-  <mat-dialog-actions align="end">
-    <button mat-stroked-button (click)="handleEditComplete(false)">
-      Cancel
-    </button>
-    <button
-      mat-stroked-button
-      (click)="handleEditComplete(true)"
-      [disabled]="!errorFree()"
-      >
-      Save
-    </button>
-  </mat-dialog-actions>
+  </crucible-dialog>
 }

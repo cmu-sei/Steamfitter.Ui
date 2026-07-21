@@ -30,8 +30,8 @@ import { ScenarioTemplateEditComponent } from 'src/app/components/scenario-templ
 import { ScenarioEditDialogComponent } from 'src/app/components/scenarios/scenario-edit-dialog/scenario-edit-dialog.component';
 import { ScenarioTemplateDataService } from 'src/app/data/scenario-template/scenario-template-data.service';
 import { ScenarioDataService } from 'src/app/data/scenario/scenario-data.service';
-import { DialogService } from 'src/app/services/dialog/dialog.service';
 import { Scenario, ScenarioTemplate } from 'src/app/generated/steamfitter.api';
+import { CrucibleDialogService } from '@cmusei/crucible-common';
 
 export interface Action {
   Value: string;
@@ -76,7 +76,7 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
   readonly SystemPermission = SystemPermission;
 
   constructor(
-    public dialogService: DialogService,
+    private confirmService: CrucibleDialogService,
     private permissionDataService: PermissionDataService,
     private scenarioTemplateDataService: ScenarioTemplateDataService,
     private scenarioDataService: ScenarioDataService,
@@ -183,15 +183,17 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
    * Delete a scenarioTemplate after confirmation
    */
   deleteScenarioTemplate(scenarioTemplate: ScenarioTemplate): void {
-    this.dialogService
-      .confirm(
-        'Delete ScenarioTemplate',
-        'Are you sure that you want to delete scenarioTemplate ' +
+    this.confirmService
+      .confirm({
+        title: 'Delete ScenarioTemplate',
+        message:
+          'Are you sure that you want to delete scenarioTemplate ' +
           scenarioTemplate.name +
-          '?'
-      )
-      .subscribe((result) => {
-        if (result['confirm']) {
+          '?',
+      })
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (confirmed) {
           this.scenarioTemplateDataService.delete(scenarioTemplate.id);
         }
       });
@@ -201,15 +203,17 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
    * Copy a scenarioTemplate after confirmation
    */
   copyScenarioTemplate(scenarioTemplate: ScenarioTemplate): void {
-    this.dialogService
-      .confirm(
-        'Copy ScenarioTemplate',
-        'Are you sure that you want to create a new scenarioTemplate from ' +
+    this.confirmService
+      .confirm({
+        title: 'Copy ScenarioTemplate',
+        message:
+          'Are you sure that you want to create a new scenarioTemplate from ' +
           scenarioTemplate.name +
-          '?'
-      )
-      .subscribe((result) => {
-        if (result['confirm']) {
+          '?',
+      })
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (confirmed) {
           this.scenarioTemplateDataService.copyScenarioTemplate(
             scenarioTemplate.id
           );
@@ -221,15 +225,17 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
    * Create a scenario after confirmation
    */
   createScenario(scenarioTemplate: ScenarioTemplate): void {
-    this.dialogService
-      .confirm(
-        'Create Scenario',
-        'Are you sure that you want to create a scenario from ' +
+    this.confirmService
+      .confirm({
+        title: 'Create Scenario',
+        message:
+          'Are you sure that you want to create a scenario from ' +
           scenarioTemplate.name +
-          '?'
-      )
-      .subscribe((result) => {
-        if (result['confirm']) {
+          '?',
+      })
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (confirmed) {
           this.scenarioDataService.createScenarioFromScenarioTemplate(
             scenarioTemplate.id
           );
