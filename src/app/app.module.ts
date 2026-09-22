@@ -115,6 +115,7 @@ import { BASE_PATH } from './generated/steamfitter.api';
 import { ApiModule as SwaggerCodegenApiModule } from './generated/steamfitter.api/api.module';
 import { ManualTasksPageComponent } from './components/manual-tasks-page/manual-tasks-page.component';
 import { ManualTasksListComponent } from './components/tasks/manual-tasks/manual-tasks-list/manual-tasks-list.component';
+import { environment } from '../environments/environment';
 
 const settings: ComnSettingsConfig = {
   url: 'assets/config/settings.json',
@@ -180,7 +181,7 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
     NameDialogComponent,
   ],
   exports: [MatSortModule],
-  bootstrap: [AppComponent], imports: [AkitaNgDevtools.forRoot(),
+  bootstrap: [AppComponent], imports: [environment.production ? [] : AkitaNgDevtools.forRoot(),
     AkitaNgRouterStoreModule,
     BrowserModule,
     AppRoutingModule,
