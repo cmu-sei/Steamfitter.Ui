@@ -49,7 +49,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           <td class="action-cell">
             <span [matTooltip]="scenario?.status !== 'active' ? 'Scenario is not active' : !task.executable ? 'This Task cannot be executed again once successful' : task.description">
               <button
-                mat-icon-button
+                mat-icon-button [attr.aria-label]="'Execute ' + task.name"
                 [disabled]="!task.executable || scenario?.status !== 'active'"
                 (click)="executeTask(task)"
                 >

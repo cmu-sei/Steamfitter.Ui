@@ -16,6 +16,10 @@
   "AppTitle": "Steamfitter",
   "AppTopBarHexColor": "#B1282F",
   "AppTopBarHexTextColor": "#FFFFFF",
+  "AppLightModePrimaryHexColor": "#B1282F",
+  "AppLightModePrimaryHexTextColor": "#FFFFFF",
+  "AppDarkModePrimaryHexColor": "#DD676D",
+  "AppDarkModePrimaryHexTextColor": "#000000",
   "UseLocalAuthStorage": false,
   "HeaderBarSettings": {
     "banner_background_color": "#007a33ff",

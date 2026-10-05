@@ -7,7 +7,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   @if (scenario$ | async; as scenario) {
     <div class="d-flex justify-content-center align-items-center">
       @if (embedded) {
-        <button mat-icon-button (click)="goBack.emit()" matTooltip="Return">
+        <button mat-icon-button aria-label="Return" (click)="goBack.emit()" matTooltip="Return">
           <mat-icon class="mdi-24px" fontIcon="mdi-keyboard-return"></mat-icon>
         </button>
       }

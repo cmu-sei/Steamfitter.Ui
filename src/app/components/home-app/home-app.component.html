@@ -112,7 +112,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             <mat-label>Search</mat-label>
             <input matInput [value]="filterString" (input)="applyFilter($any($event.target).value)" />
             @if (filterString) {
-            <button matSuffix mat-icon-button (click)="applyFilter('')" title="Clear Search">
+            <button matSuffix mat-icon-button aria-label="Clear Search" (click)="applyFilter('')" title="Clear Search">
               <mat-icon class="mdi-24px" fontIcon="mdi-close-circle-outline"></mat-icon>
             </button>
             }
