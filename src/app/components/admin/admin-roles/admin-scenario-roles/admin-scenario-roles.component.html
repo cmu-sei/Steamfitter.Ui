@@ -9,7 +9,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       <th mat-header-cell *matHeaderCellDef>Permissions</th>
       <th mat-header-cell *matHeaderCellDef>All</th>
       <td mat-cell *matCellDef="let permission">
-        <button mat-icon-button color="primary" [matTooltip]="permissionMap.get(permission)" [matTooltipShowDelay]="0">
+        <button mat-icon-button [attr.aria-label]="'About ' + permission" color="primary" [matTooltip]="permissionMap.get(permission)" [matTooltipShowDelay]="0">
           <mat-icon class="mdi-24px" fontIcon="mdi-information"> </mat-icon>
         </button>
         {{ permission }}
