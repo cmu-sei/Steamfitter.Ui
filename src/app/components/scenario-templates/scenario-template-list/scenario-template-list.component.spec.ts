@@ -121,13 +121,16 @@ async function renderList(
   });
 
   const user = userEvent.setup();
+  // Rows are found by their text: a role query with a name computes the
+  // accessible name of every row, which is slow on Material tables.
+  const rowOf = (name: string) =>
+    within(screen.getByRole('table'))
+      .getByText(name)
+      .closest('tr') as HTMLElement;
   const rowMenuButton = (name: string) =>
-    within(screen.getByRole('row', { name: new RegExp(name) })).queryByRole(
-      'button',
-      {
-        name: 'Scenario Template Menu',
-      },
-    );
+    within(rowOf(name)).queryByRole('button', {
+      name: 'Scenario Template Menu',
+    });
   const openRowMenu = async (name: string) => {
     await user.click(rowMenuButton(name));
   };
@@ -140,6 +143,7 @@ async function renderList(
     templateApi,
     scenarioApi,
     confirm,
+    rowOf,
     rowMenuButton,
     openRowMenu,
     menuItems,
@@ -177,6 +181,33 @@ describe('ScenarioTemplateListComponent', () => {
         name: 'Add Scenario Template',
       });
       expect(add !== null).toBe(shown);
+    },
+  );
+
+  /**
+   * Verifies: each row's Copy ID button needs CreateScenarioTemplates.
+   * Interacts with: real PermissionDataService.hasPermission via permissionDataProviders, the actions cell template.
+   * Data: CreateScenarioTemplates vs. Edit/Manage templates and CreateScenarios only; one template 't1'.
+   */
+  it.each([
+    { system: ['CreateScenarioTemplates'], shown: true },
+    {
+      system: [
+        'EditScenarioTemplates',
+        'ManageScenarioTemplates',
+        'CreateScenarios',
+      ],
+      shown: false,
+    },
+  ] as Array<{ system: SystemPermission[]; shown: boolean }>)(
+    'shows the Copy ID button = $shown for $system',
+    async ({ system, shown }) => {
+      const { rowOf } = await renderList({ system });
+      const row = rowOf('Alpha');
+      const copy = within(row).queryByRole('button', {
+        name: /^Copy ID:\s+t1$/,
+      });
+      expect(copy !== null).toBe(shown);
     },
   );
 
@@ -227,14 +258,14 @@ describe('ScenarioTemplateListComponent', () => {
    * Data: system CreateScenarios only; a right-click on the 'Alpha' row.
    */
   it('hides the menu button from users who can only create scenarios but opens the menu on right-click', async () => {
-    const { rowMenuButton, user, menuItems } = await renderList({
+    const { rowOf, rowMenuButton, user, menuItems } = await renderList({
       system: ['CreateScenarios'],
     });
 
     expect(rowMenuButton('Alpha')).toBeNull();
     await user.pointer({
       keys: '[MouseRight]',
-      target: screen.getByRole('row', { name: /Alpha/ }),
+      target: rowOf('Alpha'),
     });
     expect(menuItems()).toEqual(['Create a Scenario']);
   });
