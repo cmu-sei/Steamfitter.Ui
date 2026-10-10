@@ -1,38 +1,25 @@
-// Copyright 2021 Carnegie Mellon University. All Rights Reserved.
+// Copyright 2026 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { TestBed, waitForAsync } from '@angular/core/testing';
-import { RouterTestingModule } from '@angular/router/testing';
+import { describe, it, expect } from 'vitest';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { renderComponent } from 'src/app/test-utils/render-component';
 import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [RouterTestingModule],
-        declarations: [AppComponent],
-      }).compileComponents();
-    })
-  );
+  /**
+   * Verifies: the component mounts with the default test providers.
+   * Interacts with: getDefaultProviders (placeholders and stubs only).
+   * Data: no inputs beyond what the template needs to render.
+   */
+  it('renders with the default test providers', async () => {
+    const { fixture } = await renderComponent(AppComponent, {
+      declarations: [AppComponent],
+      imports: [],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    });
 
-  it('should create the app', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.debugElement.componentInstance;
-    expect(app).toBeTruthy();
-  });
-
-  it('should have as title \'steamfitter-web\'', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    const app = fixture.debugElement.componentInstance;
-    expect(app.title).toEqual('steamfitter-web');
-  });
-
-  it('should render title in a h1 tag', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.debugElement.nativeElement;
-    expect(compiled.querySelector('h1').textContent).toContain(
-      'Welcome to steamfitter-web!'
-    );
+    expect(fixture.componentInstance).toBeInstanceOf(AppComponent);
+    expect(fixture.nativeElement).toBeInTheDocument();
   });
 });

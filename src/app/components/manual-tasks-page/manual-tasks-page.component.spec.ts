@@ -1,29 +1,32 @@
-/*
-Copyright 2021 Carnegie Mellon University. All Rights Reserved.
- Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
-*/
+// Copyright 2026 Carnegie Mellon University. All Rights Reserved.
+// Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { describe, it, expect, vi } from 'vitest';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { SignalRService } from 'src/app/services/signalr/signalr.service';
+import { renderComponent } from 'src/app/test-utils/render-component';
 import { ManualTasksPageComponent } from './manual-tasks-page.component';
 
-describe('ManualTasksComponent', () => {
-  let component: ManualTasksPageComponent;
-  let fixture: ComponentFixture<ManualTasksPageComponent>;
+const signalR: Pick<SignalRService, 'joinScenario' | 'leaveScenario'> = {
+  joinScenario: vi.fn(),
+  leaveScenario: vi.fn(),
+};
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+describe('ManualTasksPageComponent', () => {
+  /**
+   * Verifies: the component mounts with the default test providers.
+   * Interacts with: getDefaultProviders (placeholders and stubs only), a SignalRService stub (the page leaves its scenario group on destroy).
+   * Data: no scenarioId or viewId route parameter.
+   */
+  it('renders with the default test providers', async () => {
+    const { fixture } = await renderComponent(ManualTasksPageComponent, {
       declarations: [ManualTasksPageComponent],
-    }).compileComponents();
-  });
+      imports: [],
+      providers: [{ provide: SignalRService, useValue: signalR }],
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ManualTasksPageComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(fixture.componentInstance).toBeInstanceOf(ManualTasksPageComponent);
+    expect(fixture.nativeElement).toBeInTheDocument();
   });
 });
