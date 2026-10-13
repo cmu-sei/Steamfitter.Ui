@@ -14,8 +14,8 @@ const roles = [
   { id: 'r2', name: 'Manager', allPermissions: true },
 ];
 
-// scenario-role.service.ts (ScenarioRoleService) is an unused copy of this
-// service, so it is not covered separately.
+// scenario-role.service.ts (ScenarioRoleService) is a copy of this service
+// with its own spec beside it.
 describe('ScenarioRoleDataService', () => {
   /**
    * Verifies: loadRoles() fetches every scenario role and publishes them on scenarioRoles$.
