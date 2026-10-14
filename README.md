@@ -1,10 +1,10 @@
 # Steamfitter.Ui Readme
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 7.1.4.
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) and now uses Angular CLI version 21 (Angular 21.2). Node `^20.19.0 || ^22.12.0 || >=24.0.0` is required.
 
 ## Development server
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4401/`. The app will automatically reload if you change any of the source files.
+Run `npm start` (`ng serve`) for a dev server. Navigate to `http://localhost:4401/`. The app will automatically reload if you change any of the source files.
 
 ## Code scaffolding
 
@@ -13,7 +13,7 @@ Run `ng generate component component-name` to generate a new component. You can 
 
 ## Build
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
+Run `npm run build` (`ng build`) to build the project. The build artifacts will be stored in the `dist/browser` directory. The default build is unoptimized with source maps; use `--configuration production` for a production build.
 
 ## Running unit tests
 
@@ -27,11 +27,11 @@ npm run test:coverage    # run once with coverage and the thresholds in angular.
 
 Run a subset with `npx ng test --watch=false --include='src/app/data/**/*.spec.ts'`.
 
-Shared test helpers (`renderComponent`, `getDefaultProviders`, `permissionDataProviders`, `mockHubConnectionBuilder`, `activatedRouteStub`, `recordEmissions`, ...) live in `src/app/test-utils/`. They are copied from the shared Crucible UI test standard; only `default-test-providers.ts` and `mock-permission-data.service.ts` are specific to Steamfitter. `vitest.config.ts` applies `patches/` with patch-package when the tests start, because Akita ships ESM that Node cannot load unpatched.
+Shared test helpers (`renderComponent`, `getDefaultProviders`, `permissionDataProviders`, `mockHubConnectionBuilder`, `activatedRouteStub`, `recordEmissions`, ...) live in `src/app/test-utils/`. They are copied from the shared Crucible UI test standard; only `default-test-providers.ts` and `mock-permission-data.service.ts` are specific to Steamfitter. `vitest.config.ts` applies `patches/` with patch-package when the tests start, because Akita and `@material/material-color-utilities` ship ESM that Node cannot load unpatched.
 
 ## Running end-to-end tests
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+End-to-end tests for Steamfitter are in the Playwright suite in [crucible-tests](https://github.com/cmu-sei/crucible-tests) (`steamfitter/`), which runs against a running Crucible stack. See its README for setup.
 
 ## Further help
 
