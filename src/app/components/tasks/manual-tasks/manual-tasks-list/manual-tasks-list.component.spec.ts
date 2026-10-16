@@ -1,29 +1,29 @@
-/*
-Copyright 2021 Carnegie Mellon University. All Rights Reserved.
- Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
-*/
+// Copyright 2026 Carnegie Mellon University. All Rights Reserved.
+// Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
+import { describe, it, expect } from 'vitest';
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { MatTooltipModule } from '@angular/material/tooltip';
+import { renderComponent } from 'src/app/test-utils/render-component';
 import { ManualTasksListComponent } from './manual-tasks-list.component';
 
 describe('ManualTasksListComponent', () => {
-  let component: ManualTasksListComponent;
-  let fixture: ComponentFixture<ManualTasksListComponent>;
-
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  /**
+   * Verifies: the component mounts with the default test providers.
+   * Interacts with: getDefaultProviders (placeholders and stubs only).
+   * Data: no tasks and no scenario yet.
+   */
+  it('renders with the default test providers', async () => {
+    const { fixture } = await renderComponent(ManualTasksListComponent, {
       declarations: [ManualTasksListComponent],
-    }).compileComponents();
-  });
+      imports: [MatIconModule, MatButtonModule, MatTooltipModule],
+      inputs: { tasks: [], scenario: null },
+      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+    });
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(ManualTasksListComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(fixture.componentInstance).toBeInstanceOf(ManualTasksListComponent);
+    expect(fixture.nativeElement).toBeInTheDocument();
   });
 });
