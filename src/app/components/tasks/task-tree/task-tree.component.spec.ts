@@ -84,7 +84,9 @@ async function renderTree(
     const node = within(tree())
       .getAllByRole('treeitem')
       .find((n) => n.textContent?.includes(name)) as HTMLElement;
-    await user.click(within(node).getByRole('button', { name: 'Task Menu' }));
+    await user.click(
+      within(node).getByRole('button', { name: `Menu for ${name}` }),
+    );
   };
   const menuItems = () =>
     screen.queryAllByRole('menuitem').map((item) => item.textContent?.trim());

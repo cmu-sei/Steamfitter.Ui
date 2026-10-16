@@ -251,7 +251,7 @@ describe('ScenarioMembershipsComponent', () => {
     expect(screen.getByRole('heading', { name: 'Alpha' })).toBeInTheDocument();
     await userEvent
       .setup()
-      .click(screen.getByRole('button', { description: 'Return' }));
+      .click(screen.getByRole('button', { name: 'Return' }));
 
     expect(back).toHaveBeenCalledTimes(1);
   });

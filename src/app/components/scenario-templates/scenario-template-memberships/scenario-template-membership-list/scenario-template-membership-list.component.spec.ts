@@ -56,7 +56,7 @@ async function renderMembershipList(canEdit: boolean) {
   const row = (name: string) =>
     within(table()).getByText(name).closest('tr') as HTMLElement;
   const addButton = (scope: HTMLElement, name: string) =>
-    within(scope).queryByRole('button', { description: `Add ${name}` });
+    within(scope).queryByRole('button', { name: `Add ${name}` });
   return {
     ...rendered,
     user: userEvent.setup(),

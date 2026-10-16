@@ -7,7 +7,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import {
   ComnAuthQuery,
   ComnAuthService,
-  ComnSettingsService,
+  CrucibleThemeService,
   Theme,
 } from '@cmusei/crucible-common';
 import { Subject, Observable } from 'rxjs';
@@ -33,7 +33,7 @@ export class AppComponent implements OnDestroy {
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private authService: ComnAuthService,
-    private settingsService: ComnSettingsService
+    private themeService: CrucibleThemeService
   ) {
     iconRegistry.setDefaultFontSetClass('mdi');
 
@@ -67,17 +67,7 @@ export class AppComponent implements OnDestroy {
   }
 
   setTheme(theme: Theme) {
-    document.body.classList.toggle('darkMode', theme === Theme.DARK);
-    const topBarColor = this.settingsService.settings?.AppTopBarHexColor || '#BB0000';
-    const topBarTextColor = this.settingsService.settings?.AppTopBarHexTextColor || '#FFFFFF';
-    if (topBarColor) {
-      document.documentElement.style.setProperty('--mat-sys-primary', topBarColor);
-      document.body.style.setProperty('--mat-sys-primary', topBarColor);
-    }
-    if (topBarTextColor) {
-      document.documentElement.style.setProperty('--mat-sys-on-primary', topBarTextColor);
-      document.body.style.setProperty('--mat-sys-on-primary', topBarTextColor);
-    }
+    this.themeService.applyTheme(theme);
   }
 
   ngOnDestroy(): void {

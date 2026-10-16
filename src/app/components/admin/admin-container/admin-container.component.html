@@ -21,7 +21,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           (click)="adminGotoScenarioTemplates()">
           <mat-icon matListItemIcon class="mat-list-item-icon" fontIcon="mdi-view-list"></mat-icon>
           {{ scenarioTemplatesText }}
-          <button aria-labelledby="scenarioTemplatesText" mat-icon-button class="pull-right">
+          <button [attr.aria-label]="scenarioTemplatesText" mat-icon-button class="pull-right">
             <mat-icon fontIcon="mdi-menu-right"></mat-icon>
           </button>
         </mat-list-item>
@@ -30,7 +30,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         <mat-list-item [ngClass]="getSelectedClass(scenariosText)" id="wrapper showhand" (click)="adminGotoScenarios()">
           <mat-icon matListItemIcon class="mat-list-item-icon" fontIcon="mdi-playlist-play"></mat-icon>
           {{ scenariosText }}
-          <button aria-labelledby="scenariosText" mat-icon-button class="pull-right">
+          <button [attr.aria-label]="scenariosText" mat-icon-button class="pull-right">
             <mat-icon fontIcon="mdi-menu-right"></mat-icon>
           </button>
         </mat-list-item>
@@ -39,7 +39,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         <mat-list-item [ngClass]="getSelectedClass(usersText)" id="wrapper showhand" (click)="adminGotoUsers()">
           <mat-icon matListItemIcon class="mat-list-item-icon" fontIcon="mdi-account"></mat-icon>
           {{ usersText }}
-          <button aria-labelledby="usersText" mat-icon-button class="pull-right">
+          <button [attr.aria-label]="usersText" mat-icon-button class="pull-right">
             <mat-icon fontIcon="mdi-menu-right"></mat-icon>
           </button>
         </mat-list-item>
@@ -48,7 +48,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         <mat-list-item [ngClass]="getSelectedClass(rolesText)" id="wrapper showhand" (click)="adminGotoRoles()">
           <mat-icon matListItemIcon class="mat-list-item-icon" fontIcon="mdi-lock"></mat-icon>
           {{ rolesText }}
-          <button aria-labelledby="rolesText" mat-icon-button class="pull-right">
+          <button [attr.aria-label]="rolesText" mat-icon-button class="pull-right">
             <mat-icon fontIcon="mdi-menu-right"></mat-icon>
           </button>
         </mat-list-item>
@@ -57,7 +57,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         <mat-list-item [ngClass]="getSelectedClass(groupsText)" id="wrapper showhand" (click)="adminGotoGroups()">
           <mat-icon matListItemIcon class="mat-list-item-icon" fontIcon="mdi-account-group"></mat-icon>
           {{ groupsText }}
-          <button aria-labelledby="groupsText" mat-icon-button class="pull-right">
+          <button [attr.aria-label]="groupsText" mat-icon-button class="pull-right">
             <mat-icon fontIcon="mdi-menu-right"></mat-icon>
           </button>
         </mat-list-item>
@@ -65,7 +65,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       </mat-list>
       }
       @if (!hideTopbar) {
-      <img class="crucible-logo" [src]="
+      <img class="crucible-logo" alt="Crucible" [src]="
           (theme$ | async) === 'light-theme'
             ? 'assets/img/crucible-logo-light.png'
             : 'assets/img/crucible-logo-dark.png'

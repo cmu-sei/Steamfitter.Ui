@@ -34,7 +34,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           </button>
           @if (result.vmId) {
             <button
-              mat-icon-button
+              mat-icon-button [attr.aria-label]="'Open ' + result.vmName"
               class="open-vm-button"
               (click)="openVmConsole(result.vmId); $event.stopPropagation()"
               title="Open {{ result.vmName }}"

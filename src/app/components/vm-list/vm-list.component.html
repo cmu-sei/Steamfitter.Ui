@@ -71,7 +71,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
                         ></mat-checkbox>
                         {{ vm.name }}
                         <button
-                          mat-icon-button
+                          mat-icon-button [attr.aria-label]="'Open ' + vm.name"
                           (click)="openInTab(vm.url); $event.stopPropagation()"
                           title="Open {{ vm.name }}"
                           class="icon-20px"
@@ -103,7 +103,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
                     ></mat-checkbox>
                     {{ vm.name }}
                     <button
-                      mat-icon-button
+                      mat-icon-button [attr.aria-label]="'Open ' + vm.name"
                       (click)="openInTab(vm.url); $event.stopPropagation()"
                       title="Open {{ vm.name }}"
                       class="icon-20px"

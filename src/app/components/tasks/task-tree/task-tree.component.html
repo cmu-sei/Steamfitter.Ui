@@ -8,11 +8,11 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   <div (contextmenu)="onContextMenu($event, null)">
     <div class="header-row">
       <div class="buttons-cell">
-        <button mat-icon-button title="Add a Task" (click)="onContextNew(null)">
+        <button mat-icon-button aria-label="Add a Task" title="Add a Task" (click)="onContextNew(null)">
           <mat-icon fontIcon="mdi-plus-circle"></mat-icon>
         </button>
         @if (!!clipboard) {
-        <button mat-icon-button title="Paste a Task" (click)="onContextPaste(null)">
+        <button mat-icon-button aria-label="Paste a Task" title="Paste a Task" (click)="onContextPaste(null)">
           <mat-icon fontIcon="mdi-content-paste"></mat-icon>
         </button>
         }
@@ -27,7 +27,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
         <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding style="margin-top: 5px">
           @if (!node.expandable) {
-          <button mat-icon-button disabled></button>
+          <button mat-icon-button aria-hidden="true" disabled></button>
           }
           @if (!!node.expandable) {
           <button mat-icon-button matTreeNodeToggle [matTreeNodeToggleRecursive]="false"
@@ -47,7 +47,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             <mat-expansion-panel-header (contextmenu)="onContextMenu($event, node)">
               <mat-panel-title>
                 <div class="cssLayoutRowSpaceCenter">
-                  <button mat-icon-button title="Task Menu" (click)="
+                  <button mat-icon-button [attr.aria-label]="'Menu for ' + node.task.name" title="Task Menu" (click)="
                       onContextMenu($event, node); $event.stopPropagation()
                     ">
                     <mat-icon fontIcon="mdi-menu"></mat-icon>

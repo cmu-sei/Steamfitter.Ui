@@ -27,7 +27,7 @@ npm run test:coverage    # run once with coverage and the thresholds in angular.
 
 Run a subset with `npx ng test --watch=false --include='src/app/data/**/*.spec.ts'`.
 
-Shared test helpers (`renderComponent`, `getDefaultProviders`, `permissionDataProviders`, `mockHubConnectionBuilder`, `activatedRouteStub`, `recordEmissions`, ...) live in `src/app/test-utils/`. They are copied from the shared Crucible UI test standard; only `default-test-providers.ts` and `mock-permission-data.service.ts` are specific to Steamfitter. `vitest.config.ts` applies `patches/` with patch-package when the tests start, because Akita and `@material/material-color-utilities` ship ESM that Node cannot load unpatched.
+Shared test helpers (`renderComponent`, `getDefaultProviders`, `permissionDataProviders`, `mockHubConnectionBuilder`, `activatedRouteStub`, `recordEmissions`, ...) live in `src/app/test-utils/`. They are copied from the shared Crucible UI test standard; only `default-test-providers.ts` and `mock-permission-data.service.ts` are specific to Steamfitter. `vitest.config.ts` applies `patches/` with patch-package when the tests start, because Akita ships ESM that Node cannot load unpatched.
 
 ## Running end-to-end tests
 
