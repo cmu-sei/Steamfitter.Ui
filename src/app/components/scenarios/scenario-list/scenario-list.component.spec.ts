@@ -115,7 +115,7 @@ async function renderList(
   const openRowMenu = async (name: string) => {
     const row = screen.getByRole('row', { name: new RegExp(name) });
     await user.click(
-      within(row).getByRole('button', { name: 'Scenario Menu' }),
+      within(row).getByRole('button', { name: `Menu for ${name}` }),
     );
   };
   const menuItems = () =>
@@ -223,7 +223,7 @@ describe('ScenarioListComponent', () => {
         await renderList({ system });
         const row = screen.getByRole('row', { name: /Alpha/ });
         const copy = within(row).queryByRole('button', {
-          name: /^Copy ID:\s+s1$/,
+          name: 'Copy ID of Alpha',
         });
         expect(copy !== null).toBe(shown);
       },
@@ -259,7 +259,7 @@ describe('ScenarioListComponent', () => {
         within(screen.getByRole('row', { name: new RegExp(name) })).queryByRole(
           'button',
           {
-            name: 'Scenario Menu',
+            name: `Menu for ${name}`,
           },
         ) !== null;
       expect([hasMenu('Alpha'), hasMenu('Bravo'), hasMenu('Charlie')]).toEqual([
@@ -281,7 +281,7 @@ describe('ScenarioListComponent', () => {
       const row = screen.getByRole('row', { name: /Alpha/ });
 
       expect(
-        within(row).queryByRole('button', { name: 'Scenario Menu' }),
+        within(row).queryByRole('button', { name: 'Menu for Alpha' }),
       ).toBeNull();
       await user.pointer({ keys: '[MouseRight]', target: row });
       expect(menuItems()).toEqual(['Copy']);

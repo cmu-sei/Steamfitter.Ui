@@ -117,14 +117,18 @@ describe('AdminSystemRolesComponent', () => {
 
     expect(
       within(permissionsHeader()).getByRole('button', {
-        description: 'Add New Role',
+        name: 'Add New Role',
       }),
     ).toBeEnabled();
     expect(
-      within(header('Observer')).getByRole('button', { name: 'Rename Role' }),
+      within(header('Observer')).getByRole('button', {
+        name: 'Rename role Observer',
+      }),
     ).toBeInTheDocument();
     expect(
-      within(header('Observer')).getByRole('button', { name: 'Delete Role' }),
+      within(header('Observer')).getByRole('button', {
+        name: 'Delete role Observer',
+      }),
     ).toBeInTheDocument();
     expect(checkbox('ViewUsers', 2).disabled).toBe(false);
     expect(checkbox('All', 1).disabled).toBe(true);
@@ -143,14 +147,18 @@ describe('AdminSystemRolesComponent', () => {
 
     expect(
       within(permissionsHeader()).getByRole('button', {
-        description: 'Add New Role',
+        name: 'Add New Role',
       }),
     ).toBeDisabled();
     expect(
-      within(header('Observer')).queryByRole('button', { name: 'Rename Role' }),
+      within(header('Observer')).queryByRole('button', {
+        name: 'Rename role Observer',
+      }),
     ).not.toBeInTheDocument();
     expect(
-      within(header('Observer')).queryByRole('button', { name: 'Delete Role' }),
+      within(header('Observer')).queryByRole('button', {
+        name: 'Delete role Observer',
+      }),
     ).not.toBeInTheDocument();
     expect(checkbox('ViewUsers', 2).disabled).toBe(true);
     expect(checkbox('ViewScenarios', 2).disabled).toBe(true);
@@ -186,7 +194,9 @@ describe('AdminSystemRolesComponent', () => {
     ]);
 
     await user.click(
-      within(header('Observer')).getByRole('button', { name: 'Delete Role' }),
+      within(header('Observer')).getByRole('button', {
+        name: 'Delete role Observer',
+      }),
     );
 
     expect(rolesApi.deleteSystemRole).toHaveBeenCalledWith('r2');

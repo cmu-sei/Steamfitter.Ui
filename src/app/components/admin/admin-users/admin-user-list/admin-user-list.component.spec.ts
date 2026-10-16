@@ -141,7 +141,7 @@ describe('AdminUserListComponent', () => {
     const { user, row, deleted, confirm } = await renderUserList(true);
 
     await user.click(
-      within(row('Bob')).getByRole('button', { name: 'Delete User' }),
+      within(row('Bob')).getByRole('button', { name: 'Delete user Bob' }),
     );
 
     expect(confirm).toHaveBeenCalledWith(
@@ -163,7 +163,7 @@ describe('AdminUserListComponent', () => {
       'true',
     );
     expect(
-      within(table()).queryByRole('button', { name: 'Delete User' }),
+      within(table()).queryByRole('button', { name: /^Delete user / }),
     ).not.toBeInTheDocument();
   });
 

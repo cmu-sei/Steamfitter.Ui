@@ -108,9 +108,8 @@ async function renderGroups(
   // accessible name of every row, which is slow on Material tables.
   const row = (name: string) =>
     within(table()).getByText(name).closest('tr') as HTMLElement;
-  // The icon buttons are named only by their tooltips (aria-describedby).
-  const button = (scope: HTMLElement, tooltip: string) =>
-    within(scope).getByRole('button', { description: tooltip });
+  const button = (scope: HTMLElement, label: string) =>
+    within(scope).getByRole('button', { name: label });
   const groupNames = () =>
     Array.from(table().querySelectorAll('tr.element-row')).map((r) =>
       r.textContent?.trim(),

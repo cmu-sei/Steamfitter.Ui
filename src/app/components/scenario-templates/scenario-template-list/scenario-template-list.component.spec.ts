@@ -129,7 +129,7 @@ async function renderList(
       .closest('tr') as HTMLElement;
   const rowMenuButton = (name: string) =>
     within(rowOf(name)).queryByRole('button', {
-      name: 'Scenario Template Menu',
+      name: `Menu for ${name}`,
     });
   const openRowMenu = async (name: string) => {
     await user.click(rowMenuButton(name));
@@ -205,7 +205,7 @@ describe('ScenarioTemplateListComponent', () => {
       const { rowOf } = await renderList({ system });
       const row = rowOf('Alpha');
       const copy = within(row).queryByRole('button', {
-        name: /^Copy ID:\s+t1$/,
+        name: 'Copy ID of Alpha',
       });
       expect(copy !== null).toBe(shown);
     },
