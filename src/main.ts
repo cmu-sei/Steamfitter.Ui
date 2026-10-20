@@ -25,7 +25,6 @@ import {
 } from '@angular/material/tooltip';
 import {
   provideNativeDateAdapter,
-  MatNativeDateModule,
 } from '@angular/material/core';
 import {
   provideHttpClient,
@@ -36,9 +35,9 @@ import { AkitaNgRouterStoreModule } from '@datorama/akita-ng-router-store';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
 import { ROUTES } from './app/app.routes';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { A11yModule } from '@angular/cdk/a11y';
 import { AppComponent } from './app/app.component';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 export function getBasePath(settingsSvc: ComnSettingsService) {
   return settingsSvc.settings.ApiUrl;
@@ -67,9 +66,7 @@ bootstrapApplication(AppComponent, {
     importProvidersFrom(
       environment.production ? [] : AkitaNgDevtools.forRoot(),
       AkitaNgRouterStoreModule,
-      BrowserAnimationsModule,
       A11yModule,
-      MatNativeDateModule,
       ComnAuthModule.forRoot(),
       ComnSettingsModule.forRoot(),
     ),
@@ -83,6 +80,7 @@ bootstrapApplication(AppComponent, {
     { provide: MAT_TOOLTIP_DEFAULT_OPTIONS, useValue: myCustomTooltipDefaults },
     provideNativeDateAdapter(),
     provideRouter(ROUTES),
+    provideAnimationsAsync(),
     provideHttpClient(withInterceptorsFromDi()),
     provideCrucibleTheme({ brand: { color: '#B1282F', text: '#FFFFFF' } }),
   ],
