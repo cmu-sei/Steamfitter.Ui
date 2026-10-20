@@ -2,7 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { describe, it, expect, vi } from 'vitest';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Output, input } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { screen } from '@testing-library/angular';
@@ -37,9 +37,9 @@ import { ScenarioMemberListComponent } from 'src/app/components/scenarios/scenar
   template: '',
 })
 class MembershipListStubComponent {
-  @Input() users?: User[];
-  @Input() groups?: Group[];
-  @Input() canEdit?: boolean;
+  readonly users = input<User[]>(undefined);
+  readonly groups = input<Group[]>(undefined);
+  readonly canEdit = input<boolean>(undefined);
   @Output() createMembership = new EventEmitter<ScenarioMembership>();
 }
 
@@ -48,11 +48,11 @@ class MembershipListStubComponent {
   template: '',
 })
 class MemberListStubComponent {
-  @Input() memberships?: ScenarioMembership[];
-  @Input() users?: User[];
-  @Input() groups?: Group[];
-  @Input() roles?: ScenarioRole[];
-  @Input() canEdit?: boolean;
+  readonly memberships = input<ScenarioMembership[]>(undefined);
+  readonly users = input<User[]>(undefined);
+  readonly groups = input<Group[]>(undefined);
+  readonly roles = input<ScenarioRole[]>(undefined);
+  readonly canEdit = input<boolean>(undefined);
   @Output() deleteMembership = new EventEmitter<string>();
   @Output() editMembership = new EventEmitter<ScenarioMembership>();
 }
@@ -146,7 +146,10 @@ describe('ScenarioMembershipsComponent', () => {
     async ({ grants }) => {
       const { candidates, members } = await renderMemberships(grants);
 
-      expect([candidates().canEdit, members().canEdit]).toEqual([true, true]);
+      expect([candidates().canEdit(), members().canEdit()]).toEqual([
+        true,
+        true,
+      ]);
     },
   );
 
@@ -169,7 +172,10 @@ describe('ScenarioMembershipsComponent', () => {
       const { candidates, members } = await renderMemberships(grants);
 
       // Current behavior; see agent-docs/ui-test-bugs/steamfitter.ui.md.
-      expect([candidates().canEdit, members().canEdit]).toEqual([true, true]);
+      expect([candidates().canEdit(), members().canEdit()]).toEqual([
+        true,
+        true,
+      ]);
     },
   );
 
@@ -205,8 +211,8 @@ describe('ScenarioMembershipsComponent', () => {
     async ({ grants }) => {
       const { candidates, members } = await renderMemberships(grants);
 
-      expect(candidates().canEdit).toBe(false);
-      expect(members().canEdit).toBe(false);
+      expect(candidates().canEdit()).toBe(false);
+      expect(members().canEdit()).toBe(false);
     },
   );
 
@@ -218,9 +224,21 @@ describe('ScenarioMembershipsComponent', () => {
   it('moves an added user into the member list', async () => {
     const { candidates, members, membershipApi, fixture } =
       await renderMemberships({ system: ['ManageScenarios'] });
-    expect(members().users?.map((u) => u.name)).toEqual(['Alice']);
-    expect(candidates().users?.map((u) => u.name)).toEqual(['Bob']);
-    expect(candidates().groups?.map((g) => g.name)).toEqual(['Blue Team']);
+    expect(
+      members()
+        .users()
+        ?.map((u) => u.name),
+    ).toEqual(['Alice']);
+    expect(
+      candidates()
+        .users()
+        ?.map((u) => u.name),
+    ).toEqual(['Bob']);
+    expect(
+      candidates()
+        .groups()
+        ?.map((g) => g.name),
+    ).toEqual(['Blue Team']);
 
     candidates().createMembership.emit({ userId: 'u2' });
     fixture.detectChanges();
@@ -229,8 +247,12 @@ describe('ScenarioMembershipsComponent', () => {
       userId: 'u2',
       scenarioId: 's1',
     });
-    expect(members().users?.map((u) => u.name)).toEqual(['Alice', 'Bob']);
-    expect(candidates().users).toEqual([]);
+    expect(
+      members()
+        .users()
+        ?.map((u) => u.name),
+    ).toEqual(['Alice', 'Bob']);
+    expect(candidates().users()).toEqual([]);
   });
 
   /**

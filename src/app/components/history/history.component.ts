@@ -10,13 +10,13 @@ import {
 } from '@angular/animations';
 import {
   Component,
-  Input,
   OnChanges,
   OnDestroy,
   OnInit,
   SimpleChanges,
   ViewChild,
   inject,
+  input,
 } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, MatSortHeader } from '@angular/material/sort';
@@ -92,12 +92,12 @@ export class HistoryComponent implements OnInit, OnChanges, OnDestroy {
   private taskDataService = inject(TaskDataService);
   private resultDataService = inject(ResultDataService);
 
-  @Input() filterString = '';
-  @Input() paginator: MatPaginator;
-  @Input() historyView: HistoryView = HistoryView.user;
-  @Input() selectedUser: User;
-  @Input() selectedView: View;
-  @Input() selectedVm: Vm;
+  readonly filterString = input('');
+  readonly paginator = input<MatPaginator>(undefined);
+  readonly historyView = input<HistoryView>(HistoryView.user);
+  readonly selectedUser = input<User>(undefined);
+  readonly selectedView = input<View>(undefined);
+  readonly selectedVm = input<Vm>(undefined);
   displayedColumns: string[] = [
     'id',
     'statusDate',
@@ -132,7 +132,7 @@ export class HistoryComponent implements OnInit, OnChanges, OnDestroy {
               a.statusDate <= b.statusDate ? 1 : -1,
             );
           }
-          this.paginator?.firstPage();
+          this.paginator()?.firstPage();
         },
         (error) => {
           console.log('API is not responding:', error.message);
@@ -141,9 +141,10 @@ export class HistoryComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnInit() {
-    if (this.paginator) {
-      this.modelDataSource.paginator = this.paginator;
-      this.paginator.pageIndex = 0;
+    const paginator = this.paginator();
+    if (paginator) {
+      this.modelDataSource.paginator = paginator;
+      paginator.pageIndex = 0;
     }
     this.modelDataSource.sort = this.sort;
 
@@ -152,23 +153,25 @@ export class HistoryComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.paginator && this.paginator) {
-      this.modelDataSource.paginator = this.paginator;
+    const paginator = this.paginator();
+    if (changes.paginator && paginator) {
+      this.modelDataSource.paginator = paginator;
     }
     if (changes.filterString !== undefined) {
-      this.applyFilter(this.filterString || '');
+      this.applyFilter(this.filterString() || '');
     }
     if (changes.historyView) {
       this.onCategoryChanged();
     } else {
-      if (changes.selectedUser && this.historyView === HistoryView.user) {
-        this.loadByUser(this.selectedUser);
+      const historyView = this.historyView();
+      if (changes.selectedUser && historyView === HistoryView.user) {
+        this.loadByUser(this.selectedUser());
       }
-      if (changes.selectedView && this.historyView === HistoryView.view) {
-        this.loadByView(this.selectedView);
+      if (changes.selectedView && historyView === HistoryView.view) {
+        this.loadByView(this.selectedView());
       }
-      if (changes.selectedVm && this.historyView === HistoryView.vm) {
-        this.loadByVm(this.selectedVm);
+      if (changes.selectedVm && historyView === HistoryView.vm) {
+        this.loadByVm(this.selectedVm());
       }
     }
   }
@@ -180,15 +183,15 @@ export class HistoryComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   private onCategoryChanged() {
-    switch (this.historyView) {
+    switch (this.historyView()) {
       case HistoryView.user:
-        this.loadByUser(this.selectedUser);
+        this.loadByUser(this.selectedUser());
         break;
       case HistoryView.view:
-        this.loadByView(this.selectedView);
+        this.loadByView(this.selectedView());
         break;
       case HistoryView.vm:
-        this.loadByVm(this.selectedVm);
+        this.loadByVm(this.selectedVm());
         break;
     }
   }
@@ -199,7 +202,7 @@ export class HistoryComponent implements OnInit, OnChanges, OnDestroy {
     } else {
       this.resultDataService.loadByUser(user.id);
     }
-    this.paginator?.firstPage();
+    this.paginator()?.firstPage();
   }
 
   private loadByView(view: View) {
@@ -208,7 +211,7 @@ export class HistoryComponent implements OnInit, OnChanges, OnDestroy {
     } else {
       this.resultDataService.loadByView(view.id);
     }
-    this.paginator?.firstPage();
+    this.paginator()?.firstPage();
   }
 
   private loadByVm(vm: Vm) {
@@ -217,7 +220,7 @@ export class HistoryComponent implements OnInit, OnChanges, OnDestroy {
     } else {
       this.resultDataService.loadByVm(vm.id);
     }
-    this.paginator?.firstPage();
+    this.paginator()?.firstPage();
   }
 
   private static readonly STATUS_ICON_MAP: Record<string, string> = {

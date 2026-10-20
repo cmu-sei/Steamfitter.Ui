@@ -3,9 +3,20 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
 
-<app-task-tree [taskList]="taskList" [resultList]="resultList" [scenarioTemplateId]="scenarioTemplateId"
-  [scenarioId]="scenarioId" [isEditableState]="isEditable" [isExecutableState]="isExecutable" [isLoading]="isLoading"
-  [clipboard]="clipboard | async" (deleteTaskRequested)="deleteTask($event)" (executeRequested)="executeTask($event)"
-  (stopIterationsRequested)="stopTaskIterations($event)" (saveTask)="saveTaskHandler($event)"
-  (sendToClipboard)="sendToClipboard($event)" (pasteClipboard)="pasteClipboard($event)"
-  (taskSelected)="taskSelectedHandler($event)"></app-task-tree>
+<app-task-tree
+  [taskList]="taskList()"
+  [resultList]="resultList()"
+  [scenarioTemplateId]="scenarioTemplateId()"
+  [scenarioId]="scenarioId()"
+  [isEditableState]="isEditable()"
+  [isExecutableState]="isExecutable()"
+  [isLoading]="isLoading()"
+  [clipboard]="clipboard | async"
+  (deleteTaskRequested)="deleteTask($event)"
+  (executeRequested)="executeTask($event)"
+  (stopIterationsRequested)="stopTaskIterations($event)"
+  (saveTask)="saveTaskHandler($event)"
+  (sendToClipboard)="sendToClipboard($event)"
+  (pasteClipboard)="pasteClipboard($event)"
+  (taskSelected)="taskSelectedHandler($event)"
+></app-task-tree>

@@ -2,7 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { describe, it, expect, vi } from 'vitest';
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -36,8 +36,8 @@ import { AdminGroupsDetailComponent } from 'src/app/components/admin/admin-group
   template: '',
 })
 class GroupDetailStubComponent {
-  @Input() groupId?: string;
-  @Input() canEdit?: boolean;
+  readonly groupId = input<string>(undefined);
+  readonly canEdit = input<boolean>(undefined);
 }
 
 const GROUPS: Group[] = [
@@ -179,8 +179,8 @@ describe('AdminGroupsComponent', () => {
 
       await user.click(row('Blue Team'));
 
-      expect(detail()?.groupId).toBe('g1');
-      expect(detail()?.canEdit).toBe(canEdit);
+      expect(detail()?.groupId()).toBe('g1');
+      expect(detail()?.canEdit()).toBe(canEdit);
     },
   );
 

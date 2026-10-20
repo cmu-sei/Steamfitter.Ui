@@ -5,8 +5,8 @@ import { describe, it, expect, vi } from 'vitest';
 import {
   Directive,
   inject,
-  Input,
   provideEnvironmentInitializer,
+  input,
 } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { screen, within } from '@testing-library/angular';
@@ -39,7 +39,7 @@ import { AdminUserListComponent } from './admin-user-list.component';
 
 @Directive({ selector: '[ngxClipboard]', standalone: false })
 class ClipboardStubDirective {
-  @Input() cbContent?: string;
+  readonly cbContent = input<string>(undefined);
 }
 
 const USERS: User[] = [

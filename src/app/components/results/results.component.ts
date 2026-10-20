@@ -1,7 +1,7 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, input } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { PlayerDataService } from 'src/app/data/player/player-data-service';
@@ -36,9 +36,9 @@ enum ResultStatus {
 export class ResultsComponent implements OnInit, OnDestroy {
   private playerDataService = inject(PlayerDataService);
 
-  @Input() results: Observable<Result[]>;
-  @Input() taskId: string;
-  @Input() taskAction: string;
+  readonly results = input<Observable<Result[]>>(undefined);
+  readonly taskId = input<string>(undefined);
+  readonly taskAction = input<string>(undefined);
 
   allResults: Result[];
   currentResults: Result[];
@@ -50,19 +50,21 @@ export class ResultsComponent implements OnInit, OnDestroy {
   showVmFields: boolean;
 
   ngOnInit() {
-    this.results.pipe(takeUntil(this.unsubscribe$)).subscribe((results) => {
-      if (!this.taskId) {
-        this.allResults = results;
-      } else {
-        this.allResults = results.filter((r) => r.taskId === this.taskId);
-      }
-      this.filterCurrentResults();
-    });
+    this.results()
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((results) => {
+        if (!this.taskId()) {
+          this.allResults = results;
+        } else {
+          this.allResults = results.filter((r) => r.taskId === this.taskId());
+        }
+        this.filterCurrentResults();
+      });
     this.showVmFields = this.hasVmFields();
   }
 
   hasVmFields() {
-    if (/^http|linux|core/.test(this.taskAction)) {
+    if (/^http|linux|core/.test(this.taskAction())) {
       return false;
     }
     return true;
@@ -92,12 +94,14 @@ export class ResultsComponent implements OnInit, OnDestroy {
 
   oldResults(current: Result) {
     return this.allResults
-      .filter(
-        (r) =>
+      .filter((r) => {
+        const taskId = this.taskId();
+        return (
           r.id !== current.id &&
-          (!this.taskId || r.taskId === this.taskId) &&
-          r.vmId === current.vmId,
-      )
+          (!taskId || r.taskId === taskId) &&
+          r.vmId === current.vmId
+        );
+      })
       .sort((a: Result, b: Result) =>
         a.dateCreated.valueOf() <= b.dateCreated.valueOf() ? 1 : -1,
       );

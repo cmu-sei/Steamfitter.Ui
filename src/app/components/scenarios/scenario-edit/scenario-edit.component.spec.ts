@@ -2,7 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { describe, it, expect, vi } from 'vitest';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Output, input } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { firstValueFrom, Observable, of } from 'rxjs';
 import {
@@ -21,13 +21,13 @@ import { TasksComponent } from 'src/app/components/tasks/tasks.component';
 
 @Component({ selector: 'app-tasks', template: '' })
 class TasksStubComponent {
-  @Input() taskList?: Observable<Task[]>;
-  @Input() resultList?: Observable<Result[]>;
-  @Input() isLoading?: Observable<boolean>;
-  @Input() scenarioTemplateId?: string;
-  @Input() scenarioId?: string;
-  @Input() isEditable?: boolean;
-  @Input() isExecutable?: boolean;
+  readonly taskList = input<Observable<Task[]>>(undefined);
+  readonly resultList = input<Observable<Result[]>>(undefined);
+  readonly isLoading = input<Observable<boolean>>(undefined);
+  readonly scenarioTemplateId = input<string>(undefined);
+  readonly scenarioId = input<string>(undefined);
+  readonly isEditable = input<boolean>(undefined);
+  readonly isExecutable = input<boolean>(undefined);
   @Output() taskListChanged = new EventEmitter<void>();
   @Output() deleteTaskRequested = new EventEmitter<string>();
 }
@@ -75,7 +75,7 @@ async function renderEdit(
     rendered.fixture.debugElement.query(By.directive(TasksStubComponent))
       ?.componentInstance as TasksStubComponent | undefined;
   const taskNames = async () =>
-    (await firstValueFrom(tasks()!.taskList!)).map((t) => t.name);
+    (await firstValueFrom(tasks()!.taskList()!)).map((t) => t.name);
   return { ...rendered, taskApi, tasks, taskNames };
 }
 
@@ -98,9 +98,9 @@ describe('ScenarioEditComponent', () => {
     async ({ status, isEditable, isExecutable }) => {
       const { tasks } = await renderEdit(scenario({ status }));
 
-      expect(tasks()?.scenarioId).toBe('s1');
-      expect(tasks()?.isEditable).toBe(isEditable);
-      expect(tasks()?.isExecutable).toBe(isExecutable);
+      expect(tasks()?.scenarioId()).toBe('s1');
+      expect(tasks()?.isEditable()).toBe(isEditable);
+      expect(tasks()?.isExecutable()).toBe(isExecutable);
     },
   );
 
@@ -115,8 +115,8 @@ describe('ScenarioEditComponent', () => {
     ]);
 
     // Current behavior; see agent-docs/ui-test-bugs/steamfitter.ui.md.
-    expect(tasks()?.isEditable).toBe(true);
-    expect(tasks()?.isExecutable).toBe(true);
+    expect(tasks()?.isEditable()).toBe(true);
+    expect(tasks()?.isExecutable()).toBe(true);
   });
 
   /**

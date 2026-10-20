@@ -5,11 +5,11 @@ import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
-  Input,
   OnDestroy,
   OnInit,
   Output,
   inject,
+  input,
 } from '@angular/core';
 import { ComnAuthQuery, ComnAuthService, Theme } from '@cmusei/crucible-common';
 import { Observable, Subject } from 'rxjs';
@@ -53,8 +53,8 @@ export class TopbarComponent implements OnInit, OnDestroy {
   private permissionDataService = inject(PermissionDataService);
   private authQuery = inject(ComnAuthQuery);
 
-  @Input() title?: string;
-  @Input() topbarView?: TopbarView;
+  readonly title = input<string>(undefined);
+  readonly topbarView = input<TopbarView>(undefined);
   @Output() editView?: EventEmitter<any> = new EventEmitter<any>();
   currentUser$: Observable<CurrentUserState>;
   theme$: Observable<Theme>;

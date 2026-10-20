@@ -18,6 +18,7 @@ import {
   SimpleChanges,
   ViewChild,
   inject,
+  input,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
@@ -115,10 +116,10 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
   private scenarioDataService = inject(ScenarioDataService);
   private dialog = inject(MatDialog);
 
-  @Input() scenarioTemplateList: ScenarioTemplate[];
+  readonly scenarioTemplateList = input<ScenarioTemplate[]>(undefined);
   @Input() selectedScenarioTemplate: ScenarioTemplate;
-  @Input() isLoading: boolean;
-  @Input() adminMode: boolean;
+  readonly isLoading = input<boolean>(undefined);
+  readonly adminMode = input<boolean>(undefined);
   @Output() saveScenarioTemplate = new EventEmitter<ScenarioTemplate>();
   @Output() itemSelected = new EventEmitter<string>();
   @ViewChild(ScenarioTemplateEditComponent)
@@ -134,8 +135,8 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
   // context menu
   @ViewChild(MatMenuTrigger, { static: true }) contextMenu: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
-  @Input() paginator: MatPaginator;
-  @Input() filterString = '';
+  readonly paginator = input<MatPaginator>(undefined);
+  readonly filterString = input('');
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   expandedScenarioTemplateId: string | null = null;
   scenarioTemplateDataSource = new MatTableDataSource<ScenarioTemplate>(
@@ -145,15 +146,17 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
   readonly SystemPermission = SystemPermission;
 
   constructor() {
-    if (!this.scenarioTemplateList || this.scenarioTemplateList.length === 0) {
+    const scenarioTemplateList = this.scenarioTemplateList();
+    if (!scenarioTemplateList || scenarioTemplateList.length === 0) {
       this.scenarioTemplateDataService.load();
     }
   }
 
   ngOnInit() {
-    if (this.paginator) {
-      this.scenarioTemplateDataSource.paginator = this.paginator;
-      this.paginator.pageIndex = 0;
+    const paginator = this.paginator();
+    if (paginator) {
+      this.scenarioTemplateDataSource.paginator = paginator;
+      paginator.pageIndex = 0;
     }
     this.scenarioTemplateDataSource.sort = this.sort;
     const id = this.selectedScenarioTemplate
@@ -186,8 +189,9 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
       this.expandedScenarioTemplateId =
         changes.selectedScenarioTemplate.currentValue.id;
     }
-    if (changes.paginator && this.paginator) {
-      this.scenarioTemplateDataSource.paginator = this.paginator;
+    const paginator = this.paginator();
+    if (changes.paginator && paginator) {
+      this.scenarioTemplateDataSource.paginator = paginator;
     }
     if (
       !!changes.scenarioTemplateList &&
@@ -339,13 +343,13 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
   selectScenarioTemplate(event: any, scenarioTemplateId: string | undefined) {
     if (this.expandedScenarioTemplateId === scenarioTemplateId) {
       this.expandedScenarioTemplateId = null;
-      if (!this.adminMode) {
+      if (!this.adminMode()) {
         this.itemSelected.emit('');
         this.selectedScenarioTemplate = null;
       }
     } else {
       this.expandedScenarioTemplateId = scenarioTemplateId;
-      if (!this.adminMode) {
+      if (!this.adminMode()) {
         this.itemSelected.emit(scenarioTemplateId ?? '');
       }
     }
@@ -355,7 +359,7 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
    * filters and sorts the displayed rows
    */
   filterAndSort() {
-    this.scenarioTemplateDataSource.filter = (this.filterString || '')
+    this.scenarioTemplateDataSource.filter = (this.filterString() || '')
       .trim()
       .toLowerCase();
   }

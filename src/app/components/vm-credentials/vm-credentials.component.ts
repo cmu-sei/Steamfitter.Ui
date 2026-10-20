@@ -7,6 +7,7 @@ import {
   Output,
   OnInit,
   inject,
+  input,
 } from '@angular/core';
 import { VmCredential } from 'src/app/generated/steamfitter.api/model/vmCredential';
 import { ScenarioQuery } from 'src/app/data/scenario/scenario.query';
@@ -50,8 +51,8 @@ export class VmCredentialsComponent implements OnInit {
 
   @Input() username: string;
   @Input() password: string;
-  @Input() scenarioTemplateId: string;
-  @Input() scenarioId: string;
+  readonly scenarioTemplateId = input<string>(undefined);
+  readonly scenarioId = input<string>(undefined);
   @Output() selectedVmCredentialChanged = new EventEmitter<VmCredential>();
   showManagement = false;
   defaultVmCredential: VmCredential;
@@ -82,9 +83,9 @@ export class VmCredentialsComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.scenarioTemplateId) {
+    if (this.scenarioTemplateId()) {
       this.parent = this.scenarioTemplate;
-    } else if (this.scenarioId) {
+    } else if (this.scenarioId()) {
       this.parent = this.scenario;
     }
   }
@@ -121,9 +122,9 @@ export class VmCredentialsComponent implements OnInit {
   ) {
     const updateItem = { ...parent };
     updateItem.defaultVmCredentialId = vmCredentialId;
-    if (this.scenarioTemplateId) {
+    if (this.scenarioTemplateId()) {
       this.scenarioTemplateDataService.updateScenarioTemplate(updateItem);
-    } else if (this.scenarioId) {
+    } else if (this.scenarioId()) {
       this.scenarioDataService.updateScenario(updateItem);
     }
   }
@@ -143,11 +144,13 @@ export class VmCredentialsComponent implements OnInit {
         newVmCredential.username = result.vmCredential.username;
         newVmCredential.password = result.vmCredential.password;
         newVmCredential.description = result.vmCredential.description;
-        if (this.scenarioTemplateId) {
-          newVmCredential.scenarioTemplateId = this.scenarioTemplateId;
+        const scenarioTemplateId = this.scenarioTemplateId();
+        const scenarioId = this.scenarioId();
+        if (scenarioTemplateId) {
+          newVmCredential.scenarioTemplateId = scenarioTemplateId;
           this.scenarioTemplateDataService.addVmCredential(newVmCredential);
-        } else if (this.scenarioId) {
-          newVmCredential.scenarioId = this.scenarioId;
+        } else if (scenarioId) {
+          newVmCredential.scenarioId = scenarioId;
           this.scenarioDataService.addVmCredential(newVmCredential);
         }
       }
@@ -167,14 +170,15 @@ export class VmCredentialsComponent implements OnInit {
       .afterClosed()
       .subscribe((confirmed) => {
         if (confirmed) {
-          if (this.scenarioTemplateId) {
+          const scenarioTemplateId = this.scenarioTemplateId();
+          if (scenarioTemplateId) {
             this.scenarioTemplateDataService.deleteVmCredential(
-              this.scenarioTemplateId,
+              scenarioTemplateId,
               vmCredential.id,
             );
-          } else if (this.scenarioId) {
+          } else if (this.scenarioId()) {
             this.scenarioDataService.deleteVmCredential(
-              this.scenarioTemplateId,
+              scenarioTemplateId,
               vmCredential.id,
             );
           }

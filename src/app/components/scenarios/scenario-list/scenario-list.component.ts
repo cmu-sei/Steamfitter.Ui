@@ -18,6 +18,7 @@ import {
   SimpleChanges,
   ViewChild,
   inject,
+  input,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
@@ -113,12 +114,12 @@ export class ScenarioListComponent implements OnInit, OnChanges {
   private confirmService = inject(CrucibleDialogService);
   private dialog = inject(MatDialog);
 
-  @Input() scenarioList: Scenario[];
+  readonly scenarioList = input<Scenario[]>(undefined);
   @Input() selectedScenario: Scenario;
-  @Input() isLoading: boolean;
-  @Input() adminMode = false;
-  @Input() statuses: string;
-  @Input() views: View[];
+  readonly isLoading = input<boolean>(undefined);
+  readonly adminMode = input(false);
+  readonly statuses = input<string>(undefined);
+  readonly views = input<View[]>(undefined);
   @Output() saveScenario = new EventEmitter<Scenario>();
   @Output() itemSelected = new EventEmitter<string>();
   @ViewChild(ScenarioEditComponent)
@@ -131,14 +132,14 @@ export class ScenarioListComponent implements OnInit, OnChanges {
     'startDate',
     'endDate',
   ];
-  @Input() selectedStatuses: string[] = ['active', 'ready'];
+  readonly selectedStatuses = input<string[]>(['active', 'ready']);
   statusFilteredScenarios: Scenario[];
   editScenarioText = 'Edit Scenario';
   // context menu
   @ViewChild(MatMenuTrigger, { static: true }) contextMenu: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
-  @Input() paginator: MatPaginator;
-  @Input() filterString = '';
+  readonly paginator = input<MatPaginator>(undefined);
+  readonly filterString = input('');
   @ViewChild(MatSort, { static: true }) sort: MatSort;
   expandedScenarioId: string | null = null;
   scenarioDataSource = new MatTableDataSource<Scenario>(new Array<Scenario>());
@@ -146,15 +147,17 @@ export class ScenarioListComponent implements OnInit, OnChanges {
   readonly SystemPermission = SystemPermission;
 
   constructor() {
-    if (!this.scenarioList || this.scenarioList.length === 0) {
+    const scenarioList = this.scenarioList();
+    if (!scenarioList || scenarioList.length === 0) {
       this.scenarioDataService.load();
     }
   }
 
   ngOnInit() {
-    if (this.paginator) {
-      this.scenarioDataSource.paginator = this.paginator;
-      this.paginator.pageIndex = 0;
+    const paginator = this.paginator();
+    if (paginator) {
+      this.scenarioDataSource.paginator = paginator;
+      paginator.pageIndex = 0;
     }
     this.scenarioDataSource.sort = this.sort;
     const id = this.selectedScenario ? this.selectedScenario.id : '';
@@ -183,24 +186,27 @@ export class ScenarioListComponent implements OnInit, OnChanges {
     ) {
       this.expandedScenarioId = changes.selectedScenario.currentValue.id;
     }
-    if (changes.paginator && this.paginator) {
-      this.scenarioDataSource.paginator = this.paginator;
+    const paginator = this.paginator();
+    if (changes.paginator && paginator) {
+      this.scenarioDataSource.paginator = paginator;
     }
+    const scenarioList = this.scenarioList();
     if (!!changes.scenarioList && !!changes.scenarioList.currentValue) {
       this.filterByStatus(changes.scenarioList.currentValue);
-    } else if (changes.selectedStatuses && this.scenarioList) {
-      this.filterByStatus(this.scenarioList);
+    } else if (changes.selectedStatuses && scenarioList) {
+      this.filterByStatus(scenarioList);
     } else if (changes.filterString !== undefined) {
       this.filterAndSort();
     }
   }
 
   filterByStatus(scenarios: Scenario[]) {
-    if (this.paginator) {
-      this.paginator.pageIndex = 0;
+    const paginator = this.paginator();
+    if (paginator) {
+      paginator.pageIndex = 0;
     }
     this.statusFilteredScenarios = scenarios.filter((m) =>
-      this.selectedStatuses.includes(m.status),
+      this.selectedStatuses().includes(m.status),
     );
     this.filterAndSort();
   }
@@ -258,7 +264,7 @@ export class ScenarioListComponent implements OnInit, OnChanges {
     scenario = !scenario ? <Scenario>{ name: '', description: '' } : scenario;
     const dialogRef = this.dialog.open(ScenarioEditDialogComponent, {
       width: '480px',
-      data: { scenario: { ...scenario }, views: this.views },
+      data: { scenario: { ...scenario }, views: this.views() },
     });
     dialogRef.componentInstance.editComplete.subscribe((result) => {
       if (result.saveChanges && result.scenario) {
@@ -347,13 +353,13 @@ export class ScenarioListComponent implements OnInit, OnChanges {
   selectScenario(event: any, scenarioId: string | undefined) {
     if (this.expandedScenarioId === scenarioId) {
       this.expandedScenarioId = null;
-      if (!this.adminMode) {
+      if (!this.adminMode()) {
         this.itemSelected.emit('');
         this.selectedScenario = null;
       }
     } else {
       this.expandedScenarioId = scenarioId;
-      if (!this.adminMode) {
+      if (!this.adminMode()) {
         this.itemSelected.emit(scenarioId ?? '');
       }
     }
@@ -364,7 +370,7 @@ export class ScenarioListComponent implements OnInit, OnChanges {
    */
   filterAndSort() {
     this.scenarioDataSource.data = this.statusFilteredScenarios || [];
-    this.scenarioDataSource.filter = (this.filterString || '')
+    this.scenarioDataSource.filter = (this.filterString() || '')
       .trim()
       .toLowerCase();
   }

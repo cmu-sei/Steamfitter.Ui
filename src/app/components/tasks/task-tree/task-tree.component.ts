@@ -5,12 +5,12 @@ import { FlatTreeControl } from '@angular/cdk/tree';
 import {
   Component,
   EventEmitter,
-  Input,
   OnDestroy,
   OnInit,
   Output,
   ViewChild,
   inject,
+  input,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
@@ -118,15 +118,15 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
   private dialog = inject(MatDialog);
   private taskDataService = inject(TaskDataService);
 
-  @Input() taskList: Observable<Task[]>;
-  @Input() resultList: Observable<Result[]>;
-  @Input() scenarioTemplateId: string;
-  @Input() scenarioId: string;
-  @Input() userId: string;
-  @Input() isEditableState: boolean;
-  @Input() isLoading: Observable<boolean>;
-  @Input() isExecutableState: boolean;
-  @Input() clipboard: any;
+  readonly taskList = input<Observable<Task[]>>(undefined);
+  readonly resultList = input<Observable<Result[]>>(undefined);
+  readonly scenarioTemplateId = input<string>(undefined);
+  readonly scenarioId = input<string>(undefined);
+  readonly userId = input<string>(undefined);
+  readonly isEditableState = input<boolean>(undefined);
+  readonly isLoading = input<Observable<boolean>>(undefined);
+  readonly isExecutableState = input<boolean>(undefined);
+  readonly clipboard = input<any>(undefined);
   @Output() taskSelected = new EventEmitter<string>();
   @Output() saveTask = new EventEmitter<Task>();
   @Output() deleteTaskRequested = new EventEmitter<string>();
@@ -174,19 +174,22 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
           this.selectedTaskId = taskId;
         }
       });
-    this.taskList.pipe(takeUntil(this.unsubscribe)).subscribe((tasks) => {
-      this.tasks = !tasks ? [] : this.filterTasks(tasks);
-      this.createTaskNodes();
-      // Expand the task details panel if it matches the URL taskId
-      if (
-        this.selectedTaskId &&
-        this.tasks.some((t) => t.id === this.selectedTaskId)
-      ) {
-        this.expandedDetails.add(this.selectedTaskId);
-      }
-    });
-    if (!!this.resultList) {
-      this.resultList.pipe(takeUntil(this.unsubscribe)).subscribe((results) => {
+    this.taskList()
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe((tasks) => {
+        this.tasks = !tasks ? [] : this.filterTasks(tasks);
+        this.createTaskNodes();
+        // Expand the task details panel if it matches the URL taskId
+        if (
+          this.selectedTaskId &&
+          this.tasks.some((t) => t.id === this.selectedTaskId)
+        ) {
+          this.expandedDetails.add(this.selectedTaskId);
+        }
+      });
+    const resultList = this.resultList();
+    if (!!resultList) {
+      resultList.pipe(takeUntil(this.unsubscribe)).subscribe((results) => {
         this.results = !results ? [] : results;
         this.createTaskNodes();
       });
@@ -194,19 +197,19 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
   }
 
   filterTasks(tasks: Task[]): Task[] {
-    if (this.scenarioTemplateId) {
+    if (this.scenarioTemplateId()) {
       tasks = tasks.filter(
         (item) =>
           item.scenarioTemplateId &&
-          item.scenarioTemplateId === this.scenarioTemplateId,
+          item.scenarioTemplateId === this.scenarioTemplateId(),
       );
-    } else if (this.scenarioId) {
+    } else if (this.scenarioId()) {
       tasks = tasks.filter(
-        (item) => item.scenarioId && item.scenarioId === this.scenarioId,
+        (item) => item.scenarioId && item.scenarioId === this.scenarioId(),
       );
-    } else if (this.userId) {
+    } else if (this.userId()) {
       tasks = tasks.filter(
-        (item) => item.userId && item.userId === this.userId,
+        (item) => item.userId && item.userId === this.userId(),
       );
     }
 
@@ -273,7 +276,7 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
    * Determines if a Task can be edited
    */
   isEditableTask(taskId: string) {
-    return this.isEditableState;
+    return this.isEditableState();
   }
 
   /**
@@ -281,7 +284,7 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
    */
   isExecutableTask(task: Task) {
     // must be a manual scenario task
-    let isExecutable = this.isExecutableState;
+    let isExecutable = this.isExecutableState();
     // if this task has a parent, the parent task must be complete
     if (isExecutable) {
       const triggerTaskId = task.triggerTaskId;
@@ -348,11 +351,13 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
     this.taskSelected.emit(this.selectedTaskId);
     // add a dependent Task
     const newTask = { ...BLANK_TASK };
-    if (!!this.scenarioTemplateId) {
-      newTask.scenarioTemplateId = this.scenarioTemplateId;
+    const scenarioTemplateId = this.scenarioTemplateId();
+    if (!!scenarioTemplateId) {
+      newTask.scenarioTemplateId = scenarioTemplateId;
     }
-    if (!!this.scenarioId) {
-      newTask.scenarioId = this.scenarioId;
+    const scenarioId = this.scenarioId();
+    if (!!scenarioId) {
+      newTask.scenarioId = scenarioId;
     }
     if (task && task.id) {
       newTask.triggerTaskId = task.id;

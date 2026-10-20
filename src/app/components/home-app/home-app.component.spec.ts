@@ -2,7 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { describe, it, expect, vi } from 'vitest';
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -44,15 +44,15 @@ import { HistoryComponent } from 'src/app/components/history/history.component';
 
 @Component({ selector: 'app-topbar', template: '' })
 class TopbarStubComponent {
-  @Input() title?: string;
-  @Input() topbarView?: TopbarView;
+  readonly title = input<string>(undefined);
+  readonly topbarView = input<TopbarView>(undefined);
 }
 
 @Component({ selector: 'app-scenarios', template: '' })
 class ScenariosStubComponent {
-  @Input() filterString?: string;
-  @Input() paginator?: unknown;
-  @Input() selectedStatuses?: string[];
+  readonly filterString = input<string>(undefined);
+  readonly paginator = input<unknown>(undefined);
+  readonly selectedStatuses = input<string[]>(undefined);
 }
 
 @Component({
@@ -60,8 +60,8 @@ class ScenariosStubComponent {
   template: '',
 })
 class ScenarioTemplatesStubComponent {
-  @Input() filterString?: string;
-  @Input() paginator?: unknown;
+  readonly filterString = input<string>(undefined);
+  readonly paginator = input<unknown>(undefined);
 }
 
 @Component({ selector: 'app-vm-task-execute', template: '' })
@@ -69,12 +69,12 @@ class VmTaskExecuteStubComponent {}
 
 @Component({ selector: 'app-history', template: '' })
 class HistoryStubComponent {
-  @Input() filterString?: string;
-  @Input() paginator?: unknown;
-  @Input() historyView?: string;
-  @Input() selectedUser?: unknown;
-  @Input() selectedView?: unknown;
-  @Input() selectedVm?: unknown;
+  readonly filterString = input<string>(undefined);
+  readonly paginator = input<unknown>(undefined);
+  readonly historyView = input<string>(undefined);
+  readonly selectedUser = input<unknown>(undefined);
+  readonly selectedView = input<unknown>(undefined);
+  readonly selectedVm = input<unknown>(undefined);
 }
 
 type OidcUser =

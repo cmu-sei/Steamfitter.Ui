@@ -2,7 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { describe, it, expect, vi } from 'vitest';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Output, input } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { Observable, of } from 'rxjs';
@@ -16,14 +16,14 @@ import { TaskTreeComponent } from 'src/app/components/tasks/task-tree/task-tree.
 
 @Component({ selector: 'app-task-tree', template: '' })
 class TaskTreeStubComponent {
-  @Input() taskList?: Observable<Task[]>;
-  @Input() resultList?: Observable<Result[]>;
-  @Input() scenarioTemplateId?: string;
-  @Input() scenarioId?: string;
-  @Input() isEditableState?: boolean;
-  @Input() isExecutableState?: boolean;
-  @Input() isLoading?: Observable<boolean>;
-  @Input() clipboard?: unknown;
+  readonly taskList = input<Observable<Task[]>>(undefined);
+  readonly resultList = input<Observable<Result[]>>(undefined);
+  readonly scenarioTemplateId = input<string>(undefined);
+  readonly scenarioId = input<string>(undefined);
+  readonly isEditableState = input<boolean>(undefined);
+  readonly isExecutableState = input<boolean>(undefined);
+  readonly isLoading = input<Observable<boolean>>(undefined);
+  readonly clipboard = input<unknown>(undefined);
   @Output() deleteTaskRequested = new EventEmitter<string>();
   @Output() executeRequested = new EventEmitter<string>();
   @Output() stopIterationsRequested = new EventEmitter<string>();
@@ -70,10 +70,10 @@ describe('TasksComponent', () => {
         isExecutable,
       });
 
-      expect(tree().taskList).toBe(taskList);
-      expect(tree().scenarioId).toBe('s1');
-      expect(tree().isEditableState).toBe(isEditable);
-      expect(tree().isExecutableState).toBe(isExecutable);
+      expect(tree().taskList()).toBe(taskList);
+      expect(tree().scenarioId()).toBe('s1');
+      expect(tree().isEditableState()).toBe(isEditable);
+      expect(tree().isExecutableState()).toBe(isExecutable);
     },
   );
 

@@ -6,12 +6,12 @@ Copyright 2025 Carnegie Mellon University. All Rights Reserved.
 import {
   Component,
   EventEmitter,
-  Input,
   OnChanges,
   OnInit,
   Output,
   SimpleChanges,
   inject,
+  input,
 } from '@angular/core';
 import { combineLatest, forkJoin, Observable, of } from 'rxjs';
 import { filter, map, tap } from 'rxjs/operators';
@@ -61,9 +61,9 @@ export class ScenarioTemplateMembershipsComponent implements OnInit, OnChanges {
   private permissionDataService = inject(PermissionDataService);
   private activatedRoute = inject(ActivatedRoute);
 
-  @Input() embedded: boolean;
-  @Input() showHeader = true;
-  @Input() scenarioTemplateId: string;
+  readonly embedded = input<boolean>(undefined);
+  readonly showHeader = input(true);
+  readonly scenarioTemplateId = input<string>(undefined);
   @Output() goBack = new EventEmitter();
 
   scenarioTemplate$: Observable<ScenarioTemplate>;
@@ -84,19 +84,19 @@ export class ScenarioTemplateMembershipsComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     forkJoin([
       this.scenarioTemplateMembershipDataService.loadMemberships(
-        this.scenarioTemplateId,
+        this.scenarioTemplateId(),
       ),
       this.userDataService.load(),
       this.scenarioTemplateRolesDataService.loadRoles(),
       this.groupDataService.load(),
     ]).subscribe();
     this.permissionDataService
-      .loadScenarioTemplatePermissions(this.scenarioTemplateId)
+      .loadScenarioTemplatePermissions(this.scenarioTemplateId())
       .subscribe(
         (x) =>
           (this.canEdit$ = of(
             this.permissionDataService.canEditScenarioTemplate(
-              this.scenarioTemplateId,
+              this.scenarioTemplateId(),
             ),
           )),
       );
@@ -104,13 +104,13 @@ export class ScenarioTemplateMembershipsComponent implements OnInit, OnChanges {
 
   ngOnChanges(changes: SimpleChanges) {
     this.scenarioTemplate$ = this.scenarioTemplateQuery
-      .selectEntity(this.scenarioTemplateId)
+      .selectEntity(this.scenarioTemplateId())
       .pipe(
         filter((x) => x != null),
         tap((x) => {
           this.canEdit$ = of(
             this.permissionDataService.canEditScenarioTemplate(
-              this.scenarioTemplateId,
+              this.scenarioTemplateId(),
             ),
           );
         }),
@@ -161,9 +161,9 @@ export class ScenarioTemplateMembershipsComponent implements OnInit, OnChanges {
   }
 
   createMembership(scenarioTemplateMembership: ScenarioTemplateMembership) {
-    scenarioTemplateMembership.scenarioTemplateId = this.scenarioTemplateId;
+    scenarioTemplateMembership.scenarioTemplateId = this.scenarioTemplateId();
     this.scenarioTemplateMembershipDataService
-      .createMembership(this.scenarioTemplateId, scenarioTemplateMembership)
+      .createMembership(this.scenarioTemplateId(), scenarioTemplateMembership)
       .subscribe();
   }
 

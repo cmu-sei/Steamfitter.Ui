@@ -2,7 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { describe, it, expect, vi } from 'vitest';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Output, input } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { firstValueFrom, Observable, of } from 'rxjs';
 import {
@@ -18,11 +18,11 @@ import { TasksComponent } from 'src/app/components/tasks/tasks.component';
 
 @Component({ selector: 'app-tasks', template: '' })
 class TasksStubComponent {
-  @Input() taskList?: Observable<Task[]>;
-  @Input() isLoading?: Observable<boolean>;
-  @Input() scenarioTemplateId?: string;
-  @Input() isEditable?: boolean;
-  @Input() isExecutable?: boolean;
+  readonly taskList = input<Observable<Task[]>>(undefined);
+  readonly isLoading = input<Observable<boolean>>(undefined);
+  readonly scenarioTemplateId = input<string>(undefined);
+  readonly isEditable = input<boolean>(undefined);
+  readonly isExecutable = input<boolean>(undefined);
   @Output() taskListChanged = new EventEmitter<void>();
   @Output() deleteTaskRequested = new EventEmitter<string>();
 }
@@ -53,7 +53,7 @@ async function renderEdit(input: ScenarioTemplate | null) {
     rendered.fixture.debugElement.query(By.directive(TasksStubComponent))
       ?.componentInstance as TasksStubComponent | undefined;
   const taskNames = async () =>
-    (await firstValueFrom(tasks()!.taskList!)).map((t) => t.name);
+    (await firstValueFrom(tasks()!.taskList()!)).map((t) => t.name);
   return { ...rendered, taskApi, tasks, taskNames };
 }
 
@@ -66,10 +66,10 @@ describe('ScenarioTemplateEditComponent', () => {
   it('makes the tasks editable for a user who can only view the template', async () => {
     const { tasks } = await renderEdit({ id: 'st1', name: 'Base' });
 
-    expect(tasks()?.scenarioTemplateId).toBe('st1');
+    expect(tasks()?.scenarioTemplateId()).toBe('st1');
     // Current behavior; see agent-docs/ui-test-bugs/steamfitter.ui.md.
-    expect(tasks()?.isEditable).toBe(true);
-    expect(tasks()?.isExecutable).toBe(false);
+    expect(tasks()?.isEditable()).toBe(true);
+    expect(tasks()?.isExecutable()).toBe(false);
   });
 
   /**

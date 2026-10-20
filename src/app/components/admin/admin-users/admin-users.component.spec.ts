@@ -2,7 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { describe, it, expect, vi } from 'vitest';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Output, input } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { of } from 'rxjs';
 import {
@@ -18,9 +18,9 @@ import { AdminUserListComponent } from 'src/app/components/admin/admin-users/adm
 
 @Component({ selector: 'app-admin-user-list', template: '' })
 class UserListStubComponent {
-  @Input() users?: User[];
-  @Input() isLoading?: boolean;
-  @Input() canEdit?: boolean;
+  readonly users = input<User[]>(undefined);
+  readonly isLoading = input<boolean>(undefined);
+  readonly canEdit = input<boolean>(undefined);
   @Output() create = new EventEmitter<User>();
   @Output() delete = new EventEmitter<string>();
 }
@@ -60,9 +60,13 @@ describe('AdminUsersComponent', () => {
   it('passes canEdit true and the users to the list with ManageUsers', async () => {
     const { list } = await renderUsers(['ManageUsers']);
 
-    expect(list().users?.map((u) => u.name)).toEqual(['Alice', 'Bob']);
-    expect(list().isLoading).toBe(false);
-    expect(list().canEdit).toBe(true);
+    expect(
+      list()
+        .users()
+        ?.map((u) => u.name),
+    ).toEqual(['Alice', 'Bob']);
+    expect(list().isLoading()).toBe(false);
+    expect(list().canEdit()).toBe(true);
   });
 
   /**
@@ -73,7 +77,7 @@ describe('AdminUsersComponent', () => {
   it('passes canEdit false to the list without ManageUsers', async () => {
     const { list } = await renderUsers(['ViewUsers', 'ManageRoles']);
 
-    expect(list().canEdit).toBe(false);
+    expect(list().canEdit()).toBe(false);
   });
 
   /**
@@ -91,7 +95,11 @@ describe('AdminUsersComponent', () => {
       id: 'u3',
       name: 'Carol',
     });
-    expect(list().users?.map((u) => u.name)).toEqual(['Alice', 'Bob', 'Carol']);
+    expect(
+      list()
+        .users()
+        ?.map((u) => u.name),
+    ).toEqual(['Alice', 'Bob', 'Carol']);
   });
 
   /**
@@ -105,6 +113,10 @@ describe('AdminUsersComponent', () => {
     list().delete.emit('u1');
     fixture.detectChanges();
 
-    expect(list().users?.map((u) => u.name)).toEqual(['Bob']);
+    expect(
+      list()
+        .users()
+        ?.map((u) => u.name),
+    ).toEqual(['Bob']);
   });
 });

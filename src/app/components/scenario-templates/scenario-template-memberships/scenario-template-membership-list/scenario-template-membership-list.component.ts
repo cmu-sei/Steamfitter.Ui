@@ -8,12 +8,12 @@ import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
-  Input,
   OnChanges,
   OnInit,
   Output,
   ViewChild,
   inject,
+  input,
 } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -88,14 +88,11 @@ export class ScenarioTemplateMembershipListComponent
 {
   snackBar = inject(MatSnackBar);
 
-  @Input()
-  users: User[];
+  readonly users = input<User[]>(undefined);
 
-  @Input()
-  groups: Group[];
+  readonly groups = input<Group[]>(undefined);
 
-  @Input()
-  canEdit: boolean;
+  readonly canEdit = input<boolean>(undefined);
 
   @Output()
   createMembership = new EventEmitter<ScenarioTemplateMembership>();
@@ -122,7 +119,7 @@ export class ScenarioTemplateMembershipListComponent
     this.dataSource.data = this.buildModel();
 
     this.displayedColumns = this.viewColumns.concat(
-      this.canEdit ? this.editColumns : [],
+      this.canEdit() ? this.editColumns : [],
     );
   }
 
@@ -141,7 +138,7 @@ export class ScenarioTemplateMembershipListComponent
   buildModel(): ScenarioTemplateMemberModel[] {
     const scenarioTemplateMemberModels = [] as ScenarioTemplateMemberModel[];
 
-    this.users.forEach((x) => {
+    this.users().forEach((x) => {
       scenarioTemplateMemberModels.push({
         user: x,
         group: null,
@@ -151,7 +148,7 @@ export class ScenarioTemplateMembershipListComponent
       });
     });
 
-    this.groups.forEach((x) => {
+    this.groups().forEach((x) => {
       scenarioTemplateMemberModels.push({
         user: null,
         group: x,

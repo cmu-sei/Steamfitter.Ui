@@ -5,10 +5,10 @@ import {
   Component,
   EventEmitter,
   NgZone,
-  Input,
   Output,
   ViewChild,
   inject,
+  input,
 } from '@angular/core';
 import { UntypedFormControl, FormGroupDirective, NgForm } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
@@ -48,9 +48,9 @@ export class ScenarioTemplatesComponent {
   private router = inject(Router);
   private activatedRoute = inject(ActivatedRoute);
 
-  @Input() filterString = '';
-  @Input() paginator: MatPaginator;
-  @Input() adminMode = false;
+  readonly filterString = input('');
+  readonly paginator = input<MatPaginator>(undefined);
+  readonly adminMode = input(false);
   @Output() editComplete = new EventEmitter<boolean>();
   @ViewChild(ScenarioTemplatesComponent) child;
   @ViewChild('stepper') stepper: MatStepper;
@@ -70,7 +70,7 @@ export class ScenarioTemplatesComponent {
 
   setActive(id: any) {
     this.scenarioTemplateDataService.setActive(id);
-    if (this.adminMode) {
+    if (this.adminMode()) {
       this.router.navigate([`scenariotemplates/${id}/memberships`], {});
     }
   }

@@ -6,12 +6,12 @@ Copyright 2025 Carnegie Mellon University. All Rights Reserved.
 import {
   Component,
   EventEmitter,
-  Input,
   OnChanges,
   OnInit,
   Output,
   SimpleChanges,
   inject,
+  input,
 } from '@angular/core';
 import { combineLatest, forkJoin, Observable, of } from 'rxjs';
 import { filter, map, tap } from 'rxjs/operators';
@@ -56,9 +56,9 @@ export class ScenarioMembershipsComponent implements OnInit, OnChanges {
   private groupDataService = inject(GroupDataService);
   private permissionDataService = inject(PermissionDataService);
 
-  @Input() embedded: boolean;
-  @Input() showHeader = true;
-  @Input() scenarioId: string;
+  readonly embedded = input<boolean>(undefined);
+  readonly showHeader = input(true);
+  readonly scenarioId = input<string>(undefined);
   @Output() goBack = new EventEmitter();
 
   scenario$: Observable<Scenario>;
@@ -77,24 +77,24 @@ export class ScenarioMembershipsComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     forkJoin([
-      this.scenarioMembershipDataService.loadMemberships(this.scenarioId),
+      this.scenarioMembershipDataService.loadMemberships(this.scenarioId()),
       this.userDataService.load(),
       this.scenarioRolesDataService.loadRoles(),
       this.groupDataService.load(),
     ]).subscribe();
     this.permissionDataService
-      .loadScenarioPermissions(this.scenarioId)
+      .loadScenarioPermissions(this.scenarioId())
       .subscribe(
         () =>
           (this.canEdit$ = of(
-            this.permissionDataService.canEditScenario(this.scenarioId),
+            this.permissionDataService.canEditScenario(this.scenarioId()),
           )),
       );
   }
 
   ngOnChanges(changes: SimpleChanges) {
     this.scenario$ = this.scenarioQuery
-      .selectEntity(this.scenarioId)
+      .selectEntity(this.scenarioId())
       .pipe(filter((x) => x != null));
   }
 
@@ -142,9 +142,9 @@ export class ScenarioMembershipsComponent implements OnInit, OnChanges {
   }
 
   createMembership(scenarioMembership: ScenarioMembership) {
-    scenarioMembership.scenarioId = this.scenarioId;
+    scenarioMembership.scenarioId = this.scenarioId();
     this.scenarioMembershipDataService
-      .createMembership(this.scenarioId, scenarioMembership)
+      .createMembership(this.scenarioId(), scenarioMembership)
       .subscribe();
   }
 

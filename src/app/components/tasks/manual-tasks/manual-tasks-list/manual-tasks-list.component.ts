@@ -9,6 +9,7 @@ import {
   ChangeDetectionStrategy,
   Input,
   inject,
+  input,
 } from '@angular/core';
 import { TaskDataService } from 'src/app/data/task/task-data.service';
 import { Scenario, Task } from 'src/app/generated/steamfitter.api';
@@ -29,7 +30,7 @@ export class ManualTasksListComponent implements OnInit {
   private taskDataService = inject(TaskDataService);
   private confirmDialogService = inject(CrucibleDialogService);
 
-  @Input() tasks: Array<Task>;
+  readonly tasks = input<Array<Task>>(undefined);
   @Input() scenario: Scenario;
 
   ngOnInit(): void {}
