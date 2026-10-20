@@ -1,7 +1,7 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Subject, Observable } from 'rxjs';
@@ -77,6 +77,18 @@ enum Section {
   ],
 })
 export class HomeAppComponent implements OnDestroy, OnInit {
+  private currentUserQuery = inject(CurrentUserQuery);
+  private authService = inject(ComnAuthService);
+  private userDataService = inject(UserDataService);
+  private router = inject(Router);
+  private playerDataService = inject(PlayerDataService);
+  private settingsService = inject(ComnSettingsService);
+  private signalRService = inject(SignalRService);
+  private healthService = inject(HealthService);
+  private authQuery = inject(ComnAuthQuery);
+  private permissionDataService = inject(PermissionDataService);
+  private userQuery = inject(UserQuery);
+
   @ViewChild('homePaginator') homePaginator: MatPaginator;
   apiIsSick = false;
   apiMessage = 'The API web service is not responding.';
@@ -107,20 +119,9 @@ export class HomeAppComponent implements OnDestroy, OnInit {
   selectedHistoryView: any;
   selectedHistoryVm: Vm;
 
-  constructor(
-    private currentUserQuery: CurrentUserQuery,
-    private authService: ComnAuthService,
-    private userDataService: UserDataService,
-    private router: Router,
-    activatedRoute: ActivatedRoute,
-    private playerDataService: PlayerDataService,
-    private settingsService: ComnSettingsService,
-    private signalRService: SignalRService,
-    private healthService: HealthService,
-    private authQuery: ComnAuthQuery,
-    private permissionDataService: PermissionDataService,
-    private userQuery: UserQuery,
-  ) {
+  constructor() {
+    const activatedRoute = inject(ActivatedRoute);
+
     this.healthCheck();
 
     this.theme$ = this.authQuery.userTheme$;

@@ -3,7 +3,7 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
  Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 */
 
-import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit, inject } from '@angular/core';
 import { combineLatest, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { GroupMembershipService } from 'src/app/data/group/group-membership.service';
@@ -24,6 +24,10 @@ import { AsyncPipe } from '@angular/common';
   ],
 })
 export class AdminGroupsDetailComponent implements OnInit, OnChanges {
+  private userQuery = inject(UserQuery);
+  private groupMembershipService = inject(GroupMembershipService);
+  private signalRService = inject(SignalRService);
+
   @Input() groupId: string;
   @Input() canEdit: boolean;
   memberships$ = of([]);
@@ -31,12 +35,6 @@ export class AdminGroupsDetailComponent implements OnInit, OnChanges {
   // All users that are not already members of the project
   nonMembers$ = this.selectUsers(false);
   members$ = this.selectUsers(true);
-
-  constructor(
-    private userQuery: UserQuery,
-    private groupMembershipService: GroupMembershipService,
-    private signalRService: SignalRService,
-  ) {}
 
   ngOnInit(): void {
     this.groupMembershipService.loadMemberships(this.groupId).subscribe();

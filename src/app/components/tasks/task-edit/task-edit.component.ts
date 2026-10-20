@@ -4,10 +4,10 @@
 import {
   Component,
   EventEmitter,
-  Inject,
   OnDestroy,
   OnInit,
   Output,
+  inject,
 } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BehaviorSubject, Subject } from 'rxjs';
@@ -57,6 +57,12 @@ import { AsyncPipe } from '@angular/common';
   ],
 })
 export class TaskEditComponent implements OnInit, OnDestroy {
+  taskService = inject(TaskService);
+  data = inject<{
+    task: Task;
+    vmCredentials: Array<VmCredential>;
+  }>(MAT_DIALOG_DATA);
+
   @Output() editComplete = new EventEmitter<any>();
   triggerConditions = [
     TaskTrigger.Time,
@@ -77,12 +83,6 @@ export class TaskEditComponent implements OnInit, OnDestroy {
   username = new BehaviorSubject<string>('');
   password = new BehaviorSubject<string>('');
   private unsubscribe$ = new Subject();
-
-  constructor(
-    public taskService: TaskService,
-    @Inject(MAT_DIALOG_DATA)
-    public data: { task: Task; vmCredentials: Array<VmCredential> },
-  ) {}
 
   ngOnInit() {
     this.data.task = this.formatTaskVmList({ ...this.data.task });

@@ -8,6 +8,7 @@ import {
   NgZone,
   Output,
   ViewChild,
+  inject,
 } from '@angular/core';
 import { ScenarioTemplateQuery } from 'src/app/data/scenario-template/scenario-template.query';
 import { TaskDataService } from 'src/app/data/task/task-data.service';
@@ -22,6 +23,11 @@ import { TasksComponent } from '../../tasks/tasks.component';
   imports: [TasksComponent],
 })
 export class ScenarioTemplateEditComponent {
+  private scenarioTemplateQuery = inject(ScenarioTemplateQuery);
+  private taskDataService = inject(TaskDataService);
+  private taskQuery = inject(TaskQuery);
+  zone = inject(NgZone);
+
   @Input() scenarioTemplate: ScenarioTemplate;
   @Output() editComplete = new EventEmitter<boolean>();
   @Output() editScenarioTemplate = new EventEmitter<ScenarioTemplate>();
@@ -31,13 +37,6 @@ export class ScenarioTemplateEditComponent {
   taskList = this.taskQuery.selectAll();
   isLoading = this.scenarioTemplateQuery.selectLoading();
   tasksAreLoading = this.taskQuery.selectLoading();
-
-  constructor(
-    private scenarioTemplateQuery: ScenarioTemplateQuery,
-    private taskDataService: TaskDataService,
-    private taskQuery: TaskQuery,
-    public zone: NgZone,
-  ) {}
 
   refreshTaskList() {
     if (this && this.scenarioTemplate) {

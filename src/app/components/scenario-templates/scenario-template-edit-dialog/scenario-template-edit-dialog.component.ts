@@ -1,7 +1,7 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Component, EventEmitter, Inject, Output } from '@angular/core';
+import { Component, EventEmitter, Output, inject } from '@angular/core';
 import {
   UntypedFormControl,
   FormGroupDirective,
@@ -73,6 +73,8 @@ export class NotIntegerErrorStateMatcher implements ErrorStateMatcher {
   ],
 })
 export class ScenarioTemplateEditDialogComponent {
+  data = inject(MAT_DIALOG_DATA);
+
   @Output() editComplete = new EventEmitter<any>();
 
   scenarioTemplateNameFormControl = new UntypedFormControl(
@@ -91,8 +93,6 @@ export class ScenarioTemplateEditDialogComponent {
   );
   matcher = new UserErrorStateMatcher();
   notAnIntegerErrorState = new NotIntegerErrorStateMatcher();
-
-  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {}
 
   errorFree() {
     const hasError =

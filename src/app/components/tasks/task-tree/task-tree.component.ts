@@ -10,6 +10,7 @@ import {
   OnInit,
   Output,
   ViewChild,
+  inject,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
@@ -113,6 +114,10 @@ const BLANK_TASK: Task = {
   ],
 })
 export class TaskTreeComponent implements OnInit, OnDestroy {
+  private confirmService = inject(CrucibleDialogService);
+  private dialog = inject(MatDialog);
+  private taskDataService = inject(TaskDataService);
+
   @Input() taskList: Observable<Task[]>;
   @Input() resultList: Observable<Result[]>;
   @Input() scenarioTemplateId: string;
@@ -160,12 +165,6 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
   // context menu
   @ViewChild(MatMenuTrigger, { static: true }) contextMenu: MatMenuTrigger;
   contextMenuPosition = { x: '0px', y: '0px' };
-
-  constructor(
-    private confirmService: CrucibleDialogService,
-    private dialog: MatDialog,
-    private taskDataService: TaskDataService,
-  ) {}
 
   ngOnInit() {
     this.taskDataService.requestedTaskId$

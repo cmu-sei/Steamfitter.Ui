@@ -8,6 +8,7 @@ import {
   Input,
   Output,
   ViewChild,
+  inject,
 } from '@angular/core';
 import { UntypedFormControl, FormGroupDirective, NgForm } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
@@ -41,6 +42,12 @@ export class UserErrorStateMatcher implements ErrorStateMatcher {
   imports: [ScenarioTemplateListComponent, AsyncPipe],
 })
 export class ScenarioTemplatesComponent {
+  zone = inject(NgZone);
+  private scenarioTemplateDataService = inject(ScenarioTemplateDataService);
+  private scenarioTemplateQuery = inject(ScenarioTemplateQuery);
+  private router = inject(Router);
+  private activatedRoute = inject(ActivatedRoute);
+
   @Input() filterString = '';
   @Input() paginator: MatPaginator;
   @Input() adminMode = false;
@@ -57,13 +64,7 @@ export class ScenarioTemplatesComponent {
   filterControl: UntypedFormControl =
     this.scenarioTemplateDataService.filterControl;
 
-  constructor(
-    public zone: NgZone,
-    private scenarioTemplateDataService: ScenarioTemplateDataService,
-    private scenarioTemplateQuery: ScenarioTemplateQuery,
-    private router: Router,
-    private activatedRoute: ActivatedRoute,
-  ) {
+  constructor() {
     this.scenarioTemplateDataService.load();
   }
 

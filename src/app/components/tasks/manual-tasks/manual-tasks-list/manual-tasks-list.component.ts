@@ -8,6 +8,7 @@ import {
   OnInit,
   ChangeDetectionStrategy,
   Input,
+  inject,
 } from '@angular/core';
 import { TaskDataService } from 'src/app/data/task/task-data.service';
 import { Scenario, Task } from 'src/app/generated/steamfitter.api';
@@ -25,13 +26,11 @@ import { PercentPipe } from '@angular/common';
   imports: [MatIcon, MatTooltip, MatIconButton, PercentPipe],
 })
 export class ManualTasksListComponent implements OnInit {
+  private taskDataService = inject(TaskDataService);
+  private confirmDialogService = inject(CrucibleDialogService);
+
   @Input() tasks: Array<Task>;
   @Input() scenario: Scenario;
-
-  constructor(
-    private taskDataService: TaskDataService,
-    private confirmDialogService: CrucibleDialogService,
-  ) {}
 
   ngOnInit(): void {}
 

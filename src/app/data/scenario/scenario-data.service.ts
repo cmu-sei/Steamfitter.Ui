@@ -3,7 +3,7 @@
 
 import { ScenarioStore } from './scenario.store';
 import { ScenarioQuery } from './scenario.query';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
 import { PageEvent } from '@angular/material/paginator';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -28,9 +28,18 @@ import { PlayerDataService } from 'src/app/data/player/player-data-service';
   providedIn: 'root',
 })
 export class ScenarioDataService {
+  private scenarioStore = inject(ScenarioStore);
+  private scenarioQuery = inject(ScenarioQuery);
+  private scenarioService = inject(ScenarioService);
+  private taskDataService = inject(TaskDataService);
+  private router = inject(Router);
+  private activatedRoute = inject(ActivatedRoute);
+  private playerDataService = inject(PlayerDataService);
+  private vmCredentialService = inject(VmCredentialService);
+
   private _requestedScenarioId: string;
   private _requestedScenarioId$ = this.activatedRoute.queryParamMap.pipe(
-    map((params) => params.get('scenarioId') || '')
+    map((params) => params.get('scenarioId') || ''),
   );
   readonly allScenarios = this.scenarioQuery.selectAll();
   readonly scenarioList: Observable<Scenario[]>;
@@ -44,16 +53,10 @@ export class ScenarioDataService {
   private pageSize: Observable<number>;
   private pageIndex: Observable<number>;
 
-  constructor(
-    private scenarioStore: ScenarioStore,
-    private scenarioQuery: ScenarioQuery,
-    private scenarioService: ScenarioService,
-    private taskDataService: TaskDataService,
-    private router: Router,
-    private activatedRoute: ActivatedRoute,
-    private playerDataService: PlayerDataService,
-    private vmCredentialService: VmCredentialService
-  ) {
+  constructor() {
+    const router = this.router;
+    const activatedRoute = this.activatedRoute;
+
     this.filterControl.valueChanges.subscribe((term) => {
       router.navigate([], {
         queryParams: { scenariomask: term },
@@ -61,19 +64,19 @@ export class ScenarioDataService {
       });
     });
     this.filterTerm = activatedRoute.queryParamMap.pipe(
-      map((params) => params.get('scenariomask') || '')
+      map((params) => params.get('scenariomask') || ''),
     );
     this.sortColumn = activatedRoute.queryParamMap.pipe(
-      map((params) => params.get('sorton') || 'name')
+      map((params) => params.get('sorton') || 'name'),
     );
     this.sortIsAscending = activatedRoute.queryParamMap.pipe(
-      map((params) => (params.get('sortdir') || 'asc') === 'asc')
+      map((params) => (params.get('sortdir') || 'asc') === 'asc'),
     );
     this.pageSize = activatedRoute.queryParamMap.pipe(
-      map((params) => parseInt(params.get('pagesize') || '20', 10))
+      map((params) => parseInt(params.get('pagesize') || '20', 10)),
     );
     this.pageIndex = activatedRoute.queryParamMap.pipe(
-      map((params) => parseInt(params.get('pageindex') || '0', 10))
+      map((params) => parseInt(params.get('pageindex') || '0', 10)),
     );
     this.scenarioList = combineLatest([
       this.allScenarios,
@@ -85,7 +88,7 @@ export class ScenarioDataService {
         items
           ? (items as Scenario[])
               .sort((a: Scenario, b: Scenario) =>
-                this.sortScenarios(a, b, sortColumn, sortIsAscending)
+                this.sortScenarios(a, b, sortColumn, sortIsAscending),
               )
               .filter(
                 (scenario) =>
@@ -97,10 +100,10 @@ export class ScenarioDataService {
                     .includes(filterTerm.toLowerCase()) ||
                   ('' + scenario.view)
                     .toLowerCase()
-                    .includes(filterTerm.toLowerCase())
+                    .includes(filterTerm.toLowerCase()),
               )
-          : []
-      )
+          : [],
+      ),
     );
     this.selected = combineLatest([
       this.scenarioList,
@@ -111,7 +114,7 @@ export class ScenarioDataService {
         let selectedScenario: Scenario = null;
         if (scenarioList && scenarioList.length > 0 && requestedScenarioId) {
           selectedScenario = scenarioList.find(
-            (scenario) => scenario.id === requestedScenarioId
+            (scenario) => scenario.id === requestedScenarioId,
           );
           if (
             selectedScenario &&
@@ -128,7 +131,7 @@ export class ScenarioDataService {
           this.scenarioStore.update({ taskList: [] });
         }
         return selectedScenario;
-      })
+      }),
     );
   }
 
@@ -136,7 +139,7 @@ export class ScenarioDataService {
     a: Scenario,
     b: Scenario,
     column: string,
-    isAsc: boolean
+    isAsc: boolean,
   ) {
     switch (column) {
       case 'name':
@@ -179,7 +182,7 @@ export class ScenarioDataService {
         tap(() => {
           this.scenarioStore.setLoading(false);
         }),
-        take(1)
+        take(1),
       )
       .subscribe(
         (scenarios) => {
@@ -188,13 +191,13 @@ export class ScenarioDataService {
           });
           this.scenarioStore.set(
             scenarios.filter(
-              (s) => s.description !== 'Personal Task Builder Scenario'
-            )
+              (s) => s.description !== 'Personal Task Builder Scenario',
+            ),
           );
         },
         (error) => {
           this.scenarioStore.set([]);
-        }
+        },
       );
   }
 
@@ -206,7 +209,7 @@ export class ScenarioDataService {
         tap(() => {
           this.scenarioStore.setLoading(false);
         }),
-        take(1)
+        take(1),
       )
       .subscribe((s) => {
         this.scenarioStore.upsert(s.id, { ...s });
@@ -221,7 +224,7 @@ export class ScenarioDataService {
         tap(() => {
           this.scenarioStore.setLoading(false);
         }),
-        take(1)
+        take(1),
       )
       .subscribe((s) => {
         this.scenarioStore.upsertMany(s);
@@ -237,7 +240,7 @@ export class ScenarioDataService {
         tap(() => {
           this.scenarioStore.setLoading(false);
         }),
-        take(1)
+        take(1),
       )
       .subscribe((scenario) => {
         this.updateStore({ ...scenario });
@@ -254,7 +257,7 @@ export class ScenarioDataService {
         tap(() => {
           this.scenarioStore.setLoading(false);
         }),
-        take(1)
+        take(1),
       )
       .subscribe((s) => {
         this.setAsDates(s);
@@ -271,7 +274,7 @@ export class ScenarioDataService {
         tap(() => {
           this.scenarioStore.setLoading(false);
         }),
-        take(1)
+        take(1),
       )
       .subscribe((s) => {
         this.setAsDates(s);
@@ -288,7 +291,7 @@ export class ScenarioDataService {
         tap(() => {
           this.scenarioStore.setLoading(false);
         }),
-        take(1)
+        take(1),
       )
       .subscribe((s) => {
         this.setAsDates(s);
@@ -305,7 +308,7 @@ export class ScenarioDataService {
         tap(() => {
           this.scenarioStore.setLoading(false);
         }),
-        take(1)
+        take(1),
       )
       .subscribe((s) => {
         this.updateStore(s);

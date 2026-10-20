@@ -2,6 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { describe, it, expect } from 'vitest';
+import { Injector, runInInjectionContext } from '@angular/core';
 import { Task } from 'src/app/generated/steamfitter.api';
 import { recordEmissions } from 'src/app/test-utils/record-emissions';
 import { TaskStore } from './task.store';
@@ -9,7 +10,10 @@ import { TaskQuery } from './task.query';
 
 function createState() {
   const store = new TaskStore();
-  const query = new TaskQuery(store);
+  const query = runInInjectionContext(
+    Injector.create({ providers: [{ provide: TaskStore, useValue: store }] }),
+    () => new TaskQuery(),
+  );
   return { store, query };
 }
 

@@ -9,6 +9,7 @@ import {
   OnDestroy,
   OnInit,
   Output,
+  inject,
 } from '@angular/core';
 import { ComnAuthQuery, ComnAuthService, Theme } from '@cmusei/crucible-common';
 import { Observable, Subject } from 'rxjs';
@@ -47,6 +48,11 @@ import { AsyncPipe } from '@angular/common';
   ],
 })
 export class TopbarComponent implements OnInit, OnDestroy {
+  private authService = inject(ComnAuthService);
+  private currentUserQuery = inject(CurrentUserQuery);
+  private permissionDataService = inject(PermissionDataService);
+  private authQuery = inject(ComnAuthQuery);
+
   @Input() title?: string;
   @Input() topbarView?: TopbarView;
   @Output() editView?: EventEmitter<any> = new EventEmitter<any>();
@@ -55,13 +61,6 @@ export class TopbarComponent implements OnInit, OnDestroy {
   unsubscribe$: Subject<null> = new Subject<null>();
   TopbarView = TopbarView;
   canViewAdmin = false;
-
-  constructor(
-    private authService: ComnAuthService,
-    private currentUserQuery: CurrentUserQuery,
-    private permissionDataService: PermissionDataService,
-    private authQuery: ComnAuthQuery,
-  ) {}
 
   ngOnInit() {
     this.permissionDataService

@@ -13,6 +13,7 @@ import {
   OnInit,
   Output,
   ViewChild,
+  inject,
 } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -85,6 +86,8 @@ import { MatTooltip } from '@angular/material/tooltip';
 export class ScenarioMembershipListComponent
   implements OnInit, OnChanges, AfterViewInit
 {
+  snackBar = inject(MatSnackBar);
+
   @Input()
   users: User[];
 
@@ -104,8 +107,6 @@ export class ScenarioMembershipListComponent
   dataSource = new MatTableDataSource<ScenarioMemberModel>();
 
   filterString = '';
-
-  constructor(public snackBar: MatSnackBar) {}
 
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild(MatPaginator) paginator: MatPaginator;

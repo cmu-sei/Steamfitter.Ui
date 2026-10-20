@@ -16,6 +16,7 @@ import {
   OnInit,
   SimpleChanges,
   ViewChild,
+  inject,
 } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, MatSortHeader } from '@angular/material/sort';
@@ -87,6 +88,10 @@ export enum HistoryView {
   ],
 })
 export class HistoryComponent implements OnInit, OnChanges, OnDestroy {
+  private resultQuery = inject(ResultQuery);
+  private taskDataService = inject(TaskDataService);
+  private resultDataService = inject(ResultDataService);
+
   @Input() filterString = '';
   @Input() paginator: MatPaginator;
   @Input() historyView: HistoryView = HistoryView.user;
@@ -112,11 +117,7 @@ export class HistoryComponent implements OnInit, OnChanges, OnDestroy {
   private unsubscribe$ = new Subject();
   @ViewChild(MatSort, { static: true }) sort: MatSort;
 
-  constructor(
-    private resultQuery: ResultQuery,
-    private taskDataService: TaskDataService,
-    private resultDataService: ResultDataService,
-  ) {
+  constructor() {
     this.loading = true;
     this.apiResponded = false;
 

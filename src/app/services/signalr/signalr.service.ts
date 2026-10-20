@@ -1,7 +1,7 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { ComnAuthService, ComnSettingsService } from '@cmusei/crucible-common';
 import * as signalR from '@microsoft/signalr';
 import { ResultDataService } from 'src/app/data/result/result-data.service';
@@ -25,23 +25,23 @@ import {
   providedIn: 'root',
 })
 export class SignalRService {
+  private authService = inject(ComnAuthService);
+  private scenarioTemplateDataService = inject(ScenarioTemplateDataService);
+  private scenarioTemplateMembershipDataService = inject(
+    ScenarioTemplateMembershipDataService,
+  );
+  private scenarioDataService = inject(ScenarioDataService);
+  private scenarioMembershipDataService = inject(ScenarioMembershipDataService);
+  private groupMembershipDataService = inject(GroupMembershipService);
+  private taskDataService = inject(TaskDataService);
+  private resultDataService = inject(ResultDataService);
+  private settingsService = inject(ComnSettingsService);
+
   private hubConnection: signalR.HubConnection;
   private connectionPromise: Promise<void>;
 
   private systemGroupJoined = false;
   private scenarioIds = [];
-
-  constructor(
-    private authService: ComnAuthService,
-    private scenarioTemplateDataService: ScenarioTemplateDataService,
-    private scenarioTemplateMembershipDataService: ScenarioTemplateMembershipDataService,
-    private scenarioDataService: ScenarioDataService,
-    private scenarioMembershipDataService: ScenarioMembershipDataService,
-    private groupMembershipDataService: GroupMembershipService,
-    private taskDataService: TaskDataService,
-    private resultDataService: ResultDataService,
-    private settingsService: ComnSettingsService
-  ) {}
 
   public startConnection(): Promise<void> {
     if (this.connectionPromise) {
@@ -51,7 +51,7 @@ export class SignalRService {
     const token = this.authService.getAuthorizationToken();
     this.hubConnection = new signalR.HubConnectionBuilder()
       .withUrl(
-        `${this.settingsService.settings.ApiUrl}/hubs/engine?bearer=${token}`
+        `${this.settingsService.settings.ApiUrl}/hubs/engine?bearer=${token}`,
       )
       .withAutomaticReconnect(new RetryPolicy(120, 0, 5))
       .withStatefulReconnect()
@@ -95,14 +95,14 @@ export class SignalRService {
       'ScenarioTemplateCreated',
       (scenarioTemplate: ScenarioTemplate) => {
         this.scenarioTemplateDataService.updateStore(scenarioTemplate);
-      }
+      },
     );
 
     this.hubConnection.on(
       'ScenarioTemplateUpdated',
       (scenarioTemplate: ScenarioTemplate) => {
         this.scenarioTemplateDataService.updateStore(scenarioTemplate);
-      }
+      },
     );
 
     this.hubConnection.on('ScenarioTemplateDeleted', (id: string) => {
@@ -115,18 +115,18 @@ export class SignalRService {
       'ScenarioTemplateMembershipCreated',
       (scenarioTemplateMembership: ScenarioTemplateMembership) => {
         this.scenarioTemplateMembershipDataService.updateStore(
-          scenarioTemplateMembership
+          scenarioTemplateMembership,
         );
-      }
+      },
     );
 
     this.hubConnection.on(
       'ScenarioTemplateMembershipUpdated',
       (scenarioTemplateMembership: ScenarioTemplateMembership) => {
         this.scenarioTemplateMembershipDataService.updateStore(
-          scenarioTemplateMembership
+          scenarioTemplateMembership,
         );
-      }
+      },
     );
 
     this.hubConnection.on('ScenarioTemplateMembershipDeleted', (id: string) => {
@@ -153,14 +153,14 @@ export class SignalRService {
       'ScenarioMembershipCreated',
       (scenarioMembership: ScenarioMembership) => {
         this.scenarioMembershipDataService.updateStore(scenarioMembership);
-      }
+      },
     );
 
     this.hubConnection.on(
       'ScenarioMembershipUpdated',
       (scenarioMembership: ScenarioMembership) => {
         this.scenarioMembershipDataService.updateStore(scenarioMembership);
-      }
+      },
     );
 
     this.hubConnection.on('ScenarioMembershipDeleted', (id: string) => {
@@ -173,14 +173,14 @@ export class SignalRService {
       'GroupMembershipCreated',
       (groupMembership: GroupMembership) => {
         this.groupMembershipDataService.updateStore(groupMembership);
-      }
+      },
     );
 
     this.hubConnection.on(
       'GroupMembershipUpdated',
       (groupMembership: GroupMembership) => {
         this.groupMembershipDataService.updateStore(groupMembership);
-      }
+      },
     );
 
     this.hubConnection.on('GroupMembershipDeleted', (id: string) => {
@@ -228,21 +228,21 @@ export class SignalRService {
   public leaveSystem() {
     this.systemGroupJoined = false;
     this.startConnection().then((x) =>
-      this.hubConnection.invoke('LeaveSystem')
+      this.hubConnection.invoke('LeaveSystem'),
     );
   }
 
   public joinScenario(scenarioId: string) {
     this.scenarioIds.push(scenarioId);
     this.startConnection().then((x) =>
-      this.hubConnection.invoke('JoinScenario', scenarioId)
+      this.hubConnection.invoke('JoinScenario', scenarioId),
     );
   }
 
   public leaveScenario(scenarioId: string) {
     this.scenarioIds = this.scenarioIds.filter((x) => x === scenarioId);
     this.startConnection().then((x) =>
-      this.hubConnection.invoke('LeaveScenario', scenarioId)
+      this.hubConnection.invoke('LeaveScenario', scenarioId),
     );
   }
 }
@@ -251,11 +251,11 @@ class RetryPolicy {
   constructor(
     private maxSeconds: number,
     private minJitterSeconds: number,
-    private maxJitterSeconds: number
+    private maxJitterSeconds: number,
   ) {}
 
   nextRetryDelayInMilliseconds(
-    retryContext: signalR.RetryContext
+    retryContext: signalR.RetryContext,
   ): number | null {
     let nextRetrySeconds = Math.pow(2, retryContext.previousRetryCount + 1);
     if (retryContext.elapsedMilliseconds / 1000 > this.maxSeconds) {
@@ -264,7 +264,7 @@ class RetryPolicy {
 
     nextRetrySeconds +=
       Math.floor(
-        Math.random() * (this.maxJitterSeconds - this.minJitterSeconds + 1)
+        Math.random() * (this.maxJitterSeconds - this.minJitterSeconds + 1),
       ) + this.minJitterSeconds; // Add Jitter
 
     return nextRetrySeconds * 1000;

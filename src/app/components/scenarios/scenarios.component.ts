@@ -9,6 +9,7 @@ import {
   OnInit,
   Output,
   ViewChild,
+  inject,
 } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
@@ -31,6 +32,13 @@ import { AsyncPipe } from '@angular/common';
   imports: [ScenarioListComponent, AsyncPipe],
 })
 export class ScenariosComponent implements OnInit {
+  zone = inject(NgZone);
+  private playerDataService = inject(PlayerDataService);
+  private scenarioDataService = inject(ScenarioDataService);
+  private scenarioQuery = inject(ScenarioQuery);
+  private router = inject(Router);
+  private activatedRoute = inject(ActivatedRoute);
+
   @Input() filterString = '';
   @Input() paginator: MatPaginator;
   @Input() selectedStatuses: string[] = ['active', 'ready'];
@@ -46,14 +54,9 @@ export class ScenariosComponent implements OnInit {
   views$ = this.playerDataService.viewList;
   statuses$: Observable<string>;
 
-  constructor(
-    public zone: NgZone,
-    private playerDataService: PlayerDataService,
-    private scenarioDataService: ScenarioDataService,
-    private scenarioQuery: ScenarioQuery,
-    private router: Router,
-    private activatedRoute: ActivatedRoute,
-  ) {
+  constructor() {
+    const activatedRoute = this.activatedRoute;
+
     this.scenarioDataService.load();
     this.statuses$ = activatedRoute.queryParamMap.pipe(
       map((params) => params.get('statuses') || 'active,ready'),

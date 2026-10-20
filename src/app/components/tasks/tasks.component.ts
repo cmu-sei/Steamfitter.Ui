@@ -1,7 +1,7 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { TaskDataService } from 'src/app/data/task/task-data.service';
 import { Result, Task } from 'src/app/generated/steamfitter.api/model/models';
@@ -15,6 +15,8 @@ import { AsyncPipe } from '@angular/common';
   imports: [TaskTreeComponent, AsyncPipe],
 })
 export class TasksComponent {
+  private taskDataService = inject(TaskDataService);
+
   @Input() taskList: Observable<Task[]>;
   @Input() resultList: Observable<Result[]>;
   @Input() isLoading: Observable<boolean>;
@@ -23,8 +25,6 @@ export class TasksComponent {
   @Input() isEditable: boolean;
   @Input() isExecutable: boolean;
   clipboard = this.taskDataService.clipboard;
-
-  constructor(private taskDataService: TaskDataService) {}
 
   deleteTask(id: string) {
     this.taskDataService.delete(id);

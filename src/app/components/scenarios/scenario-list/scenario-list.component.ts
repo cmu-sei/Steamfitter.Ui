@@ -17,6 +17,7 @@ import {
   Output,
   SimpleChanges,
   ViewChild,
+  inject,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
@@ -107,6 +108,11 @@ export interface Action {
   ],
 })
 export class ScenarioListComponent implements OnInit, OnChanges {
+  private scenarioDataService = inject(ScenarioDataService);
+  private permissionDataService = inject(PermissionDataService);
+  private confirmService = inject(CrucibleDialogService);
+  private dialog = inject(MatDialog);
+
   @Input() scenarioList: Scenario[];
   @Input() selectedScenario: Scenario;
   @Input() isLoading: boolean;
@@ -139,12 +145,7 @@ export class ScenarioListComponent implements OnInit, OnChanges {
   permissions: SystemPermission[] = [];
   readonly SystemPermission = SystemPermission;
 
-  constructor(
-    private scenarioDataService: ScenarioDataService,
-    private permissionDataService: PermissionDataService,
-    private confirmService: CrucibleDialogService,
-    private dialog: MatDialog,
-  ) {
+  constructor() {
     if (!this.scenarioList || this.scenarioList.length === 0) {
       this.scenarioDataService.load();
     }

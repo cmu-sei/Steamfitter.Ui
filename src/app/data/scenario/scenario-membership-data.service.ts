@@ -1,7 +1,7 @@
 // Copyright 2024 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import {
@@ -13,12 +13,12 @@ import {
   providedIn: 'root',
 })
 export class ScenarioMembershipDataService {
+  private scenarioMembershipsService = inject(ScenarioMembershipsService);
+
   private scenarioMembershipsSubject = new BehaviorSubject<
     ScenarioMembership[]
   >([]);
   public scenarioMemberships$ = this.scenarioMembershipsSubject.asObservable();
-
-  constructor(private scenarioMembershipsService: ScenarioMembershipsService) {}
 
   loadMemberships(scenarioId: string): Observable<ScenarioMembership[]> {
     return this.scenarioMembershipsService
@@ -32,7 +32,7 @@ export class ScenarioMembershipDataService {
       .pipe(
         tap((x) => {
           this.upsert(x.id, x);
-        })
+        }),
       );
   }
 
@@ -42,7 +42,7 @@ export class ScenarioMembershipDataService {
       .pipe(
         tap((x) => {
           this.upsert(scenarioMembership.id, x);
-        })
+        }),
       );
   }
 
@@ -50,7 +50,7 @@ export class ScenarioMembershipDataService {
     return this.scenarioMembershipsService.deleteScenarioMembership(id).pipe(
       tap(() => {
         this.remove(id);
-      })
+      }),
     );
   }
 

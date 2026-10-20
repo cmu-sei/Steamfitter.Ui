@@ -2,6 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { describe, it, expect } from 'vitest';
+import { Injector, runInInjectionContext } from '@angular/core';
 import { Theme } from '@cmusei/crucible-common';
 import { recordEmissions } from 'src/app/test-utils/record-emissions';
 import { CurrentUserStore, UserStore } from './user.store';
@@ -9,7 +10,10 @@ import { CurrentUserQuery, UserQuery } from './user.query';
 
 function createUsers() {
   const store = new UserStore();
-  const query = new UserQuery(store);
+  const query = runInInjectionContext(
+    Injector.create({ providers: [{ provide: UserStore, useValue: store }] }),
+    () => new UserQuery(),
+  );
   return { store, query };
 }
 
@@ -96,7 +100,12 @@ describe('CurrentUserStore / CurrentUserQuery', () => {
    */
   it('starts with the light theme and emits theme changes', () => {
     const store = new CurrentUserStore();
-    const query = new CurrentUserQuery(store);
+    const query = runInInjectionContext(
+      Injector.create({
+        providers: [{ provide: CurrentUserStore, useValue: store }],
+      }),
+      () => new CurrentUserQuery(),
+    );
     const themes = recordEmissions(query.userTheme$);
 
     store.update({ theme: Theme.DARK });
@@ -112,7 +121,12 @@ describe('CurrentUserStore / CurrentUserQuery', () => {
    */
   it('getLastRoute() defaults to the root route', () => {
     const store = new CurrentUserStore();
-    const query = new CurrentUserQuery(store);
+    const query = runInInjectionContext(
+      Injector.create({
+        providers: [{ provide: CurrentUserStore, useValue: store }],
+      }),
+      () => new CurrentUserQuery(),
+    );
     expect(query.getLastRoute()).toBe('/');
 
     store.update({ lastRoute: '/admin' });

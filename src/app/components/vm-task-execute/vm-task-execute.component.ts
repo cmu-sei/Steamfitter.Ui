@@ -8,6 +8,7 @@ import {
   OnDestroy,
   Output,
   ViewChild,
+  inject,
 } from '@angular/core';
 import { UntypedFormControl, FormGroupDirective, NgForm } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
@@ -47,6 +48,16 @@ export class UserErrorStateMatcher implements ErrorStateMatcher {
   imports: [TasksComponent],
 })
 export class VmTaskExecuteComponent implements OnDestroy {
+  zone = inject(NgZone);
+  private playerDataService = inject(PlayerDataService);
+  private taskService = inject(TaskService);
+  private resultQuery = inject(ResultQuery);
+  private taskDataService = inject(TaskDataService);
+  private resultDataService = inject(ResultDataService);
+  private taskQuery = inject(TaskQuery);
+  private authService = inject(ComnAuthService);
+  private scenarioDataService = inject(ScenarioDataService);
+
   @Output() editComplete = new EventEmitter<boolean>();
   @ViewChild(VmTaskExecuteComponent) child;
   @ViewChild('stepper') stepper: MatStepper;
@@ -65,17 +76,7 @@ export class VmTaskExecuteComponent implements OnDestroy {
   userScenario: Scenario;
   private unsubscribe$ = new Subject();
 
-  constructor(
-    public zone: NgZone,
-    private playerDataService: PlayerDataService,
-    private taskService: TaskService,
-    private resultQuery: ResultQuery,
-    private taskDataService: TaskDataService,
-    private resultDataService: ResultDataService,
-    private taskQuery: TaskQuery,
-    private authService: ComnAuthService,
-    private scenarioDataService: ScenarioDataService,
-  ) {
+  constructor() {
     this.scenarioDataService.selected
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((scenario) => {

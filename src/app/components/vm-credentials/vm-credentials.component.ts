@@ -1,6 +1,13 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
-import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  OnInit,
+  inject,
+} from '@angular/core';
 import { VmCredential } from 'src/app/generated/steamfitter.api/model/vmCredential';
 import { ScenarioQuery } from 'src/app/data/scenario/scenario.query';
 import { ScenarioTemplateQuery } from 'src/app/data/scenario-template/scenario-template.query';
@@ -34,6 +41,13 @@ import { AsyncPipe } from '@angular/common';
   ],
 })
 export class VmCredentialsComponent implements OnInit {
+  private scenarioTemplateQuery = inject(ScenarioTemplateQuery);
+  private scenarioQuery = inject(ScenarioQuery);
+  private confirmService = inject(CrucibleDialogService);
+  private dialog = inject(MatDialog);
+  private scenarioTemplateDataService = inject(ScenarioTemplateDataService);
+  private scenarioDataService = inject(ScenarioDataService);
+
   @Input() username: string;
   @Input() password: string;
   @Input() scenarioTemplateId: string;
@@ -46,14 +60,7 @@ export class VmCredentialsComponent implements OnInit {
   parent: Observable<ScenarioTemplate> | Observable<Scenario> | undefined;
   vmCredentialList: VmCredential[] = [];
 
-  constructor(
-    private scenarioTemplateQuery: ScenarioTemplateQuery,
-    private scenarioQuery: ScenarioQuery,
-    private confirmService: CrucibleDialogService,
-    private dialog: MatDialog,
-    private scenarioTemplateDataService: ScenarioTemplateDataService,
-    private scenarioDataService: ScenarioDataService,
-  ) {
+  constructor() {
     this.scenarioTemplate = (
       this.scenarioTemplateQuery.selectActive() as Observable<ScenarioTemplate>
     ).pipe(

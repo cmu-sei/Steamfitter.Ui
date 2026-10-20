@@ -2,6 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { describe, it, expect } from 'vitest';
+import { Injector, runInInjectionContext } from '@angular/core';
 import { Scenario } from 'src/app/generated/steamfitter.api';
 import { recordEmissions } from 'src/app/test-utils/record-emissions';
 import { ScenarioStore } from './scenario.store';
@@ -9,7 +10,12 @@ import { ScenarioQuery } from './scenario.query';
 
 function createState() {
   const store = new ScenarioStore();
-  const query = new ScenarioQuery(store);
+  const query = runInInjectionContext(
+    Injector.create({
+      providers: [{ provide: ScenarioStore, useValue: store }],
+    }),
+    () => new ScenarioQuery(),
+  );
   return { store, query };
 }
 

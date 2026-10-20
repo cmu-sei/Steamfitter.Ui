@@ -7,6 +7,7 @@ import {
   Input,
   Output,
   ViewChild,
+  inject,
 } from '@angular/core';
 import { TaskTreeComponent } from 'src/app/components/tasks/task-tree/task-tree.component';
 import { ResultQuery } from 'src/app/data/result/result.query';
@@ -26,6 +27,11 @@ import { TasksComponent } from '../../tasks/tasks.component';
   imports: [TasksComponent],
 })
 export class ScenarioEditComponent {
+  private scenarioQuery = inject(ScenarioQuery);
+  private taskDataService = inject(TaskDataService);
+  private taskQuery = inject(TaskQuery);
+  private resultQuery = inject(ResultQuery);
+
   @Input() scenario: Scenario;
   @Output() editComplete = new EventEmitter<boolean>();
   @ViewChild(ScenarioEditComponent) child: ScenarioEditComponent;
@@ -36,13 +42,6 @@ export class ScenarioEditComponent {
   taskList = this.taskQuery.selectAll();
   resultList = this.resultQuery.selectAll();
   isLoading = this.scenarioQuery.selectLoading();
-
-  constructor(
-    private scenarioQuery: ScenarioQuery,
-    private taskDataService: TaskDataService,
-    private taskQuery: TaskQuery,
-    private resultQuery: ResultQuery,
-  ) {}
 
   refreshTaskList() {
     if (this && this.scenario) {

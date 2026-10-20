@@ -1,7 +1,7 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, inject } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { PlayerDataService } from 'src/app/data/player/player-data-service';
@@ -34,6 +34,8 @@ enum ResultStatus {
   ],
 })
 export class ResultsComponent implements OnInit, OnDestroy {
+  private playerDataService = inject(PlayerDataService);
+
   @Input() results: Observable<Result[]>;
   @Input() taskId: string;
   @Input() taskAction: string;
@@ -46,8 +48,6 @@ export class ResultsComponent implements OnInit, OnDestroy {
   private lastExecutionTime: Date;
   private unsubscribe$ = new Subject();
   showVmFields: boolean;
-
-  constructor(private playerDataService: PlayerDataService) {}
 
   ngOnInit() {
     this.results.pipe(takeUntil(this.unsubscribe$)).subscribe((results) => {

@@ -8,6 +8,7 @@ import {
   OnDestroy,
   OnInit,
   ChangeDetectionStrategy,
+  inject,
 } from '@angular/core';
 import { RouterQuery } from '@datorama/akita-ng-router-store';
 import { Observable } from 'rxjs';
@@ -30,21 +31,19 @@ import { AsyncPipe } from '@angular/common';
   imports: [ManualTasksListComponent, AsyncPipe],
 })
 export class ManualTasksPageComponent implements OnInit, OnDestroy {
+  private signalRService = inject(SignalRService);
+  private taskDataService = inject(TaskDataService);
+  private routerQuery = inject(RouterQuery);
+  private taskQuery = inject(TaskQuery);
+  private scenarioDataService = inject(ScenarioDataService);
+  private scenarioQuery = inject(ScenarioQuery);
+  private errorService = inject(ErrorService);
+
   viewId: string;
   scenarioId: string;
 
   public tasks$: Observable<Task[]>;
   public scenario$: Observable<Scenario>;
-
-  constructor(
-    private signalRService: SignalRService,
-    private taskDataService: TaskDataService,
-    private routerQuery: RouterQuery,
-    private taskQuery: TaskQuery,
-    private scenarioDataService: ScenarioDataService,
-    private scenarioQuery: ScenarioQuery,
-    private errorService: ErrorService,
-  ) {}
 
   ngOnInit(): void {
     this.scenarioId = this.routerQuery.getParams('scenarioId');

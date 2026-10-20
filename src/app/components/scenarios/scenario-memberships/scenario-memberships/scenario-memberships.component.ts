@@ -11,6 +11,7 @@ import {
   OnInit,
   Output,
   SimpleChanges,
+  inject,
 } from '@angular/core';
 import { combineLatest, forkJoin, Observable, of } from 'rxjs';
 import { filter, map, tap } from 'rxjs/operators';
@@ -47,6 +48,14 @@ import { AsyncPipe } from '@angular/common';
   ],
 })
 export class ScenarioMembershipsComponent implements OnInit, OnChanges {
+  private scenarioQuery = inject(ScenarioQuery);
+  private scenarioMembershipDataService = inject(ScenarioMembershipDataService);
+  private scenarioRolesDataService = inject(ScenarioRoleDataService);
+  private userDataService = inject(UserDataService);
+  private userQuery = inject(UserQuery);
+  private groupDataService = inject(GroupDataService);
+  private permissionDataService = inject(PermissionDataService);
+
   @Input() embedded: boolean;
   @Input() showHeader = true;
   @Input() scenarioId: string;
@@ -65,16 +74,6 @@ export class ScenarioMembershipsComponent implements OnInit, OnChanges {
   groupMembers$ = this.selectGroups(true);
 
   canEdit$: Observable<boolean>;
-
-  constructor(
-    private scenarioQuery: ScenarioQuery,
-    private scenarioMembershipDataService: ScenarioMembershipDataService,
-    private scenarioRolesDataService: ScenarioRoleDataService,
-    private userDataService: UserDataService,
-    private userQuery: UserQuery,
-    private groupDataService: GroupDataService,
-    private permissionDataService: PermissionDataService,
-  ) {}
 
   ngOnInit(): void {
     forkJoin([

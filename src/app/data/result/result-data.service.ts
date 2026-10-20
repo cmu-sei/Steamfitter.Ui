@@ -3,7 +3,7 @@
 
 import { ResultStore } from 'src/app/data/result/result.store';
 import { ResultQuery } from 'src/app/data/result/result.query';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
 import { PageEvent } from '@angular/material/paginator';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -15,6 +15,12 @@ import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
   providedIn: 'root',
 })
 export class ResultDataService {
+  private resultStore = inject(ResultStore);
+  private resultQuery = inject(ResultQuery);
+  private resultService = inject(ResultService);
+  private router = inject(Router);
+  private activatedRoute = inject(ActivatedRoute);
+
   private _requestedId$ = new BehaviorSubject<string>('');
   private _apiResults = new BehaviorSubject<Result[]>([]);
   readonly resultList: Observable<Result[]>;
@@ -24,13 +30,9 @@ export class ResultDataService {
   private _pageEvent: PageEvent = { length: 0, pageIndex: 0, pageSize: 10 };
   readonly pageEvent = new BehaviorSubject<PageEvent>(this._pageEvent);
 
-  constructor(
-    private resultStore: ResultStore,
-    private resultQuery: ResultQuery,
-    private resultService: ResultService,
-    private router: Router,
-    private activatedRoute: ActivatedRoute
-  ) {
+  constructor() {
+    const activatedRoute = this.activatedRoute;
+
     this.filterTerm = activatedRoute.queryParamMap.pipe(
       tap((params) => {
         const resultId = params.get('resultId') || '';
@@ -41,7 +43,7 @@ export class ResultDataService {
           this._requestedId$.next(resultId);
         }
       }),
-      map((params) => params.get('resultmask') || '')
+      map((params) => params.get('resultmask') || ''),
     );
     this.filterControl.valueChanges.subscribe((term) => {
       this.router.navigate([], {
@@ -75,7 +77,7 @@ export class ResultDataService {
             (item.expectedOutput &&
               item.expectedOutput
                 .toLowerCase()
-                .includes(filterTerm.toLowerCase()))
+                .includes(filterTerm.toLowerCase())),
         );
         const pgsz = page.pageSize;
         const startIndex = page.pageIndex * pgsz;
@@ -90,10 +92,12 @@ export class ResultDataService {
           this.pageEvent.next(this._pageEvent);
         }
         return resultList;
-      })
+      }),
     );
     this.selected = combineLatest([this.resultList, this._requestedId$]).pipe(
-      map(([resultList, requestedResultId]) => resultList.find((result) => result.id === requestedResultId))
+      map(([resultList, requestedResultId]) =>
+        resultList.find((result) => result.id === requestedResultId),
+      ),
     );
   }
 
@@ -168,7 +172,7 @@ export class ResultDataService {
         tap(() => {
           this.resultStore.setLoading(false);
         }),
-        take(1)
+        take(1),
       )
       .subscribe((t) => {
         this.updateStore(t);
@@ -184,7 +188,7 @@ export class ResultDataService {
         tap(() => {
           this.resultStore.setLoading(false);
         }),
-        take(1)
+        take(1),
       )
       .subscribe((dt) => {
         this.updateStore(dt);

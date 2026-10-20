@@ -1,7 +1,7 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
@@ -14,6 +14,10 @@ import { Router, ActivatedRoute } from '@angular/router';
   providedIn: 'root',
 })
 export class PlayerDataService {
+  private playerService = inject(PlayerService);
+  private router = inject(Router);
+  private activatedRoute = inject(ActivatedRoute);
+
   private _views: View[] = [];
   private _viewMask: Observable<string>;
   readonly views = new BehaviorSubject<View[]>(this._views);
@@ -31,18 +35,18 @@ export class PlayerDataService {
   private requestedViewId$ = new BehaviorSubject<string>('');
   private requestedViewId = this.requestedViewId$.asObservable();
 
-  constructor(
-    private playerService: PlayerService,
-    private router: Router,
-    private activatedRoute: ActivatedRoute
-  ) {
+  constructor() {
+    const router = this.router;
+    const activatedRoute = this.activatedRoute;
+
     // Seed viewId from URL if present (for backward-compatible deep links)
-    const initialViewId = activatedRoute.snapshot.queryParamMap.get('viewId') || '';
+    const initialViewId =
+      activatedRoute.snapshot.queryParamMap.get('viewId') || '';
     if (initialViewId) {
       this.requestedViewId$.next(initialViewId);
     }
     this._viewMask = activatedRoute.queryParamMap.pipe(
-      map((params) => params.get('exmask') || '')
+      map((params) => params.get('exmask') || ''),
     );
     this.viewFilter.valueChanges.subscribe((term) => {
       router.navigate([], {
@@ -57,31 +61,31 @@ export class PlayerDataService {
       map(([items, filterTerm]) =>
         items
           ? (items as View[])
-            .sort((a: View, b: View) =>
-              a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1
-            )
-            .filter(
-              (item) =>
-                item.name.toLowerCase().includes(filterTerm.toLowerCase()) ||
-                  item.id.toLowerCase().includes(filterTerm.toLowerCase())
-            )
-          : []
-      )
+              .sort((a: View, b: View) =>
+                a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1,
+              )
+              .filter(
+                (item) =>
+                  item.name.toLowerCase().includes(filterTerm.toLowerCase()) ||
+                  item.id.toLowerCase().includes(filterTerm.toLowerCase()),
+              )
+          : [],
+      ),
     );
     this.vmList = combineLatest([this.vms, this._vmMask]).pipe(
       map(([items, filterTerm]) => {
         let vmList = items ? (items as Vm[]) : [];
         vmList = vmList
           .sort((a: Vm, b: Vm) =>
-            a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1
+            a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1,
           )
           .filter(
             (item) =>
               item.name.toLowerCase().includes(filterTerm.toLowerCase()) ||
-              item.id.toLowerCase().includes(filterTerm.toLowerCase())
+              item.id.toLowerCase().includes(filterTerm.toLowerCase()),
           );
         return vmList;
-      })
+      }),
     );
     this.selectedView = combineLatest([
       this.viewList,
@@ -90,7 +94,7 @@ export class PlayerDataService {
       map(([viewList, requestedViewId]) => {
         if (viewList && viewList.length > 0 && requestedViewId) {
           const selectedView = viewList.find(
-            (view) => view.id === requestedViewId
+            (view) => view.id === requestedViewId,
           );
           if (selectedView && selectedView.id !== this._selectedViewId) {
             this.getViewVmsFromApi(selectedView.id, true);
@@ -101,7 +105,7 @@ export class PlayerDataService {
           this._selectedViewId = '';
           return undefined;
         }
-      })
+      }),
     );
   }
 
@@ -116,7 +120,7 @@ export class PlayerDataService {
         },
         (error) => {
           this.views.next([]);
-        }
+        },
       );
   }
 

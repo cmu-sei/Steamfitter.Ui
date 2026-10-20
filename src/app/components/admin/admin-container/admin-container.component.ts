@@ -1,6 +1,6 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -60,6 +60,16 @@ import { AdminGroupsComponent } from '../admin-groups/admin-groups.component';
   ],
 })
 export class AdminContainerComponent implements OnDestroy, OnInit {
+  private router = inject(Router);
+  private userDataService = inject(UserDataService);
+  private routerQuery = inject(RouterQuery);
+  private permissionDataService = inject(PermissionDataService);
+  private settingsService = inject(ComnSettingsService);
+  private authService = inject(ComnAuthService);
+  private authQuery = inject(ComnAuthQuery);
+  private signalRService = inject(SignalRService);
+  private currentUserQuery = inject(CurrentUserQuery);
+
   public username: string;
   public titleText: string;
   usersText = 'Users';
@@ -76,17 +86,7 @@ export class AdminContainerComponent implements OnDestroy, OnInit {
   permissions: SystemPermission[] = [];
   readonly SystemPermission = SystemPermission;
 
-  constructor(
-    private router: Router,
-    private userDataService: UserDataService,
-    private routerQuery: RouterQuery,
-    private permissionDataService: PermissionDataService,
-    private settingsService: ComnSettingsService,
-    private authService: ComnAuthService,
-    private authQuery: ComnAuthQuery,
-    private signalRService: SignalRService,
-    private currentUserQuery: CurrentUserQuery,
-  ) {
+  constructor() {
     this.theme$ = this.authQuery.userTheme$;
     this.hideTopbar = this.inIframe();
     this.signalRService.joinSystem();

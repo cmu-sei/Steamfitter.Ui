@@ -7,6 +7,7 @@ import {
   Input,
   OnDestroy,
   Output,
+  inject,
 } from '@angular/core';
 import {
   UntypedFormControl,
@@ -39,6 +40,8 @@ import { MatCheckbox } from '@angular/material/checkbox';
   ],
 })
 export class VmListComponent implements OnDestroy {
+  private playerDataService = inject(PlayerDataService);
+
   @Input() selectedVms: string[];
   @Output() updateVmList = new EventEmitter<string[]>();
   vmList: Vm[];
@@ -50,7 +53,7 @@ export class VmListComponent implements OnDestroy {
   filterControl: UntypedFormControl = this.playerDataService.vmFilter;
   showSelectedOnly = false;
 
-  constructor(private playerDataService: PlayerDataService) {
+  constructor() {
     this.playerDataService.vmList
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((vms) => {
