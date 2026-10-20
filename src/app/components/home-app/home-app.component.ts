@@ -1,7 +1,7 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Component, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, viewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Subject, Observable } from 'rxjs';
@@ -89,7 +89,7 @@ export class HomeAppComponent implements OnDestroy, OnInit {
   private permissionDataService = inject(PermissionDataService);
   private userQuery = inject(UserQuery);
 
-  @ViewChild('homePaginator') homePaginator: MatPaginator;
+  readonly homePaginator = viewChild<MatPaginator>('homePaginator');
   apiIsSick = false;
   apiMessage = 'The API web service is not responding.';
   titleText = 'Steamfitter';

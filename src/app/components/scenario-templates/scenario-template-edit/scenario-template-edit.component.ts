@@ -5,9 +5,9 @@ import {
   Component,
   Input,
   NgZone,
-  ViewChild,
   inject,
   output,
+  viewChild,
 } from '@angular/core';
 import { ScenarioTemplateQuery } from 'src/app/data/scenario-template/scenario-template.query';
 import { TaskDataService } from 'src/app/data/task/task-data.service';
@@ -30,8 +30,8 @@ export class ScenarioTemplateEditComponent {
   @Input() scenarioTemplate: ScenarioTemplate;
   readonly editComplete = output<boolean>();
   readonly editScenarioTemplate = output<ScenarioTemplate>();
-  @ViewChild(ScenarioTemplateEditComponent) child;
-  @ViewChild(TasksComponent) tasks: TasksComponent;
+  readonly child = viewChild(ScenarioTemplateEditComponent);
+  readonly tasks = viewChild(TasksComponent);
 
   taskList = this.taskQuery.selectAll();
   isLoading = this.scenarioTemplateQuery.selectLoading();

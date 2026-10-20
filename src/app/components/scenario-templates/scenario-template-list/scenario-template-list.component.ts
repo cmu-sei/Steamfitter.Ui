@@ -14,10 +14,10 @@ import {
   OnChanges,
   OnInit,
   SimpleChanges,
-  ViewChild,
   inject,
   input,
   output,
+  viewChild,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
@@ -121,8 +121,9 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
   readonly adminMode = input<boolean>(undefined);
   readonly saveScenarioTemplate = output<ScenarioTemplate>();
   readonly itemSelected = output<string>();
-  @ViewChild(ScenarioTemplateEditComponent)
-  scenarioTemplateEditComponent: ScenarioTemplateEditComponent;
+  readonly scenarioTemplateEditComponent = viewChild(
+    ScenarioTemplateEditComponent,
+  );
   displayedColumns: string[] = [
     'actions',
     'name',
@@ -132,11 +133,11 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
   ];
   editScenarioTemplateText = 'Edit ScenarioTemplate';
   // context menu
-  @ViewChild(MatMenuTrigger, { static: true }) contextMenu: MatMenuTrigger;
+  readonly contextMenu = viewChild(MatMenuTrigger);
   contextMenuPosition = { x: '0px', y: '0px' };
   readonly paginator = input<MatPaginator>(undefined);
   readonly filterString = input('');
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
+  readonly sort = viewChild(MatSort);
   expandedScenarioTemplateId: string | null = null;
   scenarioTemplateDataSource = new MatTableDataSource<ScenarioTemplate>(
     new Array<ScenarioTemplate>(),
@@ -157,7 +158,7 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
       this.scenarioTemplateDataSource.paginator = paginator;
       paginator.pageIndex = 0;
     }
-    this.scenarioTemplateDataSource.sort = this.sort;
+    this.scenarioTemplateDataSource.sort = this.sort();
     const id = this.selectedScenarioTemplate
       ? this.selectedScenarioTemplate.id
       : '';
@@ -208,9 +209,10 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
     event.preventDefault();
     this.contextMenuPosition.x = event.clientX + 'px';
     this.contextMenuPosition.y = event.clientY + 'px';
-    this.contextMenu.menuData = { item: scenarioTemplate };
-    this.contextMenu.menu.focusFirstItem('mouse');
-    this.contextMenu.openMenu();
+    const contextMenu = this.contextMenu();
+    contextMenu.menuData = { item: scenarioTemplate };
+    contextMenu.menu.focusFirstItem('mouse');
+    contextMenu.openMenu();
   }
 
   hasPermission(permission: SystemPermission): boolean {

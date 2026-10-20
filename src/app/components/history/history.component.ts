@@ -14,9 +14,9 @@ import {
   OnDestroy,
   OnInit,
   SimpleChanges,
-  ViewChild,
   inject,
   input,
+  viewChild,
 } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, MatSortHeader } from '@angular/material/sort';
@@ -115,7 +115,7 @@ export class HistoryComponent implements OnInit, OnChanges, OnDestroy {
   filterValue = '';
   expandedResult: Result;
   private unsubscribe$ = new Subject();
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
+  readonly sort = viewChild(MatSort);
 
   constructor() {
     this.loading = true;
@@ -146,7 +146,7 @@ export class HistoryComponent implements OnInit, OnChanges, OnDestroy {
       this.modelDataSource.paginator = paginator;
       paginator.pageIndex = 0;
     }
-    this.modelDataSource.sort = this.sort;
+    this.modelDataSource.sort = this.sort();
 
     this.pageEvent.pageIndex = 0;
     this.pageEvent.pageSize = this.defaultPageSize;

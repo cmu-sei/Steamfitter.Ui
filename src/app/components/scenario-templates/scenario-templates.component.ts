@@ -4,10 +4,10 @@
 import {
   Component,
   NgZone,
-  ViewChild,
   inject,
   input,
   output,
+  viewChild,
 } from '@angular/core';
 import { UntypedFormControl, FormGroupDirective, NgForm } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
@@ -51,8 +51,8 @@ export class ScenarioTemplatesComponent {
   readonly paginator = input<MatPaginator>(undefined);
   readonly adminMode = input(false);
   readonly editComplete = output<boolean>();
-  @ViewChild(ScenarioTemplatesComponent) child;
-  @ViewChild('stepper') stepper: MatStepper;
+  readonly child = viewChild(ScenarioTemplatesComponent);
+  readonly stepper = viewChild<MatStepper>('stepper');
 
   matcher = new UserErrorStateMatcher();
   isLinear = false;

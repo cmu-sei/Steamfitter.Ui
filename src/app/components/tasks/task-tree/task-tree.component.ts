@@ -6,10 +6,10 @@ import {
   Component,
   OnDestroy,
   OnInit,
-  ViewChild,
   inject,
   input,
   output,
+  viewChild,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
@@ -133,7 +133,7 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
   readonly stopIterationsRequested = output<string>();
   readonly sendToClipboard = output<any>();
   readonly pasteClipboard = output<string>();
-  @ViewChild(FlatTreeControl) flatTreeControl;
+  readonly flatTreeControl = viewChild(FlatTreeControl);
   selectedTaskId = '';
   manualTrigger = TaskTrigger.Manual;
   private tasks = new Array<Task>();
@@ -162,7 +162,7 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
   dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
 
   // context menu
-  @ViewChild(MatMenuTrigger, { static: true }) contextMenu: MatMenuTrigger;
+  readonly contextMenu = viewChild(MatMenuTrigger);
   contextMenuPosition = { x: '0px', y: '0px' };
 
   ngOnInit() {
@@ -311,9 +311,10 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
     event.preventDefault();
     this.contextMenuPosition.x = event.clientX + 'px';
     this.contextMenuPosition.y = event.clientY + 'px';
-    this.contextMenu.menuData = { item: task };
-    this.contextMenu.menu.focusFirstItem('mouse');
-    this.contextMenu.openMenu();
+    const contextMenu = this.contextMenu();
+    contextMenu.menuData = { item: task };
+    contextMenu.menu.focusFirstItem('mouse');
+    contextMenu.openMenu();
   }
 
   onContextEdit(task: Task) {

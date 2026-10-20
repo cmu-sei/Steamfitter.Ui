@@ -8,9 +8,9 @@ import {
   Component,
   OnChanges,
   OnInit,
-  ViewChild,
   input,
   output,
+  viewChild,
 } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSelectChange, MatSelect } from '@angular/material/select';
@@ -105,12 +105,12 @@ export class ScenarioTemplateMemberListComponent implements OnInit, OnChanges {
 
   constructor() {}
 
-  @ViewChild(MatSort) sort: MatSort;
-  @ViewChild(MatPaginator) paginator: MatPaginator;
+  readonly sort = viewChild(MatSort);
+  readonly paginator = viewChild(MatPaginator);
 
   ngOnInit(): void {
-    this.dataSource.paginator = this.paginator;
-    this.dataSource.sort = this.sort;
+    this.dataSource.paginator = this.paginator();
+    this.dataSource.sort = this.sort();
     this.dataSource.sortingDataAccessor = (item, property) => {
       switch (property) {
         case 'role':

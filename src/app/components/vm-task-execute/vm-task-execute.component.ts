@@ -5,9 +5,9 @@ import {
   Component,
   NgZone,
   OnDestroy,
-  ViewChild,
   inject,
   output,
+  viewChild,
 } from '@angular/core';
 import { UntypedFormControl, FormGroupDirective, NgForm } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
@@ -58,8 +58,8 @@ export class VmTaskExecuteComponent implements OnDestroy {
   private scenarioDataService = inject(ScenarioDataService);
 
   readonly editComplete = output<boolean>();
-  @ViewChild(VmTaskExecuteComponent) child;
-  @ViewChild('stepper') stepper: MatStepper;
+  readonly child = viewChild(VmTaskExecuteComponent);
+  readonly stepper = viewChild<MatStepper>('stepper');
 
   matcher = new UserErrorStateMatcher();
   isLinear = false;

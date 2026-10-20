@@ -14,10 +14,10 @@ import {
   OnChanges,
   OnInit,
   SimpleChanges,
-  ViewChild,
   inject,
   input,
   output,
+  viewChild,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
@@ -121,8 +121,7 @@ export class ScenarioListComponent implements OnInit, OnChanges {
   readonly views = input<View[]>(undefined);
   readonly saveScenario = output<Scenario>();
   readonly itemSelected = output<string>();
-  @ViewChild(ScenarioEditComponent)
-  scenarioEditComponent: ScenarioEditComponent;
+  readonly scenarioEditComponent = viewChild(ScenarioEditComponent);
   displayedColumns: string[] = [
     'actions',
     'name',
@@ -135,11 +134,11 @@ export class ScenarioListComponent implements OnInit, OnChanges {
   statusFilteredScenarios: Scenario[];
   editScenarioText = 'Edit Scenario';
   // context menu
-  @ViewChild(MatMenuTrigger, { static: true }) contextMenu: MatMenuTrigger;
+  readonly contextMenu = viewChild(MatMenuTrigger);
   contextMenuPosition = { x: '0px', y: '0px' };
   readonly paginator = input<MatPaginator>(undefined);
   readonly filterString = input('');
-  @ViewChild(MatSort, { static: true }) sort: MatSort;
+  readonly sort = viewChild(MatSort);
   expandedScenarioId: string | null = null;
   scenarioDataSource = new MatTableDataSource<Scenario>(new Array<Scenario>());
   permissions: SystemPermission[] = [];
@@ -158,7 +157,7 @@ export class ScenarioListComponent implements OnInit, OnChanges {
       this.scenarioDataSource.paginator = paginator;
       paginator.pageIndex = 0;
     }
-    this.scenarioDataSource.sort = this.sort;
+    this.scenarioDataSource.sort = this.sort();
     const id = this.selectedScenario ? this.selectedScenario.id : '';
     // force already expanded scenario to refresh details
     if (id) {
@@ -214,9 +213,10 @@ export class ScenarioListComponent implements OnInit, OnChanges {
     event.preventDefault();
     this.contextMenuPosition.x = event.clientX + 'px';
     this.contextMenuPosition.y = event.clientY + 'px';
-    this.contextMenu.menuData = { item: scenario };
-    this.contextMenu.menu.focusFirstItem('mouse');
-    this.contextMenu.openMenu();
+    const contextMenu = this.contextMenu();
+    contextMenu.menuData = { item: scenario };
+    contextMenu.menu.focusFirstItem('mouse');
+    contextMenu.openMenu();
   }
 
   canManage(scenario: Scenario): boolean {
