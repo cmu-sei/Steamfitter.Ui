@@ -19,18 +19,46 @@ import {
   ViewChild,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatMenuTrigger } from '@angular/material/menu';
+import {
+  MatMenuTrigger,
+  MatMenu,
+  MatMenuContent,
+  MatMenuItem,
+} from '@angular/material/menu';
 import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatSort, MatSortHeader } from '@angular/material/sort';
+import {
+  MatTableDataSource,
+  MatTable,
+  MatColumnDef,
+  MatHeaderCellDef,
+  MatHeaderCell,
+  MatCellDef,
+  MatCell,
+  MatHeaderRowDef,
+  MatHeaderRow,
+  MatRowDef,
+  MatRow,
+} from '@angular/material/table';
 import { PermissionDataService } from 'src/app/data/permission/permission-data.service';
-import { ScenarioPermission, SystemPermission } from 'src/app/generated/steamfitter.api';
+import {
+  ScenarioPermission,
+  SystemPermission,
+} from 'src/app/generated/steamfitter.api';
 import { View } from 'src/app/generated/steamfitter.api';
 import { ScenarioEditComponent } from 'src/app/components/scenarios/scenario-edit/scenario-edit.component';
 import { ScenarioEditDialogComponent } from 'src/app/components/scenarios/scenario-edit-dialog/scenario-edit-dialog.component';
 import { ScenarioDataService } from 'src/app/data/scenario/scenario-data.service';
 import { Scenario } from 'src/app/generated/steamfitter.api';
 import { CrucibleDialogService } from '@cmusei/crucible-common';
+import { MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { ClipboardModule } from 'ngx-clipboard';
+import { ScenarioMembershipsComponent } from '../scenario-memberships/scenario-memberships/scenario-memberships.component';
+import { ScenarioEditComponent as ScenarioEditComponent_1 } from '../scenario-edit/scenario-edit.component';
+import { MatCard } from '@angular/material/card';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { DatePipe } from '@angular/common';
 
 export interface Action {
   Value: string;
@@ -38,17 +66,45 @@ export interface Action {
 }
 
 @Component({
-    selector: 'app-scenario-list',
-    templateUrl: './scenario-list.component.html',
-    styleUrls: ['./scenario-list.component.scss'],
-    animations: [
-        trigger('detailExpand', [
-            state('collapsed', style({ height: '0px', minHeight: '0' })),
-            state('expanded', style({ height: '*' })),
-            transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
-        ]),
-    ],
-    standalone: false
+  selector: 'app-scenario-list',
+  templateUrl: './scenario-list.component.html',
+  styleUrls: ['./scenario-list.component.scss'],
+  animations: [
+    trigger('detailExpand', [
+      state('collapsed', style({ height: '0px', minHeight: '0' })),
+      state('expanded', style({ height: '*' })),
+      transition(
+        'expanded <=> collapsed',
+        animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)'),
+      ),
+    ]),
+  ],
+  imports: [
+    MatTable,
+    MatSort,
+    MatColumnDef,
+    MatHeaderCellDef,
+    MatHeaderCell,
+    MatIconButton,
+    MatIcon,
+    MatCellDef,
+    MatCell,
+    ClipboardModule,
+    MatSortHeader,
+    ScenarioMembershipsComponent,
+    ScenarioEditComponent_1,
+    MatHeaderRowDef,
+    MatHeaderRow,
+    MatRowDef,
+    MatRow,
+    MatCard,
+    MatProgressSpinner,
+    MatMenuTrigger,
+    MatMenu,
+    MatMenuContent,
+    MatMenuItem,
+    DatePipe,
+  ],
 })
 export class ScenarioListComponent implements OnInit, OnChanges {
   @Input() scenarioList: Scenario[];
@@ -87,7 +143,7 @@ export class ScenarioListComponent implements OnInit, OnChanges {
     private scenarioDataService: ScenarioDataService,
     private permissionDataService: PermissionDataService,
     private confirmService: CrucibleDialogService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
   ) {
     if (!this.scenarioList || this.scenarioList.length === 0) {
       this.scenarioDataService.load();
@@ -118,9 +174,12 @@ export class ScenarioListComponent implements OnInit, OnChanges {
     this.permissions = this.permissionDataService.permissions;
     // When selectedScenario arrives asynchronously (e.g. from URL query param
     // on initial load), expand that scenario's row.
-    if (!!changes.selectedScenario && !!changes.selectedScenario.currentValue &&
-        !!changes.selectedScenario.currentValue.id &&
-        changes.selectedScenario.currentValue.id !== this.expandedScenarioId) {
+    if (
+      !!changes.selectedScenario &&
+      !!changes.selectedScenario.currentValue &&
+      !!changes.selectedScenario.currentValue.id &&
+      changes.selectedScenario.currentValue.id !== this.expandedScenarioId
+    ) {
       this.expandedScenarioId = changes.selectedScenario.currentValue.id;
     }
     if (changes.paginator && this.paginator) {
@@ -139,8 +198,8 @@ export class ScenarioListComponent implements OnInit, OnChanges {
     if (this.paginator) {
       this.paginator.pageIndex = 0;
     }
-    this.statusFilteredScenarios = scenarios.filter(
-      (m) => this.selectedStatuses.includes(m.status)
+    this.statusFilteredScenarios = scenarios.filter((m) =>
+      this.selectedStatuses.includes(m.status),
     );
     this.filterAndSort();
   }
@@ -155,22 +214,40 @@ export class ScenarioListComponent implements OnInit, OnChanges {
   }
 
   canManage(scenario: Scenario): boolean {
-    return scenario?.scenarioPermissions?.some(m => m === ScenarioPermission.ManageScenario) ||
-      this.permissionDataService.hasPermission(SystemPermission.ManageScenarios);
+    return (
+      scenario?.scenarioPermissions?.some(
+        (m) => m === ScenarioPermission.ManageScenario,
+      ) ||
+      this.permissionDataService.hasPermission(SystemPermission.ManageScenarios)
+    );
   }
 
   canEdit(scenario: Scenario): boolean {
-    return scenario?.scenarioPermissions?.some(m => m === ScenarioPermission.EditScenario) ||
-      this.permissionDataService.hasPermission(SystemPermission.EditScenarios);
+    return (
+      scenario?.scenarioPermissions?.some(
+        (m) => m === ScenarioPermission.EditScenario,
+      ) ||
+      this.permissionDataService.hasPermission(SystemPermission.EditScenarios)
+    );
   }
 
   canExecute(scenario: Scenario): boolean {
-    return scenario?.scenarioPermissions?.some(m => m === ScenarioPermission.ExecuteScenario) ||
-      this.permissionDataService.hasPermission(SystemPermission.ExecuteScenarios);
+    return (
+      scenario?.scenarioPermissions?.some(
+        (m) => m === ScenarioPermission.ExecuteScenario,
+      ) ||
+      this.permissionDataService.hasPermission(
+        SystemPermission.ExecuteScenarios,
+      )
+    );
   }
 
   canDoSomething(scenario: Scenario): boolean {
-    return this.canManage(scenario) || this.canEdit(scenario) || this.canExecute(scenario);
+    return (
+      this.canManage(scenario) ||
+      this.canEdit(scenario) ||
+      this.canExecute(scenario)
+    );
   }
 
   /**
@@ -198,7 +275,9 @@ export class ScenarioListComponent implements OnInit, OnChanges {
       .confirm({
         title: 'Delete Scenario',
         message:
-          'Are you sure that you want to delete scenario ' + scenario.name + '?',
+          'Are you sure that you want to delete scenario ' +
+          scenario.name +
+          '?',
       })
       .afterClosed()
       .subscribe((confirmed) => {
@@ -284,6 +363,8 @@ export class ScenarioListComponent implements OnInit, OnChanges {
    */
   filterAndSort() {
     this.scenarioDataSource.data = this.statusFilteredScenarios || [];
-    this.scenarioDataSource.filter = (this.filterString || '').trim().toLowerCase();
+    this.scenarioDataSource.filter = (this.filterString || '')
+      .trim()
+      .toLowerCase();
   }
 }

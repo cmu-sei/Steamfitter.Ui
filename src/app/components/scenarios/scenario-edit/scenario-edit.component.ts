@@ -17,12 +17,13 @@ import {
   Scenario,
   ScenarioStatus,
 } from 'src/app/generated/steamfitter.api/model/models';
+import { TasksComponent } from '../../tasks/tasks.component';
 
 @Component({
-    selector: 'app-scenario-edit',
-    templateUrl: './scenario-edit.component.html',
-    styleUrls: ['./scenario-edit.component.scss'],
-    standalone: false
+  selector: 'app-scenario-edit',
+  templateUrl: './scenario-edit.component.html',
+  styleUrls: ['./scenario-edit.component.scss'],
+  imports: [TasksComponent],
 })
 export class ScenarioEditComponent {
   @Input() scenario: Scenario;
@@ -40,7 +41,7 @@ export class ScenarioEditComponent {
     private scenarioQuery: ScenarioQuery,
     private taskDataService: TaskDataService,
     private taskQuery: TaskQuery,
-    private resultQuery: ResultQuery
+    private resultQuery: ResultQuery,
   ) {}
 
   refreshTaskList() {

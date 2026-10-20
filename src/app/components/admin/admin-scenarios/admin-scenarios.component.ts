@@ -11,22 +11,24 @@ import { ScenarioQuery } from 'src/app/data/scenario/scenario.query';
 import { PlayerDataService } from 'src/app/data/player/player-data-service';
 import { ActivatedRoute } from '@angular/router';
 import { Scenario } from 'src/app/generated/steamfitter.api';
+import { ScenarioListComponent } from '../../scenarios/scenario-list/scenario-list.component';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
-    selector: 'app-admin-scenarios',
-    templateUrl: './admin-scenarios.component.html',
-    styleUrls: ['./admin-scenarios.component.scss'],
-    standalone: false
+  selector: 'app-admin-scenarios',
+  templateUrl: './admin-scenarios.component.html',
+  styleUrls: ['./admin-scenarios.component.scss'],
+  imports: [ScenarioListComponent, AsyncPipe],
 })
 export class AdminScenariosComponent implements OnInit {
   constructor(
     private activatedRoute: ActivatedRoute,
     private scenarioDataService: ScenarioDataService,
     private scenarioQuery: ScenarioQuery,
-    private playerDataService: PlayerDataService
+    private playerDataService: PlayerDataService,
   ) {
     this.statuses = this.activatedRoute.queryParamMap.pipe(
-      map((params) => params.get('statuses') || 'active,ready')
+      map((params) => params.get('statuses') || 'active,ready'),
     );
     this.playerDataService.getViewsFromApi();
   }

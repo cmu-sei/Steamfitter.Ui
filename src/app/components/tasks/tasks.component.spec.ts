@@ -12,8 +12,9 @@ import { TaskStore } from 'src/app/data/task/task.store';
 import { renderComponent } from 'src/app/test-utils/render-component';
 import { ApiStub } from 'src/app/test-utils/api-stub';
 import { TasksComponent } from './tasks.component';
+import { TaskTreeComponent } from 'src/app/components/tasks/task-tree/task-tree.component';
 
-@Component({ selector: 'app-task-tree', template: '', standalone: false })
+@Component({ selector: 'app-task-tree', template: '' })
 class TaskTreeStubComponent {
   @Input() taskList?: Observable<Task[]>;
   @Input() resultList?: Observable<Result[]>;
@@ -41,7 +42,7 @@ async function renderTasks(state: {
   } satisfies ApiStub<TaskService>;
   const taskList = of<Task[]>([{ id: 't1', name: 'Ping', scenarioId: 's1' }]);
   const rendered = await renderComponent(TasksComponent, {
-    declarations: [TasksComponent, TaskTreeStubComponent],
+    childStubs: [{ replace: TaskTreeComponent, with: TaskTreeStubComponent }],
     providers: [{ provide: TaskService, useValue: taskApi }],
     inputs: { taskList, scenarioId: 's1', ...state },
   });

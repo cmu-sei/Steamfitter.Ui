@@ -36,11 +36,12 @@ import {
   permissionDataProviders,
 } from 'src/app/test-utils/mock-permission-data.service';
 import { ScenarioTemplateMembershipsComponent } from './scenario-template-memberships.component';
+import { ScenarioTemplateMembershipListComponent } from 'src/app/components/scenario-templates/scenario-template-memberships/scenario-template-membership-list/scenario-template-membership-list.component';
+import { ScenarioTemplateMemberListComponent } from 'src/app/components/scenario-templates/scenario-template-memberships/scenario-template-member-list/scenario-template-member-list.component';
 
 @Component({
   selector: 'app-scenario-template-membership-list',
   template: '',
-  standalone: false,
 })
 class MembershipListStubComponent {
   @Input() users?: User[];
@@ -52,7 +53,6 @@ class MembershipListStubComponent {
 @Component({
   selector: 'app-scenario-template-member-list',
   template: '',
-  standalone: false,
 })
 class MemberListStubComponent {
   @Input() memberships?: ScenarioTemplateMembership[];
@@ -88,10 +88,15 @@ async function renderMemberships(
     deleteScenarioTemplateMembership: vi.fn(() => of(null)),
   } satisfies ApiStub<ScenarioTemplateMembershipsService>;
   const rendered = await renderComponent(ScenarioTemplateMembershipsComponent, {
-    declarations: [
-      ScenarioTemplateMembershipsComponent,
-      MembershipListStubComponent,
-      MemberListStubComponent,
+    childStubs: [
+      {
+        replace: ScenarioTemplateMembershipListComponent,
+        with: MembershipListStubComponent,
+      },
+      {
+        replace: ScenarioTemplateMemberListComponent,
+        with: MemberListStubComponent,
+      },
     ],
     imports: [MatButtonModule, MatIconModule, MatTooltipModule],
     providers: [

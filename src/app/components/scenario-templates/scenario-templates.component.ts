@@ -20,12 +20,14 @@ import { map } from 'rxjs/operators';
 import { ScenarioTemplateDataService } from 'src/app/data/scenario-template/scenario-template-data.service';
 import { ScenarioTemplateQuery } from 'src/app/data/scenario-template/scenario-template.query';
 import { ScenarioTemplate } from 'src/app/generated/steamfitter.api';
+import { ScenarioTemplateListComponent } from './scenario-template-list/scenario-template-list.component';
+import { AsyncPipe } from '@angular/common';
 
 /** Error when invalid control is dirty, touched, or submitted. */
 export class UserErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(
     control: UntypedFormControl | null,
-    form: FormGroupDirective | NgForm | null
+    form: FormGroupDirective | NgForm | null,
   ): boolean {
     const isSubmitted = form && form.submitted;
     return !!(control && control.invalid && (control.dirty || isSubmitted));
@@ -33,10 +35,10 @@ export class UserErrorStateMatcher implements ErrorStateMatcher {
 }
 
 @Component({
-    selector: 'app-scenario-templates',
-    templateUrl: './scenario-templates.component.html',
-    styleUrls: ['./scenario-templates.component.scss'],
-    standalone: false
+  selector: 'app-scenario-templates',
+  templateUrl: './scenario-templates.component.html',
+  styleUrls: ['./scenario-templates.component.scss'],
+  imports: [ScenarioTemplateListComponent, AsyncPipe],
 })
 export class ScenarioTemplatesComponent {
   @Input() filterString = '';
@@ -60,7 +62,7 @@ export class ScenarioTemplatesComponent {
     private scenarioTemplateDataService: ScenarioTemplateDataService,
     private scenarioTemplateQuery: ScenarioTemplateQuery,
     private router: Router,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
   ) {
     this.scenarioTemplateDataService.load();
   }

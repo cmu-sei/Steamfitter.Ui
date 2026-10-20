@@ -16,22 +16,75 @@ import {
 } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatSort, MatSortHeader } from '@angular/material/sort';
+import {
+  MatTableDataSource,
+  MatTable,
+  MatColumnDef,
+  MatHeaderCellDef,
+  MatHeaderCell,
+  MatCellDef,
+  MatCell,
+  MatHeaderRowDef,
+  MatHeaderRow,
+  MatRowDef,
+  MatRow,
+  MatNoDataRow,
+} from '@angular/material/table';
 import {
   ScenarioMembership,
   Group,
   User,
 } from 'src/app/generated/steamfitter.api';
+import { MatToolbar, MatToolbarRow } from '@angular/material/toolbar';
+import { MatIcon } from '@angular/material/icon';
+import {
+  MatFormField,
+  MatLabel,
+  MatInput,
+  MatSuffix,
+} from '@angular/material/input';
+import { FormsModule } from '@angular/forms';
+import { MatIconButton } from '@angular/material/button';
+import { ClipboardModule } from 'ngx-clipboard';
+import { MatTooltip } from '@angular/material/tooltip';
 
 @Component({
-    selector: 'app-scenario-membership-list',
-    templateUrl: './scenario-membership-list.component.html',
-    styleUrls: ['./scenario-membership-list.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-scenario-membership-list',
+  templateUrl: './scenario-membership-list.component.html',
+  styleUrls: ['./scenario-membership-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [
+    MatToolbar,
+    MatToolbarRow,
+    MatIcon,
+    MatFormField,
+    MatLabel,
+    MatInput,
+    FormsModule,
+    MatIconButton,
+    MatSuffix,
+    MatPaginator,
+    MatTable,
+    MatSort,
+    MatColumnDef,
+    MatHeaderCellDef,
+    MatHeaderCell,
+    MatSortHeader,
+    MatCellDef,
+    MatCell,
+    ClipboardModule,
+    MatTooltip,
+    MatHeaderRowDef,
+    MatHeaderRow,
+    MatRowDef,
+    MatRow,
+    MatNoDataRow,
+  ],
 })
-export class ScenarioMembershipListComponent implements OnInit, OnChanges, AfterViewInit {
+export class ScenarioMembershipListComponent
+  implements OnInit, OnChanges, AfterViewInit
+{
   @Input()
   users: User[];
 
@@ -68,7 +121,7 @@ export class ScenarioMembershipListComponent implements OnInit, OnChanges, After
     this.dataSource.data = this.buildModel();
 
     this.displayedColumns = this.viewColumns.concat(
-      this.canEdit ? this.editColumns : []
+      this.canEdit ? this.editColumns : [],
     );
   }
 

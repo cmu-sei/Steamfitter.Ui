@@ -7,17 +7,19 @@ import { Component, OnInit } from '@angular/core';
 import { ScenarioTemplateDataService } from 'src/app/data/scenario-template/scenario-template-data.service';
 import { ScenarioTemplateQuery } from 'src/app/data/scenario-template/scenario-template.query';
 import { ScenarioTemplate } from 'src/app/generated/steamfitter.api';
+import { ScenarioTemplateListComponent } from '../../scenario-templates/scenario-template-list/scenario-template-list.component';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
-    selector: 'app-admin-scenario-templates',
-    templateUrl: './admin-scenario-templates.component.html',
-    styleUrls: ['./admin-scenario-templates.component.scss'],
-    standalone: false
+  selector: 'app-admin-scenario-templates',
+  templateUrl: './admin-scenario-templates.component.html',
+  styleUrls: ['./admin-scenario-templates.component.scss'],
+  imports: [ScenarioTemplateListComponent, AsyncPipe],
 })
 export class AdminScenarioTemplatesComponent implements OnInit {
   constructor(
     private scenarioTemplateDataService: ScenarioTemplateDataService,
-    private scenarioTemplateQuery: ScenarioTemplateQuery
+    private scenarioTemplateQuery: ScenarioTemplateQuery,
   ) {}
 
   scenarioTemplates$ = this.scenarioTemplateQuery.selectAll();

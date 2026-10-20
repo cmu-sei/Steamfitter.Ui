@@ -21,13 +21,13 @@ describe('SystemMessageService', () => {
    */
   it('opens the system message bottom sheet with the title and message', async () => {
     TestBed.configureTestingModule({
-      declarations: [SystemMessageComponent],
       imports: [
         NoopAnimationsModule,
         MatBottomSheetModule,
         MatButtonModule,
         MatIconModule,
         MatIconTestingModule,
+        SystemMessageComponent,
       ],
       providers: [SystemMessageService],
     });

@@ -1,7 +1,7 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { PermissionDataService } from 'src/app/data/permission/permission-data.service';
@@ -17,12 +17,47 @@ import {
 } from '@cmusei/crucible-common';
 import { CurrentUserQuery } from 'src/app/data/user/user.query';
 import { SignalRService } from 'src/app/services/signalr/signalr.service';
+import {
+  MatSidenavContainer,
+  MatSidenav,
+  MatSidenavContent,
+} from '@angular/material/sidenav';
+import { MatToolbar } from '@angular/material/toolbar';
+import { MatIcon } from '@angular/material/icon';
+import { MatList, MatListItem, MatListItemIcon } from '@angular/material/list';
+import { NgClass, AsyncPipe } from '@angular/common';
+import { MatIconButton } from '@angular/material/button';
+import { TopbarComponent } from '../../shared/top-bar/topbar.component';
+import { AdminScenarioTemplatesComponent } from '../admin-scenario-templates/admin-scenario-templates.component';
+import { AdminScenariosComponent } from '../admin-scenarios/admin-scenarios.component';
+import { AdminUsersComponent } from '../admin-users/admin-users.component';
+import { AdminRolesComponent } from '../admin-roles/admin-roles.component';
+import { AdminGroupsComponent } from '../admin-groups/admin-groups.component';
 
 @Component({
-    selector: 'app-admin-container',
-    templateUrl: './admin-container.component.html',
-    styleUrls: ['./admin-container.component.scss'],
-    standalone: false
+  selector: 'app-admin-container',
+  templateUrl: './admin-container.component.html',
+  styleUrls: ['./admin-container.component.scss'],
+  imports: [
+    MatSidenavContainer,
+    MatSidenav,
+    MatToolbar,
+    RouterLink,
+    MatIcon,
+    MatList,
+    MatListItem,
+    NgClass,
+    MatListItemIcon,
+    MatIconButton,
+    MatSidenavContent,
+    TopbarComponent,
+    AdminScenarioTemplatesComponent,
+    AdminScenariosComponent,
+    AdminUsersComponent,
+    AdminRolesComponent,
+    AdminGroupsComponent,
+    AsyncPipe,
+  ],
 })
 export class AdminContainerComponent implements OnDestroy, OnInit {
   public username: string;
@@ -50,7 +85,7 @@ export class AdminContainerComponent implements OnDestroy, OnInit {
     private authService: ComnAuthService,
     private authQuery: ComnAuthQuery,
     private signalRService: SignalRService,
-    private currentUserQuery: CurrentUserQuery
+    private currentUserQuery: CurrentUserQuery,
   ) {
     this.theme$ = this.authQuery.userTheme$;
     this.hideTopbar = this.inIframe();
@@ -77,25 +112,23 @@ export class AdminContainerComponent implements OnDestroy, OnInit {
         }
       });
 
-    this.permissionDataService
-      .load()
-      .subscribe((x) => {
-        this.permissions = this.permissionDataService.permissions;
-        // Set default section if none is selected
-        if (!this.showSection) {
-          if (this.canViewScenarioTemplateList()) {
-            this.showSection = this.scenarioTemplatesText;
-          } else if (this.canViewScenarioList()) {
-            this.showSection = this.scenariosText;
-          } else if (this.permissions.includes(SystemPermission.ViewUsers)) {
-            this.showSection = this.usersText;
-          } else if (this.permissions.includes(SystemPermission.ViewRoles)) {
-            this.showSection = this.rolesText;
-          } else if (this.permissions.includes(SystemPermission.ViewGroups)) {
-            this.showSection = this.groupsText;
-          }
+    this.permissionDataService.load().subscribe((x) => {
+      this.permissions = this.permissionDataService.permissions;
+      // Set default section if none is selected
+      if (!this.showSection) {
+        if (this.canViewScenarioTemplateList()) {
+          this.showSection = this.scenarioTemplatesText;
+        } else if (this.canViewScenarioList()) {
+          this.showSection = this.scenariosText;
+        } else if (this.permissions.includes(SystemPermission.ViewUsers)) {
+          this.showSection = this.usersText;
+        } else if (this.permissions.includes(SystemPermission.ViewRoles)) {
+          this.showSection = this.rolesText;
+        } else if (this.permissions.includes(SystemPermission.ViewGroups)) {
+          this.showSection = this.groupsText;
         }
-      });
+      }
+    });
   }
 
   canViewScenarioTemplateList(): boolean {

@@ -12,13 +12,17 @@ import {
 import { TaskDataService } from 'src/app/data/task/task-data.service';
 import { Scenario, Task } from 'src/app/generated/steamfitter.api';
 import { CrucibleDialogService } from '@cmusei/crucible-common';
+import { MatIcon } from '@angular/material/icon';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatIconButton } from '@angular/material/button';
+import { PercentPipe } from '@angular/common';
 
 @Component({
-    selector: 'app-manual-tasks-list',
-    templateUrl: './manual-tasks-list.component.html',
-    styleUrls: ['./manual-tasks-list.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-manual-tasks-list',
+  templateUrl: './manual-tasks-list.component.html',
+  styleUrls: ['./manual-tasks-list.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [MatIcon, MatTooltip, MatIconButton, PercentPipe],
 })
 export class ManualTasksListComponent implements OnInit {
   @Input() tasks: Array<Task>;
@@ -26,7 +30,7 @@ export class ManualTasksListComponent implements OnInit {
 
   constructor(
     private taskDataService: TaskDataService,
-    private confirmDialogService: CrucibleDialogService
+    private confirmDialogService: CrucibleDialogService,
   ) {}
 
   ngOnInit(): void {}
@@ -49,7 +53,10 @@ export class ManualTasksListComponent implements OnInit {
   };
 
   statusIcon(status: string): string {
-    return ManualTasksListComponent.STATUS_ICON_MAP[status?.toLowerCase()] || 'mdi-help-circle-outline';
+    return (
+      ManualTasksListComponent.STATUS_ICON_MAP[status?.toLowerCase()] ||
+      'mdi-help-circle-outline'
+    );
   }
 
   executeTask(task: Task) {

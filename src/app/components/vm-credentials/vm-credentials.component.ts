@@ -12,12 +12,26 @@ import { AddDialogComponent } from './add-dialog/add-dialog.component';
 import { Observable } from 'rxjs';
 import { delay, tap } from 'rxjs/operators';
 import { CrucibleDialogService } from '@cmusei/crucible-common';
+import { MatFormField, MatInput } from '@angular/material/input';
+import { FormsModule } from '@angular/forms';
+import { MatExpansionPanel } from '@angular/material/expansion';
+import { MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
-    selector: 'app-vm-credentials',
-    templateUrl: './vm-credentials.component.html',
-    styleUrls: ['./vm-credentials.component.scss'],
-    standalone: false
+  selector: 'app-vm-credentials',
+  templateUrl: './vm-credentials.component.html',
+  styleUrls: ['./vm-credentials.component.scss'],
+  imports: [
+    MatFormField,
+    MatInput,
+    FormsModule,
+    MatExpansionPanel,
+    MatIconButton,
+    MatIcon,
+    AsyncPipe,
+  ],
 })
 export class VmCredentialsComponent implements OnInit {
   @Input() username: string;
@@ -38,7 +52,7 @@ export class VmCredentialsComponent implements OnInit {
     private confirmService: CrucibleDialogService,
     private dialog: MatDialog,
     private scenarioTemplateDataService: ScenarioTemplateDataService,
-    private scenarioDataService: ScenarioDataService
+    private scenarioDataService: ScenarioDataService,
   ) {
     this.scenarioTemplate = (
       this.scenarioTemplateQuery.selectActive() as Observable<ScenarioTemplate>
@@ -47,7 +61,7 @@ export class VmCredentialsComponent implements OnInit {
       tap((p) => {
         this.setVmCredentialsToDefault(p);
         this.vmCredentialList = this.sortVmCredentialList(p.vmCredentials);
-      })
+      }),
     );
     this.scenario = (
       this.scenarioQuery.selectActive() as Observable<Scenario>
@@ -56,7 +70,7 @@ export class VmCredentialsComponent implements OnInit {
       tap((p) => {
         this.setVmCredentialsToDefault(p);
         this.vmCredentialList = this.sortVmCredentialList(p.vmCredentials);
-      })
+      }),
     );
   }
 
@@ -71,7 +85,7 @@ export class VmCredentialsComponent implements OnInit {
   private setVmCredentialsToDefault(p: ScenarioTemplate | Scenario) {
     if (!this.username && p && p.vmCredentials && p.vmCredentials.length > 0) {
       const defaultVmCredential = p.vmCredentials.find(
-        (vmc) => vmc.id === p.defaultVmCredentialId
+        (vmc) => vmc.id === p.defaultVmCredentialId,
       );
       if (defaultVmCredential) {
         this.selectedVmCredentialChanged.emit(defaultVmCredential);
@@ -96,7 +110,7 @@ export class VmCredentialsComponent implements OnInit {
 
   setDefaultVmCredential(
     vmCredentialId: string,
-    parent: ScenarioTemplate | Scenario
+    parent: ScenarioTemplate | Scenario,
   ) {
     const updateItem = { ...parent };
     updateItem.defaultVmCredentialId = vmCredentialId;
@@ -149,12 +163,12 @@ export class VmCredentialsComponent implements OnInit {
           if (this.scenarioTemplateId) {
             this.scenarioTemplateDataService.deleteVmCredential(
               this.scenarioTemplateId,
-              vmCredential.id
+              vmCredential.id,
             );
           } else if (this.scenarioId) {
             this.scenarioDataService.deleteVmCredential(
               this.scenarioTemplateId,
-              vmCredential.id
+              vmCredential.id,
             );
           }
         }

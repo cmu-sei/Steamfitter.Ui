@@ -10,12 +10,14 @@ import { SystemPermission, User } from 'src/app/generated/steamfitter.api';
 import { Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import { PermissionDataService } from 'src/app/data/permission/permission-data.service';
+import { AdminUserListComponent } from './admin-user-list/admin-user-list.component';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
-    selector: 'app-admin-users',
-    templateUrl: './admin-users.component.html',
-    styleUrls: ['./admin-users.component.scss'],
-    standalone: false
+  selector: 'app-admin-users',
+  templateUrl: './admin-users.component.html',
+  styleUrls: ['./admin-users.component.scss'],
+  imports: [AdminUserListComponent, AsyncPipe],
 })
 export class AdminUsersComponent implements OnInit {
   matcher = new UserErrorStateMatcher();
@@ -23,12 +25,12 @@ export class AdminUsersComponent implements OnInit {
   users$: Observable<User[]>;
   isLoading$: Observable<boolean>;
   canEdit = this.permissionDataService.hasPermission(
-    SystemPermission.ManageUsers
+    SystemPermission.ManageUsers,
   );
   constructor(
     private userDataService: UserDataService,
     private userQuery: UserQuery,
-    private permissionDataService: PermissionDataService
+    private permissionDataService: PermissionDataService,
   ) {}
 
   /**
@@ -53,7 +55,7 @@ export class AdminUsersComponent implements OnInit {
 export class UserErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(
     control: UntypedFormControl | null,
-    form: FormGroupDirective | NgForm | null
+    form: FormGroupDirective | NgForm | null,
   ): boolean {
     const isSubmitted = form && form.submitted;
     return !!(control && control.invalid && (control.dirty || isSubmitted));

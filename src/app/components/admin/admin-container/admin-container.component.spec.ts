@@ -29,8 +29,14 @@ import {
 import { permissionApiStubs } from 'src/app/test-utils/mock-permission-data.service';
 import { TopbarView } from '../../shared/top-bar/topbar.models';
 import { AdminContainerComponent } from './admin-container.component';
+import { TopbarComponent } from 'src/app/components/shared/top-bar/topbar.component';
+import { AdminScenarioTemplatesComponent } from 'src/app/components/admin/admin-scenario-templates/admin-scenario-templates.component';
+import { AdminScenariosComponent } from 'src/app/components/admin/admin-scenarios/admin-scenarios.component';
+import { AdminUsersComponent } from 'src/app/components/admin/admin-users/admin-users.component';
+import { AdminRolesComponent } from 'src/app/components/admin/admin-roles/admin-roles.component';
+import { AdminGroupsComponent } from 'src/app/components/admin/admin-groups/admin-groups.component';
 
-@Component({ selector: 'app-topbar', template: '', standalone: false })
+@Component({ selector: 'app-topbar', template: '' })
 class TopbarStubComponent {
   @Input() title?: string;
   @Input() topbarView?: TopbarView;
@@ -39,35 +45,30 @@ class TopbarStubComponent {
 @Component({
   selector: 'app-admin-scenario-templates',
   template: '',
-  standalone: false,
 })
 class AdminScenarioTemplatesStubComponent {}
 
 @Component({
   selector: 'app-admin-scenarios',
   template: '',
-  standalone: false,
 })
 class AdminScenariosStubComponent {}
 
 @Component({
   selector: 'app-admin-users',
   template: '',
-  standalone: false,
 })
 class AdminUsersStubComponent {}
 
 @Component({
   selector: 'app-admin-roles',
   template: '',
-  standalone: false,
 })
 class AdminRolesStubComponent {}
 
 @Component({
   selector: 'app-admin-groups',
   template: '',
-  standalone: false,
 })
 class AdminGroupsStubComponent {}
 
@@ -107,14 +108,16 @@ async function renderAdmin(
   };
 
   const rendered = await renderComponent(AdminContainerComponent, {
-    declarations: [
-      AdminContainerComponent,
-      TopbarStubComponent,
-      AdminScenarioTemplatesStubComponent,
-      AdminScenariosStubComponent,
-      AdminUsersStubComponent,
-      AdminRolesStubComponent,
-      AdminGroupsStubComponent,
+    childStubs: [
+      { replace: TopbarComponent, with: TopbarStubComponent },
+      {
+        replace: AdminScenarioTemplatesComponent,
+        with: AdminScenarioTemplatesStubComponent,
+      },
+      { replace: AdminScenariosComponent, with: AdminScenariosStubComponent },
+      { replace: AdminUsersComponent, with: AdminUsersStubComponent },
+      { replace: AdminRolesComponent, with: AdminRolesStubComponent },
+      { replace: AdminGroupsComponent, with: AdminGroupsStubComponent },
     ],
     imports: [
       MatSidenavModule,

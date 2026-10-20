@@ -8,16 +8,41 @@ import {
   transition,
   trigger,
 } from '@angular/animations';
-import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnChanges,
+  OnDestroy,
+  OnInit,
+  SimpleChanges,
+  ViewChild,
+} from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
+import { MatSort, MatSortHeader } from '@angular/material/sort';
+import {
+  MatTableDataSource,
+  MatTable,
+  MatColumnDef,
+  MatHeaderCellDef,
+  MatHeaderCell,
+  MatCellDef,
+  MatCell,
+  MatHeaderRowDef,
+  MatHeaderRow,
+  MatRowDef,
+  MatRow,
+} from '@angular/material/table';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ResultDataService } from 'src/app/data/result/result-data.service';
 import { ResultQuery } from 'src/app/data/result/result.query';
 import { TaskDataService } from 'src/app/data/task/task-data.service';
 import { Result, User, View, Vm } from 'src/app/generated/steamfitter.api';
+import { MatCard } from '@angular/material/card';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { TitleCasePipe, DatePipe, KeyValuePipe } from '@angular/common';
 
 export enum HistoryView {
   user = 'User',
@@ -26,17 +51,40 @@ export enum HistoryView {
 }
 
 @Component({
-    selector: 'app-history',
-    templateUrl: './history.component.html',
-    styleUrls: ['./history.component.scss'],
-    animations: [
-        trigger('detailExpand', [
-            state('collapsed', style({ height: '0px', minHeight: '0' })),
-            state('expanded', style({ height: '*' })),
-            transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
-        ]),
-    ],
-    standalone: false
+  selector: 'app-history',
+  templateUrl: './history.component.html',
+  styleUrls: ['./history.component.scss'],
+  animations: [
+    trigger('detailExpand', [
+      state('collapsed', style({ height: '0px', minHeight: '0' })),
+      state('expanded', style({ height: '*' })),
+      transition(
+        'expanded <=> collapsed',
+        animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)'),
+      ),
+    ]),
+  ],
+  imports: [
+    MatCard,
+    MatProgressSpinner,
+    MatTable,
+    MatSort,
+    MatColumnDef,
+    MatHeaderCellDef,
+    MatHeaderCell,
+    MatCellDef,
+    MatCell,
+    MatIconButton,
+    MatIcon,
+    MatSortHeader,
+    MatHeaderRowDef,
+    MatHeaderRow,
+    MatRowDef,
+    MatRow,
+    TitleCasePipe,
+    DatePipe,
+    KeyValuePipe,
+  ],
 })
 export class HistoryComponent implements OnInit, OnChanges, OnDestroy {
   @Input() filterString = '';
@@ -67,7 +115,7 @@ export class HistoryComponent implements OnInit, OnChanges, OnDestroy {
   constructor(
     private resultQuery: ResultQuery,
     private taskDataService: TaskDataService,
-    private resultDataService: ResultDataService
+    private resultDataService: ResultDataService,
   ) {
     this.loading = true;
     this.apiResponded = false;
@@ -80,14 +128,14 @@ export class HistoryComponent implements OnInit, OnChanges, OnDestroy {
           this.apiResponded = true;
           if (res != null) {
             this.modelDataSource.data = res.sort((a: Result, b: Result) =>
-              a.statusDate <= b.statusDate ? 1 : -1
+              a.statusDate <= b.statusDate ? 1 : -1,
             );
           }
           this.paginator?.firstPage();
         },
         (error) => {
           console.log('API is not responding:', error.message);
-        }
+        },
       );
   }
 
@@ -188,7 +236,10 @@ export class HistoryComponent implements OnInit, OnChanges, OnDestroy {
   };
 
   statusIcon(status: string): string {
-    return HistoryComponent.STATUS_ICON_MAP[status?.toLowerCase()] || 'mdi-help-circle-outline';
+    return (
+      HistoryComponent.STATUS_ICON_MAP[status?.toLowerCase()] ||
+      'mdi-help-circle-outline'
+    );
   }
 
   copyTask(resultId: string) {

@@ -8,18 +8,35 @@ import {
   OnDestroy,
   Output,
 } from '@angular/core';
-import { UntypedFormControl } from '@angular/forms';
+import {
+  UntypedFormControl,
+  FormsModule,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { PlayerDataService } from 'src/app/data/player/player-data-service';
 import { Vm } from 'src/app/generated/steamfitter.api';
 import { MatIcon } from '@angular/material/icon';
+import { MatFormField, MatInput, MatSuffix } from '@angular/material/input';
+import { MatIconButton, MatButton } from '@angular/material/button';
+import { MatCheckbox } from '@angular/material/checkbox';
 
 @Component({
-    selector: 'app-vm-list',
-    templateUrl: './vm-list.component.html',
-    styleUrls: ['./vm-list.component.scss'],
-    standalone: false
+  selector: 'app-vm-list',
+  templateUrl: './vm-list.component.html',
+  styleUrls: ['./vm-list.component.scss'],
+  imports: [
+    MatFormField,
+    MatInput,
+    FormsModule,
+    ReactiveFormsModule,
+    MatIconButton,
+    MatSuffix,
+    MatIcon,
+    MatCheckbox,
+    MatButton,
+  ],
 })
 export class VmListComponent implements OnDestroy {
   @Input() selectedVms: string[];

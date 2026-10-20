@@ -29,11 +29,11 @@ import { dialogRefStub } from 'src/app/test-utils/dialog-refs';
 import { permissionDataProviders } from 'src/app/test-utils/mock-permission-data.service';
 import { NameDialogComponent } from '../../shared/name-dialog/name-dialog.component';
 import { AdminGroupsComponent } from './admin-groups.component';
+import { AdminGroupsDetailComponent } from 'src/app/components/admin/admin-groups/admin-groups-detail/admin-groups-detail.component';
 
 @Component({
   selector: 'app-admin-groups-detail',
   template: '',
-  standalone: false,
 })
 class GroupDetailStubComponent {
   @Input() groupId?: string;
@@ -84,7 +84,9 @@ async function renderGroups(
   const dialog: Pick<MatDialog, 'open'> = { open };
 
   const rendered = await renderComponent(AdminGroupsComponent, {
-    declarations: [AdminGroupsComponent, GroupDetailStubComponent],
+    childStubs: [
+      { replace: AdminGroupsDetailComponent, with: GroupDetailStubComponent },
+    ],
     imports: [
       MatTableModule,
       MatSortModule,

@@ -27,12 +27,13 @@ import {
   TaskService,
   Vm,
 } from 'src/app/generated/steamfitter.api';
+import { TasksComponent } from '../tasks/tasks.component';
 
 /** Error when invalid control is dirty, touched, or submitted. */
 export class UserErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(
     control: UntypedFormControl | null,
-    form: FormGroupDirective | NgForm | null
+    form: FormGroupDirective | NgForm | null,
   ): boolean {
     const isSubmitted = form && form.submitted;
     return !!(control && control.invalid && (control.dirty || isSubmitted));
@@ -40,10 +41,10 @@ export class UserErrorStateMatcher implements ErrorStateMatcher {
 }
 
 @Component({
-    selector: 'app-vm-task-execute',
-    templateUrl: './vm-task-execute.component.html',
-    styleUrls: ['./vm-task-execute.component.scss'],
-    standalone: false
+  selector: 'app-vm-task-execute',
+  templateUrl: './vm-task-execute.component.html',
+  styleUrls: ['./vm-task-execute.component.scss'],
+  imports: [TasksComponent],
 })
 export class VmTaskExecuteComponent implements OnDestroy {
   @Output() editComplete = new EventEmitter<boolean>();
@@ -73,7 +74,7 @@ export class VmTaskExecuteComponent implements OnDestroy {
     private resultDataService: ResultDataService,
     private taskQuery: TaskQuery,
     private authService: ComnAuthService,
-    private scenarioDataService: ScenarioDataService
+    private scenarioDataService: ScenarioDataService,
   ) {
     this.scenarioDataService.selected
       .pipe(takeUntil(this.unsubscribe$))
@@ -116,9 +117,9 @@ export class VmTaskExecuteComponent implements OnDestroy {
         (error) => {
           this.isExecuting = false;
           console.log(
-            'The Steamfitter API generated an error.  ' + error.message
+            'The Steamfitter API generated an error.  ' + error.message,
           );
-        }
+        },
       );
   }
 

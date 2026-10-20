@@ -5,12 +5,14 @@ import { Component, Input } from '@angular/core';
 import { Observable } from 'rxjs';
 import { TaskDataService } from 'src/app/data/task/task-data.service';
 import { Result, Task } from 'src/app/generated/steamfitter.api/model/models';
+import { TaskTreeComponent } from './task-tree/task-tree.component';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
-    selector: 'app-tasks',
-    templateUrl: './tasks.component.html',
-    styleUrls: ['./tasks.component.scss'],
-    standalone: false
+  selector: 'app-tasks',
+  templateUrl: './tasks.component.html',
+  styleUrls: ['./tasks.component.scss'],
+  imports: [TaskTreeComponent, AsyncPipe],
 })
 export class TasksComponent {
   @Input() taskList: Observable<Task[]>;

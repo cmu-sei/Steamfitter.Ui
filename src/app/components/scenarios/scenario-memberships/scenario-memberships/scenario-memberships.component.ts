@@ -26,12 +26,25 @@ import {
 } from 'src/app/generated/steamfitter.api';
 import { GroupDataService } from 'src/app/data/group/group-data.service';
 import { PermissionDataService } from 'src/app/data/permission/permission-data.service';
+import { MatIconButton } from '@angular/material/button';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatIcon } from '@angular/material/icon';
+import { ScenarioMembershipListComponent } from '../scenario-membership-list/scenario-membership-list.component';
+import { ScenarioMemberListComponent } from '../scenario-member-list/scenario-member-list.component';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
-    selector: 'app-scenario-memberships',
-    templateUrl: './scenario-memberships.component.html',
-    styleUrls: ['./scenario-memberships.component.scss'],
-    standalone: false
+  selector: 'app-scenario-memberships',
+  templateUrl: './scenario-memberships.component.html',
+  styleUrls: ['./scenario-memberships.component.scss'],
+  imports: [
+    MatIconButton,
+    MatTooltip,
+    MatIcon,
+    ScenarioMembershipListComponent,
+    ScenarioMemberListComponent,
+    AsyncPipe,
+  ],
 })
 export class ScenarioMembershipsComponent implements OnInit, OnChanges {
   @Input() embedded: boolean;
@@ -60,7 +73,7 @@ export class ScenarioMembershipsComponent implements OnInit, OnChanges {
     private userDataService: UserDataService,
     private userQuery: UserQuery,
     private groupDataService: GroupDataService,
-    private permissionDataService: PermissionDataService
+    private permissionDataService: PermissionDataService,
   ) {}
 
   ngOnInit(): void {
@@ -72,14 +85,18 @@ export class ScenarioMembershipsComponent implements OnInit, OnChanges {
     ]).subscribe();
     this.permissionDataService
       .loadScenarioPermissions(this.scenarioId)
-      .subscribe(() =>
-        this.canEdit$ = of(this.permissionDataService.canEditScenario(this.scenarioId)));
+      .subscribe(
+        () =>
+          (this.canEdit$ = of(
+            this.permissionDataService.canEditScenario(this.scenarioId),
+          )),
+      );
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    this.scenario$ = this.scenarioQuery.selectEntity(this.scenarioId).pipe(
-      filter((x) => x != null)
-    );
+    this.scenario$ = this.scenarioQuery
+      .selectEntity(this.scenarioId)
+      .pipe(filter((x) => x != null));
   }
 
   selectUsers(members: boolean) {
@@ -98,7 +115,7 @@ export class ScenarioMembershipsComponent implements OnInit, OnChanges {
             );
           }
         });
-      })
+      }),
     );
   }
 
@@ -121,7 +138,7 @@ export class ScenarioMembershipsComponent implements OnInit, OnChanges {
             );
           }
         });
-      })
+      }),
     );
   }
 

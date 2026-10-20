@@ -2,10 +2,22 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { describe, it, expect } from 'vitest';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import { Component } from '@angular/core';
 import { MatTabsModule } from '@angular/material/tabs';
 import { renderComponent } from 'src/app/test-utils/render-component';
 import { AdminRolesComponent } from './admin-roles.component';
+import { AdminSystemRolesComponent } from './admin-system-roles/admin-system-roles.component';
+import { AdminScenarioTemplateRolesComponent } from './admin-scenario-template-roles/admin-scenario-template-roles.component';
+import { AdminScenarioRolesComponent } from './admin-scenario-roles/admin-scenario-roles.component';
+
+@Component({ selector: 'app-admin-system-roles', template: '' })
+class SystemRolesStubComponent {}
+
+@Component({ selector: 'app-admin-scenario-template-roles', template: '' })
+class ScenarioTemplateRolesStubComponent {}
+
+@Component({ selector: 'app-admin-scenario-roles', template: '' })
+class ScenarioRolesStubComponent {}
 
 describe('AdminRolesComponent', () => {
   /**
@@ -15,9 +27,18 @@ describe('AdminRolesComponent', () => {
    */
   it('renders with the default test providers', async () => {
     const { fixture } = await renderComponent(AdminRolesComponent, {
-      declarations: [AdminRolesComponent],
       imports: [MatTabsModule],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
+      childStubs: [
+        { replace: AdminSystemRolesComponent, with: SystemRolesStubComponent },
+        {
+          replace: AdminScenarioTemplateRolesComponent,
+          with: ScenarioTemplateRolesStubComponent,
+        },
+        {
+          replace: AdminScenarioRolesComponent,
+          with: ScenarioRolesStubComponent,
+        },
+      ],
     });
 
     expect(fixture.componentInstance).toBeInstanceOf(AdminRolesComponent);

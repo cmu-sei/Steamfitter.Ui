@@ -36,14 +36,19 @@ import {
 import { permissionApiStubs } from 'src/app/test-utils/mock-permission-data.service';
 import { TopbarView } from '../shared/top-bar/topbar.models';
 import { HomeAppComponent } from './home-app.component';
+import { TopbarComponent } from 'src/app/components/shared/top-bar/topbar.component';
+import { ScenariosComponent } from 'src/app/components/scenarios/scenarios.component';
+import { ScenarioTemplatesComponent } from 'src/app/components/scenario-templates/scenario-templates.component';
+import { VmTaskExecuteComponent } from 'src/app/components/vm-task-execute/vm-task-execute.component';
+import { HistoryComponent } from 'src/app/components/history/history.component';
 
-@Component({ selector: 'app-topbar', template: '', standalone: false })
+@Component({ selector: 'app-topbar', template: '' })
 class TopbarStubComponent {
   @Input() title?: string;
   @Input() topbarView?: TopbarView;
 }
 
-@Component({ selector: 'app-scenarios', template: '', standalone: false })
+@Component({ selector: 'app-scenarios', template: '' })
 class ScenariosStubComponent {
   @Input() filterString?: string;
   @Input() paginator?: unknown;
@@ -53,17 +58,16 @@ class ScenariosStubComponent {
 @Component({
   selector: 'app-scenario-templates',
   template: '',
-  standalone: false,
 })
 class ScenarioTemplatesStubComponent {
   @Input() filterString?: string;
   @Input() paginator?: unknown;
 }
 
-@Component({ selector: 'app-vm-task-execute', template: '', standalone: false })
+@Component({ selector: 'app-vm-task-execute', template: '' })
 class VmTaskExecuteStubComponent {}
 
-@Component({ selector: 'app-history', template: '', standalone: false })
+@Component({ selector: 'app-history', template: '' })
 class HistoryStubComponent {
   @Input() filterString?: string;
   @Input() paginator?: unknown;
@@ -110,13 +114,15 @@ async function renderHome(
   const { route } = activatedRouteStub(tab ? { tab } : {});
 
   const rendered = await renderComponent(HomeAppComponent, {
-    declarations: [
-      HomeAppComponent,
-      TopbarStubComponent,
-      ScenariosStubComponent,
-      ScenarioTemplatesStubComponent,
-      VmTaskExecuteStubComponent,
-      HistoryStubComponent,
+    childStubs: [
+      { replace: TopbarComponent, with: TopbarStubComponent },
+      { replace: ScenariosComponent, with: ScenariosStubComponent },
+      {
+        replace: ScenarioTemplatesComponent,
+        with: ScenarioTemplatesStubComponent,
+      },
+      { replace: VmTaskExecuteComponent, with: VmTaskExecuteStubComponent },
+      { replace: HistoryComponent, with: HistoryStubComponent },
     ],
     imports: [
       MatIconModule,

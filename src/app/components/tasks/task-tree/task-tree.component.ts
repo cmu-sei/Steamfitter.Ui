@@ -12,10 +12,20 @@ import {
   ViewChild,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatMenuTrigger } from '@angular/material/menu';
+import {
+  MatMenuTrigger,
+  MatMenu,
+  MatMenuContent,
+  MatMenuItem,
+} from '@angular/material/menu';
 import {
   MatTreeFlatDataSource,
   MatTreeFlattener,
+  MatTree,
+  MatTreeNodeDef,
+  MatTreeNode,
+  MatTreeNodePadding,
+  MatTreeNodeToggle,
 } from '@angular/material/tree';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -30,6 +40,19 @@ import {
   TaskTrigger,
 } from 'src/app/generated/steamfitter.api';
 import { CrucibleDialogService } from '@cmusei/crucible-common';
+import { MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import {
+  MatExpansionPanel,
+  MatExpansionPanelHeader,
+  MatExpansionPanelTitle,
+  MatExpansionPanelDescription,
+} from '@angular/material/expansion';
+import { MatLabel } from '@angular/material/input';
+import { ResultsComponent } from '../../results/results.component';
+import { MatCard } from '@angular/material/card';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { AsyncPipe, KeyValuePipe } from '@angular/common';
 interface TaskNode {
   task: Task;
   results?: Result[];
@@ -62,10 +85,32 @@ const BLANK_TASK: Task = {
 };
 
 @Component({
-    selector: 'app-task-tree',
-    templateUrl: './task-tree.component.html',
-    styleUrls: ['./task-tree.component.scss'],
-    standalone: false
+  selector: 'app-task-tree',
+  templateUrl: './task-tree.component.html',
+  styleUrls: ['./task-tree.component.scss'],
+  imports: [
+    MatIconButton,
+    MatIcon,
+    MatTree,
+    MatTreeNodeDef,
+    MatTreeNode,
+    MatTreeNodePadding,
+    MatTreeNodeToggle,
+    MatExpansionPanel,
+    MatExpansionPanelHeader,
+    MatExpansionPanelTitle,
+    MatLabel,
+    MatExpansionPanelDescription,
+    ResultsComponent,
+    MatCard,
+    MatProgressSpinner,
+    MatMenuTrigger,
+    MatMenu,
+    MatMenuContent,
+    MatMenuItem,
+    AsyncPipe,
+    KeyValuePipe,
+  ],
 })
 export class TaskTreeComponent implements OnInit, OnDestroy {
   @Input() taskList: Observable<Task[]>;
@@ -102,13 +147,13 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
   });
   treeControl = new FlatTreeControl<FlatTaskNode>(
     (node) => node.level,
-    (node) => node.expandable
+    (node) => node.expandable,
   );
   treeFlattener = new MatTreeFlattener(
     this.transformer,
     (node) => node.level,
     (node) => node.expandable,
-    (node) => node.children
+    (node) => node.children,
   );
   dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
 
@@ -119,7 +164,7 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
   constructor(
     private confirmService: CrucibleDialogService,
     private dialog: MatDialog,
-    private taskDataService: TaskDataService
+    private taskDataService: TaskDataService,
   ) {}
 
   ngOnInit() {
@@ -134,7 +179,10 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
       this.tasks = !tasks ? [] : this.filterTasks(tasks);
       this.createTaskNodes();
       // Expand the task details panel if it matches the URL taskId
-      if (this.selectedTaskId && this.tasks.some(t => t.id === this.selectedTaskId)) {
+      if (
+        this.selectedTaskId &&
+        this.tasks.some((t) => t.id === this.selectedTaskId)
+      ) {
         this.expandedDetails.add(this.selectedTaskId);
       }
     });
@@ -151,15 +199,15 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
       tasks = tasks.filter(
         (item) =>
           item.scenarioTemplateId &&
-          item.scenarioTemplateId === this.scenarioTemplateId
+          item.scenarioTemplateId === this.scenarioTemplateId,
       );
     } else if (this.scenarioId) {
       tasks = tasks.filter(
-        (item) => item.scenarioId && item.scenarioId === this.scenarioId
+        (item) => item.scenarioId && item.scenarioId === this.scenarioId,
       );
     } else if (this.userId) {
       tasks = tasks.filter(
-        (item) => item.userId && item.userId === this.userId
+        (item) => item.userId && item.userId === this.userId,
       );
     }
 
@@ -186,7 +234,9 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
    * Creates a TaskNode to display in the tree
    */
   private createTaskNode(parentTask: Task): TaskNode {
-    const results = this.results.filter((result) => result.taskId === parentTask.id);
+    const results = this.results.filter(
+      (result) => result.taskId === parentTask.id,
+    );
     const newNode: TaskNode = {
       task: parentTask,
       results: results,
@@ -246,7 +296,7 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
             (r) =>
               r.status === TaskStatus.Pending ||
               r.status === TaskStatus.Queued ||
-              r.status === TaskStatus.Sent
+              r.status === TaskStatus.Sent,
           )
         ) {
           isExecutable = false;
@@ -398,13 +448,13 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
     this.forgetMissingExpandedNodes(this.treeControl, this.expandedNodeSet);
     this.expandNodesById(
       this.treeControl.dataNodes,
-      Array.from(this.expandedNodeSet)
+      Array.from(this.expandedNodeSet),
     );
   }
 
   private rememberExpandedTreeNodes(
     treeControl: FlatTreeControl<FlatTaskNode>,
-    expandedNodeSet: Set<string>
+    expandedNodeSet: Set<string>,
   ) {
     if (treeControl.dataNodes) {
       treeControl.dataNodes.forEach((node) => {
@@ -418,7 +468,7 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
 
   private forgetMissingExpandedNodes(
     treeControl: FlatTreeControl<FlatTaskNode>,
-    expandedNodeSet: Set<string>
+    expandedNodeSet: Set<string>,
   ) {
     if (treeControl.dataNodes) {
       expandedNodeSet.forEach((nodeId) => {
@@ -481,13 +531,16 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
   };
 
   statusIcon(status: string): string {
-    return TaskTreeComponent.STATUS_ICON_MAP[status?.toLowerCase()] || 'mdi-help-circle-outline';
+    return (
+      TaskTreeComponent.STATUS_ICON_MAP[status?.toLowerCase()] ||
+      'mdi-help-circle-outline'
+    );
   }
 
   sortedResults(results: Result[], sortBy: string, sortDescending: boolean) {
     const sortValue = sortDescending ? 1 : -1;
     const sortedResults = results.sort((a, b) =>
-      a[sortBy] < b[sortBy] ? sortValue : -1 * sortValue
+      a[sortBy] < b[sortBy] ? sortValue : -1 * sortValue,
     );
     return sortedResults;
   }

@@ -14,8 +14,9 @@ import { renderComponent } from 'src/app/test-utils/render-component';
 import { ApiStub } from 'src/app/test-utils/api-stub';
 import { permissionDataProviders } from 'src/app/test-utils/mock-permission-data.service';
 import { ScenarioTemplateEditComponent } from './scenario-template-edit.component';
+import { TasksComponent } from 'src/app/components/tasks/tasks.component';
 
-@Component({ selector: 'app-tasks', template: '', standalone: false })
+@Component({ selector: 'app-tasks', template: '' })
 class TasksStubComponent {
   @Input() taskList?: Observable<Task[]>;
   @Input() isLoading?: Observable<boolean>;
@@ -37,7 +38,7 @@ async function renderEdit(input: ScenarioTemplate | null) {
     deleteTask: vi.fn(() => of(null)),
   } satisfies ApiStub<TaskService>;
   const rendered = await renderComponent(ScenarioTemplateEditComponent, {
-    declarations: [ScenarioTemplateEditComponent, TasksStubComponent],
+    childStubs: [{ replace: TasksComponent, with: TasksStubComponent }],
     providers: [
       ...permissionDataProviders({
         scenarioTemplates: [

@@ -7,15 +7,27 @@ import {
   FormGroupDirective,
   NgForm,
   Validators,
+  FormsModule,
+  ReactiveFormsModule,
 } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import {
+  CrucibleDialogComponent,
+  CrucibleDialogContentDirective,
+} from '@cmusei/crucible-common';
+import {
+  MatFormField,
+  MatLabel,
+  MatInput,
+  MatError,
+} from '@angular/material/input';
 
 /** Error when invalid control is dirty, touched, or submitted. */
 export class UserErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(
     control: UntypedFormControl | null,
-    form: FormGroupDirective | NgForm | null
+    form: FormGroupDirective | NgForm | null,
   ): boolean {
     const isSubmitted = form && form.submitted;
     return !!(control && control.invalid && (control.dirty || isSubmitted));
@@ -26,7 +38,7 @@ export class UserErrorStateMatcher implements ErrorStateMatcher {
 export class NotIntegerErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(
     control: UntypedFormControl | null,
-    form: FormGroupDirective | NgForm | null
+    form: FormGroupDirective | NgForm | null,
   ): boolean {
     const hours = parseInt(control.value, 10);
     let isNotAnInteger = Number.isNaN(hours) || hours <= 0;
@@ -46,34 +58,41 @@ export class NotIntegerErrorStateMatcher implements ErrorStateMatcher {
 }
 
 @Component({
-    selector: 'app-scenario-template-edit-dialog',
-    templateUrl: './scenario-template-edit-dialog.component.html',
-    styleUrls: ['./scenario-template-edit-dialog.component.scss'],
-    standalone: false
+  selector: 'app-scenario-template-edit-dialog',
+  templateUrl: './scenario-template-edit-dialog.component.html',
+  styleUrls: ['./scenario-template-edit-dialog.component.scss'],
+  imports: [
+    CrucibleDialogComponent,
+    CrucibleDialogContentDirective,
+    MatFormField,
+    MatLabel,
+    MatInput,
+    FormsModule,
+    ReactiveFormsModule,
+    MatError,
+  ],
 })
 export class ScenarioTemplateEditDialogComponent {
   @Output() editComplete = new EventEmitter<any>();
 
   scenarioTemplateNameFormControl = new UntypedFormControl(
     this.data.scenarioTemplate.name,
-    [Validators.required, Validators.minLength(4)]
+    [Validators.required, Validators.minLength(4)],
   );
   descriptionFormControl = new UntypedFormControl(
     this.data.scenarioTemplate.description
       ? this.data.scenarioTemplate.description
       : ' ',
-    [Validators.required, Validators.minLength(4)]
+    [Validators.required, Validators.minLength(4)],
   );
   durationHoursFormControl = new UntypedFormControl(
     this.data.scenarioTemplate.durationHours,
-    [Validators.required]
+    [Validators.required],
   );
   matcher = new UserErrorStateMatcher();
   notAnIntegerErrorState = new NotIntegerErrorStateMatcher();
 
-  constructor(
-    @Inject(MAT_DIALOG_DATA) public data: any
-  ) {}
+  constructor(@Inject(MAT_DIALOG_DATA) public data: any) {}
 
   errorFree() {
     const hasError =
@@ -92,7 +111,7 @@ export class ScenarioTemplateEditDialogComponent {
       this.descriptionFormControl.value.toString()[0] === ' '
     ) {
       this.descriptionFormControl.setValue(
-        this.descriptionFormControl.value.toString().trim()
+        this.descriptionFormControl.value.toString().trim(),
       );
     }
   }

@@ -4,7 +4,10 @@
 import { A11yModule } from '@angular/cdk/a11y';
 import { CdkTableModule } from '@angular/cdk/table';
 import { CdkTreeModule } from '@angular/cdk/tree';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import {
+  provideHttpClient,
+  withInterceptorsFromDi,
+} from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -15,7 +18,11 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatChipsModule } from '@angular/material/chips';
-import { MatNativeDateModule, MatRippleModule, provideNativeDateAdapter } from '@angular/material/core';
+import {
+  MatNativeDateModule,
+  MatRippleModule,
+  provideNativeDateAdapter,
+} from '@angular/material/core';
 import {
   NgxMatDatepickerActions,
   NgxMatDatepickerApply,
@@ -136,53 +143,11 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
 };
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    HomeAppComponent,
-    VmListComponent,
-    SystemMessageComponent,
-    VmTaskExecuteComponent,
-    ScenarioTemplatesComponent,
-    ScenarioTemplateEditComponent,
-    ScenarioTemplateEditDialogComponent,
-    ScenarioTemplateListComponent,
-    ScenarioTemplateMemberListComponent,
-    ScenarioTemplateMembershipListComponent,
-    ScenarioTemplateMembershipsComponent,
-    ScenariosComponent,
-    ScenarioEditComponent,
-    ScenarioEditDialogComponent,
-    ScenarioListComponent,
-    ScenarioMemberListComponent,
-    ScenarioMembershipListComponent,
-    ScenarioMembershipsComponent,
-    ResultsComponent,
-    AddDialogComponent,
-    HistoryComponent,
-    TaskTreeComponent,
-    TaskEditComponent,
-    TasksComponent,
-    VmCredentialsComponent,
-    AdminContainerComponent,
-    AdminGroupsComponent,
-    AdminGroupsDetailComponent,
-    AdminGroupsMemberListComponent,
-    AdminGroupsMembershipListComponent,
-    AdminRolesComponent,
-    AdminScenarioRolesComponent,
-    AdminScenarioTemplateRolesComponent,
-    AdminScenariosComponent,
-    AdminScenarioTemplatesComponent,
-    AdminSystemRolesComponent,
-    AdminUsersComponent,
-    AdminUserListComponent,
-    TopbarComponent,
-    ManualTasksPageComponent,
-    ManualTasksListComponent,
-    NameDialogComponent,
-  ],
+  declarations: [AppComponent],
   exports: [MatSortModule],
-  bootstrap: [AppComponent], imports: [environment.production ? [] : AkitaNgDevtools.forRoot(),
+  bootstrap: [AppComponent],
+  imports: [
+    environment.production ? [] : AkitaNgDevtools.forRoot(),
     AkitaNgRouterStoreModule,
     BrowserModule,
     AppRoutingModule,
@@ -230,8 +195,8 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
     MatTreeModule,
     CdkTreeModule,
     ClipboardModule,
-  ComnAuthModule.forRoot(),
-  ComnSettingsModule.forRoot(),
+    ComnAuthModule.forRoot(),
+    ComnSettingsModule.forRoot(),
     NgxMatDatetimepicker,
     NgxMatDatepickerToggle,
     NgxMatDatepickerInput,
@@ -240,18 +205,62 @@ export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
     NgxMatDatepickerCancel,
     NgxMatDatepickerClear,
     ...CRUCIBLE_DIALOG_IMPORTS,
-    ComnHeaderBarModule], providers: [
-      SystemMessageService,
-      UserDataService,
-      {
-        provide: BASE_PATH,
-        useFactory: getBasePath,
-        deps: [ComnSettingsService],
-      },
-      { provide: MAT_TOOLTIP_DEFAULT_OPTIONS, useValue: myCustomTooltipDefaults },
-      provideNativeDateAdapter(),
-      provideHttpClient(withInterceptorsFromDi()),
-      provideCrucibleTheme({ brand: { color: '#B1282F', text: '#FFFFFF' } }),
-    ]
+    ComnHeaderBarModule,
+    HomeAppComponent,
+    VmListComponent,
+    SystemMessageComponent,
+    VmTaskExecuteComponent,
+    ScenarioTemplatesComponent,
+    ScenarioTemplateEditComponent,
+    ScenarioTemplateEditDialogComponent,
+    ScenarioTemplateListComponent,
+    ScenarioTemplateMemberListComponent,
+    ScenarioTemplateMembershipListComponent,
+    ScenarioTemplateMembershipsComponent,
+    ScenariosComponent,
+    ScenarioEditComponent,
+    ScenarioEditDialogComponent,
+    ScenarioListComponent,
+    ScenarioMemberListComponent,
+    ScenarioMembershipListComponent,
+    ScenarioMembershipsComponent,
+    ResultsComponent,
+    AddDialogComponent,
+    HistoryComponent,
+    TaskTreeComponent,
+    TaskEditComponent,
+    TasksComponent,
+    VmCredentialsComponent,
+    AdminContainerComponent,
+    AdminGroupsComponent,
+    AdminGroupsDetailComponent,
+    AdminGroupsMemberListComponent,
+    AdminGroupsMembershipListComponent,
+    AdminRolesComponent,
+    AdminScenarioRolesComponent,
+    AdminScenarioTemplateRolesComponent,
+    AdminScenariosComponent,
+    AdminScenarioTemplatesComponent,
+    AdminSystemRolesComponent,
+    AdminUsersComponent,
+    AdminUserListComponent,
+    TopbarComponent,
+    ManualTasksPageComponent,
+    ManualTasksListComponent,
+    NameDialogComponent,
+  ],
+  providers: [
+    SystemMessageService,
+    UserDataService,
+    {
+      provide: BASE_PATH,
+      useFactory: getBasePath,
+      deps: [ComnSettingsService],
+    },
+    { provide: MAT_TOOLTIP_DEFAULT_OPTIONS, useValue: myCustomTooltipDefaults },
+    provideNativeDateAdapter(),
+    provideHttpClient(withInterceptorsFromDi()),
+    provideCrucibleTheme({ brand: { color: '#B1282F', text: '#FFFFFF' } }),
+  ],
 })
-export class AppModule { }
+export class AppModule {}
