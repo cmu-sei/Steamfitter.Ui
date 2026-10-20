@@ -3,13 +3,12 @@
 
 import {
   Component,
-  EventEmitter,
   NgZone,
   OnInit,
-  Output,
   ViewChild,
   inject,
   input,
+  output,
 } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
@@ -42,7 +41,7 @@ export class ScenariosComponent implements OnInit {
   readonly filterString = input('');
   readonly paginator = input<MatPaginator>(undefined);
   readonly selectedStatuses = input<string[]>(['active', 'ready']);
-  @Output() editComplete = new EventEmitter<boolean>();
+  readonly editComplete = output<boolean>();
   @ViewChild(ScenariosComponent) child;
   @ViewChild('stepper') stepper: MatStepper;
 

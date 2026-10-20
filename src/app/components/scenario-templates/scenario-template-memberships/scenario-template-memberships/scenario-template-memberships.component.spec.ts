@@ -4,11 +4,10 @@
 import { describe, it, expect, vi } from 'vitest';
 import {
   Component,
-  EventEmitter,
   inject,
-  Output,
   provideEnvironmentInitializer,
   input,
+  output,
 } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
@@ -47,7 +46,7 @@ class MembershipListStubComponent {
   readonly users = input<User[]>(undefined);
   readonly groups = input<Group[]>(undefined);
   readonly canEdit = input<boolean>(undefined);
-  @Output() createMembership = new EventEmitter<ScenarioTemplateMembership>();
+  readonly createMembership = output<ScenarioTemplateMembership>();
 }
 
 @Component({
@@ -60,8 +59,8 @@ class MemberListStubComponent {
   readonly groups = input<Group[]>(undefined);
   readonly roles = input<ScenarioTemplateRole[]>(undefined);
   readonly canEdit = input<boolean>(undefined);
-  @Output() deleteMembership = new EventEmitter<string>();
-  @Output() editMembership = new EventEmitter<ScenarioTemplateMembership>();
+  readonly deleteMembership = output<string>();
+  readonly editMembership = output<ScenarioTemplateMembership>();
 }
 
 const USERS: User[] = [

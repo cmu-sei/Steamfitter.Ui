@@ -2,7 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { describe, it, expect, vi } from 'vitest';
-import { Component, EventEmitter, Output, input } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { Observable, of } from 'rxjs';
@@ -24,13 +24,13 @@ class TaskTreeStubComponent {
   readonly isExecutableState = input<boolean>(undefined);
   readonly isLoading = input<Observable<boolean>>(undefined);
   readonly clipboard = input<unknown>(undefined);
-  @Output() deleteTaskRequested = new EventEmitter<string>();
-  @Output() executeRequested = new EventEmitter<string>();
-  @Output() stopIterationsRequested = new EventEmitter<string>();
-  @Output() saveTask = new EventEmitter<Task>();
-  @Output() sendToClipboard = new EventEmitter<unknown>();
-  @Output() pasteClipboard = new EventEmitter<string>();
-  @Output() taskSelected = new EventEmitter<string>();
+  readonly deleteTaskRequested = output<string>();
+  readonly executeRequested = output<string>();
+  readonly stopIterationsRequested = output<string>();
+  readonly saveTask = output<Task>();
+  readonly sendToClipboard = output<unknown>();
+  readonly pasteClipboard = output<string>();
+  readonly taskSelected = output<string>();
 }
 
 async function renderTasks(state: {

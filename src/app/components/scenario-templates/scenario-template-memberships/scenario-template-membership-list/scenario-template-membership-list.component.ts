@@ -7,13 +7,12 @@ import {
   AfterViewInit,
   ChangeDetectionStrategy,
   Component,
-  EventEmitter,
   OnChanges,
   OnInit,
-  Output,
   ViewChild,
   inject,
   input,
+  output,
 } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -94,8 +93,7 @@ export class ScenarioTemplateMembershipListComponent
 
   readonly canEdit = input<boolean>(undefined);
 
-  @Output()
-  createMembership = new EventEmitter<ScenarioTemplateMembership>();
+  readonly createMembership = output<ScenarioTemplateMembership>();
 
   viewColumns = ['name', 'type'];
   editColumns = ['actions'];

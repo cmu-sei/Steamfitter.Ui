@@ -2,7 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { describe, it, expect, vi } from 'vitest';
-import { Component, EventEmitter, Output, input } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { screen } from '@testing-library/angular';
@@ -40,7 +40,7 @@ class MembershipListStubComponent {
   readonly users = input<User[]>(undefined);
   readonly groups = input<Group[]>(undefined);
   readonly canEdit = input<boolean>(undefined);
-  @Output() createMembership = new EventEmitter<ScenarioMembership>();
+  readonly createMembership = output<ScenarioMembership>();
 }
 
 @Component({
@@ -53,8 +53,8 @@ class MemberListStubComponent {
   readonly groups = input<Group[]>(undefined);
   readonly roles = input<ScenarioRole[]>(undefined);
   readonly canEdit = input<boolean>(undefined);
-  @Output() deleteMembership = new EventEmitter<string>();
-  @Output() editMembership = new EventEmitter<ScenarioMembership>();
+  readonly deleteMembership = output<string>();
+  readonly editMembership = output<ScenarioMembership>();
 }
 
 const USERS: User[] = [

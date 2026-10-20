@@ -122,14 +122,14 @@ async function renderList(
     screen.queryAllByRole('menuitem').map((item) => item.textContent?.trim());
 
   // The next dialog.open() returns a dialogRefStub whose component exposes an
-  // editComplete emitter the test fires itself.
+  // editComplete emitter the test fires itself. The component's output() can
+  // only be created in an injection context, so an EventEmitter stands in for
+  // it; the list only subscribes to it.
   const openEditDialog = () => {
     const { dialogRef, close } = dialogRefStub<ScenarioEditDialogComponent>();
     const editComplete = new EventEmitter();
-    const instance: Pick<ScenarioEditDialogComponent, 'editComplete'> = {
-      editComplete,
-    };
-    dialogRef.componentInstance = instance as ScenarioEditDialogComponent;
+    const instance = { editComplete } as unknown as ScenarioEditDialogComponent;
+    dialogRef.componentInstance = instance;
     vi.mocked(dialog.open).mockReturnValue(dialogRef);
     return { editComplete, close };
   };

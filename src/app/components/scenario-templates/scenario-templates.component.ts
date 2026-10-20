@@ -3,12 +3,11 @@
 
 import {
   Component,
-  EventEmitter,
   NgZone,
-  Output,
   ViewChild,
   inject,
   input,
+  output,
 } from '@angular/core';
 import { UntypedFormControl, FormGroupDirective, NgForm } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
@@ -51,7 +50,7 @@ export class ScenarioTemplatesComponent {
   readonly filterString = input('');
   readonly paginator = input<MatPaginator>(undefined);
   readonly adminMode = input(false);
-  @Output() editComplete = new EventEmitter<boolean>();
+  readonly editComplete = output<boolean>();
   @ViewChild(ScenarioTemplatesComponent) child;
   @ViewChild('stepper') stepper: MatStepper;
 

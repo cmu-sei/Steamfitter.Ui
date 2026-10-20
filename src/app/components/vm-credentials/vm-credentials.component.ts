@@ -1,14 +1,6 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
-import {
-  Component,
-  EventEmitter,
-  Input,
-  Output,
-  OnInit,
-  inject,
-  input,
-} from '@angular/core';
+import { Component, Input, OnInit, inject, input, output } from '@angular/core';
 import { VmCredential } from 'src/app/generated/steamfitter.api/model/vmCredential';
 import { ScenarioQuery } from 'src/app/data/scenario/scenario.query';
 import { ScenarioTemplateQuery } from 'src/app/data/scenario-template/scenario-template.query';
@@ -53,7 +45,7 @@ export class VmCredentialsComponent implements OnInit {
   @Input() password: string;
   readonly scenarioTemplateId = input<string>(undefined);
   readonly scenarioId = input<string>(undefined);
-  @Output() selectedVmCredentialChanged = new EventEmitter<VmCredential>();
+  readonly selectedVmCredentialChanged = output<VmCredential>();
   showManagement = false;
   defaultVmCredential: VmCredential;
   scenarioTemplate: Observable<ScenarioTemplate>;

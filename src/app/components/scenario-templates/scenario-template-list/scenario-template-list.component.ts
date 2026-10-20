@@ -10,15 +10,14 @@ import {
 } from '@angular/animations';
 import {
   Component,
-  EventEmitter,
   Input,
   OnChanges,
   OnInit,
-  Output,
   SimpleChanges,
   ViewChild,
   inject,
   input,
+  output,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
@@ -120,8 +119,8 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
   @Input() selectedScenarioTemplate: ScenarioTemplate;
   readonly isLoading = input<boolean>(undefined);
   readonly adminMode = input<boolean>(undefined);
-  @Output() saveScenarioTemplate = new EventEmitter<ScenarioTemplate>();
-  @Output() itemSelected = new EventEmitter<string>();
+  readonly saveScenarioTemplate = output<ScenarioTemplate>();
+  readonly itemSelected = output<string>();
   @ViewChild(ScenarioTemplateEditComponent)
   scenarioTemplateEditComponent: ScenarioTemplateEditComponent;
   displayedColumns: string[] = [

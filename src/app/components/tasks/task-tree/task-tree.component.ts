@@ -4,13 +4,12 @@
 import { FlatTreeControl } from '@angular/cdk/tree';
 import {
   Component,
-  EventEmitter,
   OnDestroy,
   OnInit,
-  Output,
   ViewChild,
   inject,
   input,
+  output,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import {
@@ -127,13 +126,13 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
   readonly isLoading = input<Observable<boolean>>(undefined);
   readonly isExecutableState = input<boolean>(undefined);
   readonly clipboard = input<any>(undefined);
-  @Output() taskSelected = new EventEmitter<string>();
-  @Output() saveTask = new EventEmitter<Task>();
-  @Output() deleteTaskRequested = new EventEmitter<string>();
-  @Output() executeRequested = new EventEmitter<string>();
-  @Output() stopIterationsRequested = new EventEmitter<string>();
-  @Output() sendToClipboard = new EventEmitter<any>();
-  @Output() pasteClipboard = new EventEmitter<string>();
+  readonly taskSelected = output<string>();
+  readonly saveTask = output<Task>();
+  readonly deleteTaskRequested = output<string>();
+  readonly executeRequested = output<string>();
+  readonly stopIterationsRequested = output<string>();
+  readonly sendToClipboard = output<any>();
+  readonly pasteClipboard = output<string>();
   @ViewChild(FlatTreeControl) flatTreeControl;
   selectedTaskId = '';
   manualTrigger = TaskTrigger.Manual;

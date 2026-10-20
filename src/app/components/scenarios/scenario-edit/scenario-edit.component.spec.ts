@@ -2,7 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { describe, it, expect, vi } from 'vitest';
-import { Component, EventEmitter, Output, input } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { firstValueFrom, Observable, of } from 'rxjs';
 import {
@@ -28,8 +28,8 @@ class TasksStubComponent {
   readonly scenarioId = input<string>(undefined);
   readonly isEditable = input<boolean>(undefined);
   readonly isExecutable = input<boolean>(undefined);
-  @Output() taskListChanged = new EventEmitter<void>();
-  @Output() deleteTaskRequested = new EventEmitter<string>();
+  readonly taskListChanged = output<void>();
+  readonly deleteTaskRequested = output<string>();
 }
 
 function scenario(overrides: Partial<Scenario> = {}): Scenario {
@@ -139,6 +139,7 @@ describe('ScenarioEditComponent', () => {
     const { tasks, taskApi, taskNames } = await renderEdit(scenario());
     expect(await taskNames()).toEqual([]);
 
+    // TODO: The 'emit' function requires a mandatory void argument
     tasks()!.taskListChanged.emit();
 
     expect(taskApi.getScenarioTasks).toHaveBeenCalledWith('s1');
@@ -152,6 +153,7 @@ describe('ScenarioEditComponent', () => {
    */
   it('removes a task the tree asks to delete', async () => {
     const { tasks, taskApi, taskNames } = await renderEdit(scenario());
+    // TODO: The 'emit' function requires a mandatory void argument
     tasks()!.taskListChanged.emit();
 
     tasks()!.deleteTaskRequested.emit('t1');

@@ -5,13 +5,12 @@ Copyright 2025 Carnegie Mellon University. All Rights Reserved.
 
 import {
   Component,
-  EventEmitter,
   OnChanges,
   OnInit,
-  Output,
   SimpleChanges,
   inject,
   input,
+  output,
 } from '@angular/core';
 import { combineLatest, forkJoin, Observable, of } from 'rxjs';
 import { filter, map, tap } from 'rxjs/operators';
@@ -59,7 +58,7 @@ export class ScenarioMembershipsComponent implements OnInit, OnChanges {
   readonly embedded = input<boolean>(undefined);
   readonly showHeader = input(true);
   readonly scenarioId = input<string>(undefined);
-  @Output() goBack = new EventEmitter();
+  readonly goBack = output();
 
   scenario$: Observable<Scenario>;
 

@@ -2,7 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { Component, Output, EventEmitter, inject } from '@angular/core';
+import { Component, inject, output } from '@angular/core';
 import {
   CrucibleDialogComponent,
   CrucibleDialogContentDirective,
@@ -26,7 +26,7 @@ import { FormsModule } from '@angular/forms';
 export class AddDialogComponent {
   data = inject(MAT_DIALOG_DATA);
 
-  @Output() editComplete = new EventEmitter<any>();
+  readonly editComplete = output<any>();
   public title: string;
   public message: string;
   onClick(add: boolean): void {

@@ -3,12 +3,11 @@
 
 import {
   Component,
-  EventEmitter,
   Input,
   NgZone,
-  Output,
   ViewChild,
   inject,
+  output,
 } from '@angular/core';
 import { ScenarioTemplateQuery } from 'src/app/data/scenario-template/scenario-template.query';
 import { TaskDataService } from 'src/app/data/task/task-data.service';
@@ -29,8 +28,8 @@ export class ScenarioTemplateEditComponent {
   zone = inject(NgZone);
 
   @Input() scenarioTemplate: ScenarioTemplate;
-  @Output() editComplete = new EventEmitter<boolean>();
-  @Output() editScenarioTemplate = new EventEmitter<ScenarioTemplate>();
+  readonly editComplete = output<boolean>();
+  readonly editScenarioTemplate = output<ScenarioTemplate>();
   @ViewChild(ScenarioTemplateEditComponent) child;
   @ViewChild(TasksComponent) tasks: TasksComponent;
 

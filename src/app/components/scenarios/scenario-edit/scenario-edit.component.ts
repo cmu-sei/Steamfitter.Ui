@@ -1,14 +1,7 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import {
-  Component,
-  EventEmitter,
-  Input,
-  Output,
-  ViewChild,
-  inject,
-} from '@angular/core';
+import { Component, Input, ViewChild, inject, output } from '@angular/core';
 import { TaskTreeComponent } from 'src/app/components/tasks/task-tree/task-tree.component';
 import { ResultQuery } from 'src/app/data/result/result.query';
 import { ScenarioQuery } from 'src/app/data/scenario/scenario.query';
@@ -33,7 +26,7 @@ export class ScenarioEditComponent {
   private resultQuery = inject(ResultQuery);
 
   @Input() scenario: Scenario;
-  @Output() editComplete = new EventEmitter<boolean>();
+  readonly editComplete = output<boolean>();
   @ViewChild(ScenarioEditComponent) child: ScenarioEditComponent;
   @ViewChild(TaskTreeComponent) taskTree: TaskTreeComponent;
 

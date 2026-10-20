@@ -1,14 +1,7 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  Output,
-  inject,
-} from '@angular/core';
+import { Component, Input, OnDestroy, inject, output } from '@angular/core';
 import {
   UntypedFormControl,
   FormsModule,
@@ -43,7 +36,7 @@ export class VmListComponent implements OnDestroy {
   private playerDataService = inject(PlayerDataService);
 
   @Input() selectedVms: string[];
-  @Output() updateVmList = new EventEmitter<string[]>();
+  readonly updateVmList = output<string[]>();
   vmList: Vm[];
   displayedColumns: string[] = ['name'];
   private unsubscribe$ = new Subject();
