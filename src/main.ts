@@ -18,7 +18,6 @@ import {
   provideCrucibleTheme,
   ComnAuthModule,
   ComnSettingsModule,
-  CRUCIBLE_DIALOG_IMPORTS,
   ComnHeaderBarModule,
 } from '@cmusei/crucible-common';
 import {
@@ -79,15 +78,6 @@ import { CdkTableModule } from '@angular/cdk/table';
 import { MatTreeModule } from '@angular/material/tree';
 import { CdkTreeModule } from '@angular/cdk/tree';
 import { ClipboardModule } from 'ngx-clipboard';
-import {
-  NgxMatDatetimepicker,
-  NgxMatDatepickerToggle,
-  NgxMatDatepickerInput,
-  NgxMatDatepickerActions,
-  NgxMatDatepickerApply,
-  NgxMatDatepickerCancel,
-  NgxMatDatepickerClear,
-} from '@ngxmc/datetime-picker';
 import { AppComponent } from './app/app.component';
 
 export function getBasePath(settingsSvc: ComnSettingsService) {
@@ -163,14 +153,6 @@ bootstrapApplication(AppComponent, {
       ClipboardModule,
       ComnAuthModule.forRoot(),
       ComnSettingsModule.forRoot(),
-      NgxMatDatetimepicker,
-      NgxMatDatepickerToggle,
-      NgxMatDatepickerInput,
-      NgxMatDatepickerActions,
-      NgxMatDatepickerApply,
-      NgxMatDatepickerCancel,
-      NgxMatDatepickerClear,
-      ...CRUCIBLE_DIALOG_IMPORTS,
       ComnHeaderBarModule,
     ),
     SystemMessageService,
