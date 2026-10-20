@@ -9,16 +9,17 @@ import {
   ComnAuthService,
   CrucibleThemeService,
   Theme,
+  ComnHeaderBarModule,
 } from '@cmusei/crucible-common';
 import { Subject, Observable } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
-  standalone: false
+  imports: [ComnHeaderBarModule, RouterOutlet],
 })
 export class AppComponent implements OnDestroy {
   @HostBinding('class') componentCssClass: string;
@@ -33,15 +34,15 @@ export class AppComponent implements OnDestroy {
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private authService: ComnAuthService,
-    private themeService: CrucibleThemeService
+    private themeService: CrucibleThemeService,
   ) {
     iconRegistry.setDefaultFontSetClass('mdi');
 
     iconRegistry.addSvgIcon(
       'ic_crucible_steamfitter',
       sanitizer.bypassSecurityTrustResourceUrl(
-        'assets/svg-icons/ic_crucible_steamfitter.svg'
-      )
+        'assets/svg-icons/ic_crucible_steamfitter.svg',
+      ),
     );
 
     this.theme$.pipe(takeUntil(this.unsubscribe$)).subscribe((theme) => {
@@ -63,7 +64,6 @@ export class AppComponent implements OnDestroy {
           this.authService.setUserTheme(this.paramTheme);
         }
       });
-
   }
 
   setTheme(theme: Theme) {
