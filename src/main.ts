@@ -9,7 +9,6 @@ import {
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { enableAkitaProdMode, persistState } from '@datorama/akita';
 
-import { getBasePath, myCustomTooltipDefaults } from './app/app.module';
 import { environment } from './environments/environment';
 import { SystemMessageService } from './app/services/system-message/system-message.service';
 import { UserDataService } from './app/data/user/user-data.service';
@@ -39,7 +38,8 @@ import {
 import { AkitaNgDevtools } from '@datorama/akita-ngdevtools';
 import { AkitaNgRouterStoreModule } from '@datorama/akita-ng-router-store';
 import { BrowserModule, bootstrapApplication } from '@angular/platform-browser';
-import { AppRoutingModule } from './app/app-routing.module';
+import { provideRouter } from '@angular/router';
+import { ROUTES } from './app/app.routes';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { A11yModule } from '@angular/cdk/a11y';
 import { ApiModule as SwaggerCodegenApiModule } from './app/generated/steamfitter.api/api.module';
@@ -90,6 +90,17 @@ import {
 } from '@ngxmc/datetime-picker';
 import { AppComponent } from './app/app.component';
 
+export function getBasePath(settingsSvc: ComnSettingsService) {
+  return settingsSvc.settings.ApiUrl;
+}
+
+/** Custom options the configure the tooltip's default show/hide delays. */
+export const myCustomTooltipDefaults: MatTooltipDefaultOptions = {
+  showDelay: 1000,
+  hideDelay: 0,
+  touchendHideDelay: 1000,
+};
+
 export const storage = persistState({
   key: 'akita-steamfitter-ui',
   include: ['auth.ui'],
@@ -106,7 +117,6 @@ bootstrapApplication(AppComponent, {
       environment.production ? [] : AkitaNgDevtools.forRoot(),
       AkitaNgRouterStoreModule,
       BrowserModule,
-      AppRoutingModule,
       BrowserAnimationsModule,
       A11yModule,
       SwaggerCodegenApiModule,
@@ -172,6 +182,7 @@ bootstrapApplication(AppComponent, {
     },
     { provide: MAT_TOOLTIP_DEFAULT_OPTIONS, useValue: myCustomTooltipDefaults },
     provideNativeDateAdapter(),
+    provideRouter(ROUTES),
     provideHttpClient(withInterceptorsFromDi()),
     provideCrucibleTheme({ brand: { color: '#B1282F', text: '#FFFFFF' } }),
   ],
