@@ -139,7 +139,6 @@ describe('ScenarioEditComponent', () => {
     const { tasks, taskApi, taskNames } = await renderEdit(scenario());
     expect(await taskNames()).toEqual([]);
 
-    // TODO: The 'emit' function requires a mandatory void argument
     tasks()!.taskListChanged.emit();
 
     expect(taskApi.getScenarioTasks).toHaveBeenCalledWith('s1');
@@ -153,7 +152,6 @@ describe('ScenarioEditComponent', () => {
    */
   it('removes a task the tree asks to delete', async () => {
     const { tasks, taskApi, taskNames } = await renderEdit(scenario());
-    // TODO: The 'emit' function requires a mandatory void argument
     tasks()!.taskListChanged.emit();
 
     tasks()!.deleteTaskRequested.emit('t1');

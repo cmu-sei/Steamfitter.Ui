@@ -16,7 +16,7 @@ import { SystemMessageService } from './system-message.service';
 describe('SystemMessageService', () => {
   /**
    * Verifies: displayMessage opens one bottom sheet that renders SystemMessageComponent with the title as its heading and the message as its body.
-   * Interacts with: the real MatBottomSheet and its overlay container; SystemMessageComponent template (declared as in AppModule, noop animations).
+   * Interacts with: the real MatBottomSheet and its overlay container; SystemMessageComponent template (standalone, noop animations).
    * Data: title 'Task failed', message 'The task could not be executed on the VM.'.
    */
   it('opens the system message bottom sheet with the title and message', async () => {

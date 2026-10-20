@@ -91,7 +91,6 @@ describe('ScenarioTemplateEditComponent', () => {
   it('reloads the task list when the tree reports a change', async () => {
     const { tasks, taskApi, taskNames } = await renderEdit({ id: 'st1' });
 
-    // TODO: The 'emit' function requires a mandatory void argument
     tasks()!.taskListChanged.emit();
 
     expect(taskApi.getScenarioTemplateTasks).toHaveBeenCalledWith('st1');
@@ -105,7 +104,6 @@ describe('ScenarioTemplateEditComponent', () => {
    */
   it('removes a task the tree asks to delete', async () => {
     const { tasks, taskApi, taskNames } = await renderEdit({ id: 'st1' });
-    // TODO: The 'emit' function requires a mandatory void argument
     tasks()!.taskListChanged.emit();
 
     tasks()!.deleteTaskRequested.emit('t2');
