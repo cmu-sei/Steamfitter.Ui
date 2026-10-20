@@ -15,10 +15,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   }
   <div>
     <div class="cssLayoutRowCenterCenter">
-      <mat-icon
-        class="steamfitter-icon"
-        svgIcon="ic_crucible_steamfitter"
-      ></mat-icon>
+      <mat-icon class="steamfitter-icon" svgIcon="ic_crucible_steamfitter" />
       <h2>Tasks</h2>
     </div>
     <table class="task-table">
@@ -43,7 +40,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
               matTooltip="{{
                 task.totalStatus == 'none' ? 'pending' : task.totalStatus
               }}"
-            ></mat-icon>
+            />
           </td>
           @if (scenario?.score > 0) {
             <td class="score-cell">
@@ -68,7 +65,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
                 [disabled]="!task.executable || scenario?.status !== 'active'"
                 (click)="executeTask(task)"
               >
-                <mat-icon fontIcon="mdi-play"></mat-icon>
+                <mat-icon fontIcon="mdi-play" />
               </button>
             </span>
             <span matTooltip="{{ task.description }}">{{ task.name }}</span>

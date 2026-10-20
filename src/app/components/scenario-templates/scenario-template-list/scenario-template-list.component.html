@@ -20,7 +20,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             style="outline: none; margin-left: 20px"
             title="Add Scenario Template"
           >
-            <mat-icon class="mdi-24px" fontIcon="mdi-plus-circle"></mat-icon>
+            <mat-icon class="mdi-24px" fontIcon="mdi-plus-circle" />
           </button>
         }
       </th>
@@ -35,7 +35,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             style="outline: none"
             title="Copy ID:  {{ element.id }}"
           >
-            <mat-icon class="mdi-18px" fontIcon="mdi-content-copy"></mat-icon>
+            <mat-icon class="mdi-18px" fontIcon="mdi-content-copy" />
           </button>
         }
         @if (canDoSomething(element)) {
@@ -46,7 +46,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             style="outline: none"
             title="Scenario Template Menu"
           >
-            <mat-icon class="mdi-18px" fontIcon="mdi-menu"></mat-icon>
+            <mat-icon class="mdi-18px" fontIcon="mdi-menu" />
           </button>
         }
       </td>
@@ -95,12 +95,12 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
                 <app-scenario-template-memberships
                   [scenarioTemplateId]="element.id"
                   [showHeader]="false"
-                ></app-scenario-template-memberships>
+                />
               </div>
             } @else {
               <app-scenario-template-edit
                 [scenarioTemplate]="selectedScenarioTemplate"
-              ></app-scenario-template-edit>
+              />
             }
           }
         </div>
@@ -133,8 +133,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       width: 100%;
     "
   >
-    <mat-progress-spinner color="primary" mode="indeterminate">
-    </mat-progress-spinner>
+    <mat-progress-spinner color="primary" mode="indeterminate" />
   </mat-card>
 }
 

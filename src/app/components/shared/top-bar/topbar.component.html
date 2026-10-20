@@ -16,7 +16,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         [routerLink]="['/']"
         title="Home"
       >
-        <mat-icon svgIcon="ic_crucible_steamfitter"></mat-icon>
+        <mat-icon svgIcon="ic_crucible_steamfitter" />
       </a>
     </span>
     <span class="view-text">{{ title() }}</span>
@@ -30,7 +30,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           style="outline: none"
         >
           <strong>{{ currentUser.name }}</strong>
-          <mat-icon class="menu-trigger" fontIcon="mdi-chevron-down"></mat-icon>
+          <mat-icon class="menu-trigger" fontIcon="mdi-chevron-down" />
         </button>
         <mat-menu #menu="matMenu" [overlapTrigger]="false">
           @if (topbarView() === TopbarView.STEAMFITTER_ADMIN) {

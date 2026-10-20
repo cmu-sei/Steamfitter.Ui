@@ -3,7 +3,13 @@ Copyright 2024 Carnegie Mellon University. All Rights Reserved.
 Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
 
-<app-scenario-template-list class="background" fxFill fxLayout="row" fxLayoutAlign="center start"
-  [isLoading]="loading$ | async" [scenarioTemplateList]="scenarioTemplates$ | async" [adminMode]="true"
-  (saveScenarioTemplate)="saveScenarioTemplate($event)">
-</app-scenario-template-list>
+<app-scenario-template-list
+  class="background"
+  fxFill
+  fxLayout="row"
+  fxLayoutAlign="center start"
+  [isLoading]="loading$ | async"
+  [scenarioTemplateList]="scenarioTemplates$ | async"
+  [adminMode]="true"
+  (saveScenarioTemplate)="saveScenarioTemplate($event)"
+/>

@@ -6,7 +6,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
 <div class="elevate">
   <mat-toolbar class="background">
     <mat-toolbar-row>
-      <mat-icon class="mdi-24px" fontIcon="mdi-account-group"></mat-icon>
+      <mat-icon class="mdi-24px" fontIcon="mdi-account-group" />
       <p>Users/Groups</p>
     </mat-toolbar-row>
     <mat-toolbar-row>
@@ -26,17 +26,14 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             aria-label="Clear"
             (click)="clearFilter()"
           >
-            <mat-icon
-              class="mdi-24px"
-              fontIcon="mdi-close-circle-outline"
-            ></mat-icon>
+            <mat-icon class="mdi-24px" fontIcon="mdi-close-circle-outline" />
           </button>
         }
       </mat-form-field>
       <mat-paginator
         [pageSizeOptions]="[10, 25, 50, 100]"
         aria-label="Select page of members"
-      ></mat-paginator> </mat-toolbar-row
+      /> </mat-toolbar-row
   ></mat-toolbar>
   <table
     mat-table
@@ -58,7 +55,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           (click)="$event.stopPropagation()"
           title="Copy:  {{ model.id }}"
         >
-          <mat-icon class="mdi-24px" fontIcon="mdi-content-copy"></mat-icon>
+          <mat-icon class="mdi-24px" fontIcon="mdi-content-copy" />
         </button>
         {{ model.name }}
       </td>
@@ -84,7 +81,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           <mat-icon
             class="mdi-24px self-center"
             fontIcon="mdi-plus-circle-outline"
-          ></mat-icon>
+          />
         </button>
       </td>
     </ng-container>

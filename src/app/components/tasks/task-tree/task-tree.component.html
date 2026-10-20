@@ -14,7 +14,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             title="Add a Task"
             (click)="onContextNew(null)"
           >
-            <mat-icon fontIcon="mdi-plus-circle"></mat-icon>
+            <mat-icon fontIcon="mdi-plus-circle" />
           </button>
           @if (!!clipboard()) {
             <button
@@ -23,7 +23,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
               title="Paste a Task"
               (click)="onContextPaste(null)"
             >
-              <mat-icon fontIcon="mdi-content-paste"></mat-icon>
+              <mat-icon fontIcon="mdi-content-paste" />
             </button>
           }
         </div>
@@ -51,10 +51,10 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
                 [attr.aria-label]="'toggle ' + node.task.name"
               >
                 @if (treeControl.isExpanded(node)) {
-                  <mat-icon fontIcon="mdi-chevron-down"></mat-icon>
+                  <mat-icon fontIcon="mdi-chevron-down" />
                 }
                 @if (!treeControl.isExpanded(node)) {
-                  <mat-icon fontIcon="mdi-chevron-right"></mat-icon>
+                  <mat-icon fontIcon="mdi-chevron-right" />
                 }
               </button>
             }
@@ -80,13 +80,13 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
                         onContextMenu($event, node); $event.stopPropagation()
                       "
                     >
-                      <mat-icon fontIcon="mdi-menu"></mat-icon>
+                      <mat-icon fontIcon="mdi-menu" />
                     </button>
                     <mat-icon
                       class="icon-20"
                       [fontIcon]="statusIcon(node.task.triggerCondition)"
                       title="Runs on {{ node.task.triggerCondition }}"
-                    ></mat-icon>
+                    />
                     <mat-label>&nbsp;{{ node.task.name }}</mat-label>
                   </div>
                 </mat-panel-title>
@@ -164,8 +164,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
                       [results]="resultList()"
                       [taskId]="node.task.id"
                       [taskAction]="node.task.action"
-                    >
-                    </app-results>
+                    />
                   </div>
                 }
               </span>
@@ -186,8 +185,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       width: 100%;
     "
   >
-    <mat-progress-spinner color="primary" mode="indeterminate">
-    </mat-progress-spinner>
+    <mat-progress-spinner color="primary" mode="indeterminate" />
   </mat-card>
 }
 <div

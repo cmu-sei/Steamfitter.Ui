@@ -20,7 +20,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             style="outline: none; margin-left: 20px"
             title="Add Scenario"
           >
-            <mat-icon class="mdi-24px" fontIcon="mdi-plus-circle"></mat-icon>
+            <mat-icon class="mdi-24px" fontIcon="mdi-plus-circle" />
           </button>
         }
       </th>
@@ -35,7 +35,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             style="outline: none"
             title="Copy ID:  {{ element.id }}"
           >
-            <mat-icon class="mdi-18px" fontIcon="mdi-content-copy"></mat-icon>
+            <mat-icon class="mdi-18px" fontIcon="mdi-content-copy" />
           </button>
         }
         @if (canDoSomething(element)) {
@@ -46,7 +46,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             style="outline: none"
             title="Scenario Menu"
           >
-            <mat-icon class="mdi-18px" fontIcon="mdi-menu"></mat-icon>
+            <mat-icon class="mdi-18px" fontIcon="mdi-menu" />
           </button>
         }
       </td>
@@ -107,12 +107,10 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
                 <app-scenario-memberships
                   [scenarioId]="element.id"
                   [showHeader]="false"
-                ></app-scenario-memberships>
+                />
               </div>
             } @else {
-              <app-scenario-edit
-                [scenario]="selectedScenario"
-              ></app-scenario-edit>
+              <app-scenario-edit [scenario]="selectedScenario" />
             }
           }
         </div>
@@ -145,8 +143,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
       width: 100%;
     "
   >
-    <mat-progress-spinner color="primary" mode="indeterminate">
-    </mat-progress-spinner>
+    <mat-progress-spinner color="primary" mode="indeterminate" />
   </mat-card>
 }
 
