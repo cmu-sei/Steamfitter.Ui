@@ -2,7 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { describe, it, expect, vi } from 'vitest';
-import { screen } from '@testing-library/angular';
+import { screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { throwError } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
@@ -32,6 +32,7 @@ async function renderTopbar(
     grants?: PermissionGrants;
     topbarView?: TopbarView;
     systemPermissionsApi?: ApiStub<SystemPermissionsService>;
+    logout?: ComnAuthService['logout'];
   } = {},
 ) {
   const { grants = {}, topbarView = TopbarView.STEAMFITTER_HOME } = overrides;
@@ -42,7 +43,7 @@ async function renderTopbar(
   const permissionApi = permissionApiStubs(grants);
   const auth: Pick<ComnAuthService, 'setUserTheme' | 'logout'> = {
     setUserTheme,
-    logout,
+    logout: overrides.logout ?? logout,
   };
 
   const rendered = await renderComponent(TopbarComponent, {
@@ -101,9 +102,9 @@ describe('TopbarComponent', () => {
   /**
    * Verifies: any View* system permission shows the Administration menu item on the home view.
    * Interacts with: real PermissionDataService (canViewAdiminstration) over the stubbed getMySystemPermissions, MatMenu.
-   * Data: ViewUsers, ViewRoles, or ViewScenarios on their own.
+   * Data: each View system permission on its own.
    */
-  it.each(['ViewUsers', 'ViewRoles', 'ViewScenarios'] as const)(
+  it.each(['ViewUsers', 'ViewRoles', 'ViewGroups', 'ViewScenarios', 'ViewScenarioTemplates'] as const)(
     'shows Administration with %s',
     async (permission) => {
       const { openMenu, permissionApi } = await renderTopbar({
@@ -138,6 +139,17 @@ describe('TopbarComponent', () => {
     expect(
       screen.queryByRole('menuitem', { name: 'Administration' }),
     ).not.toBeInTheDocument();
+  });
+
+  /**
+   * Verifies: canViewAdmin hides Administration when only ManageUsers is held.
+   * Interacts with: real PermissionDataService and the rendered user menu.
+   * Data: Manage instead of View on users.
+   */
+  it('hides Administration for canViewAdmin with ManageUsers', async () => {
+    const { openMenu } = await renderTopbar({ grants: { system: ['ManageUsers'] } });
+    await openMenu();
+    expect(within(screen.getByRole('menu')).queryByRole('menuitem', { name: 'Administration' })).not.toBeInTheDocument();
   });
 
   /**
@@ -222,5 +234,33 @@ describe('TopbarComponent', () => {
     await user.click(screen.getByRole('menuitem', { name: 'Logout' }));
 
     expect(logout).toHaveBeenCalledTimes(1);
+  });
+
+  /**
+   * Verifies: a rejected logout escapes while the toolbar stays visible and the menu closes.
+   * Interacts with: the rendered Logout item, ComnAuthService.logout, captureUnhandledRxErrors.
+   * Data: signout redirect rejects because its discovery document has no end-session endpoint.
+   */
+  it('lets a rejected logout escape after closing the menu', async () => {
+    const errors = captureUnhandledRxErrors();
+    const failure = new Error('No end session endpoint');
+    const logoutCalled = vi.fn();
+    const { openMenu, user } = await renderTopbar({
+      logout: () => {
+        logoutCalled();
+        return Promise.reject(failure);
+      },
+    });
+    await openMenu();
+
+    await user.click(within(screen.getByRole('menu')).getByRole('menuitem', { name: 'Logout' }));
+    await flush();
+
+    expect(logoutCalled).toHaveBeenCalledTimes(1);
+    expect(errors).toEqual([failure]);
+    expect(screen.queryByRole('menu')).not.toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Ada Lovelace' })).toBeInTheDocument();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 });

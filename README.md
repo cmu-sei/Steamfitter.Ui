@@ -29,6 +29,11 @@ Run a subset with `npx ng test --watch=false --include='src/app/data/**/*.spec.t
 
 Shared test helpers (`renderComponent`, `getDefaultProviders`, `permissionDataProviders`, `mockHubConnectionBuilder`, `activatedRouteStub`, `recordEmissions`, ...) live in `src/app/test-utils/`. They are copied from the shared Crucible UI test standard; only `default-test-providers.ts` and `mock-permission-data.service.ts` are specific to Steamfitter. `vitest.config.ts` applies `patches/` with patch-package when the tests start, because Akita ships ESM that Node cannot load unpatched.
 
+Component specs drive rendered controls with role-and-name queries. Permission
+cases use one accepted permission at a time and a neighbouring permission for
+denial. Async cases record rejected promises and observable errors with the
+helpers in `unhandled-rx-errors.ts`, and wait for queued work before asserting.
+
 ## Running end-to-end tests
 
 End-to-end tests for Steamfitter are in the Playwright suite in [crucible-tests](https://github.com/cmu-sei/crucible-tests) (`steamfitter/`), which runs against a running Crucible stack. See its README for setup.
