@@ -94,4 +94,35 @@ describe('ErrorService', () => {
 
     expect(displayMessage).toHaveBeenCalledWith(...expected);
   });
+
+  /**
+   * Verifies: raw promise rejection reasons with Error messages use the generic report.
+   * Interacts with: real ErrorService and SystemMessageService.displayMessage.
+   * Data: raw Network Error and other Error reasons without a rejection wrapper.
+   */
+  it.each([
+    { label: 'network failure', error: new Error('Network Error'), expected: ['Error', 'Network Error'] },
+    { label: 'other failure', error: new Error('nope'), expected: ['Error', 'nope'] },
+  ])('reports raw $label with its error name and message', ({ error, expected }) => {
+    const { service, displayMessage } = setup();
+
+    service.handleError(error);
+
+    expect(displayMessage).toHaveBeenCalledExactlyOnceWith(...expected);
+  });
+
+  /**
+   * Verifies: a non-Error reason throws before the reporter displays a message.
+   * Interacts with: real ErrorService and SystemMessageService.displayMessage.
+   * Data: null and a string supplied as raw rejected-promise reasons.
+   */
+  it.each([
+    { label: 'null', reason: null },
+    { label: 'string', reason: 'Network Error' },
+  ])('throws before reporting a raw $label reason', ({ reason }) => {
+    const { service, displayMessage } = setup();
+
+    expect(() => service.handleError(reason)).toThrow(TypeError);
+    expect(displayMessage).not.toHaveBeenCalled();
+  });
 });
