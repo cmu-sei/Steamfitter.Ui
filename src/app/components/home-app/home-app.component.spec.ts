@@ -2,11 +2,11 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { describe, it, expect, vi } from 'vitest';
-import { Component, input } from '@angular/core';
+import { Component, NgZone, input } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
-import { screen } from '@testing-library/angular';
+import { screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { NEVER, Observable, of, throwError } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
@@ -89,6 +89,7 @@ async function renderHome(
     user$?: Observable<OidcUser>;
     systemPermissionsApi?: ApiStub<SystemPermissionsService>;
     userApi?: ApiStub<UserService>;
+    logout?: ComnAuthService['logout'];
   } = {},
 ) {
   const {
@@ -99,7 +100,7 @@ async function renderHome(
   } = overrides;
   const auth: Pick<ComnAuthService, 'user$' | 'logout'> = {
     user$,
-    logout: vi.fn(() => Promise.resolve()),
+    logout: overrides.logout ?? (() => Promise.resolve()),
   };
   const signalR: Pick<SignalRService, 'joinSystem' | 'leaveSystem'> = {
     joinSystem: vi.fn(),
@@ -222,6 +223,61 @@ describe('HomeAppComponent', () => {
   );
 
   /**
+   * Verifies: each accepted system permission alone reveals its section menu item.
+   * Interacts with: real PermissionDataService and the rendered section menu.
+   * Data: one system permission per render, no broader grant.
+   */
+  it.each([
+    { permission: 'CreateScenarioTemplates', section: 'Scenario Templates' },
+    { permission: 'ViewScenarioTemplates', section: 'Scenario Templates' },
+    { permission: 'EditScenarioTemplates', section: 'Scenario Templates' },
+    { permission: 'ManageScenarioTemplates', section: 'Scenario Templates' },
+    { permission: 'CreateScenarios', section: 'Scenarios' },
+    { permission: 'ViewScenarios', section: 'Scenarios' },
+    { permission: 'EditScenarios', section: 'Scenarios' },
+    { permission: 'ExecuteScenarios', section: 'Scenarios' },
+    { permission: 'ManageScenarios', section: 'Scenarios' },
+    { permission: 'ManageTasks', section: 'Tasks' },
+  ] satisfies Array<{ permission: SystemPermission; section: string }>)(
+    'offers $section with exactly $permission',
+    async ({ permission, section }) => {
+      const { sectionMenu, user, navigate } = await renderHome({ system: [permission] });
+      await sectionMenu();
+      await user.click(within(screen.getByRole('menu')).getByRole('menuitem', { name: section }));
+      expect(navigate).toHaveBeenCalledWith([], {
+        queryParams: {
+          tab: section,
+          scenarioId: null,
+          scenarioTemplateId: null,
+          viewId: null,
+          taskId: null,
+          resultId: null,
+        },
+        queryParamsHandling: 'merge',
+      });
+    },
+  );
+
+  /**
+   * Verifies: each section gate hides its menu control and panel for a neighbouring permission.
+   * Interacts with: real PermissionDataService, MatMenu and stubbed panels.
+   * Data: another resource's View or ManageScenarios instead of ManageTasks.
+   */
+  it.each([
+    { gate: 'canViewScenarioTemplateList', permission: 'ViewScenarios', section: 'Scenario Templates' },
+    { gate: 'canViewScenarioList', permission: 'ViewScenarioTemplates', section: 'Scenarios' },
+    { gate: 'SystemPermission.ManageTasks', permission: 'ManageScenarios', section: 'Tasks' },
+  ] satisfies Array<{ gate: string; permission: SystemPermission; section: string }>)(
+    'hides $section for $gate with $permission',
+    async ({ permission, section }) => {
+      const { sectionMenu, renderedPanels } = await renderHome({ system: [permission], tab: section });
+      await sectionMenu();
+      expect(within(screen.getByRole('menu')).queryByRole('menuitem', { name: section })).not.toBeInTheDocument();
+      expect(renderedPanels()).toEqual([]);
+    },
+  );
+
+  /**
    * Verifies: the default Scenarios tab shows the scenario list only to users who may view scenarios.
    * Interacts with: the tab content gates, stub child panels.
    * Data: ViewScenarios vs. ViewScenarioTemplates (the near miss), with no tab in the URL.
@@ -285,6 +341,29 @@ describe('HomeAppComponent', () => {
       expect(admin !== null).toBe(shown);
     },
   );
+
+  /**
+   * Verifies: every View permission alone reveals the Administration button.
+   * Interacts with: real PermissionDataService.canViewAdiminstration and the rendered button.
+   * Data: each View system permission held on its own.
+   */
+  it.each(['ViewScenarioTemplates', 'ViewScenarios', 'ViewUsers', 'ViewRoles', 'ViewGroups'] as const)(
+    'shows Administration with exactly %s',
+    async (permission) => {
+      const { fixture } = await renderHome({ system: [permission] });
+      expect(within(fixture.nativeElement).getByRole('button', { name: 'Show Administration Page' })).toBeInTheDocument();
+    },
+  );
+
+  /**
+   * Verifies: canViewAdministration hides the Administration button for ManageGroups alone.
+   * Interacts with: real PermissionDataService and the rendered Administration control.
+   * Data: Manage rather than View on groups.
+   */
+  it('hides Administration for canViewAdministration with ManageGroups', async () => {
+    const { fixture } = await renderHome({ system: ['ManageGroups'] });
+    expect(within(fixture.nativeElement).queryByRole('button', { name: 'Show Administration Page' })).not.toBeInTheDocument();
+  });
 
   /**
    * Verifies: nothing but the top bar renders until a signed-in user is known.
@@ -370,6 +449,34 @@ describe('HomeAppComponent', () => {
       },
       queryParamsHandling: 'merge',
     });
+  });
+
+  /**
+   * Verifies: calling logout with a rejected redirect leaves the home page visible and lets the error escape.
+   * Interacts with: ComnAuthService.logout, NgZone and captureUnhandledRxErrors.
+   * Data: the redirect rejects with a missing end-session endpoint.
+   */
+  it('lets a rejected logout escape while keeping the home page visible', async () => {
+    const errors = captureUnhandledRxErrors();
+    const failure = new Error('No end session endpoint');
+    const logoutCalled = vi.fn();
+    const { fixture } = await renderHome({
+      system: ['ViewScenarios'],
+      logout: () => {
+        logoutCalled();
+        return Promise.reject(failure);
+      },
+    });
+
+    TestBed.inject(NgZone).run(() => fixture.componentInstance.logout());
+    await flush();
+    await flush();
+
+    expect(logoutCalled).toHaveBeenCalledTimes(1);
+    expect(errors).toEqual([failure]);
+    expect(within(fixture.nativeElement).getByRole('button', { name: 'My Scenarios' })).toBeInTheDocument();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 
   /**

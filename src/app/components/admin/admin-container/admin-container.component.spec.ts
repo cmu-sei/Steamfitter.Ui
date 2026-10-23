@@ -2,19 +2,20 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { describe, it, expect, vi } from 'vitest';
-import { Component, input } from '@angular/core';
+import { Component, NgZone, input } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-import { screen } from '@testing-library/angular';
+import { screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
-import { of, throwError } from 'rxjs';
+import { EMPTY, of, throwError } from 'rxjs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterQuery } from '@datorama/akita-ng-router-store';
+import { ComnAuthService } from '@cmusei/crucible-common';
 import {
   SystemPermission,
   SystemPermissionsService,
@@ -93,12 +94,17 @@ async function renderAdmin(
     system?: SystemPermission[];
     section?: string | null;
     systemPermissionsApi?: ApiStub<SystemPermissionsService>;
+    logout?: ComnAuthService['logout'];
   } = {},
 ) {
   const { system = [], section = null } = overrides;
   // AdminContainerComponent loads the system permissions itself (ngOnInit),
   // so the real PermissionDataService runs over the stubbed endpoint.
   const permissionApi = permissionApiStubs({ system });
+  const auth: Pick<ComnAuthService, 'user$' | 'logout'> = {
+    user$: EMPTY,
+    logout: overrides.logout ?? (() => Promise.resolve()),
+  };
   const signalR: Pick<SignalRService, 'joinSystem' | 'leaveSystem'> = {
     joinSystem: vi.fn(),
     leaveSystem: vi.fn(),
@@ -134,6 +140,7 @@ async function renderAdmin(
       },
       { provide: SignalRService, useValue: signalR },
       { provide: RouterQuery, useValue: routerQuery },
+      { provide: ComnAuthService, useValue: auth },
     ],
   });
   const navigate = vi
@@ -199,6 +206,57 @@ describe('AdminContainerComponent', () => {
     ).toHaveBeenCalled();
     expect(visibleSections()).toEqual(sections);
   });
+
+  /**
+   * Verifies: each accepted system permission alone reveals its sidebar section.
+   * Interacts with: real PermissionDataService and the rendered sidebar buttons.
+   * Data: one non-Root system permission per render.
+   */
+  it.each([
+    { permission: 'CreateScenarioTemplates', section: 'Scenario Templates' },
+    { permission: 'ViewScenarioTemplates', section: 'Scenario Templates' },
+    { permission: 'EditScenarioTemplates', section: 'Scenario Templates' },
+    { permission: 'ManageScenarioTemplates', section: 'Scenario Templates' },
+    { permission: 'CreateScenarios', section: 'Scenarios' },
+    { permission: 'ViewScenarios', section: 'Scenarios' },
+    { permission: 'EditScenarios', section: 'Scenarios' },
+    { permission: 'ExecuteScenarios', section: 'Scenarios' },
+    { permission: 'ManageScenarios', section: 'Scenarios' },
+    { permission: 'ViewUsers', section: 'Users' },
+    { permission: 'ViewRoles', section: 'Roles' },
+    { permission: 'ViewGroups', section: 'Groups' },
+  ] satisfies Array<{ permission: SystemPermission; section: string }>)(
+    'shows $section with exactly $permission',
+    async ({ permission, section }) => {
+      const { fixture, navigate } = await renderAdmin({ system: [permission] });
+      const sidebar = within(fixture.nativeElement);
+      await userEvent.setup().click(sidebar.getByRole('button', { name: section }));
+      expect(navigate).toHaveBeenCalledWith([], {
+        queryParams: { section },
+        queryParamsHandling: 'merge',
+      });
+    },
+  );
+
+  /**
+   * Verifies: each sidebar gate hides its control and panel for a neighbouring permission.
+   * Interacts with: real PermissionDataService, sidebar buttons and stubbed section panels.
+   * Data: another resource's View or Manage on the same resource instead of View.
+   */
+  it.each([
+    { gate: 'canViewScenarioTemplateList', permission: 'ViewScenarios', section: 'Scenario Templates' },
+    { gate: 'canViewScenarioList', permission: 'ViewScenarioTemplates', section: 'Scenarios' },
+    { gate: 'SystemPermission.ViewUsers', permission: 'ManageUsers', section: 'Users' },
+    { gate: 'SystemPermission.ViewRoles', permission: 'ManageRoles', section: 'Roles' },
+    { gate: 'SystemPermission.ViewGroups', permission: 'ManageGroups', section: 'Groups' },
+  ] satisfies Array<{ gate: string; permission: SystemPermission; section: string }>)(
+    'hides $section for $gate with $permission',
+    async ({ permission, section }) => {
+      const { fixture, visiblePanels } = await renderAdmin({ system: [permission], section });
+      expect(within(fixture.nativeElement).queryByRole('button', { name: section })).not.toBeInTheDocument();
+      expect(visiblePanels()).toEqual([]);
+    },
+  );
 
   /**
    * Verifies: with no section in the URL, the first permitted section opens, in the order templates, scenarios, users, roles, groups.
@@ -281,6 +339,34 @@ describe('AdminContainerComponent', () => {
       queryParams: { section: 'Roles' },
       queryParamsHandling: 'merge',
     });
+  });
+
+  /**
+   * Verifies: calling logout with a rejected redirect leaves the admin page visible and lets the error escape.
+   * Interacts with: ComnAuthService.logout, NgZone and captureUnhandledRxErrors.
+   * Data: the redirect rejects with a missing end-session endpoint.
+   */
+  it('lets a rejected logout escape while keeping the admin page visible', async () => {
+    const errors = captureUnhandledRxErrors();
+    const failure = new Error('No end session endpoint');
+    const logoutCalled = vi.fn();
+    const { fixture } = await renderAdmin({
+      system: ['ViewUsers'],
+      logout: () => {
+        logoutCalled();
+        return Promise.reject(failure);
+      },
+    });
+
+    TestBed.inject(NgZone).run(() => fixture.componentInstance.logout());
+    await flush();
+    await flush();
+
+    expect(logoutCalled).toHaveBeenCalledTimes(1);
+    expect(errors).toEqual([failure]);
+    expect(within(fixture.nativeElement).getByRole('button', { name: 'Users' })).toBeInTheDocument();
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 
   /**

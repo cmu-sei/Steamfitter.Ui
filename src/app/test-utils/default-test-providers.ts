@@ -9,6 +9,7 @@ import {
   ComnAuthService,
   ComnSettingsService,
   CrucibleDialogService,
+  CrucibleThemeService,
   Theme,
 } from '@cmusei/crucible-common';
 import { AnyProvider, mergeProviders, unstubbed } from './unstubbed';
@@ -90,6 +91,7 @@ export function getDefaultProviders(
 
     // Common library
     unstubbed(CrucibleDialogService),
+    unstubbed(CrucibleThemeService),
     {
       provide: ComnSettingsService,
       useValue: {
