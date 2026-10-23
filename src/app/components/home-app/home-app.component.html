@@ -3,7 +3,8 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 -->
 
-<div class="app-container" fxLayout="column" fxLayoutAlign="center stretch" fxFlexFill>
+<div class="app-container" [class.has-background]="backgroundImage" [style.--landing-background]="backgroundImage"
+  fxLayout="column" fxLayoutAlign="center stretch" fxFlexFill>
   @if (!hideTopbar) {
   <app-topbar [title]="titleText" [topbarView]="TopbarView.STEAMFITTER_HOME"></app-topbar>
   }

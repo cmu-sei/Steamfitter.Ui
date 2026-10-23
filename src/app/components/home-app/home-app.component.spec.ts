@@ -16,7 +16,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSelectModule } from '@angular/material/select';
-import { ComnAuthService } from '@cmusei/crucible-common';
+import { ComnAuthService, ComnSettingsService } from '@cmusei/crucible-common';
 import {
   HealthService,
   HealthStatus,
@@ -86,6 +86,7 @@ async function renderHome(
     systemPermissionsApi?: ApiStub<SystemPermissionsService>;
     userApi?: ApiStub<UserService>;
     logout?: ComnAuthService['logout'];
+    background?: string;
   } = {},
 ) {
   const {
@@ -93,6 +94,7 @@ async function renderHome(
     tab,
     health = 'Healthy',
     user$ = of(signedIn),
+    background,
   } = overrides;
   const auth: Pick<ComnAuthService, 'user$' | 'logout'> = {
     user$,
@@ -135,6 +137,12 @@ async function renderHome(
           overrides.systemPermissionsApi ?? permissionApi.systemPermissions,
       },
       { provide: ComnAuthService, useValue: auth },
+      {
+        provide: ComnSettingsService,
+        useValue: {
+          settings: { AppTitle: 'Steamfitter', AppLandingBackgroundImage: background },
+        } satisfies Pick<ComnSettingsService, 'settings'>,
+      },
       { provide: SignalRService, useValue: signalR },
       { provide: ActivatedRoute, useValue: route },
       {
@@ -485,5 +493,21 @@ describe('HomeAppComponent', () => {
     fixture.destroy();
 
     expect(signalR.leaveSystem).toHaveBeenCalledTimes(1);
+  });
+
+  /**
+   * Verifies: the page shows the background image named in settings, and none without the setting.
+   * Interacts with: ComnSettingsService.settings (stub), HomeAppComponent template.
+   * Data: AppLandingBackgroundImage set to a relative asset URL, or unset.
+   */
+  it.each([
+    { label: 'with', background: '/assets/local/landing-background.jpg', expected: 'url("/assets/local/landing-background.jpg")' },
+    { label: 'without', background: undefined, expected: '' },
+  ])('shows the landing background $label the setting', async ({ background, expected }) => {
+    const { container } = await renderHome({ background });
+
+    const page = container.querySelector('.app-container') as HTMLElement;
+    expect(page.style.getPropertyValue('--landing-background')).toBe(expected);
+    expect(page.classList.contains('has-background')).toBe(!!background);
   });
 });

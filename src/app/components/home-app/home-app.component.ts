@@ -53,6 +53,11 @@ export class HomeAppComponent implements OnDestroy, OnInit {
   private unsubscribe$ = new Subject();
   hideTopbar = false;
   TopbarView = TopbarView;
+  // An optional image URL from settings, so a site can brand the page
+  // without shipping the image in this repo.
+  backgroundImage = this.settingsService.settings.AppLandingBackgroundImage
+    ? `url("${this.settingsService.settings.AppLandingBackgroundImage}")`
+    : null;
   theme$: Observable<Theme>;
   username: string;
   readonly SystemPermission = SystemPermission;
