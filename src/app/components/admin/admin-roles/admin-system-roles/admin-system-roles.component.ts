@@ -5,7 +5,19 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 
 import { Component, inject, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatTableDataSource } from '@angular/material/table';
+import {
+  MatTableDataSource,
+  MatTable,
+  MatColumnDef,
+  MatHeaderCellDef,
+  MatHeaderCell,
+  MatCellDef,
+  MatCell,
+  MatHeaderRowDef,
+  MatHeaderRow,
+  MatRowDef,
+  MatRow,
+} from '@angular/material/table';
 import {
   SystemPermission,
   SystemRole,
@@ -14,19 +26,39 @@ import { PermissionDataService } from 'src/app/data/permission/permission-data.s
 import { RoleDataService } from 'src/app/data/role/role-data.service';
 import { SystemRolesModel } from './admin-system-roles.models';
 import { map, take } from 'rxjs/operators';
-import { MatCheckboxChange } from '@angular/material/checkbox';
+import { MatCheckboxChange, MatCheckbox } from '@angular/material/checkbox';
 import { Observable } from 'rxjs';
 import { NameDialogComponent } from 'src/app/components/shared/name-dialog/name-dialog.component';
 import { SignalRService } from 'src/app/services/signalr/signalr.service';
 import { CrucibleDialogService } from '@cmusei/crucible-common';
+import { MatIconButton } from '@angular/material/button';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatIcon } from '@angular/material/icon';
+import { AsyncPipe } from '@angular/common';
 
 const NAME_VALUE = 'nameValue';
 
 @Component({
-    selector: 'app-admin-system-roles',
-    templateUrl: './admin-system-roles.component.html',
-    styleUrls: ['./admin-system-roles.component.scss'],
-    standalone: false
+  selector: 'app-admin-system-roles',
+  templateUrl: './admin-system-roles.component.html',
+  styleUrls: ['./admin-system-roles.component.scss'],
+  imports: [
+    MatTable,
+    MatColumnDef,
+    MatHeaderCellDef,
+    MatHeaderCell,
+    MatIconButton,
+    MatTooltip,
+    MatIcon,
+    MatCellDef,
+    MatCell,
+    MatCheckbox,
+    MatHeaderRowDef,
+    MatHeaderRow,
+    MatRowDef,
+    MatRow,
+    AsyncPipe,
+  ],
 })
 export class AdminSystemRolesComponent implements OnInit {
   private roleService = inject(RoleDataService);
@@ -36,7 +68,7 @@ export class AdminSystemRolesComponent implements OnInit {
   private signalRService = inject(SignalRService);
 
   public canEdit = this.permissionDataService.hasPermission(
-    SystemPermission.ManageRoles
+    SystemPermission.ManageRoles,
   );
 
   public allPermission = 'All';
@@ -57,15 +89,15 @@ export class AdminSystemRolesComponent implements OnInit {
         }
         // If 'immutable' values are the same, sort by 'name' (case-insensitive)
         return a.name.localeCompare(b.name);
-      })
-    )
+      }),
+    ),
   );
 
   public displayedColumns$ = this.roles$.pipe(
     map((x) => {
       const columnNames = x.map((y) => y.name);
       return ['permissions', ...columnNames];
-    })
+    }),
   );
 
   ngOnInit(): void {
@@ -91,7 +123,7 @@ export class AdminSystemRolesComponent implements OnInit {
   setPermission(
     permission: string,
     role: SystemRole,
-    event: MatCheckboxChange
+    event: MatCheckboxChange,
   ) {
     if (permission === this.allPermission) {
       role.allPermissions = event.checked;
@@ -100,7 +132,7 @@ export class AdminSystemRolesComponent implements OnInit {
         role.permissions.push(permission as SystemPermission);
       } else if (!event.checked) {
         role.permissions = role.permissions.filter(
-          (x) => x !== (permission as SystemPermission)
+          (x) => x !== (permission as SystemPermission),
         );
       }
     }

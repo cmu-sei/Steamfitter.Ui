@@ -4,7 +4,7 @@
 import { TaskStore } from './task.store';
 import { TaskQuery } from './task.query';
 import { ResultDataService } from 'src/app/data/result/result-data.service';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
 import { PageEvent } from '@angular/material/paginator';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -32,6 +32,12 @@ export interface PasteLocation {
   providedIn: 'root',
 })
 export class TaskDataService {
+  private taskStore = inject(TaskStore);
+  private taskQuery = inject(TaskQuery);
+  private taskService = inject(TaskService);
+  private resultDataService = inject(ResultDataService);
+  private router = inject(Router);
+
   private _requestedTaskId$ = new BehaviorSubject<string>('');
   readonly requestedTaskId$ = this._requestedTaskId$.asObservable();
   readonly taskList: Observable<Task[]>;
@@ -43,14 +49,9 @@ export class TaskDataService {
   readonly clipboard = new BehaviorSubject<Clipboard>(null);
   private _clipboard = null;
 
-  constructor(
-    private taskStore: TaskStore,
-    private taskQuery: TaskQuery,
-    private taskService: TaskService,
-    private resultDataService: ResultDataService,
-    private router: Router,
-    activatedRoute: ActivatedRoute
-  ) {
+  constructor() {
+    const activatedRoute = inject(ActivatedRoute);
+
     activatedRoute.queryParamMap.subscribe((params) => {
       const taskId = params.get('taskId') || '';
       if (taskId !== this._requestedTaskId$.getValue()) {
@@ -61,7 +62,7 @@ export class TaskDataService {
       }
     });
     this.filterTerm = activatedRoute.queryParamMap.pipe(
-      map((params) => params.get('taskmask') || '')
+      map((params) => params.get('taskmask') || ''),
     );
     this.filterControl.valueChanges.subscribe((term) => {
       this.router.navigate([], {
@@ -87,7 +88,7 @@ export class TaskDataService {
         taskList = taskList.filter(
           (item) =>
             item.name.toLowerCase().includes(filterTerm.toLowerCase()) ||
-            item.id.toLowerCase().includes(filterTerm.toLowerCase())
+            item.id.toLowerCase().includes(filterTerm.toLowerCase()),
         );
         const pgsz = page.pageSize;
         const startIndex = page.pageIndex * pgsz;
@@ -102,12 +103,12 @@ export class TaskDataService {
           this.pageEvent.next(this._pageEvent);
         }
         return taskList;
-      })
+      }),
     );
     this.selected = combineLatest([this.taskList, this._requestedTaskId$]).pipe(
       map(([taskList, requestedTaskId]) =>
-        taskList.find((task) => task.id === requestedTaskId)
-      )
+        taskList.find((task) => task.id === requestedTaskId),
+      ),
     );
   }
 
@@ -119,7 +120,7 @@ export class TaskDataService {
         tap(() => {
           this.taskStore.setLoading(false);
         }),
-        take(1)
+        take(1),
       )
       .subscribe(
         (tasks) => {
@@ -127,7 +128,7 @@ export class TaskDataService {
         },
         (error) => {
           this.taskStore.set([]);
-        }
+        },
       );
   }
 
@@ -139,7 +140,7 @@ export class TaskDataService {
         tap(() => {
           this.taskStore.setLoading(false);
         }),
-        take(1)
+        take(1),
       )
       .subscribe(
         (tasks) => {
@@ -147,7 +148,7 @@ export class TaskDataService {
         },
         (error) => {
           this.taskStore.set([]);
-        }
+        },
       );
     this.resultDataService.loadByScenario(scenarioId);
   }
@@ -160,7 +161,7 @@ export class TaskDataService {
         tap(() => {
           this.taskStore.setLoading(false);
         }),
-        take(1)
+        take(1),
       )
       .subscribe(
         (tasks) => {
@@ -168,7 +169,7 @@ export class TaskDataService {
         },
         (error) => {
           this.taskStore.set([]);
-        }
+        },
       );
     this.resultDataService.loadByUser(userId);
   }
@@ -181,7 +182,7 @@ export class TaskDataService {
         tap(() => {
           this.taskStore.setLoading(false);
         }),
-        take(1)
+        take(1),
       )
       .subscribe(
         (tasks) => {
@@ -189,7 +190,7 @@ export class TaskDataService {
         },
         (error) => {
           this.taskStore.set([]);
-        }
+        },
       );
 
     if (loadResults) {
@@ -205,7 +206,7 @@ export class TaskDataService {
         tap(() => {
           this.taskStore.setLoading(false);
         }),
-        take(1)
+        take(1),
       )
       .subscribe(
         (tasks) => {
@@ -213,7 +214,7 @@ export class TaskDataService {
         },
         (error) => {
           this.taskStore.set([]);
-        }
+        },
       );
     this.resultDataService.loadByVm(vmId);
   }
@@ -226,7 +227,7 @@ export class TaskDataService {
         tap(() => {
           this.taskStore.setLoading(false);
         }),
-        take(1)
+        take(1),
       )
       .subscribe((task) => {
         this.updateStore({ ...task });
@@ -242,7 +243,7 @@ export class TaskDataService {
         tap(() => {
           this.taskStore.setLoading(false);
         }),
-        take(1)
+        take(1),
       )
       .subscribe((t) => {
         this.taskStore.add(t);
@@ -258,7 +259,7 @@ export class TaskDataService {
         tap(() => {
           this.taskStore.setLoading(false);
         }),
-        take(1)
+        take(1),
       )
       .subscribe((dt) => {
         this.updateStore(dt);

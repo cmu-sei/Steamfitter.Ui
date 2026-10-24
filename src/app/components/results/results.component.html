@@ -8,12 +8,12 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   animationDuration="0ms"
   (selectedTabChange)="onTabChanged($event.index)"
   (click)="$event.stopPropagation()"
-  >
-  <mat-tab label="{{ resultCount('all') }} Total"> </mat-tab>
-  <mat-tab label="{{ resultCount('succeeded') }} Succeeded"> </mat-tab>
-  <mat-tab label="{{ resultCount('failed') }} Failed"> </mat-tab>
-  <mat-tab label="{{ resultCount('pending') }} Pending"> </mat-tab>
-  <mat-tab label="{{ resultCount('queued') }} Queued"> </mat-tab>
+>
+  <mat-tab label="{{ resultCount('all') }} Total" />
+  <mat-tab label="{{ resultCount('succeeded') }} Succeeded" />
+  <mat-tab label="{{ resultCount('failed') }} Failed" />
+  <mat-tab label="{{ resultCount('pending') }} Pending" />
+  <mat-tab label="{{ resultCount('queued') }} Queued" />
 </mat-tab-group>
 <div class="flex-container">
   @for (result of filteredResults; track result) {
@@ -25,24 +25,22 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             class="result-button"
             (click)="toggleResultDisplay(result.id); $event.stopPropagation()"
             title="{{ result.status }}: Open/Close Details"
-            >
+          >
             <mat-icon
               [fontIcon]="statusIcon(result.status)"
               class="icon-20px"
-            ></mat-icon>
+            />
             {{ result.vmName }}
           </button>
           @if (result.vmId) {
             <button
-              mat-icon-button [attr.aria-label]="'Open ' + result.vmName"
+              mat-icon-button
+              [attr.aria-label]="'Open ' + result.vmName"
               class="open-vm-button"
               (click)="openVmConsole(result.vmId); $event.stopPropagation()"
               title="Open {{ result.vmName }}"
-              >
-              <mat-icon
-                class="icon-20px"
-                fontIcon="mdi-open-in-new"
-              ></mat-icon>
+            >
+              <mat-icon class="icon-20px" fontIcon="mdi-open-in-new" />
             </button>
           }
           @if (showResults[result.id]) {
@@ -58,7 +56,10 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
               @for (k of result.actionParameters | keyvalue; track k) {
                 <span
                   >&nbsp;&nbsp;&nbsp;&nbsp;{{ k.key }}:
-                  {{ k.key.toLowerCase() === 'password' ? '**************' : k.value
+                  {{
+                    k.key.toLowerCase() === 'password'
+                      ? '**************'
+                      : k.value
                   }}<br
                 /></span>
               }
@@ -75,21 +76,20 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
               }}<br />
               <div class="flex-container old-results">
                 @for (oldResult of oldResults(result); track oldResult) {
-                  <div
-                    class="item-container"
-                    >
+                  <div class="item-container">
                     <button
                       mat-button
                       class="result-button"
-                (click)="
-                  toggleResultDisplay(oldResult.id); $event.stopPropagation()
-                "
+                      (click)="
+                        toggleResultDisplay(oldResult.id);
+                        $event.stopPropagation()
+                      "
                       title="{{ oldResult.status }}: Open/Close Details"
-                      >
+                    >
                       <mat-icon
                         [fontIcon]="statusIcon(oldResult.status)"
                         class="icon-20px"
-                      ></mat-icon>
+                      />
                       {{ oldResult.dateCreated | date: 'yyyy/MM/dd HH:mm:ss' }}
                     </button>
                     @if (showResults[oldResult.id]) {
@@ -102,17 +102,21 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
                           </div>
                         }
                         actionParameters:<br />
-                        @for (k of result.actionParameters | keyvalue; track k) {
+                        @for (
+                          k of result.actionParameters | keyvalue;
+                          track k
+                        ) {
                           <span
                             >&nbsp;&nbsp;&nbsp;&nbsp;{{ k.key }}:
                             {{
-                            k.key.toLowerCase() === 'password'
-                            ? '**************'
-                            : k.value
+                              k.key.toLowerCase() === 'password'
+                                ? '**************'
+                                : k.value
                             }}<br
                           /></span>
                         }
-                        expirationSeconds: {{ oldResult.expirationSeconds }}<br />
+                        expirationSeconds: {{ oldResult.expirationSeconds
+                        }}<br />
                         iteration {{ oldResult.currentIteration }} of
                         {{ oldResult.iterations }}<br />
                         intervalSeconds: {{ oldResult.intervalSeconds }}<br />
@@ -120,9 +124,11 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
                         expectedOutput: {{ oldResult.expectedOutput }}<br />
                         actualOutput: {{ oldResult.actualOutput }}<br />
                         dateCreated:
-                        {{ oldResult.dateCreated | date: 'yyyy/MM/dd HH:mm:ss' }}<br />
+                        {{ oldResult.dateCreated | date: 'yyyy/MM/dd HH:mm:ss'
+                        }}<br />
                         statusDate:
-                        {{ oldResult.statusDate | date: 'yyyy/MM/dd HH:mm:ss' }}<br />
+                        {{ oldResult.statusDate | date: 'yyyy/MM/dd HH:mm:ss'
+                        }}<br />
                       </div>
                     }
                   </div>

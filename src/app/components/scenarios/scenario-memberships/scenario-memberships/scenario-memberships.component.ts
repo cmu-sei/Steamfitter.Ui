@@ -5,12 +5,12 @@ Copyright 2025 Carnegie Mellon University. All Rights Reserved.
 
 import {
   Component,
-  EventEmitter,
-  Input,
   OnChanges,
   OnInit,
-  Output,
   SimpleChanges,
+  inject,
+  input,
+  output,
 } from '@angular/core';
 import { combineLatest, forkJoin, Observable, of } from 'rxjs';
 import { filter, map, tap } from 'rxjs/operators';
@@ -26,18 +26,39 @@ import {
 } from 'src/app/generated/steamfitter.api';
 import { GroupDataService } from 'src/app/data/group/group-data.service';
 import { PermissionDataService } from 'src/app/data/permission/permission-data.service';
+import { MatIconButton } from '@angular/material/button';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatIcon } from '@angular/material/icon';
+import { ScenarioMembershipListComponent } from '../scenario-membership-list/scenario-membership-list.component';
+import { ScenarioMemberListComponent } from '../scenario-member-list/scenario-member-list.component';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
-    selector: 'app-scenario-memberships',
-    templateUrl: './scenario-memberships.component.html',
-    styleUrls: ['./scenario-memberships.component.scss'],
-    standalone: false
+  selector: 'app-scenario-memberships',
+  templateUrl: './scenario-memberships.component.html',
+  styleUrls: ['./scenario-memberships.component.scss'],
+  imports: [
+    MatIconButton,
+    MatTooltip,
+    MatIcon,
+    ScenarioMembershipListComponent,
+    ScenarioMemberListComponent,
+    AsyncPipe,
+  ],
 })
 export class ScenarioMembershipsComponent implements OnInit, OnChanges {
-  @Input() embedded: boolean;
-  @Input() showHeader = true;
-  @Input() scenarioId: string;
-  @Output() goBack = new EventEmitter();
+  private scenarioQuery = inject(ScenarioQuery);
+  private scenarioMembershipDataService = inject(ScenarioMembershipDataService);
+  private scenarioRolesDataService = inject(ScenarioRoleDataService);
+  private userDataService = inject(UserDataService);
+  private userQuery = inject(UserQuery);
+  private groupDataService = inject(GroupDataService);
+  private permissionDataService = inject(PermissionDataService);
+
+  readonly embedded = input<boolean>(undefined);
+  readonly showHeader = input(true);
+  readonly scenarioId = input<string>(undefined);
+  readonly goBack = output();
 
   scenario$: Observable<Scenario>;
 
@@ -53,33 +74,27 @@ export class ScenarioMembershipsComponent implements OnInit, OnChanges {
 
   canEdit$: Observable<boolean>;
 
-  constructor(
-    private scenarioQuery: ScenarioQuery,
-    private scenarioMembershipDataService: ScenarioMembershipDataService,
-    private scenarioRolesDataService: ScenarioRoleDataService,
-    private userDataService: UserDataService,
-    private userQuery: UserQuery,
-    private groupDataService: GroupDataService,
-    private permissionDataService: PermissionDataService
-  ) {}
-
   ngOnInit(): void {
     forkJoin([
-      this.scenarioMembershipDataService.loadMemberships(this.scenarioId),
+      this.scenarioMembershipDataService.loadMemberships(this.scenarioId()),
       this.userDataService.load(),
       this.scenarioRolesDataService.loadRoles(),
       this.groupDataService.load(),
     ]).subscribe();
     this.permissionDataService
-      .loadScenarioPermissions(this.scenarioId)
-      .subscribe(() =>
-        this.canEdit$ = of(this.permissionDataService.canEditScenario(this.scenarioId)));
+      .loadScenarioPermissions(this.scenarioId())
+      .subscribe(
+        () =>
+          (this.canEdit$ = of(
+            this.permissionDataService.canEditScenario(this.scenarioId()),
+          )),
+      );
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    this.scenario$ = this.scenarioQuery.selectEntity(this.scenarioId).pipe(
-      filter((x) => x != null)
-    );
+    this.scenario$ = this.scenarioQuery
+      .selectEntity(this.scenarioId())
+      .pipe(filter((x) => x != null));
   }
 
   selectUsers(members: boolean) {
@@ -98,7 +113,7 @@ export class ScenarioMembershipsComponent implements OnInit, OnChanges {
             );
           }
         });
-      })
+      }),
     );
   }
 
@@ -121,14 +136,14 @@ export class ScenarioMembershipsComponent implements OnInit, OnChanges {
             );
           }
         });
-      })
+      }),
     );
   }
 
   createMembership(scenarioMembership: ScenarioMembership) {
-    scenarioMembership.scenarioId = this.scenarioId;
+    scenarioMembership.scenarioId = this.scenarioId();
     this.scenarioMembershipDataService
-      .createMembership(this.scenarioId, scenarioMembership)
+      .createMembership(this.scenarioId(), scenarioMembership)
       .subscribe();
   }
 

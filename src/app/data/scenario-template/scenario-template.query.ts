@@ -7,7 +7,7 @@ import {
   ScenarioTemplateStore,
 } from './scenario-template.store';
 import { ScenarioTemplate } from 'src/app/generated/steamfitter.api';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
 import { Observable } from 'rxjs';
 
@@ -19,8 +19,14 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class ScenarioTemplateQuery extends QueryEntity<ScenarioTemplateState> {
-  constructor(protected store: ScenarioTemplateStore) {
+  protected store: ScenarioTemplateStore;
+
+  constructor() {
+    const store = inject(ScenarioTemplateStore);
+
     super(store);
+
+    this.store = store;
   }
 
   selectById(id: string): Observable<ScenarioTemplate> {

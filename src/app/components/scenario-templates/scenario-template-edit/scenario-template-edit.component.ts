@@ -3,11 +3,11 @@
 
 import {
   Component,
-  EventEmitter,
   Input,
   NgZone,
-  Output,
-  ViewChild,
+  inject,
+  output,
+  viewChild,
 } from '@angular/core';
 import { ScenarioTemplateQuery } from 'src/app/data/scenario-template/scenario-template.query';
 import { TaskDataService } from 'src/app/data/task/task-data.service';
@@ -16,28 +16,26 @@ import { ScenarioTemplate } from 'src/app/generated/steamfitter.api';
 import { TasksComponent } from '../../tasks/tasks.component';
 
 @Component({
-    selector: 'app-scenario-template-edit',
-    templateUrl: './scenario-template-edit.component.html',
-    styleUrls: ['./scenario-template-edit.component.scss'],
-    standalone: false
+  selector: 'app-scenario-template-edit',
+  templateUrl: './scenario-template-edit.component.html',
+  styleUrls: ['./scenario-template-edit.component.scss'],
+  imports: [TasksComponent],
 })
 export class ScenarioTemplateEditComponent {
+  private scenarioTemplateQuery = inject(ScenarioTemplateQuery);
+  private taskDataService = inject(TaskDataService);
+  private taskQuery = inject(TaskQuery);
+  zone = inject(NgZone);
+
   @Input() scenarioTemplate: ScenarioTemplate;
-  @Output() editComplete = new EventEmitter<boolean>();
-  @Output() editScenarioTemplate = new EventEmitter<ScenarioTemplate>();
-  @ViewChild(ScenarioTemplateEditComponent) child;
-  @ViewChild(TasksComponent) tasks: TasksComponent;
+  readonly editComplete = output<boolean>();
+  readonly editScenarioTemplate = output<ScenarioTemplate>();
+  readonly child = viewChild(ScenarioTemplateEditComponent);
+  readonly tasks = viewChild(TasksComponent);
 
   taskList = this.taskQuery.selectAll();
   isLoading = this.scenarioTemplateQuery.selectLoading();
   tasksAreLoading = this.taskQuery.selectLoading();
-
-  constructor(
-    private scenarioTemplateQuery: ScenarioTemplateQuery,
-    private taskDataService: TaskDataService,
-    private taskQuery: TaskQuery,
-    public zone: NgZone
-  ) {}
 
   refreshTaskList() {
     if (this && this.scenarioTemplate) {

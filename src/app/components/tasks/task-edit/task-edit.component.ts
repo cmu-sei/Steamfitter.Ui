@@ -1,14 +1,7 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import {
-  Component,
-  EventEmitter,
-  Inject,
-  OnDestroy,
-  OnInit,
-  Output,
-} from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, output } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -20,15 +13,50 @@ import {
   TaskTrigger,
   VmCredential,
 } from 'src/app/generated/steamfitter.api';
+import {
+  CrucibleDialogComponent,
+  CrucibleDialogContentDirective,
+} from '@cmusei/crucible-common';
+import { MatFormField, MatLabel, MatInput } from '@angular/material/input';
+import { MatSelect } from '@angular/material/select';
+import { MatOption } from '@angular/material/autocomplete';
+import { FormsModule } from '@angular/forms';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { MatMenuItem } from '@angular/material/menu';
+import { VmCredentialsComponent } from '../../vm-credentials/vm-credentials.component';
+import { VmListComponent } from '../../vm-list/vm-list.component';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
-    selector: 'app-task-edit',
-    templateUrl: './task-edit.component.html',
-    styleUrls: ['./task-edit.component.scss'],
-    standalone: false
+  selector: 'app-task-edit',
+  templateUrl: './task-edit.component.html',
+  styleUrls: ['./task-edit.component.scss'],
+  imports: [
+    CrucibleDialogComponent,
+    CrucibleDialogContentDirective,
+    MatFormField,
+    MatLabel,
+    MatInput,
+    MatSelect,
+    MatOption,
+    FormsModule,
+    MatTooltip,
+    MatCheckbox,
+    MatMenuItem,
+    VmCredentialsComponent,
+    VmListComponent,
+    AsyncPipe,
+  ],
 })
 export class TaskEditComponent implements OnInit, OnDestroy {
-  @Output() editComplete = new EventEmitter<any>();
+  taskService = inject(TaskService);
+  data = inject<{
+    task: Task;
+    vmCredentials: Array<VmCredential>;
+  }>(MAT_DIALOG_DATA);
+
+  readonly editComplete = output<any>();
   triggerConditions = [
     TaskTrigger.Time,
     TaskTrigger.Manual,
@@ -49,16 +77,11 @@ export class TaskEditComponent implements OnInit, OnDestroy {
   password = new BehaviorSubject<string>('');
   private unsubscribe$ = new Subject();
 
-  constructor(
-    public taskService: TaskService,
-    @Inject(MAT_DIALOG_DATA)
-    public data: { task: Task; vmCredentials: Array<VmCredential> }
-  ) {}
-
   ngOnInit() {
     this.data.task = this.formatTaskVmList({ ...this.data.task });
     if (!this.data.task.iterationTermination) {
-      this.data.task.iterationTermination = TaskIterationTermination.IterationCount;
+      this.data.task.iterationTermination =
+        TaskIterationTermination.IterationCount;
     }
     this.taskService
       .getAvailableCommands()
@@ -73,9 +96,9 @@ export class TaskEditComponent implements OnInit, OnDestroy {
         },
         (error) => {
           console.log(
-            'The Steamfitter API is not responding.  ' + error.message
+            'The Steamfitter API is not responding.  ' + error.message,
           );
-        }
+        },
       );
   }
 
@@ -126,7 +149,7 @@ export class TaskEditComponent implements OnInit, OnDestroy {
   credentialsAreRequired() {
     if (this.selectedCommand && this.selectedCommand.parameters) {
       return this.selectedCommand.parameters.some(
-        (parameter) => parameter.key.toLowerCase() === 'username'
+        (parameter) => parameter.key.toLowerCase() === 'username',
       );
     }
     return false;
@@ -199,7 +222,7 @@ export class TaskEditComponent implements OnInit, OnDestroy {
       fileReader.onloadend = function (x) {
         if (file.name.endsWith('.json')) {
           param.value = JSON.stringify(
-            JSON.parse(fileReader.result.toString())
+            JSON.parse(fileReader.result.toString()),
           );
         }
         param.value = fileReader.result.toString();

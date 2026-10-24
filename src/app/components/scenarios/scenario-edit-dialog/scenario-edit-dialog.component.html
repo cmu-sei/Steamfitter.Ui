@@ -12,159 +12,158 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     (cancel)="handleEditComplete(false)"
     (submit)="handleEditComplete(true)"
   >
-  <div crucibleDialogContent>
-    <div class="add-margin">
-      <div>
-        <mat-form-field class="full-width">
-          <mat-label>Name (required)</mat-label>
-          <input
-            type="text"
-            matInput
-            [formControl]="scenarioNameFormControl"
-            placeholder="Name (required)"
-            (blur)="saveScenario('name')"
-            value="{{ data.scenario.name }}"
-            [errorStateMatcher]="matcher"
-            cdkFocusInitial
+    <div crucibleDialogContent>
+      <div class="add-margin">
+        <div>
+          <mat-form-field class="full-width">
+            <mat-label>Name (required)</mat-label>
+            <input
+              type="text"
+              matInput
+              [formControl]="scenarioNameFormControl"
+              placeholder="Name (required)"
+              (blur)="saveScenario('name')"
+              value="{{ data.scenario.name }}"
+              [errorStateMatcher]="matcher"
+              cdkFocusInitial
             />
-          @if (
-            scenarioNameFormControl.hasError('minlength') &&
-            !scenarioNameFormControl.hasError('required')
+            @if (
+              scenarioNameFormControl.hasError('minlength') &&
+              !scenarioNameFormControl.hasError('required')
             ) {
-            <mat-error
-              >
-              Must contain 4 or more characters
-            </mat-error>
-          }
-          @if (scenarioNameFormControl.hasError('required')) {
-            <mat-error>
-              Name is <strong>required</strong>
-            </mat-error>
-          }
-        </mat-form-field>
-      </div>
-    </div>
-    <div class="add-margin">
-      <div>
-        <mat-form-field class="full-width">
-          <mat-label>Scenario Description (required)</mat-label>
-          <textarea
-            matInput
-            placeholder="Scenario Description (required)"
-            [formControl]="descriptionFormControl"
-            (blur)="saveScenario('description')"
-            value="{{ data.scenario.description }}"
-            [errorStateMatcher]="matcher"
-          ></textarea>
-          @if (descriptionFormControl.hasError('required')) {
-            <mat-error>
-              Description is <strong>required</strong>
-            </mat-error>
-          }
-        </mat-form-field>
-      </div>
-    </div>
-    <div class="add-margin">
-      <div>
-        <mat-form-field class="full-width">
-          <mat-label>View</mat-label>
-          <mat-select
-            placeholder="View"
-            [(ngModel)]="data.scenario.viewId"
-            (selectionChange)="saveScenario('view')"
-            >
-            <mat-option>None</mat-option>
-            @for (view of data.views; track view) {
-              <mat-option
-                [value]="view.id"
-                [matTooltip]="view.id"
-                matTooltipPosition="right"
-                >
-                {{ view.name }}
-              </mat-option>
+              <mat-error> Must contain 4 or more characters </mat-error>
             }
-          </mat-select>
-        </mat-form-field>
+            @if (scenarioNameFormControl.hasError('required')) {
+              <mat-error> Name is <strong>required</strong> </mat-error>
+            }
+          </mat-form-field>
+        </div>
       </div>
-    </div>
-    <div class="add-margin">
-      <div>
-        <mat-form-field class="full-width">
-          <mat-label>Start Date / Time (required)</mat-label>
-          <input
-            matInput
-            [ngxMatDatetimePicker]="startDatePicker"
-            [formControl]="startDateFormControl"
-            (dateChange)="saveScenario('startDate')"
-            style="display: none;"
+      <div class="add-margin">
+        <div>
+          <mat-form-field class="full-width">
+            <mat-label>Scenario Description (required)</mat-label>
+            <textarea
+              matInput
+              placeholder="Scenario Description (required)"
+              [formControl]="descriptionFormControl"
+              (blur)="saveScenario('description')"
+              value="{{ data.scenario.description }}"
+              [errorStateMatcher]="matcher"
+            ></textarea>
+            @if (descriptionFormControl.hasError('required')) {
+              <mat-error> Description is <strong>required</strong> </mat-error>
+            }
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="add-margin">
+        <div>
+          <mat-form-field class="full-width">
+            <mat-label>View</mat-label>
+            <mat-select
+              placeholder="View"
+              [(ngModel)]="data.scenario.viewId"
+              (selectionChange)="saveScenario('view')"
             >
-          <span (click)="startDatePicker.open()" style="cursor: pointer;">
-            {{ startDateFormControl.value | date: 'dd MMM yyyy HH:mm:ss' }}
-          </span>
-          <ngx-mat-datepicker-toggle matSuffix [for]="startDatePicker">
-          </ngx-mat-datepicker-toggle>
-          @if (startDateFormControl.hasError('required')) {
-            <mat-error>
-              Start Date / Time is <strong>required</strong>
-            </mat-error>
-          }
-          <ngx-mat-datetime-picker #startDatePicker
-            [showSpinners]="true"
-            [showSeconds]="true"
-            [stepHour]="1"
-            [stepMinute]="1"
-            [stepSecond]="1"
-            [touchUi]="false"
-            [enableMeridian]="true"
-            [disableMinute]="false"
-            [hideTime]="false">
-            <ngx-mat-datepicker-actions>
-              <button mat-stroked-button ngxMatDatepickerApply>Save</button>
-              <button mat-stroked-button ngxMatDatepickerCancel>Cancel</button>
-            </ngx-mat-datepicker-actions>
-          </ngx-mat-datetime-picker>
-        </mat-form-field>
+              <mat-option>None</mat-option>
+              @for (view of data.views; track view) {
+                <mat-option
+                  [value]="view.id"
+                  [matTooltip]="view.id"
+                  matTooltipPosition="right"
+                >
+                  {{ view.name }}
+                </mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+        </div>
       </div>
-    </div>
-    <div class="add-margin">
-      <div>
-        <mat-form-field class="full-width">
-          <mat-label>End Date / Time (required)</mat-label>
-          <input
-            matInput
-            [ngxMatDatetimePicker]="endDatePicker"
-            [formControl]="endDateFormControl"
-            (dateChange)="saveScenario('endDate')"
-            style="display: none;"
+      <div class="add-margin">
+        <div>
+          <mat-form-field class="full-width">
+            <mat-label>Start Date / Time (required)</mat-label>
+            <input
+              matInput
+              [ngxMatDatetimePicker]="startDatePicker"
+              [formControl]="startDateFormControl"
+              (dateChange)="saveScenario('startDate')"
+              style="display: none"
+            />
+            <span (click)="startDatePicker.open()" style="cursor: pointer">
+              {{ startDateFormControl.value | date: 'dd MMM yyyy HH:mm:ss' }}
+            </span>
+            <ngx-mat-datepicker-toggle matSuffix [for]="startDatePicker" />
+            @if (startDateFormControl.hasError('required')) {
+              <mat-error>
+                Start Date / Time is <strong>required</strong>
+              </mat-error>
+            }
+            <ngx-mat-datetime-picker
+              #startDatePicker
+              [showSpinners]="true"
+              [showSeconds]="true"
+              [stepHour]="1"
+              [stepMinute]="1"
+              [stepSecond]="1"
+              [touchUi]="false"
+              [enableMeridian]="true"
+              [disableMinute]="false"
+              [hideTime]="false"
             >
-          <span (click)="endDatePicker.open()" style="cursor: pointer;">
-            {{ endDateFormControl.value | date: 'dd MMM yyyy HH:mm:ss' }}
-          </span>
-          <ngx-mat-datepicker-toggle matSuffix [for]="endDatePicker">
-          </ngx-mat-datepicker-toggle>
-          @if (endDateFormControl.hasError('required')) {
-            <mat-error>
-              End Date / Time is <strong>required</strong>
-            </mat-error>
-          }
-          <ngx-mat-datetime-picker #endDatePicker
-            [showSpinners]="true"
-            [showSeconds]="true"
-            [stepHour]="1"
-            [stepMinute]="1"
-            [stepSecond]="1"
-            [touchUi]="false"
-            [enableMeridian]="true"
-            [disableMinute]="false"
-            [hideTime]="false">
-            <ngx-mat-datepicker-actions>
-              <button mat-stroked-button ngxMatDatepickerApply>Save</button>
-              <button mat-stroked-button ngxMatDatepickerCancel>Cancel</button>
-            </ngx-mat-datepicker-actions>
-          </ngx-mat-datetime-picker>
-        </mat-form-field>
+              <ngx-mat-datepicker-actions>
+                <button mat-stroked-button ngxMatDatepickerApply>Save</button>
+                <button mat-stroked-button ngxMatDatepickerCancel>
+                  Cancel
+                </button>
+              </ngx-mat-datepicker-actions>
+            </ngx-mat-datetime-picker>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="add-margin">
+        <div>
+          <mat-form-field class="full-width">
+            <mat-label>End Date / Time (required)</mat-label>
+            <input
+              matInput
+              [ngxMatDatetimePicker]="endDatePicker"
+              [formControl]="endDateFormControl"
+              (dateChange)="saveScenario('endDate')"
+              style="display: none"
+            />
+            <span (click)="endDatePicker.open()" style="cursor: pointer">
+              {{ endDateFormControl.value | date: 'dd MMM yyyy HH:mm:ss' }}
+            </span>
+            <ngx-mat-datepicker-toggle matSuffix [for]="endDatePicker" />
+            @if (endDateFormControl.hasError('required')) {
+              <mat-error>
+                End Date / Time is <strong>required</strong>
+              </mat-error>
+            }
+            <ngx-mat-datetime-picker
+              #endDatePicker
+              [showSpinners]="true"
+              [showSeconds]="true"
+              [stepHour]="1"
+              [stepMinute]="1"
+              [stepSecond]="1"
+              [touchUi]="false"
+              [enableMeridian]="true"
+              [disableMinute]="false"
+              [hideTime]="false"
+            >
+              <ngx-mat-datepicker-actions>
+                <button mat-stroked-button ngxMatDatepickerApply>Save</button>
+                <button mat-stroked-button ngxMatDatepickerCancel>
+                  Cancel
+                </button>
+              </ngx-mat-datepicker-actions>
+            </ngx-mat-datetime-picker>
+          </mat-form-field>
+        </div>
       </div>
     </div>
-  </div>
   </crucible-dialog>
 }

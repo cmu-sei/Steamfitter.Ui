@@ -4,11 +4,10 @@
 import { describe, it, expect, vi } from 'vitest';
 import {
   Component,
-  EventEmitter,
   inject,
-  Input,
-  Output,
   provideEnvironmentInitializer,
+  input,
+  output,
 } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
@@ -36,32 +35,32 @@ import {
   permissionDataProviders,
 } from 'src/app/test-utils/mock-permission-data.service';
 import { ScenarioTemplateMembershipsComponent } from './scenario-template-memberships.component';
+import { ScenarioTemplateMembershipListComponent } from 'src/app/components/scenario-templates/scenario-template-memberships/scenario-template-membership-list/scenario-template-membership-list.component';
+import { ScenarioTemplateMemberListComponent } from 'src/app/components/scenario-templates/scenario-template-memberships/scenario-template-member-list/scenario-template-member-list.component';
 
 @Component({
   selector: 'app-scenario-template-membership-list',
   template: '',
-  standalone: false,
 })
 class MembershipListStubComponent {
-  @Input() users?: User[];
-  @Input() groups?: Group[];
-  @Input() canEdit?: boolean;
-  @Output() createMembership = new EventEmitter<ScenarioTemplateMembership>();
+  readonly users = input<User[]>(undefined);
+  readonly groups = input<Group[]>(undefined);
+  readonly canEdit = input<boolean>(undefined);
+  readonly createMembership = output<ScenarioTemplateMembership>();
 }
 
 @Component({
   selector: 'app-scenario-template-member-list',
   template: '',
-  standalone: false,
 })
 class MemberListStubComponent {
-  @Input() memberships?: ScenarioTemplateMembership[];
-  @Input() users?: User[];
-  @Input() groups?: Group[];
-  @Input() roles?: ScenarioTemplateRole[];
-  @Input() canEdit?: boolean;
-  @Output() deleteMembership = new EventEmitter<string>();
-  @Output() editMembership = new EventEmitter<ScenarioTemplateMembership>();
+  readonly memberships = input<ScenarioTemplateMembership[]>(undefined);
+  readonly users = input<User[]>(undefined);
+  readonly groups = input<Group[]>(undefined);
+  readonly roles = input<ScenarioTemplateRole[]>(undefined);
+  readonly canEdit = input<boolean>(undefined);
+  readonly deleteMembership = output<string>();
+  readonly editMembership = output<ScenarioTemplateMembership>();
 }
 
 const USERS: User[] = [
@@ -88,10 +87,15 @@ async function renderMemberships(
     deleteScenarioTemplateMembership: vi.fn(() => of(null)),
   } satisfies ApiStub<ScenarioTemplateMembershipsService>;
   const rendered = await renderComponent(ScenarioTemplateMembershipsComponent, {
-    declarations: [
-      ScenarioTemplateMembershipsComponent,
-      MembershipListStubComponent,
-      MemberListStubComponent,
+    childStubs: [
+      {
+        replace: ScenarioTemplateMembershipListComponent,
+        with: MembershipListStubComponent,
+      },
+      {
+        replace: ScenarioTemplateMemberListComponent,
+        with: MemberListStubComponent,
+      },
     ],
     imports: [MatButtonModule, MatIconModule, MatTooltipModule],
     providers: [
@@ -161,7 +165,10 @@ describe('ScenarioTemplateMembershipsComponent', () => {
     async ({ grants }) => {
       const { candidates, members } = await renderMemberships(grants);
 
-      expect([candidates().canEdit, members().canEdit]).toEqual([true, true]);
+      expect([candidates().canEdit(), members().canEdit()]).toEqual([
+        true,
+        true,
+      ]);
     },
   );
 
@@ -189,7 +196,10 @@ describe('ScenarioTemplateMembershipsComponent', () => {
       const { candidates, members } = await renderMemberships(grants);
 
       // Current behavior; see agent-docs/ui-test-bugs/steamfitter.ui.md.
-      expect([candidates().canEdit, members().canEdit]).toEqual([true, true]);
+      expect([candidates().canEdit(), members().canEdit()]).toEqual([
+        true,
+        true,
+      ]);
     },
   );
 
@@ -224,8 +234,8 @@ describe('ScenarioTemplateMembershipsComponent', () => {
     async ({ grants }) => {
       const { candidates, members } = await renderMemberships(grants);
 
-      expect(candidates().canEdit).toBe(false);
-      expect(members().canEdit).toBe(false);
+      expect(candidates().canEdit()).toBe(false);
+      expect(members().canEdit()).toBe(false);
     },
   );
 
@@ -255,8 +265,8 @@ describe('ScenarioTemplateMembershipsComponent', () => {
       expect(
         screen.getByRole('heading', { name: 'Alpha' }),
       ).toBeInTheDocument();
-      expect(candidates().canEdit).toBe(false);
-      expect(members().canEdit).toBe(false);
+      expect(candidates().canEdit()).toBe(false);
+      expect(members().canEdit()).toBe(false);
     },
   );
 
@@ -276,7 +286,7 @@ describe('ScenarioTemplateMembershipsComponent', () => {
       true,
     );
 
-    expect([candidates().canEdit, members().canEdit]).toEqual([true, true]);
+    expect([candidates().canEdit(), members().canEdit()]).toEqual([true, true]);
   });
 
   /**
@@ -287,9 +297,21 @@ describe('ScenarioTemplateMembershipsComponent', () => {
   it('moves an added user into the member list', async () => {
     const { candidates, members, membershipApi, fixture } =
       await renderMemberships({ system: ['ManageScenarioTemplates'] });
-    expect(members().users?.map((u) => u.name)).toEqual(['Alice']);
-    expect(candidates().users?.map((u) => u.name)).toEqual(['Bob']);
-    expect(candidates().groups?.map((g) => g.name)).toEqual(['Blue Team']);
+    expect(
+      members()
+        .users()
+        ?.map((u) => u.name),
+    ).toEqual(['Alice']);
+    expect(
+      candidates()
+        .users()
+        ?.map((u) => u.name),
+    ).toEqual(['Bob']);
+    expect(
+      candidates()
+        .groups()
+        ?.map((g) => g.name),
+    ).toEqual(['Blue Team']);
 
     candidates().createMembership.emit({ userId: 'u2' });
     fixture.detectChanges();
@@ -301,8 +323,12 @@ describe('ScenarioTemplateMembershipsComponent', () => {
         scenarioTemplateId: 't1',
       },
     );
-    expect(members().users?.map((u) => u.name)).toEqual(['Alice', 'Bob']);
-    expect(candidates().users).toEqual([]);
+    expect(
+      members()
+        .users()
+        ?.map((u) => u.name),
+    ).toEqual(['Alice', 'Bob']);
+    expect(candidates().users()).toEqual([]);
   });
 
   /**

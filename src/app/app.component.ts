@@ -1,7 +1,7 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Component, HostBinding, OnDestroy } from '@angular/core';
+import { Component, HostBinding, OnDestroy, inject } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { DomSanitizer } from '@angular/platform-browser';
 import {
@@ -9,39 +9,41 @@ import {
   ComnAuthService,
   CrucibleThemeService,
   Theme,
+  ComnHeaderBarModule,
 } from '@cmusei/crucible-common';
 import { Subject, Observable } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss'],
-  standalone: false
+  imports: [ComnHeaderBarModule, RouterOutlet],
 })
 export class AppComponent implements OnDestroy {
+  private authQuery = inject(ComnAuthQuery);
+  private activatedRoute = inject(ActivatedRoute);
+  private router = inject(Router);
+  private authService = inject(ComnAuthService);
+  private themeService = inject(CrucibleThemeService);
+
   @HostBinding('class') componentCssClass: string;
   theme$: Observable<Theme> = this.authQuery.userTheme$;
   private paramTheme;
   unsubscribe$: Subject<null> = new Subject<null>();
 
-  constructor(
-    iconRegistry: MatIconRegistry,
-    sanitizer: DomSanitizer,
-    private authQuery: ComnAuthQuery,
-    private activatedRoute: ActivatedRoute,
-    private router: Router,
-    private authService: ComnAuthService,
-    private themeService: CrucibleThemeService
-  ) {
+  constructor() {
+    const iconRegistry = inject(MatIconRegistry);
+    const sanitizer = inject(DomSanitizer);
+
     iconRegistry.setDefaultFontSetClass('mdi');
 
     iconRegistry.addSvgIcon(
       'ic_crucible_steamfitter',
       sanitizer.bypassSecurityTrustResourceUrl(
-        'assets/svg-icons/ic_crucible_steamfitter.svg'
-      )
+        'assets/svg-icons/ic_crucible_steamfitter.svg',
+      ),
     );
 
     this.theme$.pipe(takeUntil(this.unsubscribe$)).subscribe((theme) => {
@@ -63,7 +65,6 @@ export class AppComponent implements OnDestroy {
           this.authService.setUserTheme(this.paramTheme);
         }
       });
-
   }
 
   setTheme(theme: Theme) {

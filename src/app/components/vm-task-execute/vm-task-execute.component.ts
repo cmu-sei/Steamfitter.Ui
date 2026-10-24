@@ -3,11 +3,11 @@
 
 import {
   Component,
-  EventEmitter,
   NgZone,
   OnDestroy,
-  Output,
-  ViewChild,
+  inject,
+  output,
+  viewChild,
 } from '@angular/core';
 import { UntypedFormControl, FormGroupDirective, NgForm } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
@@ -27,12 +27,13 @@ import {
   TaskService,
   Vm,
 } from 'src/app/generated/steamfitter.api';
+import { TasksComponent } from '../tasks/tasks.component';
 
 /** Error when invalid control is dirty, touched, or submitted. */
 export class UserErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(
     control: UntypedFormControl | null,
-    form: FormGroupDirective | NgForm | null
+    form: FormGroupDirective | NgForm | null,
   ): boolean {
     const isSubmitted = form && form.submitted;
     return !!(control && control.invalid && (control.dirty || isSubmitted));
@@ -40,15 +41,25 @@ export class UserErrorStateMatcher implements ErrorStateMatcher {
 }
 
 @Component({
-    selector: 'app-vm-task-execute',
-    templateUrl: './vm-task-execute.component.html',
-    styleUrls: ['./vm-task-execute.component.scss'],
-    standalone: false
+  selector: 'app-vm-task-execute',
+  templateUrl: './vm-task-execute.component.html',
+  styleUrls: ['./vm-task-execute.component.scss'],
+  imports: [TasksComponent],
 })
 export class VmTaskExecuteComponent implements OnDestroy {
-  @Output() editComplete = new EventEmitter<boolean>();
-  @ViewChild(VmTaskExecuteComponent) child;
-  @ViewChild('stepper') stepper: MatStepper;
+  zone = inject(NgZone);
+  private playerDataService = inject(PlayerDataService);
+  private taskService = inject(TaskService);
+  private resultQuery = inject(ResultQuery);
+  private taskDataService = inject(TaskDataService);
+  private resultDataService = inject(ResultDataService);
+  private taskQuery = inject(TaskQuery);
+  private authService = inject(ComnAuthService);
+  private scenarioDataService = inject(ScenarioDataService);
+
+  readonly editComplete = output<boolean>();
+  readonly child = viewChild(VmTaskExecuteComponent);
+  readonly stepper = viewChild<MatStepper>('stepper');
 
   matcher = new UserErrorStateMatcher();
   isLinear = false;
@@ -64,17 +75,7 @@ export class VmTaskExecuteComponent implements OnDestroy {
   userScenario: Scenario;
   private unsubscribe$ = new Subject();
 
-  constructor(
-    public zone: NgZone,
-    private playerDataService: PlayerDataService,
-    private taskService: TaskService,
-    private resultQuery: ResultQuery,
-    private taskDataService: TaskDataService,
-    private resultDataService: ResultDataService,
-    private taskQuery: TaskQuery,
-    private authService: ComnAuthService,
-    private scenarioDataService: ScenarioDataService
-  ) {
+  constructor() {
     this.scenarioDataService.selected
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((scenario) => {
@@ -116,9 +117,9 @@ export class VmTaskExecuteComponent implements OnDestroy {
         (error) => {
           this.isExecuting = false;
           console.log(
-            'The Steamfitter API generated an error.  ' + error.message
+            'The Steamfitter API generated an error.  ' + error.message,
           );
-        }
+        },
       );
   }
 

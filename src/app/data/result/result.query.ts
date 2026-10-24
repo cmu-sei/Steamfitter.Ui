@@ -4,7 +4,7 @@
 import { Order, Query, QueryConfig, QueryEntity } from '@datorama/akita';
 import { ResultState, ResultStore } from './result.store';
 import { Result } from 'src/app/generated/steamfitter.api';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 @QueryConfig({
@@ -15,8 +15,14 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class ResultQuery extends QueryEntity<ResultState> {
-  constructor(protected store: ResultStore) {
+  protected store: ResultStore;
+
+  constructor() {
+    const store = inject(ResultStore);
+
     super(store);
+
+    this.store = store;
   }
 
   selectById(id: string): Observable<Result> {

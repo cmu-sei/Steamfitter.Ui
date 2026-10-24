@@ -4,7 +4,7 @@
 import { Order, Query, QueryConfig, QueryEntity } from '@datorama/akita';
 import { TaskState, TaskStore } from './task.store';
 import { Task } from 'src/app/generated/steamfitter.api';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 @QueryConfig({
@@ -15,8 +15,14 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class TaskQuery extends QueryEntity<TaskState> {
-  constructor(protected store: TaskStore) {
+  protected store: TaskStore;
+
+  constructor() {
+    const store = inject(TaskStore);
+
     super(store);
+
+    this.store = store;
   }
 
   selectById(id: string): Observable<Task> {

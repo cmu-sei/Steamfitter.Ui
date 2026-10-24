@@ -2,7 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { describe, it, expect, vi } from 'vitest';
-import { Component, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { Observable, of } from 'rxjs';
@@ -24,9 +24,9 @@ import { TaskTreeComponent } from './task-tree.component';
 
 @Component({ selector: 'app-results', template: '', standalone: false })
 class ResultsStubComponent {
-  @Input() results?: Observable<Result[]>;
-  @Input() taskId?: string;
-  @Input() taskAction?: string;
+  readonly results = input<Observable<Result[]>>(undefined);
+  readonly taskId = input<string>(undefined);
+  readonly taskAction = input<string>(undefined);
 }
 
 const TASKS: Task[] = [

@@ -2,7 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { describe, it, expect, vi } from 'vitest';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { screen } from '@testing-library/angular';
@@ -29,32 +29,32 @@ import {
   permissionDataProviders,
 } from 'src/app/test-utils/mock-permission-data.service';
 import { ScenarioMembershipsComponent } from './scenario-memberships.component';
+import { ScenarioMembershipListComponent } from 'src/app/components/scenarios/scenario-memberships/scenario-membership-list/scenario-membership-list.component';
+import { ScenarioMemberListComponent } from 'src/app/components/scenarios/scenario-memberships/scenario-member-list/scenario-member-list.component';
 
 @Component({
   selector: 'app-scenario-membership-list',
   template: '',
-  standalone: false,
 })
 class MembershipListStubComponent {
-  @Input() users?: User[];
-  @Input() groups?: Group[];
-  @Input() canEdit?: boolean;
-  @Output() createMembership = new EventEmitter<ScenarioMembership>();
+  readonly users = input<User[]>(undefined);
+  readonly groups = input<Group[]>(undefined);
+  readonly canEdit = input<boolean>(undefined);
+  readonly createMembership = output<ScenarioMembership>();
 }
 
 @Component({
   selector: 'app-scenario-member-list',
   template: '',
-  standalone: false,
 })
 class MemberListStubComponent {
-  @Input() memberships?: ScenarioMembership[];
-  @Input() users?: User[];
-  @Input() groups?: Group[];
-  @Input() roles?: ScenarioRole[];
-  @Input() canEdit?: boolean;
-  @Output() deleteMembership = new EventEmitter<string>();
-  @Output() editMembership = new EventEmitter<ScenarioMembership>();
+  readonly memberships = input<ScenarioMembership[]>(undefined);
+  readonly users = input<User[]>(undefined);
+  readonly groups = input<Group[]>(undefined);
+  readonly roles = input<ScenarioRole[]>(undefined);
+  readonly canEdit = input<boolean>(undefined);
+  readonly deleteMembership = output<string>();
+  readonly editMembership = output<ScenarioMembership>();
 }
 
 const USERS: User[] = [
@@ -80,10 +80,12 @@ async function renderMemberships(
     deleteScenarioMembership: vi.fn(() => of(null)),
   } satisfies ApiStub<ScenarioMembershipsService>;
   const rendered = await renderComponent(ScenarioMembershipsComponent, {
-    declarations: [
-      ScenarioMembershipsComponent,
-      MembershipListStubComponent,
-      MemberListStubComponent,
+    childStubs: [
+      {
+        replace: ScenarioMembershipListComponent,
+        with: MembershipListStubComponent,
+      },
+      { replace: ScenarioMemberListComponent, with: MemberListStubComponent },
     ],
     imports: [MatButtonModule, MatIconModule, MatTooltipModule],
     providers: [
@@ -144,7 +146,10 @@ describe('ScenarioMembershipsComponent', () => {
     async ({ grants }) => {
       const { candidates, members } = await renderMemberships(grants);
 
-      expect([candidates().canEdit, members().canEdit]).toEqual([true, true]);
+      expect([candidates().canEdit(), members().canEdit()]).toEqual([
+        true,
+        true,
+      ]);
     },
   );
 
@@ -167,7 +172,10 @@ describe('ScenarioMembershipsComponent', () => {
       const { candidates, members } = await renderMemberships(grants);
 
       // Current behavior; see agent-docs/ui-test-bugs/steamfitter.ui.md.
-      expect([candidates().canEdit, members().canEdit]).toEqual([true, true]);
+      expect([candidates().canEdit(), members().canEdit()]).toEqual([
+        true,
+        true,
+      ]);
     },
   );
 
@@ -203,8 +211,8 @@ describe('ScenarioMembershipsComponent', () => {
     async ({ grants }) => {
       const { candidates, members } = await renderMemberships(grants);
 
-      expect(candidates().canEdit).toBe(false);
-      expect(members().canEdit).toBe(false);
+      expect(candidates().canEdit()).toBe(false);
+      expect(members().canEdit()).toBe(false);
     },
   );
 
@@ -216,9 +224,21 @@ describe('ScenarioMembershipsComponent', () => {
   it('moves an added user into the member list', async () => {
     const { candidates, members, membershipApi, fixture } =
       await renderMemberships({ system: ['ManageScenarios'] });
-    expect(members().users?.map((u) => u.name)).toEqual(['Alice']);
-    expect(candidates().users?.map((u) => u.name)).toEqual(['Bob']);
-    expect(candidates().groups?.map((g) => g.name)).toEqual(['Blue Team']);
+    expect(
+      members()
+        .users()
+        ?.map((u) => u.name),
+    ).toEqual(['Alice']);
+    expect(
+      candidates()
+        .users()
+        ?.map((u) => u.name),
+    ).toEqual(['Bob']);
+    expect(
+      candidates()
+        .groups()
+        ?.map((g) => g.name),
+    ).toEqual(['Blue Team']);
 
     candidates().createMembership.emit({ userId: 'u2' });
     fixture.detectChanges();
@@ -227,8 +247,12 @@ describe('ScenarioMembershipsComponent', () => {
       userId: 'u2',
       scenarioId: 's1',
     });
-    expect(members().users?.map((u) => u.name)).toEqual(['Alice', 'Bob']);
-    expect(candidates().users).toEqual([]);
+    expect(
+      members()
+        .users()
+        ?.map((u) => u.name),
+    ).toEqual(['Alice', 'Bob']);
+    expect(candidates().users()).toEqual([]);
   });
 
   /**

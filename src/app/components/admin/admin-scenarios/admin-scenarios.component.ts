@@ -3,7 +3,7 @@ Copyright 2024 Carnegie Mellon University. All Rights Reserved.
  Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 */
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ScenarioDataService } from 'src/app/data/scenario/scenario-data.service';
@@ -11,22 +11,24 @@ import { ScenarioQuery } from 'src/app/data/scenario/scenario.query';
 import { PlayerDataService } from 'src/app/data/player/player-data-service';
 import { ActivatedRoute } from '@angular/router';
 import { Scenario } from 'src/app/generated/steamfitter.api';
+import { ScenarioListComponent } from '../../scenarios/scenario-list/scenario-list.component';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
-    selector: 'app-admin-scenarios',
-    templateUrl: './admin-scenarios.component.html',
-    styleUrls: ['./admin-scenarios.component.scss'],
-    standalone: false
+  selector: 'app-admin-scenarios',
+  templateUrl: './admin-scenarios.component.html',
+  styleUrls: ['./admin-scenarios.component.scss'],
+  imports: [ScenarioListComponent, AsyncPipe],
 })
 export class AdminScenariosComponent implements OnInit {
-  constructor(
-    private activatedRoute: ActivatedRoute,
-    private scenarioDataService: ScenarioDataService,
-    private scenarioQuery: ScenarioQuery,
-    private playerDataService: PlayerDataService
-  ) {
+  private activatedRoute = inject(ActivatedRoute);
+  private scenarioDataService = inject(ScenarioDataService);
+  private scenarioQuery = inject(ScenarioQuery);
+  private playerDataService = inject(PlayerDataService);
+
+  constructor() {
     this.statuses = this.activatedRoute.queryParamMap.pipe(
-      map((params) => params.get('statuses') || 'active,ready')
+      map((params) => params.get('statuses') || 'active,ready'),
     );
     this.playerDataService.getViewsFromApi();
   }

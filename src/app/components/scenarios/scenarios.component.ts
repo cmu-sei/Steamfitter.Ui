@@ -3,12 +3,12 @@
 
 import {
   Component,
-  EventEmitter,
-  Input,
   NgZone,
   OnInit,
-  Output,
-  ViewChild,
+  inject,
+  input,
+  output,
+  viewChild,
 } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
@@ -21,20 +21,29 @@ import { PlayerDataService } from 'src/app/data/player/player-data-service';
 import { ScenarioDataService } from 'src/app/data/scenario/scenario-data.service';
 import { ScenarioQuery } from 'src/app/data/scenario/scenario.query';
 import { Scenario } from 'src/app/generated/steamfitter.api';
+import { ScenarioListComponent } from './scenario-list/scenario-list.component';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
-    selector: 'app-scenarios',
-    templateUrl: './scenarios.component.html',
-    styleUrls: ['./scenarios.component.scss'],
-    standalone: false
+  selector: 'app-scenarios',
+  templateUrl: './scenarios.component.html',
+  styleUrls: ['./scenarios.component.scss'],
+  imports: [ScenarioListComponent, AsyncPipe],
 })
 export class ScenariosComponent implements OnInit {
-  @Input() filterString = '';
-  @Input() paginator: MatPaginator;
-  @Input() selectedStatuses: string[] = ['active', 'ready'];
-  @Output() editComplete = new EventEmitter<boolean>();
-  @ViewChild(ScenariosComponent) child;
-  @ViewChild('stepper') stepper: MatStepper;
+  zone = inject(NgZone);
+  private playerDataService = inject(PlayerDataService);
+  private scenarioDataService = inject(ScenarioDataService);
+  private scenarioQuery = inject(ScenarioQuery);
+  private router = inject(Router);
+  private activatedRoute = inject(ActivatedRoute);
+
+  readonly filterString = input('');
+  readonly paginator = input<MatPaginator>(undefined);
+  readonly selectedStatuses = input<string[]>(['active', 'ready']);
+  readonly editComplete = output<boolean>();
+  readonly child = viewChild(ScenariosComponent);
+  readonly stepper = viewChild<MatStepper>('stepper');
 
   isLinear = false;
   scenarioList$ = this.scenarioDataService.scenarioList;
@@ -44,17 +53,12 @@ export class ScenariosComponent implements OnInit {
   views$ = this.playerDataService.viewList;
   statuses$: Observable<string>;
 
-  constructor(
-    public zone: NgZone,
-    private playerDataService: PlayerDataService,
-    private scenarioDataService: ScenarioDataService,
-    private scenarioQuery: ScenarioQuery,
-    private router: Router,
-    private activatedRoute: ActivatedRoute
-  ) {
+  constructor() {
+    const activatedRoute = this.activatedRoute;
+
     this.scenarioDataService.load();
     this.statuses$ = activatedRoute.queryParamMap.pipe(
-      map((params) => params.get('statuses') || 'active,ready')
+      map((params) => params.get('statuses') || 'active,ready'),
     );
   }
 
