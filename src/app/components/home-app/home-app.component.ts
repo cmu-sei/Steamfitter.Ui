@@ -1,13 +1,13 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, viewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Subject, Observable } from 'rxjs';
 import { take, takeUntil } from 'rxjs/operators';
 import { PlayerDataService } from 'src/app/data/player/player-data-service';
-import { HistoryView } from '../history/history.component';
+import { HistoryView, HistoryComponent } from '../history/history.component';
 import {
   ComnSettingsService,
   Theme,
@@ -22,6 +22,23 @@ import { TopbarView } from './../shared/top-bar/topbar.models';
 import { HealthService, User, Vm } from 'src/app/generated/steamfitter.api';
 import { SystemPermission } from 'src/app/generated/steamfitter.api';
 import { PermissionDataService } from 'src/app/data/permission/permission-data.service';
+import { TopbarComponent } from '../shared/top-bar/topbar.component';
+import { MatIconButton, MatButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { MatMenuTrigger, MatMenu, MatMenuItem } from '@angular/material/menu';
+import {
+  MatFormField,
+  MatLabel,
+  MatInput,
+  MatSuffix,
+} from '@angular/material/input';
+import { MatSelect } from '@angular/material/select';
+import { FormsModule } from '@angular/forms';
+import { MatOption } from '@angular/material/autocomplete';
+import { ScenariosComponent } from '../scenarios/scenarios.component';
+import { ScenarioTemplatesComponent } from '../scenario-templates/scenario-templates.component';
+import { VmTaskExecuteComponent } from '../vm-task-execute/vm-task-execute.component';
+import { AsyncPipe, KeyValuePipe } from '@angular/common';
 
 enum Section {
   taskBuilder = 'Tasks',
@@ -31,13 +48,48 @@ enum Section {
 }
 
 @Component({
-    selector: 'app-home-app',
-    templateUrl: './home-app.component.html',
-    styleUrls: ['./home-app.component.scss'],
-    standalone: false
+  selector: 'app-home-app',
+  templateUrl: './home-app.component.html',
+  styleUrls: ['./home-app.component.scss'],
+  imports: [
+    TopbarComponent,
+    MatIconButton,
+    RouterLink,
+    MatIcon,
+    MatButton,
+    MatMenuTrigger,
+    MatMenu,
+    MatMenuItem,
+    MatFormField,
+    MatLabel,
+    MatSelect,
+    FormsModule,
+    MatOption,
+    MatInput,
+    MatSuffix,
+    ScenariosComponent,
+    ScenarioTemplatesComponent,
+    VmTaskExecuteComponent,
+    HistoryComponent,
+    MatPaginator,
+    AsyncPipe,
+    KeyValuePipe,
+  ],
 })
 export class HomeAppComponent implements OnDestroy, OnInit {
-  @ViewChild('homePaginator') homePaginator: MatPaginator;
+  private currentUserQuery = inject(CurrentUserQuery);
+  private authService = inject(ComnAuthService);
+  private userDataService = inject(UserDataService);
+  private router = inject(Router);
+  private playerDataService = inject(PlayerDataService);
+  private settingsService = inject(ComnSettingsService);
+  private signalRService = inject(SignalRService);
+  private healthService = inject(HealthService);
+  private authQuery = inject(ComnAuthQuery);
+  private permissionDataService = inject(PermissionDataService);
+  private userQuery = inject(UserQuery);
+
+  readonly homePaginator = viewChild<MatPaginator>('homePaginator');
   apiIsSick = false;
   apiMessage = 'The API web service is not responding.';
   titleText = 'Steamfitter';
@@ -67,20 +119,9 @@ export class HomeAppComponent implements OnDestroy, OnInit {
   selectedHistoryView: any;
   selectedHistoryVm: Vm;
 
-  constructor(
-    private currentUserQuery: CurrentUserQuery,
-    private authService: ComnAuthService,
-    private userDataService: UserDataService,
-    private router: Router,
-    activatedRoute: ActivatedRoute,
-    private playerDataService: PlayerDataService,
-    private settingsService: ComnSettingsService,
-    private signalRService: SignalRService,
-    private healthService: HealthService,
-    private authQuery: ComnAuthQuery,
-    private permissionDataService: PermissionDataService,
-    private userQuery: UserQuery
-  ) {
+  constructor() {
+    const activatedRoute = inject(ActivatedRoute);
+
     this.healthCheck();
 
     this.theme$ = this.authQuery.userTheme$;
@@ -118,18 +159,15 @@ export class HomeAppComponent implements OnDestroy, OnInit {
         this.historyVmList =
           !!vms && vms.length > 0
             ? vms.sort((a, b) =>
-                a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1
+                a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1,
               )
             : [];
       });
-    this.permissionDataService
-      .load()
-      .subscribe(
-        (x) => {
-          this.permissions = this.permissionDataService.permissions;
-          this.canViewAdministration = this.permissionDataService.canViewAdiminstration();
-        }
-      );
+    this.permissionDataService.load().subscribe((x) => {
+      this.permissions = this.permissionDataService.permissions;
+      this.canViewAdministration =
+        this.permissionDataService.canViewAdiminstration();
+    });
   }
 
   selectTab(section: Section) {
@@ -191,7 +229,7 @@ export class HomeAppComponent implements OnDestroy, OnInit {
       },
       (error) => {
         this.apiIsSick = true;
-      }
+      },
     );
   }
 

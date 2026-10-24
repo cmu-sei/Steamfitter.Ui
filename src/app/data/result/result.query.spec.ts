@@ -2,6 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { describe, it, expect } from 'vitest';
+import { Injector, runInInjectionContext } from '@angular/core';
 import { __stores__ } from '@datorama/akita';
 import { recordEmissions } from 'src/app/test-utils/record-emissions';
 import { TaskStore } from 'src/app/data/task/task.store';
@@ -31,7 +32,12 @@ describe('ResultStore / ResultQuery', () => {
    */
   it('selectAll keeps insertion order', () => {
     const store = new ResultStore();
-    const query = new ResultQuery(store);
+    const query = runInInjectionContext(
+      Injector.create({
+        providers: [{ provide: ResultStore, useValue: store }],
+      }),
+      () => new ResultQuery(),
+    );
     store.set([{ id: 'r3' }, { id: 'r1' }, { id: 'r2' }]);
     expect(query.getAll().map((r) => r.id)).toEqual(['r3', 'r1', 'r2']);
   });
@@ -43,7 +49,12 @@ describe('ResultStore / ResultQuery', () => {
    */
   it('selectById follows status updates', () => {
     const store = new ResultStore();
-    const query = new ResultQuery(store);
+    const query = runInInjectionContext(
+      Injector.create({
+        providers: [{ provide: ResultStore, useValue: store }],
+      }),
+      () => new ResultQuery(),
+    );
     store.set([{ id: 'r1', status: 'sent' }]);
     const seen = recordEmissions(query.selectById('r1'));
 

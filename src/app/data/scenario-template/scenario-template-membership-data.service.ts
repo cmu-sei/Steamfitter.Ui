@@ -1,7 +1,7 @@
 // Copyright 2024 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import {
@@ -13,18 +13,18 @@ import {
   providedIn: 'root',
 })
 export class ScenarioTemplateMembershipDataService {
+  private scenarioTemplateMembershipsService = inject(
+    ScenarioTemplateMembershipsService,
+  );
+
   private scenarioTemplateMembershipsSubject = new BehaviorSubject<
     ScenarioTemplateMembership[]
   >([]);
   public scenarioTemplateMemberships$ =
     this.scenarioTemplateMembershipsSubject.asObservable();
 
-  constructor(
-    private scenarioTemplateMembershipsService: ScenarioTemplateMembershipsService
-  ) {}
-
   loadMemberships(
-    scenarioTemplateId: string
+    scenarioTemplateId: string,
   ): Observable<ScenarioTemplateMembership[]> {
     return this.scenarioTemplateMembershipsService
       .getAllScenarioTemplateMemberships(scenarioTemplateId)
@@ -33,17 +33,17 @@ export class ScenarioTemplateMembershipDataService {
 
   createMembership(
     scenarioTemplateId: string,
-    scenarioTemplateMembership: ScenarioTemplateMembership
+    scenarioTemplateMembership: ScenarioTemplateMembership,
   ) {
     return this.scenarioTemplateMembershipsService
       .createScenarioTemplateMembership(
         scenarioTemplateId,
-        scenarioTemplateMembership
+        scenarioTemplateMembership,
       )
       .pipe(
         tap((x) => {
           this.upsert(x.id, x);
-        })
+        }),
       );
   }
 
@@ -51,12 +51,12 @@ export class ScenarioTemplateMembershipDataService {
     return this.scenarioTemplateMembershipsService
       .updateScenarioTemplateMembership(
         scenarioTemplateMembership.id,
-        scenarioTemplateMembership
+        scenarioTemplateMembership,
       )
       .pipe(
         tap((x) => {
           this.upsert(scenarioTemplateMembership.id, x);
-        })
+        }),
       );
   }
 
@@ -66,13 +66,13 @@ export class ScenarioTemplateMembershipDataService {
       .pipe(
         tap(() => {
           this.remove(id);
-        })
+        }),
       );
   }
 
   upsert(
     id: string,
-    scenarioTemplateMembership: Partial<ScenarioTemplateMembership>
+    scenarioTemplateMembership: Partial<ScenarioTemplateMembership>,
   ) {
     const memberships = this.scenarioTemplateMembershipsSubject.getValue();
     const membershipToUpdate = memberships.find((x) => x.id === id);

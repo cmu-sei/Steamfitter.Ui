@@ -4,18 +4,28 @@
 import { FlatTreeControl } from '@angular/cdk/tree';
 import {
   Component,
-  EventEmitter,
-  Input,
   OnDestroy,
   OnInit,
-  Output,
-  ViewChild,
+  inject,
+  input,
+  output,
+  viewChild,
 } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatMenuTrigger } from '@angular/material/menu';
+import {
+  MatMenuTrigger,
+  MatMenu,
+  MatMenuContent,
+  MatMenuItem,
+} from '@angular/material/menu';
 import {
   MatTreeFlatDataSource,
   MatTreeFlattener,
+  MatTree,
+  MatTreeNodeDef,
+  MatTreeNode,
+  MatTreeNodePadding,
+  MatTreeNodeToggle,
 } from '@angular/material/tree';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
@@ -30,6 +40,19 @@ import {
   TaskTrigger,
 } from 'src/app/generated/steamfitter.api';
 import { CrucibleDialogService } from '@cmusei/crucible-common';
+import { MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import {
+  MatExpansionPanel,
+  MatExpansionPanelHeader,
+  MatExpansionPanelTitle,
+  MatExpansionPanelDescription,
+} from '@angular/material/expansion';
+import { MatLabel } from '@angular/material/input';
+import { ResultsComponent } from '../../results/results.component';
+import { MatCard } from '@angular/material/card';
+import { MatProgressSpinner } from '@angular/material/progress-spinner';
+import { AsyncPipe, KeyValuePipe } from '@angular/common';
 interface TaskNode {
   task: Task;
   results?: Result[];
@@ -62,29 +85,55 @@ const BLANK_TASK: Task = {
 };
 
 @Component({
-    selector: 'app-task-tree',
-    templateUrl: './task-tree.component.html',
-    styleUrls: ['./task-tree.component.scss'],
-    standalone: false
+  selector: 'app-task-tree',
+  templateUrl: './task-tree.component.html',
+  styleUrls: ['./task-tree.component.scss'],
+  imports: [
+    MatIconButton,
+    MatIcon,
+    MatTree,
+    MatTreeNodeDef,
+    MatTreeNode,
+    MatTreeNodePadding,
+    MatTreeNodeToggle,
+    MatExpansionPanel,
+    MatExpansionPanelHeader,
+    MatExpansionPanelTitle,
+    MatLabel,
+    MatExpansionPanelDescription,
+    ResultsComponent,
+    MatCard,
+    MatProgressSpinner,
+    MatMenuTrigger,
+    MatMenu,
+    MatMenuContent,
+    MatMenuItem,
+    AsyncPipe,
+    KeyValuePipe,
+  ],
 })
 export class TaskTreeComponent implements OnInit, OnDestroy {
-  @Input() taskList: Observable<Task[]>;
-  @Input() resultList: Observable<Result[]>;
-  @Input() scenarioTemplateId: string;
-  @Input() scenarioId: string;
-  @Input() userId: string;
-  @Input() isEditableState: boolean;
-  @Input() isLoading: Observable<boolean>;
-  @Input() isExecutableState: boolean;
-  @Input() clipboard: any;
-  @Output() taskSelected = new EventEmitter<string>();
-  @Output() saveTask = new EventEmitter<Task>();
-  @Output() deleteTaskRequested = new EventEmitter<string>();
-  @Output() executeRequested = new EventEmitter<string>();
-  @Output() stopIterationsRequested = new EventEmitter<string>();
-  @Output() sendToClipboard = new EventEmitter<any>();
-  @Output() pasteClipboard = new EventEmitter<string>();
-  @ViewChild(FlatTreeControl) flatTreeControl;
+  private confirmService = inject(CrucibleDialogService);
+  private dialog = inject(MatDialog);
+  private taskDataService = inject(TaskDataService);
+
+  readonly taskList = input<Observable<Task[]>>(undefined);
+  readonly resultList = input<Observable<Result[]>>(undefined);
+  readonly scenarioTemplateId = input<string>(undefined);
+  readonly scenarioId = input<string>(undefined);
+  readonly userId = input<string>(undefined);
+  readonly isEditableState = input<boolean>(undefined);
+  readonly isLoading = input<Observable<boolean>>(undefined);
+  readonly isExecutableState = input<boolean>(undefined);
+  readonly clipboard = input<any>(undefined);
+  readonly taskSelected = output<string>();
+  readonly saveTask = output<Task>();
+  readonly deleteTaskRequested = output<string>();
+  readonly executeRequested = output<string>();
+  readonly stopIterationsRequested = output<string>();
+  readonly sendToClipboard = output<any>();
+  readonly pasteClipboard = output<string>();
+  readonly flatTreeControl = viewChild(FlatTreeControl);
   selectedTaskId = '';
   manualTrigger = TaskTrigger.Manual;
   private tasks = new Array<Task>();
@@ -102,25 +151,19 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
   });
   treeControl = new FlatTreeControl<FlatTaskNode>(
     (node) => node.level,
-    (node) => node.expandable
+    (node) => node.expandable,
   );
   treeFlattener = new MatTreeFlattener(
     this.transformer,
     (node) => node.level,
     (node) => node.expandable,
-    (node) => node.children
+    (node) => node.children,
   );
   dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
 
   // context menu
-  @ViewChild(MatMenuTrigger, { static: true }) contextMenu: MatMenuTrigger;
+  readonly contextMenu = viewChild(MatMenuTrigger);
   contextMenuPosition = { x: '0px', y: '0px' };
-
-  constructor(
-    private confirmService: CrucibleDialogService,
-    private dialog: MatDialog,
-    private taskDataService: TaskDataService
-  ) {}
 
   ngOnInit() {
     this.taskDataService.requestedTaskId$
@@ -130,16 +173,22 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
           this.selectedTaskId = taskId;
         }
       });
-    this.taskList.pipe(takeUntil(this.unsubscribe)).subscribe((tasks) => {
-      this.tasks = !tasks ? [] : this.filterTasks(tasks);
-      this.createTaskNodes();
-      // Expand the task details panel if it matches the URL taskId
-      if (this.selectedTaskId && this.tasks.some(t => t.id === this.selectedTaskId)) {
-        this.expandedDetails.add(this.selectedTaskId);
-      }
-    });
-    if (!!this.resultList) {
-      this.resultList.pipe(takeUntil(this.unsubscribe)).subscribe((results) => {
+    this.taskList()
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe((tasks) => {
+        this.tasks = !tasks ? [] : this.filterTasks(tasks);
+        this.createTaskNodes();
+        // Expand the task details panel if it matches the URL taskId
+        if (
+          this.selectedTaskId &&
+          this.tasks.some((t) => t.id === this.selectedTaskId)
+        ) {
+          this.expandedDetails.add(this.selectedTaskId);
+        }
+      });
+    const resultList = this.resultList();
+    if (!!resultList) {
+      resultList.pipe(takeUntil(this.unsubscribe)).subscribe((results) => {
         this.results = !results ? [] : results;
         this.createTaskNodes();
       });
@@ -147,19 +196,19 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
   }
 
   filterTasks(tasks: Task[]): Task[] {
-    if (this.scenarioTemplateId) {
+    if (this.scenarioTemplateId()) {
       tasks = tasks.filter(
         (item) =>
           item.scenarioTemplateId &&
-          item.scenarioTemplateId === this.scenarioTemplateId
+          item.scenarioTemplateId === this.scenarioTemplateId(),
       );
-    } else if (this.scenarioId) {
+    } else if (this.scenarioId()) {
       tasks = tasks.filter(
-        (item) => item.scenarioId && item.scenarioId === this.scenarioId
+        (item) => item.scenarioId && item.scenarioId === this.scenarioId(),
       );
-    } else if (this.userId) {
+    } else if (this.userId()) {
       tasks = tasks.filter(
-        (item) => item.userId && item.userId === this.userId
+        (item) => item.userId && item.userId === this.userId(),
       );
     }
 
@@ -186,7 +235,9 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
    * Creates a TaskNode to display in the tree
    */
   private createTaskNode(parentTask: Task): TaskNode {
-    const results = this.results.filter((result) => result.taskId === parentTask.id);
+    const results = this.results.filter(
+      (result) => result.taskId === parentTask.id,
+    );
     const newNode: TaskNode = {
       task: parentTask,
       results: results,
@@ -224,7 +275,7 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
    * Determines if a Task can be edited
    */
   isEditableTask(taskId: string) {
-    return this.isEditableState;
+    return this.isEditableState();
   }
 
   /**
@@ -232,7 +283,7 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
    */
   isExecutableTask(task: Task) {
     // must be a manual scenario task
-    let isExecutable = this.isExecutableState;
+    let isExecutable = this.isExecutableState();
     // if this task has a parent, the parent task must be complete
     if (isExecutable) {
       const triggerTaskId = task.triggerTaskId;
@@ -246,7 +297,7 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
             (r) =>
               r.status === TaskStatus.Pending ||
               r.status === TaskStatus.Queued ||
-              r.status === TaskStatus.Sent
+              r.status === TaskStatus.Sent,
           )
         ) {
           isExecutable = false;
@@ -260,9 +311,10 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
     event.preventDefault();
     this.contextMenuPosition.x = event.clientX + 'px';
     this.contextMenuPosition.y = event.clientY + 'px';
-    this.contextMenu.menuData = { item: task };
-    this.contextMenu.menu.focusFirstItem('mouse');
-    this.contextMenu.openMenu();
+    const contextMenu = this.contextMenu();
+    contextMenu.menuData = { item: task };
+    contextMenu.menu.focusFirstItem('mouse');
+    contextMenu.openMenu();
   }
 
   onContextEdit(task: Task) {
@@ -299,11 +351,13 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
     this.taskSelected.emit(this.selectedTaskId);
     // add a dependent Task
     const newTask = { ...BLANK_TASK };
-    if (!!this.scenarioTemplateId) {
-      newTask.scenarioTemplateId = this.scenarioTemplateId;
+    const scenarioTemplateId = this.scenarioTemplateId();
+    if (!!scenarioTemplateId) {
+      newTask.scenarioTemplateId = scenarioTemplateId;
     }
-    if (!!this.scenarioId) {
-      newTask.scenarioId = this.scenarioId;
+    const scenarioId = this.scenarioId();
+    if (!!scenarioId) {
+      newTask.scenarioId = scenarioId;
     }
     if (task && task.id) {
       newTask.triggerTaskId = task.id;
@@ -398,13 +452,13 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
     this.forgetMissingExpandedNodes(this.treeControl, this.expandedNodeSet);
     this.expandNodesById(
       this.treeControl.dataNodes,
-      Array.from(this.expandedNodeSet)
+      Array.from(this.expandedNodeSet),
     );
   }
 
   private rememberExpandedTreeNodes(
     treeControl: FlatTreeControl<FlatTaskNode>,
-    expandedNodeSet: Set<string>
+    expandedNodeSet: Set<string>,
   ) {
     if (treeControl.dataNodes) {
       treeControl.dataNodes.forEach((node) => {
@@ -418,7 +472,7 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
 
   private forgetMissingExpandedNodes(
     treeControl: FlatTreeControl<FlatTaskNode>,
-    expandedNodeSet: Set<string>
+    expandedNodeSet: Set<string>,
   ) {
     if (treeControl.dataNodes) {
       expandedNodeSet.forEach((nodeId) => {
@@ -481,13 +535,16 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
   };
 
   statusIcon(status: string): string {
-    return TaskTreeComponent.STATUS_ICON_MAP[status?.toLowerCase()] || 'mdi-help-circle-outline';
+    return (
+      TaskTreeComponent.STATUS_ICON_MAP[status?.toLowerCase()] ||
+      'mdi-help-circle-outline'
+    );
   }
 
   sortedResults(results: Result[], sortBy: string, sortDescending: boolean) {
     const sortValue = sortDescending ? 1 : -1;
     const sortedResults = results.sort((a, b) =>
-      a[sortBy] < b[sortBy] ? sortValue : -1 * sortValue
+      a[sortBy] < b[sortBy] ? sortValue : -1 * sortValue,
     );
     return sortedResults;
   }

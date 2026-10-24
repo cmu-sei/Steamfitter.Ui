@@ -2,7 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { describe, it, expect, vi } from 'vitest';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { of } from 'rxjs';
@@ -15,28 +15,28 @@ import { UserStore } from 'src/app/data/user/user.store';
 import { renderComponent } from 'src/app/test-utils/render-component';
 import { ApiStub } from 'src/app/test-utils/api-stub';
 import { AdminGroupsDetailComponent } from './admin-groups-detail.component';
+import { AdminGroupsMembershipListComponent } from 'src/app/components/admin/admin-groups/admin-groups-membership-list/admin-groups-membership-list.component';
+import { AdminGroupsMemberListComponent } from 'src/app/components/admin/admin-groups/admin-groups-member-list/admin-groups-member-list.component';
 
 @Component({
   selector: 'app-admin-groups-membership-list',
   template: '',
-  standalone: false,
 })
 class MembershipListStubComponent {
-  @Input() users?: User[];
-  @Input() canEdit?: boolean;
-  @Output() createMembership = new EventEmitter<string>();
+  readonly users = input<User[]>(undefined);
+  readonly canEdit = input<boolean>(undefined);
+  readonly createMembership = output<string>();
 }
 
 @Component({
   selector: 'app-admin-groups-member-list',
   template: '',
-  standalone: false,
 })
 class MemberListStubComponent {
-  @Input() memberships?: GroupMembership[];
-  @Input() users?: User[];
-  @Input() canEdit?: boolean;
-  @Output() deleteMembership = new EventEmitter<string>();
+  readonly memberships = input<GroupMembership[]>(undefined);
+  readonly users = input<User[]>(undefined);
+  readonly canEdit = input<boolean>(undefined);
+  readonly deleteMembership = output<string>();
 }
 
 const USERS: User[] = [
@@ -56,10 +56,15 @@ async function renderDetail(canEdit: boolean) {
     deleteGroupMembership: vi.fn(() => of(null)),
   } satisfies ApiStub<GroupService>;
   const rendered = await renderComponent(AdminGroupsDetailComponent, {
-    declarations: [
-      AdminGroupsDetailComponent,
-      MembershipListStubComponent,
-      MemberListStubComponent,
+    childStubs: [
+      {
+        replace: AdminGroupsMembershipListComponent,
+        with: MembershipListStubComponent,
+      },
+      {
+        replace: AdminGroupsMemberListComponent,
+        with: MemberListStubComponent,
+      },
     ],
     providers: [{ provide: GroupService, useValue: groupApi }],
     inputs: { groupId: 'g1', canEdit },
@@ -85,9 +90,17 @@ describe('AdminGroupsDetailComponent', () => {
   it('passes canEdit true to both lists for a group manager', async () => {
     const { nonMembers, members } = await renderDetail(true);
 
-    expect(members().users?.map((u) => u.name)).toEqual(['Alice']);
-    expect(nonMembers().users?.map((u) => u.name)).toEqual(['Bob']);
-    expect([nonMembers().canEdit, members().canEdit]).toEqual([true, true]);
+    expect(
+      members()
+        .users()
+        ?.map((u) => u.name),
+    ).toEqual(['Alice']);
+    expect(
+      nonMembers()
+        .users()
+        ?.map((u) => u.name),
+    ).toEqual(['Bob']);
+    expect([nonMembers().canEdit(), members().canEdit()]).toEqual([true, true]);
   });
 
   /**
@@ -98,8 +111,8 @@ describe('AdminGroupsDetailComponent', () => {
   it('passes canEdit false to both lists without canEdit', async () => {
     const { nonMembers, members } = await renderDetail(false);
 
-    expect(nonMembers().canEdit).toBe(false);
-    expect(members().canEdit).toBe(false);
+    expect(nonMembers().canEdit()).toBe(false);
+    expect(members().canEdit()).toBe(false);
   });
 
   /**
@@ -117,8 +130,12 @@ describe('AdminGroupsDetailComponent', () => {
       groupId: 'g1',
       userId: 'u2',
     });
-    expect(members().users?.map((u) => u.name)).toEqual(['Alice', 'Bob']);
-    expect(nonMembers().users).toEqual([]);
+    expect(
+      members()
+        .users()
+        ?.map((u) => u.name),
+    ).toEqual(['Alice', 'Bob']);
+    expect(nonMembers().users()).toEqual([]);
   });
 
   /**
@@ -132,7 +149,11 @@ describe('AdminGroupsDetailComponent', () => {
     members().deleteMembership.emit('m1');
     fixture.detectChanges();
 
-    expect(members().users).toEqual([]);
-    expect(nonMembers().users?.map((u) => u.name)).toEqual(['Alice', 'Bob']);
+    expect(members().users()).toEqual([]);
+    expect(
+      nonMembers()
+        .users()
+        ?.map((u) => u.name),
+    ).toEqual(['Alice', 'Bob']);
   });
 });

@@ -1,7 +1,7 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { ErrorStateMatcher } from '@angular/material/core';
 import { UntypedFormControl, FormGroupDirective, NgForm } from '@angular/forms';
 import { UserDataService } from 'src/app/data/user/user-data.service';
@@ -10,26 +10,27 @@ import { SystemPermission, User } from 'src/app/generated/steamfitter.api';
 import { Observable } from 'rxjs';
 import { map, take } from 'rxjs/operators';
 import { PermissionDataService } from 'src/app/data/permission/permission-data.service';
+import { AdminUserListComponent } from './admin-user-list/admin-user-list.component';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
-    selector: 'app-admin-users',
-    templateUrl: './admin-users.component.html',
-    styleUrls: ['./admin-users.component.scss'],
-    standalone: false
+  selector: 'app-admin-users',
+  templateUrl: './admin-users.component.html',
+  styleUrls: ['./admin-users.component.scss'],
+  imports: [AdminUserListComponent, AsyncPipe],
 })
 export class AdminUsersComponent implements OnInit {
+  private userDataService = inject(UserDataService);
+  private userQuery = inject(UserQuery);
+  private permissionDataService = inject(PermissionDataService);
+
   matcher = new UserErrorStateMatcher();
   isLinear = false;
   users$: Observable<User[]>;
   isLoading$: Observable<boolean>;
   canEdit = this.permissionDataService.hasPermission(
-    SystemPermission.ManageUsers
+    SystemPermission.ManageUsers,
   );
-  constructor(
-    private userDataService: UserDataService,
-    private userQuery: UserQuery,
-    private permissionDataService: PermissionDataService
-  ) {}
 
   /**
    * Initialize component
@@ -53,7 +54,7 @@ export class AdminUsersComponent implements OnInit {
 export class UserErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(
     control: UntypedFormControl | null,
-    form: FormGroupDirective | NgForm | null
+    form: FormGroupDirective | NgForm | null,
   ): boolean {
     const isSubmitted = form && form.submitted;
     return !!(control && control.invalid && (control.dirty || isSubmitted));

@@ -2,7 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { describe, it, expect, vi } from 'vitest';
-import { Component, Directive, Input } from '@angular/core';
+import { Component, Directive, input } from '@angular/core';
 import { screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { of } from 'rxjs';
@@ -34,7 +34,7 @@ import { ScenarioTemplateListComponent } from './scenario-template-list.componen
 
 @Directive({ selector: '[ngxClipboard]', standalone: false })
 class ClipboardStubDirective {
-  @Input() cbContent?: string;
+  readonly cbContent = input<string>(undefined);
 }
 
 @Component({
@@ -43,7 +43,7 @@ class ClipboardStubDirective {
   standalone: false,
 })
 class ScenarioTemplateEditStubComponent {
-  @Input() scenarioTemplate?: ScenarioTemplate;
+  readonly scenarioTemplate = input<ScenarioTemplate>(undefined);
 }
 
 @Component({
@@ -52,8 +52,8 @@ class ScenarioTemplateEditStubComponent {
   standalone: false,
 })
 class ScenarioTemplateMembershipsStubComponent {
-  @Input() scenarioTemplateId?: string;
-  @Input() showHeader?: boolean;
+  readonly scenarioTemplateId = input<string>(undefined);
+  readonly showHeader = input<boolean>(undefined);
 }
 
 function template(overrides: Partial<ScenarioTemplate> = {}): ScenarioTemplate {

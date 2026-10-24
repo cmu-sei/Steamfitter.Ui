@@ -3,11 +3,11 @@
 
 import {
   Component,
-  EventEmitter,
   NgZone,
-  Input,
-  Output,
-  ViewChild,
+  inject,
+  input,
+  output,
+  viewChild,
 } from '@angular/core';
 import { UntypedFormControl, FormGroupDirective, NgForm } from '@angular/forms';
 import { ErrorStateMatcher } from '@angular/material/core';
@@ -20,12 +20,14 @@ import { map } from 'rxjs/operators';
 import { ScenarioTemplateDataService } from 'src/app/data/scenario-template/scenario-template-data.service';
 import { ScenarioTemplateQuery } from 'src/app/data/scenario-template/scenario-template.query';
 import { ScenarioTemplate } from 'src/app/generated/steamfitter.api';
+import { ScenarioTemplateListComponent } from './scenario-template-list/scenario-template-list.component';
+import { AsyncPipe } from '@angular/common';
 
 /** Error when invalid control is dirty, touched, or submitted. */
 export class UserErrorStateMatcher implements ErrorStateMatcher {
   isErrorState(
     control: UntypedFormControl | null,
-    form: FormGroupDirective | NgForm | null
+    form: FormGroupDirective | NgForm | null,
   ): boolean {
     const isSubmitted = form && form.submitted;
     return !!(control && control.invalid && (control.dirty || isSubmitted));
@@ -33,18 +35,24 @@ export class UserErrorStateMatcher implements ErrorStateMatcher {
 }
 
 @Component({
-    selector: 'app-scenario-templates',
-    templateUrl: './scenario-templates.component.html',
-    styleUrls: ['./scenario-templates.component.scss'],
-    standalone: false
+  selector: 'app-scenario-templates',
+  templateUrl: './scenario-templates.component.html',
+  styleUrls: ['./scenario-templates.component.scss'],
+  imports: [ScenarioTemplateListComponent, AsyncPipe],
 })
 export class ScenarioTemplatesComponent {
-  @Input() filterString = '';
-  @Input() paginator: MatPaginator;
-  @Input() adminMode = false;
-  @Output() editComplete = new EventEmitter<boolean>();
-  @ViewChild(ScenarioTemplatesComponent) child;
-  @ViewChild('stepper') stepper: MatStepper;
+  zone = inject(NgZone);
+  private scenarioTemplateDataService = inject(ScenarioTemplateDataService);
+  private scenarioTemplateQuery = inject(ScenarioTemplateQuery);
+  private router = inject(Router);
+  private activatedRoute = inject(ActivatedRoute);
+
+  readonly filterString = input('');
+  readonly paginator = input<MatPaginator>(undefined);
+  readonly adminMode = input(false);
+  readonly editComplete = output<boolean>();
+  readonly child = viewChild(ScenarioTemplatesComponent);
+  readonly stepper = viewChild<MatStepper>('stepper');
 
   matcher = new UserErrorStateMatcher();
   isLinear = false;
@@ -55,19 +63,13 @@ export class ScenarioTemplatesComponent {
   filterControl: UntypedFormControl =
     this.scenarioTemplateDataService.filterControl;
 
-  constructor(
-    public zone: NgZone,
-    private scenarioTemplateDataService: ScenarioTemplateDataService,
-    private scenarioTemplateQuery: ScenarioTemplateQuery,
-    private router: Router,
-    private activatedRoute: ActivatedRoute
-  ) {
+  constructor() {
     this.scenarioTemplateDataService.load();
   }
 
   setActive(id: any) {
     this.scenarioTemplateDataService.setActive(id);
-    if (this.adminMode) {
+    if (this.adminMode()) {
       this.router.navigate([`scenariotemplates/${id}/memberships`], {});
     }
   }

@@ -2,7 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { describe, it, expect, vi } from 'vitest';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { of } from 'rxjs';
 import {
@@ -14,14 +14,15 @@ import { renderComponent } from 'src/app/test-utils/render-component';
 import { ApiStub } from 'src/app/test-utils/api-stub';
 import { permissionDataProviders } from 'src/app/test-utils/mock-permission-data.service';
 import { AdminUsersComponent } from './admin-users.component';
+import { AdminUserListComponent } from 'src/app/components/admin/admin-users/admin-user-list/admin-user-list.component';
 
-@Component({ selector: 'app-admin-user-list', template: '', standalone: false })
+@Component({ selector: 'app-admin-user-list', template: '' })
 class UserListStubComponent {
-  @Input() users?: User[];
-  @Input() isLoading?: boolean;
-  @Input() canEdit?: boolean;
-  @Output() create = new EventEmitter<User>();
-  @Output() delete = new EventEmitter<string>();
+  readonly users = input<User[]>(undefined);
+  readonly isLoading = input<boolean>(undefined);
+  readonly canEdit = input<boolean>(undefined);
+  readonly create = output<User>();
+  readonly delete = output<string>();
 }
 
 const USERS: User[] = [
@@ -36,7 +37,9 @@ async function renderUsers(system: SystemPermission[]) {
     deleteUser: vi.fn(() => of(null)),
   } satisfies ApiStub<UserService>;
   const rendered = await renderComponent(AdminUsersComponent, {
-    declarations: [AdminUsersComponent, UserListStubComponent],
+    childStubs: [
+      { replace: AdminUserListComponent, with: UserListStubComponent },
+    ],
     providers: [
       ...permissionDataProviders({ system }),
       { provide: UserService, useValue: userApi },
@@ -57,9 +60,13 @@ describe('AdminUsersComponent', () => {
   it('passes canEdit true and the users to the list with ManageUsers', async () => {
     const { list } = await renderUsers(['ManageUsers']);
 
-    expect(list().users?.map((u) => u.name)).toEqual(['Alice', 'Bob']);
-    expect(list().isLoading).toBe(false);
-    expect(list().canEdit).toBe(true);
+    expect(
+      list()
+        .users()
+        ?.map((u) => u.name),
+    ).toEqual(['Alice', 'Bob']);
+    expect(list().isLoading()).toBe(false);
+    expect(list().canEdit()).toBe(true);
   });
 
   /**
@@ -70,7 +77,7 @@ describe('AdminUsersComponent', () => {
   it('passes canEdit false to the list without ManageUsers', async () => {
     const { list } = await renderUsers(['ViewUsers', 'ManageRoles']);
 
-    expect(list().canEdit).toBe(false);
+    expect(list().canEdit()).toBe(false);
   });
 
   /**
@@ -88,7 +95,11 @@ describe('AdminUsersComponent', () => {
       id: 'u3',
       name: 'Carol',
     });
-    expect(list().users?.map((u) => u.name)).toEqual(['Alice', 'Bob', 'Carol']);
+    expect(
+      list()
+        .users()
+        ?.map((u) => u.name),
+    ).toEqual(['Alice', 'Bob', 'Carol']);
   });
 
   /**
@@ -102,6 +113,10 @@ describe('AdminUsersComponent', () => {
     list().delete.emit('u1');
     fixture.detectChanges();
 
-    expect(list().users?.map((u) => u.name)).toEqual(['Bob']);
+    expect(
+      list()
+        .users()
+        ?.map((u) => u.name),
+    ).toEqual(['Bob']);
   });
 });

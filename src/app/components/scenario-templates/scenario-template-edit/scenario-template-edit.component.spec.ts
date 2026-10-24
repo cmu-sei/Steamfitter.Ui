@@ -2,7 +2,7 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { describe, it, expect, vi } from 'vitest';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { firstValueFrom, Observable, of } from 'rxjs';
 import {
@@ -14,16 +14,17 @@ import { renderComponent } from 'src/app/test-utils/render-component';
 import { ApiStub } from 'src/app/test-utils/api-stub';
 import { permissionDataProviders } from 'src/app/test-utils/mock-permission-data.service';
 import { ScenarioTemplateEditComponent } from './scenario-template-edit.component';
+import { TasksComponent } from 'src/app/components/tasks/tasks.component';
 
-@Component({ selector: 'app-tasks', template: '', standalone: false })
+@Component({ selector: 'app-tasks', template: '' })
 class TasksStubComponent {
-  @Input() taskList?: Observable<Task[]>;
-  @Input() isLoading?: Observable<boolean>;
-  @Input() scenarioTemplateId?: string;
-  @Input() isEditable?: boolean;
-  @Input() isExecutable?: boolean;
-  @Output() taskListChanged = new EventEmitter<void>();
-  @Output() deleteTaskRequested = new EventEmitter<string>();
+  readonly taskList = input<Observable<Task[]>>(undefined);
+  readonly isLoading = input<Observable<boolean>>(undefined);
+  readonly scenarioTemplateId = input<string>(undefined);
+  readonly isEditable = input<boolean>(undefined);
+  readonly isExecutable = input<boolean>(undefined);
+  readonly taskListChanged = output<void>();
+  readonly deleteTaskRequested = output<string>();
 }
 
 async function renderEdit(input: ScenarioTemplate | null) {
@@ -37,7 +38,7 @@ async function renderEdit(input: ScenarioTemplate | null) {
     deleteTask: vi.fn(() => of(null)),
   } satisfies ApiStub<TaskService>;
   const rendered = await renderComponent(ScenarioTemplateEditComponent, {
-    declarations: [ScenarioTemplateEditComponent, TasksStubComponent],
+    childStubs: [{ replace: TasksComponent, with: TasksStubComponent }],
     providers: [
       ...permissionDataProviders({
         scenarioTemplates: [
@@ -52,7 +53,7 @@ async function renderEdit(input: ScenarioTemplate | null) {
     rendered.fixture.debugElement.query(By.directive(TasksStubComponent))
       ?.componentInstance as TasksStubComponent | undefined;
   const taskNames = async () =>
-    (await firstValueFrom(tasks()!.taskList!)).map((t) => t.name);
+    (await firstValueFrom(tasks()!.taskList()!)).map((t) => t.name);
   return { ...rendered, taskApi, tasks, taskNames };
 }
 
@@ -65,10 +66,10 @@ describe('ScenarioTemplateEditComponent', () => {
   it('makes the tasks editable for a user who can only view the template', async () => {
     const { tasks } = await renderEdit({ id: 'st1', name: 'Base' });
 
-    expect(tasks()?.scenarioTemplateId).toBe('st1');
+    expect(tasks()?.scenarioTemplateId()).toBe('st1');
     // Current behavior; see agent-docs/ui-test-bugs/steamfitter.ui.md.
-    expect(tasks()?.isEditable).toBe(true);
-    expect(tasks()?.isExecutable).toBe(false);
+    expect(tasks()?.isEditable()).toBe(true);
+    expect(tasks()?.isExecutable()).toBe(false);
   });
 
   /**

@@ -2,13 +2,19 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { describe, it, expect } from 'vitest';
+import { Injector, runInInjectionContext } from '@angular/core';
 import { recordEmissions } from 'src/app/test-utils/record-emissions';
 import { ScenarioTemplateStore } from './scenario-template.store';
 import { ScenarioTemplateQuery } from './scenario-template.query';
 
 function createState() {
   const store = new ScenarioTemplateStore();
-  const query = new ScenarioTemplateQuery(store);
+  const query = runInInjectionContext(
+    Injector.create({
+      providers: [{ provide: ScenarioTemplateStore, useValue: store }],
+    }),
+    () => new ScenarioTemplateQuery(),
+  );
   return { store, query };
 }
 

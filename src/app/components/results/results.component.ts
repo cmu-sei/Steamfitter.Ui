@@ -1,11 +1,15 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, input } from '@angular/core';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { PlayerDataService } from 'src/app/data/player/player-data-service';
 import { Result } from 'src/app/generated/steamfitter.api';
+import { MatTabGroup, MatTab } from '@angular/material/tabs';
+import { MatButton, MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { DatePipe, KeyValuePipe } from '@angular/common';
 
 enum ResultStatus {
   all = 0,
@@ -16,15 +20,25 @@ enum ResultStatus {
 }
 
 @Component({
-    selector: 'app-results',
-    templateUrl: './results.component.html',
-    styleUrls: ['./results.component.scss'],
-    standalone: false
+  selector: 'app-results',
+  templateUrl: './results.component.html',
+  styleUrls: ['./results.component.scss'],
+  imports: [
+    MatTabGroup,
+    MatTab,
+    MatButton,
+    MatIcon,
+    MatIconButton,
+    DatePipe,
+    KeyValuePipe,
+  ],
 })
 export class ResultsComponent implements OnInit, OnDestroy {
-  @Input() results: Observable<Result[]>;
-  @Input() taskId: string;
-  @Input() taskAction: string;
+  private playerDataService = inject(PlayerDataService);
+
+  readonly results = input<Observable<Result[]>>(undefined);
+  readonly taskId = input<string>(undefined);
+  readonly taskAction = input<string>(undefined);
 
   allResults: Result[];
   currentResults: Result[];
@@ -35,24 +49,24 @@ export class ResultsComponent implements OnInit, OnDestroy {
   private unsubscribe$ = new Subject();
   showVmFields: boolean;
 
-  constructor(private playerDataService: PlayerDataService) {}
-
   ngOnInit() {
-    this.results.pipe(takeUntil(this.unsubscribe$)).subscribe((results) => {
-      if (!this.taskId) {
-        this.allResults = results;
-      } else {
-        this.allResults = results.filter((r) => r.taskId === this.taskId);
-      }
-      this.filterCurrentResults();
-    });
+    this.results()
+      .pipe(takeUntil(this.unsubscribe$))
+      .subscribe((results) => {
+        if (!this.taskId()) {
+          this.allResults = results;
+        } else {
+          this.allResults = results.filter((r) => r.taskId === this.taskId());
+        }
+        this.filterCurrentResults();
+      });
     this.showVmFields = this.hasVmFields();
   }
 
   hasVmFields() {
-    if (/^http|linux|core/.test(this.taskAction)) {
+    if (/^http|linux|core/.test(this.taskAction())) {
       return false;
-    };
+    }
     return true;
   }
 
@@ -61,13 +75,13 @@ export class ResultsComponent implements OnInit, OnDestroy {
       this.lastExecutionTime = new Date();
     } else {
       this.lastExecutionTime = this.allResults.reduce((m, v, i) =>
-        v.dateCreated.valueOf() > m.dateCreated.valueOf() && i ? v : m
+        v.dateCreated.valueOf() > m.dateCreated.valueOf() && i ? v : m,
       ).dateCreated;
     }
     this.currentResults = this.allResults
       .filter((r) => this.isCurrentResult(new Date(r.dateCreated)))
       .sort((a: Result, b: Result) =>
-        a.vmName.toLowerCase() <= b.vmName.toLowerCase() ? -1 : 1
+        a.vmName.toLowerCase() <= b.vmName.toLowerCase() ? -1 : 1,
       );
     this.filteredResults = this.currentResults;
   }
@@ -80,14 +94,16 @@ export class ResultsComponent implements OnInit, OnDestroy {
 
   oldResults(current: Result) {
     return this.allResults
-      .filter(
-        (r) =>
+      .filter((r) => {
+        const taskId = this.taskId();
+        return (
           r.id !== current.id &&
-          (!this.taskId || r.taskId === this.taskId) &&
+          (!taskId || r.taskId === taskId) &&
           r.vmId === current.vmId
-      )
+        );
+      })
       .sort((a: Result, b: Result) =>
-        a.dateCreated.valueOf() <= b.dateCreated.valueOf() ? 1 : -1
+        a.dateCreated.valueOf() <= b.dateCreated.valueOf() ? 1 : -1,
       );
   }
 
@@ -112,41 +128,41 @@ export class ResultsComponent implements OnInit, OnDestroy {
       case 0:
         this.filteredResults = this.currentResults.sort(
           (a: Result, b: Result) =>
-            a.vmName.toLowerCase() < b.vmName.toLowerCase() ? -1 : 1
+            a.vmName.toLowerCase() < b.vmName.toLowerCase() ? -1 : 1,
         );
         break;
       case 1:
         this.filteredResults = this.currentResults
           .filter((r) => r.status === 'succeeded')
           .sort((a: Result, b: Result) =>
-            a.vmName.toLowerCase() < b.vmName.toLowerCase() ? -1 : 1
+            a.vmName.toLowerCase() < b.vmName.toLowerCase() ? -1 : 1,
           );
         break;
       case 2:
         this.filteredResults = this.currentResults
           .filter((r) => r.status === 'failed')
           .sort((a: Result, b: Result) =>
-            a.vmName.toLowerCase() < b.vmName.toLowerCase() ? -1 : 1
+            a.vmName.toLowerCase() < b.vmName.toLowerCase() ? -1 : 1,
           );
         break;
       case 3:
         this.filteredResults = this.currentResults
           .filter((r) => r.status === 'pending')
           .sort((a: Result, b: Result) =>
-            a.vmName.toLowerCase() < b.vmName.toLowerCase() ? -1 : 1
+            a.vmName.toLowerCase() < b.vmName.toLowerCase() ? -1 : 1,
           );
         break;
       case 4:
         this.filteredResults = this.currentResults
           .filter((r) => r.status === 'queued')
           .sort((a: Result, b: Result) =>
-            a.vmName.toLowerCase() < b.vmName.toLowerCase() ? -1 : 1
+            a.vmName.toLowerCase() < b.vmName.toLowerCase() ? -1 : 1,
           );
         break;
       default:
         this.filteredResults = this.currentResults.sort(
           (a: Result, b: Result) =>
-            a.vmName.toLowerCase() < b.vmName.toLowerCase() ? -1 : 1
+            a.vmName.toLowerCase() < b.vmName.toLowerCase() ? -1 : 1,
         );
         break;
     }
@@ -169,7 +185,10 @@ export class ResultsComponent implements OnInit, OnDestroy {
   };
 
   statusIcon(status: string): string {
-    return ResultsComponent.STATUS_ICON_MAP[status?.toLowerCase()] || 'mdi-help-circle-outline';
+    return (
+      ResultsComponent.STATUS_ICON_MAP[status?.toLowerCase()] ||
+      'mdi-help-circle-outline'
+    );
   }
 
   openVmConsole(id: string) {

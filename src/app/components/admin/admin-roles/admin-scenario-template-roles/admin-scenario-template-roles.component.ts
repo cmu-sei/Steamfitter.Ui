@@ -4,7 +4,19 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 */
 
 import { Component, inject, OnInit } from '@angular/core';
-import { MatTableDataSource } from '@angular/material/table';
+import {
+  MatTableDataSource,
+  MatTable,
+  MatColumnDef,
+  MatHeaderCellDef,
+  MatHeaderCell,
+  MatCellDef,
+  MatCell,
+  MatHeaderRowDef,
+  MatHeaderRow,
+  MatRowDef,
+  MatRow,
+} from '@angular/material/table';
 import {
   ScenarioTemplatePermission,
   ScenarioTemplateRole,
@@ -12,12 +24,33 @@ import {
 import { ScenarioTemplateRolesModel } from './admin-scenario-template-roles.models';
 import { map } from 'rxjs/operators';
 import { ScenarioTemplateRoleDataService } from 'src/app/data/scenario-template/scenario-template-role-data.service';
+import { MatIconButton } from '@angular/material/button';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatIcon } from '@angular/material/icon';
+import { MatCheckbox } from '@angular/material/checkbox';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
-    selector: 'app-admin-scenario-template-roles',
-    templateUrl: './admin-scenario-template-roles.component.html',
-    styleUrls: ['./admin-scenario-template-roles.component.scss'],
-    standalone: false
+  selector: 'app-admin-scenario-template-roles',
+  templateUrl: './admin-scenario-template-roles.component.html',
+  styleUrls: ['./admin-scenario-template-roles.component.scss'],
+  imports: [
+    MatTable,
+    MatColumnDef,
+    MatHeaderCellDef,
+    MatHeaderCell,
+    MatCellDef,
+    MatCell,
+    MatIconButton,
+    MatTooltip,
+    MatIcon,
+    MatCheckbox,
+    MatHeaderRowDef,
+    MatHeaderRow,
+    MatRowDef,
+    MatRow,
+    AsyncPipe,
+  ],
 })
 export class AdminScenarioTemplateRolesComponent implements OnInit {
   private scenarioTemplateRoleService = inject(ScenarioTemplateRoleDataService);
@@ -35,15 +68,15 @@ export class AdminScenarioTemplateRolesComponent implements OnInit {
     map((roles) =>
       roles.sort((a, b) => {
         return a.name.localeCompare(b.name);
-      })
-    )
+      }),
+    ),
   );
 
   public displayedColumns$ = this.roles$.pipe(
     map((x) => {
       const columnNames = x.map((y) => y.name);
       return ['permissions', ...columnNames];
-    })
+    }),
   );
 
   ngOnInit(): void {

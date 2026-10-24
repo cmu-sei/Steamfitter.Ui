@@ -8,17 +8,14 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     <div>
       <h1>
         Score: {{ scenario?.scoreEarned }}/{{ scenario?.score }} ({{
-        scenario?.scoreEarned / scenario?.score | percent
+          scenario?.scoreEarned / scenario?.score | percent
         }})
       </h1>
     </div>
   }
   <div>
     <div class="cssLayoutRowCenterCenter">
-      <mat-icon
-        class="steamfitter-icon"
-        svgIcon="ic_crucible_steamfitter"
-      ></mat-icon>
+      <mat-icon class="steamfitter-icon" svgIcon="ic_crucible_steamfitter" />
       <h2>Tasks</h2>
     </div>
     <table class="task-table">
@@ -31,13 +28,19 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
           <th class="action-cell">Task</th>
         </tr>
       </thead>
-      @for (task of tasks; track task) {
+      @for (task of tasks(); track task) {
         <tr>
           <td class="icon-cell">
             <mat-icon
-              [fontIcon]="statusIcon(task.totalStatus == 'none' ? 'manual' : task.totalStatus)"
-              matTooltip="{{ task.totalStatus == 'none' ? 'pending' : task.totalStatus }}"
-            ></mat-icon>
+              [fontIcon]="
+                statusIcon(
+                  task.totalStatus == 'none' ? 'manual' : task.totalStatus
+                )
+              "
+              matTooltip="{{
+                task.totalStatus == 'none' ? 'pending' : task.totalStatus
+              }}"
+            />
           </td>
           @if (scenario?.score > 0) {
             <td class="score-cell">
@@ -47,13 +50,22 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
             </td>
           }
           <td class="action-cell">
-            <span [matTooltip]="scenario?.status !== 'active' ? 'Scenario is not active' : !task.executable ? 'This Task cannot be executed again once successful' : task.description">
+            <span
+              [matTooltip]="
+                scenario?.status !== 'active'
+                  ? 'Scenario is not active'
+                  : !task.executable
+                    ? 'This Task cannot be executed again once successful'
+                    : task.description
+              "
+            >
               <button
-                mat-icon-button [attr.aria-label]="'Execute ' + task.name"
+                mat-icon-button
+                [attr.aria-label]="'Execute ' + task.name"
                 [disabled]="!task.executable || scenario?.status !== 'active'"
                 (click)="executeTask(task)"
-                >
-                <mat-icon fontIcon="mdi-play"></mat-icon>
+              >
+                <mat-icon fontIcon="mdi-play" />
               </button>
             </span>
             <span matTooltip="{{ task.description }}">{{ task.name }}</span>

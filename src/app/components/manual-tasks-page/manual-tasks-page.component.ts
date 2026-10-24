@@ -8,6 +8,7 @@ import {
   OnDestroy,
   OnInit,
   ChangeDetectionStrategy,
+  inject,
 } from '@angular/core';
 import { RouterQuery } from '@datorama/akita-ng-router-store';
 import { Observable } from 'rxjs';
@@ -19,30 +20,30 @@ import { TaskQuery } from 'src/app/data/task/task.query';
 import { Scenario, Task } from 'src/app/generated/steamfitter.api';
 import { SignalRService } from 'src/app/services/signalr/signalr.service';
 import { ErrorService } from 'src/app/services/error/error.service';
+import { ManualTasksListComponent } from '../tasks/manual-tasks/manual-tasks-list/manual-tasks-list.component';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
-    selector: 'app-manual-tasks-page',
-    templateUrl: './manual-tasks-page.component.html',
-    styleUrls: ['./manual-tasks-page.component.scss'],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    standalone: false
+  selector: 'app-manual-tasks-page',
+  templateUrl: './manual-tasks-page.component.html',
+  styleUrls: ['./manual-tasks-page.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [ManualTasksListComponent, AsyncPipe],
 })
 export class ManualTasksPageComponent implements OnInit, OnDestroy {
+  private signalRService = inject(SignalRService);
+  private taskDataService = inject(TaskDataService);
+  private routerQuery = inject(RouterQuery);
+  private taskQuery = inject(TaskQuery);
+  private scenarioDataService = inject(ScenarioDataService);
+  private scenarioQuery = inject(ScenarioQuery);
+  private errorService = inject(ErrorService);
+
   viewId: string;
   scenarioId: string;
 
   public tasks$: Observable<Task[]>;
   public scenario$: Observable<Scenario>;
-
-  constructor(
-    private signalRService: SignalRService,
-    private taskDataService: TaskDataService,
-    private routerQuery: RouterQuery,
-    private taskQuery: TaskQuery,
-    private scenarioDataService: ScenarioDataService,
-    private scenarioQuery: ScenarioQuery,
-    private errorService: ErrorService
-  ) { }
 
   ngOnInit(): void {
     this.scenarioId = this.routerQuery.getParams('scenarioId');
@@ -57,7 +58,7 @@ export class ManualTasksPageComponent implements OnInit, OnDestroy {
             this.tasks$ = this.taskQuery.selectAllUserExecutable(scenario.id);
             this.signalRService.joinScenario(this.scenarioId);
           }
-        })
+        }),
       );
     } else {
       this.viewId = this.routerQuery.getParams('viewId');
@@ -68,29 +69,33 @@ export class ManualTasksPageComponent implements OnInit, OnDestroy {
           tap((scenarios) => {
             if (scenarios) {
               if (scenarios.length > 1) {
-                const scenarioNames = scenarios.map(m => m.name).join('  ||  ');
+                const scenarioNames = scenarios
+                  .map((m) => m.name)
+                  .join('  ||  ');
                 const err = {
-                  'message': 'This URL is ambiguous because ' +
+                  message:
+                    'This URL is ambiguous because ' +
                     scenarios.length +
                     ' scenarios point to view ID ' +
                     this.viewId +
                     '.  (' +
                     scenarioNames +
-                    ').  Please use the "scenario/{scenarioId}" URL instead of the "view/{viewId}" URL to select the specific scenario.'
+                    ').  Please use the "scenario/{scenarioId}" URL instead of the "view/{viewId}" URL to select the specific scenario.',
                 };
                 this.errorService.handleError(err);
               } else if (scenarios.length === 1) {
                 this.scenarioId = scenarios[0].id;
-                this.tasks$ = this.taskQuery.selectAllUserExecutable(this.scenarioId);
+                this.tasks$ = this.taskQuery.selectAllUserExecutable(
+                  this.scenarioId,
+                );
                 this.signalRService.joinScenario(this.scenarioId);
               }
             }
           }),
-          map((scenarios) => scenarios.length === 1 ? scenarios[0] : null),
+          map((scenarios) => (scenarios.length === 1 ? scenarios[0] : null)),
         );
       }
     }
-
   }
 
   ngOnDestroy() {

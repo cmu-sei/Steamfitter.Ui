@@ -5,12 +5,12 @@ Copyright 2025 Carnegie Mellon University. All Rights Reserved.
 
 import {
   Component,
-  EventEmitter,
-  Input,
   OnChanges,
   OnInit,
-  Output,
   SimpleChanges,
+  inject,
+  input,
+  output,
 } from '@angular/core';
 import { combineLatest, forkJoin, Observable, of } from 'rxjs';
 import { filter, map, tap } from 'rxjs/operators';
@@ -26,18 +26,44 @@ import {
 import { GroupDataService } from 'src/app/data/group/group-data.service';
 import { PermissionDataService } from 'src/app/data/permission/permission-data.service';
 import { ActivatedRoute } from '@angular/router';
+import { MatIconButton } from '@angular/material/button';
+import { MatTooltip } from '@angular/material/tooltip';
+import { MatIcon } from '@angular/material/icon';
+import { ScenarioTemplateMembershipListComponent } from '../scenario-template-membership-list/scenario-template-membership-list.component';
+import { ScenarioTemplateMemberListComponent } from '../scenario-template-member-list/scenario-template-member-list.component';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
-    selector: 'app-scenario-template-memberships',
-    templateUrl: './scenario-template-memberships.component.html',
-    styleUrls: ['./scenario-template-memberships.component.scss'],
-    standalone: false
+  selector: 'app-scenario-template-memberships',
+  templateUrl: './scenario-template-memberships.component.html',
+  styleUrls: ['./scenario-template-memberships.component.scss'],
+  imports: [
+    MatIconButton,
+    MatTooltip,
+    MatIcon,
+    ScenarioTemplateMembershipListComponent,
+    ScenarioTemplateMemberListComponent,
+    AsyncPipe,
+  ],
 })
 export class ScenarioTemplateMembershipsComponent implements OnInit, OnChanges {
-  @Input() embedded: boolean;
-  @Input() showHeader = true;
-  @Input() scenarioTemplateId: string;
-  @Output() goBack = new EventEmitter();
+  private scenarioTemplateQuery = inject(ScenarioTemplateQuery);
+  private scenarioTemplateMembershipDataService = inject(
+    ScenarioTemplateMembershipDataService,
+  );
+  private scenarioTemplateRolesDataService = inject(
+    ScenarioTemplateRoleDataService,
+  );
+  private userDataService = inject(UserDataService);
+  private userQuery = inject(UserQuery);
+  private groupDataService = inject(GroupDataService);
+  private permissionDataService = inject(PermissionDataService);
+  private activatedRoute = inject(ActivatedRoute);
+
+  readonly embedded = input<boolean>(undefined);
+  readonly showHeader = input(true);
+  readonly scenarioTemplateId = input<string>(undefined);
+  readonly goBack = output();
 
   scenarioTemplate$: Observable<ScenarioTemplate>;
 
@@ -54,41 +80,39 @@ export class ScenarioTemplateMembershipsComponent implements OnInit, OnChanges {
 
   canEdit$: Observable<boolean>;
 
-  constructor(
-    private scenarioTemplateQuery: ScenarioTemplateQuery,
-    private scenarioTemplateMembershipDataService: ScenarioTemplateMembershipDataService,
-    private scenarioTemplateRolesDataService: ScenarioTemplateRoleDataService,
-    private userDataService: UserDataService,
-    private userQuery: UserQuery,
-    private groupDataService: GroupDataService,
-    private permissionDataService: PermissionDataService,
-    private activatedRoute: ActivatedRoute
-  ) {}
-
   ngOnInit(): void {
     forkJoin([
       this.scenarioTemplateMembershipDataService.loadMemberships(
-        this.scenarioTemplateId
+        this.scenarioTemplateId(),
       ),
       this.userDataService.load(),
       this.scenarioTemplateRolesDataService.loadRoles(),
       this.groupDataService.load(),
     ]).subscribe();
     this.permissionDataService
-      .loadScenarioTemplatePermissions(this.scenarioTemplateId)
-      .subscribe((x) =>
-        this.canEdit$ = of(this.permissionDataService.canEditScenarioTemplate(this.scenarioTemplateId)));
+      .loadScenarioTemplatePermissions(this.scenarioTemplateId())
+      .subscribe(
+        (x) =>
+          (this.canEdit$ = of(
+            this.permissionDataService.canEditScenarioTemplate(
+              this.scenarioTemplateId(),
+            ),
+          )),
+      );
   }
 
   ngOnChanges(changes: SimpleChanges) {
     this.scenarioTemplate$ = this.scenarioTemplateQuery
-      .selectEntity(this.scenarioTemplateId)
+      .selectEntity(this.scenarioTemplateId())
       .pipe(
         filter((x) => x != null),
-        tap(
-          (x) => {
-            this.canEdit$ = of(this.permissionDataService.canEditScenarioTemplate(this.scenarioTemplateId));
-          })
+        tap((x) => {
+          this.canEdit$ = of(
+            this.permissionDataService.canEditScenarioTemplate(
+              this.scenarioTemplateId(),
+            ),
+          );
+        }),
       );
   }
 
@@ -108,7 +132,7 @@ export class ScenarioTemplateMembershipsComponent implements OnInit, OnChanges {
             );
           }
         });
-      })
+      }),
     );
   }
 
@@ -131,14 +155,14 @@ export class ScenarioTemplateMembershipsComponent implements OnInit, OnChanges {
             );
           }
         });
-      })
+      }),
     );
   }
 
   createMembership(scenarioTemplateMembership: ScenarioTemplateMembership) {
-    scenarioTemplateMembership.scenarioTemplateId = this.scenarioTemplateId;
+    scenarioTemplateMembership.scenarioTemplateId = this.scenarioTemplateId();
     this.scenarioTemplateMembershipDataService
-      .createMembership(this.scenarioTemplateId, scenarioTemplateMembership)
+      .createMembership(this.scenarioTemplateId(), scenarioTemplateMembership)
       .subscribe();
   }
 

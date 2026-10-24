@@ -6,7 +6,7 @@
 // (system permission, then the scenario or scenario-template claim) and cannot
 // drift from it.
 
-import { inject, Provider } from '@angular/core';
+import { Provider } from '@angular/core';
 import { vi } from 'vitest';
 import { of } from 'rxjs';
 import {
@@ -58,14 +58,10 @@ export function permissionDataProviders(
     },
     {
       provide: PermissionDataService,
-      // inject() resolves the stubs above (or a test's own override) with the
-      // real types, so the partial stubs need no casts.
+      // The service's inject() calls resolve the stubs above (or a test's own
+      // override), so the partial stubs need no casts.
       useFactory: () => {
-        const service = new PermissionDataService(
-          inject(SystemPermissionsService),
-          inject(ScenarioPermissionsService),
-          inject(ScenarioTemplatePermissionsService),
-        );
+        const service = new PermissionDataService();
         // The stubs emit synchronously, so the service is loaded on return.
         // The app primes these from its route guards and list components;
         // `load()` and the claim loaders still work if the code under test

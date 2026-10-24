@@ -4,7 +4,7 @@
 import { Order, QueryConfig, QueryEntity } from '@datorama/akita';
 import { ScenarioState, ScenarioStore } from './scenario.store';
 import { Scenario } from 'src/app/generated/steamfitter.api';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 
 @QueryConfig({
@@ -15,8 +15,14 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class ScenarioQuery extends QueryEntity<ScenarioState> {
-  constructor(protected store: ScenarioStore) {
+  protected store: ScenarioStore;
+
+  constructor() {
+    const store = inject(ScenarioStore);
+
     super(store);
+
+    this.store = store;
   }
 
   selectById(id: string): Observable<Scenario> {

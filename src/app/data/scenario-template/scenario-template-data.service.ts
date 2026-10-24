@@ -3,7 +3,7 @@
 
 import { ScenarioTemplateStore } from './scenario-template.store';
 import { ScenarioTemplateQuery } from './scenario-template.query';
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
 import { PageEvent } from '@angular/material/paginator';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -21,10 +21,18 @@ import { TaskDataService } from 'src/app/data/task/task-data.service';
   providedIn: 'root',
 })
 export class ScenarioTemplateDataService {
+  private scenarioTemplateStore = inject(ScenarioTemplateStore);
+  private scenarioTemplateQuery = inject(ScenarioTemplateQuery);
+  private scenarioTemplateService = inject(ScenarioTemplateService);
+  private taskDataService = inject(TaskDataService);
+  private vmCredentialService = inject(VmCredentialService);
+  private router = inject(Router);
+  private activatedRoute = inject(ActivatedRoute);
+
   private _requestedScenarioTemplateId: string;
   private _requestedScenarioTemplateId$ =
     this.activatedRoute.queryParamMap.pipe(
-      map((params) => params.get('scenarioTemplateId') || '')
+      map((params) => params.get('scenarioTemplateId') || ''),
     );
   readonly scenarioTemplateList: Observable<ScenarioTemplate[]>;
   readonly selected: Observable<ScenarioTemplate>;
@@ -37,17 +45,11 @@ export class ScenarioTemplateDataService {
   private pageSize: Observable<number>;
   private pageIndex: Observable<number>;
 
-  constructor(
-    private scenarioTemplateStore: ScenarioTemplateStore,
-    private scenarioTemplateQuery: ScenarioTemplateQuery,
-    private scenarioTemplateService: ScenarioTemplateService,
-    private taskDataService: TaskDataService,
-    private vmCredentialService: VmCredentialService,
-    private router: Router,
-    private activatedRoute: ActivatedRoute
-  ) {
+  constructor() {
+    const activatedRoute = this.activatedRoute;
+
     this.filterTerm = activatedRoute.queryParamMap.pipe(
-      map((params) => params.get('scenarioTemplatemask') || '')
+      map((params) => params.get('scenarioTemplatemask') || ''),
     );
     this.filterControl.valueChanges.subscribe((term) => {
       this.router.navigate([], {
@@ -56,16 +58,16 @@ export class ScenarioTemplateDataService {
       });
     });
     this.sortColumn = activatedRoute.queryParamMap.pipe(
-      map((params) => params.get('sorton') || 'name')
+      map((params) => params.get('sorton') || 'name'),
     );
     this.sortIsAscending = activatedRoute.queryParamMap.pipe(
-      map((params) => (params.get('sortdir') || 'asc') === 'asc')
+      map((params) => (params.get('sortdir') || 'asc') === 'asc'),
     );
     this.pageSize = activatedRoute.queryParamMap.pipe(
-      map((params) => parseInt(params.get('pagesize') || '20', 10))
+      map((params) => parseInt(params.get('pagesize') || '20', 10)),
     );
     this.pageIndex = activatedRoute.queryParamMap.pipe(
-      map((params) => parseInt(params.get('pageindex') || '0', 10))
+      map((params) => parseInt(params.get('pageindex') || '0', 10)),
     );
     this.scenarioTemplateList = combineLatest([
       this.scenarioTemplateQuery.selectAll(),
@@ -86,20 +88,20 @@ export class ScenarioTemplateDataService {
         ]) =>
           items
             ? (items as ScenarioTemplate[])
-              .sort((a: ScenarioTemplate, b: ScenarioTemplate) =>
-                this.sortScenarioTemplates(a, b, sortColumn, sortIsAscending)
-              )
-              .filter(
-                (scenarioTemplate) =>
-                  ('' + scenarioTemplate.name)
-                    .toLowerCase()
-                    .includes(filterTerm.toLowerCase()) ||
+                .sort((a: ScenarioTemplate, b: ScenarioTemplate) =>
+                  this.sortScenarioTemplates(a, b, sortColumn, sortIsAscending),
+                )
+                .filter(
+                  (scenarioTemplate) =>
+                    ('' + scenarioTemplate.name)
+                      .toLowerCase()
+                      .includes(filterTerm.toLowerCase()) ||
                     scenarioTemplate.id
                       .toLowerCase()
-                      .includes(filterTerm.toLowerCase())
-              )
-            : []
-      )
+                      .includes(filterTerm.toLowerCase()),
+                )
+            : [],
+      ),
     );
     this.selected = combineLatest([
       this.scenarioTemplateList,
@@ -114,7 +116,7 @@ export class ScenarioTemplateDataService {
         ) {
           selectedScenarioTemplate = scenarioTemplateList.find(
             (scenarioTemplate) =>
-              scenarioTemplate.id === requestedScenarioTemplateId
+              scenarioTemplate.id === requestedScenarioTemplateId,
           );
           if (
             selectedScenarioTemplate &&
@@ -123,7 +125,7 @@ export class ScenarioTemplateDataService {
             this.scenarioTemplateStore.setActive(requestedScenarioTemplateId);
             this._requestedScenarioTemplateId = requestedScenarioTemplateId;
             this.taskDataService.loadByScenarioTemplate(
-              requestedScenarioTemplateId
+              requestedScenarioTemplateId,
             );
           }
         } else {
@@ -132,7 +134,7 @@ export class ScenarioTemplateDataService {
           this.scenarioTemplateStore.update({ taskList: [] });
         }
         return selectedScenarioTemplate;
-      })
+      }),
     );
   }
 
@@ -140,7 +142,7 @@ export class ScenarioTemplateDataService {
     a: ScenarioTemplate,
     b: ScenarioTemplate,
     column: string,
-    isAsc: boolean
+    isAsc: boolean,
   ) {
     switch (column) {
       case 'name':
@@ -173,7 +175,7 @@ export class ScenarioTemplateDataService {
         tap(() => {
           this.scenarioTemplateStore.setLoading(false);
         }),
-        take(1)
+        take(1),
       )
       .subscribe(
         (scenarioTemplates) => {
@@ -181,7 +183,7 @@ export class ScenarioTemplateDataService {
         },
         (error) => {
           this.scenarioTemplateStore.set([]);
-        }
+        },
       );
   }
 
@@ -193,7 +195,7 @@ export class ScenarioTemplateDataService {
         tap(() => {
           this.scenarioTemplateStore.setLoading(false);
         }),
-        take(1)
+        take(1),
       )
       .subscribe((s) => {
         this.scenarioTemplateStore.upsert(s.id, { ...s });
@@ -208,7 +210,7 @@ export class ScenarioTemplateDataService {
         tap(() => {
           this.scenarioTemplateStore.setLoading(false);
         }),
-        take(1)
+        take(1),
       )
       .subscribe((s) => {
         this.scenarioTemplateStore.add(s);
@@ -224,7 +226,7 @@ export class ScenarioTemplateDataService {
         tap(() => {
           this.scenarioTemplateStore.setLoading(false);
         }),
-        take(1)
+        take(1),
       )
       .subscribe((s) => {
         this.scenarioTemplateStore.add(s);
@@ -240,7 +242,7 @@ export class ScenarioTemplateDataService {
         tap(() => {
           this.scenarioTemplateStore.setLoading(false);
         }),
-        take(1)
+        take(1),
       )
       .subscribe((n) => {
         this.updateStore(n);
@@ -259,7 +261,11 @@ export class ScenarioTemplateDataService {
 
   setActive(id: string) {
     this.router.navigate([], {
-      queryParams: { scenarioTemplateId: id || null, scenarioId: null, viewId: null },
+      queryParams: {
+        scenarioTemplateId: id || null,
+        scenarioId: null,
+        viewId: null,
+      },
       queryParamsHandling: 'merge',
     });
   }

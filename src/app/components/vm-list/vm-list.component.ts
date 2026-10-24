@@ -1,29 +1,42 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
+import { Component, Input, OnDestroy, inject, output } from '@angular/core';
 import {
-  Component,
-  EventEmitter,
-  Input,
-  OnDestroy,
-  Output,
-} from '@angular/core';
-import { UntypedFormControl } from '@angular/forms';
+  UntypedFormControl,
+  FormsModule,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { PlayerDataService } from 'src/app/data/player/player-data-service';
 import { Vm } from 'src/app/generated/steamfitter.api';
 import { MatIcon } from '@angular/material/icon';
+import { MatFormField, MatInput, MatSuffix } from '@angular/material/input';
+import { MatIconButton, MatButton } from '@angular/material/button';
+import { MatCheckbox } from '@angular/material/checkbox';
 
 @Component({
-    selector: 'app-vm-list',
-    templateUrl: './vm-list.component.html',
-    styleUrls: ['./vm-list.component.scss'],
-    standalone: false
+  selector: 'app-vm-list',
+  templateUrl: './vm-list.component.html',
+  styleUrls: ['./vm-list.component.scss'],
+  imports: [
+    MatFormField,
+    MatInput,
+    FormsModule,
+    ReactiveFormsModule,
+    MatIconButton,
+    MatSuffix,
+    MatIcon,
+    MatCheckbox,
+    MatButton,
+  ],
 })
 export class VmListComponent implements OnDestroy {
+  private playerDataService = inject(PlayerDataService);
+
   @Input() selectedVms: string[];
-  @Output() updateVmList = new EventEmitter<string[]>();
+  readonly updateVmList = output<string[]>();
   vmList: Vm[];
   displayedColumns: string[] = ['name'];
   private unsubscribe$ = new Subject();
@@ -33,7 +46,7 @@ export class VmListComponent implements OnDestroy {
   filterControl: UntypedFormControl = this.playerDataService.vmFilter;
   showSelectedOnly = false;
 
-  constructor(private playerDataService: PlayerDataService) {
+  constructor() {
     this.playerDataService.vmList
       .pipe(takeUntil(this.unsubscribe$))
       .subscribe((vms) => {
