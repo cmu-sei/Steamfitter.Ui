@@ -189,7 +189,7 @@ describe('AdminSystemRolesComponent', () => {
    * Data: ManageRoles; the user confirms deleting Observer.
    */
   it('deletes a role after confirmation', async () => {
-    const { user, header, roleNames, rolesApi } = await renderRoles([
+    const { user, header, roleNames, rolesApi, confirm } = await renderRoles([
       'ManageRoles',
     ]);
 
@@ -199,6 +199,13 @@ describe('AdminSystemRolesComponent', () => {
       }),
     );
 
+    expect(confirm).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: 'Delete Role',
+        message: 'Are you sure that you want to delete Observer?',
+        confirmText: 'Delete',
+      }),
+    );
     expect(rolesApi.deleteSystemRole).toHaveBeenCalledWith('r2');
     expect(roleNames()).toEqual(['Administrator']);
   });

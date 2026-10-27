@@ -13,8 +13,41 @@ import { of } from 'rxjs';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { TaskService } from 'src/app/generated/steamfitter.api';
 import { ApiStub } from 'src/app/test-utils/api-stub';
+import { screen } from '@testing-library/angular';
 import { renderComponent } from 'src/app/test-utils/render-component';
 import { TaskEditComponent } from './task-edit.component';
+
+function renderEdit(task: { id?: string } = {}) {
+  return renderComponent(TaskEditComponent, {
+    declarations: [TaskEditComponent],
+    imports: [
+      MatFormFieldModule,
+      MatInputModule,
+      MatSelectModule,
+      MatTooltipModule,
+      MatButtonModule,
+      MatCheckboxModule,
+    ],
+    providers: [
+      {
+        provide: TaskService,
+        useValue: {
+          getAvailableCommands: vi.fn(() =>
+            of(JSON.stringify({ availableCommands: [] })),
+          ),
+        } satisfies ApiStub<TaskService>,
+      },
+      {
+        provide: MAT_DIALOG_DATA,
+        useValue: {
+          task: { ...task, name: '', action: 'guest_process_run', vmList: [] },
+          vmCredentials: [],
+        },
+      },
+    ],
+    schemas: [CUSTOM_ELEMENTS_SCHEMA],
+  });
+}
 
 describe('TaskEditComponent', () => {
   /**
@@ -23,37 +56,23 @@ describe('TaskEditComponent', () => {
    * Data: dialog data with a new manual task and no VM credentials; an empty command catalog.
    */
   it('renders with the default test providers', async () => {
-    const { fixture } = await renderComponent(TaskEditComponent, {
-      declarations: [TaskEditComponent],
-      imports: [
-        MatFormFieldModule,
-        MatInputModule,
-        MatSelectModule,
-        MatTooltipModule,
-        MatButtonModule,
-        MatCheckboxModule,
-      ],
-      providers: [
-        {
-          provide: TaskService,
-          useValue: {
-            getAvailableCommands: vi.fn(() =>
-              of(JSON.stringify({ availableCommands: [] })),
-            ),
-          } satisfies ApiStub<TaskService>,
-        },
-        {
-          provide: MAT_DIALOG_DATA,
-          useValue: {
-            task: { name: '', action: 'guest_process_run', vmList: [] },
-            vmCredentials: [],
-          },
-        },
-      ],
-      schemas: [CUSTOM_ELEMENTS_SCHEMA],
-    });
+    const { fixture } = await renderEdit();
 
     expect(fixture.componentInstance).toBeInstanceOf(TaskEditComponent);
     expect(fixture.nativeElement).toBeInTheDocument();
+  });
+
+  /**
+   * Verifies: the dialog is titled "Add Task" for a new task and "Edit Task" for an existing one.
+   * Interacts with: the crucible-dialog title binding.
+   * Data: a task without an id, then one with id t1.
+   */
+  it.each([
+    { task: {}, title: 'Add Task' },
+    { task: { id: 't1' }, title: 'Edit Task' },
+  ])('is titled $title', async ({ task, title }) => {
+    await renderEdit(task);
+
+    expect(screen.getByRole('heading', { name: title })).toBeInTheDocument();
   });
 });

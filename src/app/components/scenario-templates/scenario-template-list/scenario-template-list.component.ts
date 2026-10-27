@@ -131,7 +131,7 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
     'durationHours',
     'dateCreated',
   ];
-  editScenarioTemplateText = 'Edit ScenarioTemplate';
+  editScenarioTemplateText = 'Edit Scenario Template';
   // context menu
   readonly contextMenu = viewChild(MatMenuTrigger);
   contextMenuPosition = { x: '0px', y: '0px' };
@@ -270,11 +270,10 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
   deleteScenarioTemplate(scenarioTemplate: ScenarioTemplate): void {
     this.confirmService
       .confirm({
-        title: 'Delete ScenarioTemplate',
-        message:
-          'Are you sure that you want to delete scenarioTemplate ' +
-          scenarioTemplate.name +
-          '?',
+        title: 'Delete Scenario Template',
+        message: `Are you sure that you want to delete ${scenarioTemplate.name}?`,
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
       })
       .afterClosed()
       .subscribe((confirmed) => {
@@ -290,11 +289,10 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
   copyScenarioTemplate(scenarioTemplate: ScenarioTemplate): void {
     this.confirmService
       .confirm({
-        title: 'Copy ScenarioTemplate',
-        message:
-          'Are you sure that you want to create a new scenarioTemplate from ' +
-          scenarioTemplate.name +
-          '?',
+        title: 'Copy Scenario Template',
+        message: `Are you sure that you want to copy ${scenarioTemplate.name}?`,
+        confirmText: 'Copy',
+        cancelText: 'Cancel',
       })
       .afterClosed()
       .subscribe((confirmed) => {
@@ -313,10 +311,9 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
     this.confirmService
       .confirm({
         title: 'Create Scenario',
-        message:
-          'Are you sure that you want to create a scenario from ' +
-          scenarioTemplate.name +
-          '?',
+        message: `Are you sure that you want to create a scenario from ${scenarioTemplate.name}?`,
+        confirmText: 'Create',
+        cancelText: 'Cancel',
       })
       .afterClosed()
       .subscribe((confirmed) => {

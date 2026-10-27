@@ -169,7 +169,12 @@ describe('TaskTreeComponent', () => {
     await user.click(screen.getByRole('menuitem', { name: 'Delete' }));
 
     expect(confirm).toHaveBeenCalledWith(
-      expect.objectContaining({ title: 'Delete Task' }),
+      expect.objectContaining({
+        title: 'Delete Task',
+        message: 'Are you sure that you want to delete Ping?',
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
+      }),
     );
     expect(deleted.mock.calls).toEqual([['t1']]);
   });

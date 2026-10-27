@@ -333,7 +333,12 @@ describe('ScenarioTemplateListComponent', () => {
     );
 
     expect(confirm).toHaveBeenCalledWith(
-      expect.objectContaining({ title: 'Create Scenario' }),
+      expect.objectContaining({
+        title: 'Create Scenario',
+        message: 'Are you sure that you want to create a scenario from Alpha?',
+        confirmText: 'Create',
+        cancelText: 'Cancel',
+      }),
     );
     expect(scenarioApi.createScenarioFromScenarioTemplate).toHaveBeenCalledWith(
       't1',
@@ -348,7 +353,7 @@ describe('ScenarioTemplateListComponent', () => {
    * Data: CreateScenarioTemplates + EditScenarioTemplates; the user cancels.
    */
   it('does not copy when the confirmation is cancelled', async () => {
-    const { openRowMenu, user, templateApi } = await renderList({
+    const { openRowMenu, user, confirm, templateApi } = await renderList({
       system: ['CreateScenarioTemplates', 'EditScenarioTemplates'],
       confirmed: false,
     });
@@ -356,6 +361,14 @@ describe('ScenarioTemplateListComponent', () => {
 
     await user.click(screen.getByRole('menuitem', { name: 'Copy' }));
 
+    expect(confirm).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: 'Copy Scenario Template',
+        message: 'Are you sure that you want to copy Alpha?',
+        confirmText: 'Copy',
+        cancelText: 'Cancel',
+      }),
+    );
     expect(templateApi.copyScenarioTemplate).not.toHaveBeenCalled();
   });
 
@@ -365,7 +378,7 @@ describe('ScenarioTemplateListComponent', () => {
    * Data: ManageScenarioTemplates; template 't1' seeded into the store; the user confirms.
    */
   it('deletes the template after confirmation', async () => {
-    const { openRowMenu, user, templateApi } = await renderList({
+    const { openRowMenu, user, confirm, templateApi } = await renderList({
       system: ['ManageScenarioTemplates'],
     });
     TestBed.inject(ScenarioTemplateStore).set([template()]);
@@ -375,6 +388,14 @@ describe('ScenarioTemplateListComponent', () => {
 
     await user.click(screen.getByRole('menuitem', { name: 'Delete' }));
 
+    expect(confirm).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: 'Delete Scenario Template',
+        message: 'Are you sure that you want to delete Alpha?',
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
+      }),
+    );
     expect(templateApi.deleteScenarioTemplate).toHaveBeenCalledWith('t1');
     expect(templateQuery.hasEntity('t1')).toBe(false);
   });
