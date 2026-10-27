@@ -8,6 +8,7 @@ import { UntypedFormControl } from '@angular/forms';
 import { PageEvent } from '@angular/material/paginator';
 import { Router, ActivatedRoute } from '@angular/router';
 import {
+  ImportScenarioTemplatesResult,
   ScenarioTemplate,
   ScenarioTemplateService,
   VmCredential,
@@ -232,6 +233,57 @@ export class ScenarioTemplateDataService {
         this.scenarioTemplateStore.add(s);
         this.setActive(s.id);
       });
+  }
+
+  /**
+   * Downloads a json file of the given scenario templates, with their tasks. No ids exports every template.
+   * The ids go in the request body, so a large selection is not limited by the length of a URL.
+   */
+  exportScenarioTemplates(ids: string[]): Observable<void> {
+    return this.scenarioTemplateService
+      .exportScenarioTemplates({ ids }, 'response')
+      .pipe(
+        take(1),
+        map((response) => {
+          const filename =
+            this.getFilename(response.headers.get('Content-Disposition')) ||
+            'scenario-templates.json';
+          const url = window.URL.createObjectURL(response.body);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = filename;
+          link.click();
+          window.URL.revokeObjectURL(url);
+        }),
+      );
+  }
+
+  /**
+   * Creates scenario templates from an exported json file (or a zip holding one), then refreshes the list
+   */
+  importScenarioTemplates(
+    file: Blob,
+  ): Observable<ImportScenarioTemplatesResult> {
+    return this.scenarioTemplateService.importScenarioTemplates(file).pipe(
+      take(1),
+      tap((result) => {
+        if (result.scenarioTemplates?.length > 0) {
+          this.load();
+        }
+      }),
+    );
+  }
+
+  private getFilename(contentDisposition: string | null): string | null {
+    if (!contentDisposition) {
+      return null;
+    }
+    const encoded = /filename\*=UTF-8''([^;]+)/i.exec(contentDisposition);
+    if (encoded) {
+      return decodeURIComponent(encoded[1]);
+    }
+    const plain = /filename="?([^";]+)"?/i.exec(contentDisposition);
+    return plain ? plain[1] : null;
   }
 
   updateScenarioTemplate(scenarioTemplate: ScenarioTemplate) {

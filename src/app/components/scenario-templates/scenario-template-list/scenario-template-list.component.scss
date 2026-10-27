@@ -32,9 +32,18 @@ table {
   padding-right: 10px;
 }
 
+.mat-column-select {
+  width: 48px;
+}
+
 .mat-column-actions {
-  width: 140px;
+  width: 160px;
   white-space: nowrap;
+}
+
+// the export button's selected-count badge sits outside the button
+.mat-mdc-header-cell.mat-column-actions {
+  overflow: visible;
 }
 
 .mat-column-name {
