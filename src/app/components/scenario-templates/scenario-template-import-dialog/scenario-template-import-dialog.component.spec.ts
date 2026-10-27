@@ -4,7 +4,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, Subject, of, throwError } from 'rxjs';
 import { MatDialogRef } from '@angular/material/dialog';
 import { ImportScenarioTemplatesResult } from 'src/app/generated/steamfitter.api';
 import { ScenarioTemplateDataService } from 'src/app/data/scenario-template/scenario-template-data.service';
@@ -145,22 +145,31 @@ describe('ScenarioTemplateImportDialogComponent', () => {
   });
 
   /**
-   * Verifies: cancelling while the import is in flight unsubscribes, which aborts the HTTP request.
-   * Data: an import that never answers.
+   * Verifies: closing the dialog while the import is in flight does not abort it, since the API may already
+   * have saved the templates.
+   * Data: an import that answers only after the dialog is closed.
    */
-  it('aborts an import in flight when cancelled', async () => {
+  it('keeps an import in flight running when the dialog is closed', async () => {
     let aborted = false;
+    const answer = new Subject<ImportScenarioTemplatesResult>();
     const { user, close, chooseFile } = await renderDialog(
-      new Observable<ImportScenarioTemplatesResult>(
-        () => () => (aborted = true),
-      ),
+      new Observable<ImportScenarioTemplatesResult>((subscriber) => {
+        const inner = answer.subscribe(subscriber);
+        return () => {
+          inner.unsubscribe();
+          aborted = !subscriber.closed;
+        };
+      }),
     );
 
     await chooseFile(exportFile());
     await user.click(screen.getByRole('button', { name: 'Import' }));
     await user.click(screen.getByRole('button', { name: 'Cancel' }));
 
-    expect(aborted).toBe(true);
     expect(close).toHaveBeenCalled();
+    expect(aborted).toBe(false);
+    answer.next({ scenarioTemplates: [{ id: 'n1', name: 'Alpha' }] });
+    answer.complete();
+    expect(aborted).toBe(false);
   });
 });

@@ -1,7 +1,7 @@
 // Copyright 2026 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Component, OnDestroy, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { MatDialogRef } from '@angular/material/dialog';
@@ -10,7 +10,7 @@ import {
   CrucibleDialogComponent,
   CrucibleDialogContentDirective,
 } from '@cmusei/crucible-common';
-import { Subscription, finalize } from 'rxjs';
+import { finalize } from 'rxjs';
 import { archiveErrorMessage } from '../archive-error-message';
 import { ScenarioTemplateDataService } from 'src/app/data/scenario-template/scenario-template-data.service';
 import { ImportScenarioTemplatesResult } from 'src/app/generated/steamfitter.api';
@@ -27,7 +27,7 @@ import { ImportScenarioTemplatesResult } from 'src/app/generated/steamfitter.api
     MatButton,
   ],
 })
-export class ScenarioTemplateImportDialogComponent implements OnDestroy {
+export class ScenarioTemplateImportDialogComponent {
   private scenarioTemplateDataService = inject(ScenarioTemplateDataService);
   private dialogRef = inject(
     MatDialogRef<ScenarioTemplateImportDialogComponent>,
@@ -39,7 +39,6 @@ export class ScenarioTemplateImportDialogComponent implements OnDestroy {
   loading = false;
   errorMessage = '';
   result: ImportScenarioTemplatesResult | null = null;
-  private request: Subscription | undefined;
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -50,7 +49,7 @@ export class ScenarioTemplateImportDialogComponent implements OnDestroy {
   import(): void {
     this.loading = true;
     this.errorMessage = '';
-    this.request = this.scenarioTemplateDataService
+    this.scenarioTemplateDataService
       .importScenarioTemplates(this.form.value.file)
       .pipe(finalize(() => (this.loading = false)))
       .subscribe({
@@ -64,15 +63,11 @@ export class ScenarioTemplateImportDialogComponent implements OnDestroy {
   }
 
   /**
-   * Closing the dialog abandons an import still in flight, which aborts the request. The API saves an
-   * import in one SaveChanges, so an aborted import creates nothing.
+   * Closing the dialog leaves an import still in flight running rather than aborting it: the API may already
+   * have saved the templates, and an abort would then hide them until the next reload, inviting a second
+   * import that copies them all again. The data service reloads the list when the import returns.
    */
   close(): void {
-    this.request?.unsubscribe();
     this.dialogRef.close(this.result);
-  }
-
-  ngOnDestroy(): void {
-    this.request?.unsubscribe();
   }
 }
