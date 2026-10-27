@@ -6,7 +6,6 @@ import { Component, Directive, input } from '@angular/core';
 import { screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { of } from 'rxjs';
-import { HttpHeaders, HttpResponse } from '@angular/common/http';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { TestBed } from '@angular/core/testing';
@@ -31,6 +30,7 @@ import { ScenarioQuery } from 'src/app/data/scenario/scenario.query';
 import { ScenarioTemplateQuery } from 'src/app/data/scenario-template/scenario-template.query';
 import { ScenarioTemplateStore } from 'src/app/data/scenario-template/scenario-template.store';
 import { permissionDataProviders } from 'src/app/test-utils/mock-permission-data.service';
+import { ScenarioTemplateExportDialogComponent } from 'src/app/components/scenario-templates/scenario-template-export-dialog/scenario-template-export-dialog.component';
 import { ScenarioTemplateImportDialogComponent } from 'src/app/components/scenario-templates/scenario-template-import-dialog/scenario-template-import-dialog.component';
 import { ScenarioTemplateListComponent } from './scenario-template-list.component';
 
@@ -84,16 +84,6 @@ async function renderList(
       of(template({ id: 't2', name: 'Alpha copy' })),
     ),
     deleteScenarioTemplate: vi.fn(() => of(null)),
-    exportScenarioTemplates: vi.fn(() =>
-      of(
-        new HttpResponse({
-          body: new Blob(['[]'], { type: 'application/json' }),
-          headers: new HttpHeaders({
-            'Content-Disposition': 'attachment; filename=Alpha.json',
-          }),
-        }),
-      ),
-    ),
   } satisfies ApiStub<ScenarioTemplateService>;
   const scenarioApi = {
     createScenarioFromScenarioTemplate: vi.fn(() =>
@@ -280,24 +270,24 @@ describe('ScenarioTemplateListComponent', () => {
       keys: '[MouseRight]',
       target: rowOf('Alpha'),
     });
-    expect(menuItems()).toEqual(['Export', 'Create a Scenario']);
+    expect(menuItems()).toEqual(['Create a Scenario']);
   });
 
   /**
-   * Verifies: the row menu offers Edit, Copy, Delete and Create a Scenario according to system permissions, and Export to anyone who sees the row.
+   * Verifies: the row menu offers Edit, Copy, Delete and Create a Scenario according to system permissions.
    * Interacts with: the context menu template, canEdit/canManage/hasPermission, real PermissionDataService.
    * Data: each row pairs system permissions with the expected items.
    */
   it.each([
-    { system: ['EditScenarioTemplates'], items: ['Edit', 'Export'] },
+    { system: ['EditScenarioTemplates'], items: ['Edit'] },
     {
       system: ['EditScenarioTemplates', 'CreateScenarioTemplates'],
-      items: ['Edit', 'Copy', 'Export'],
+      items: ['Edit', 'Copy'],
     },
-    { system: ['ManageScenarioTemplates'], items: ['Export', 'Delete'] },
+    { system: ['ManageScenarioTemplates'], items: ['Delete'] },
     {
       system: ['EditScenarioTemplates', 'CreateScenarios'],
-      items: ['Edit', 'Export', 'Create a Scenario'],
+      items: ['Edit', 'Create a Scenario'],
     },
   ] as Array<{ system: SystemPermission[]; items: string[] }>)(
     'offers $items for $system',
@@ -327,7 +317,7 @@ describe('ScenarioTemplateListComponent', () => {
 
     await openRowMenu('Alpha');
 
-    expect(menuItems()).toEqual(['Edit', 'Export', 'Delete']);
+    expect(menuItems()).toEqual(['Edit', 'Delete']);
   });
 
   /**
@@ -393,35 +383,98 @@ describe('ScenarioTemplateListComponent', () => {
   });
 
   /**
-   * Verifies: Export downloads the template as the file named by the response.
-   * Interacts with: real ScenarioTemplateDataService.exportScenarioTemplates, ScenarioTemplateService.exportScenarioTemplates stub, URL.createObjectURL.
-   * Data: EditScenarioTemplates; the API answers a json blob named Alpha.json.
+   * Verifies: with nothing selected, Export offers every template, and asks the API for all of them when the caller holds ViewScenarioTemplates.
+   * Interacts with: exportIds/canExportAll, MatDialog.open stub.
+   * Data: two templates; ViewScenarioTemplates, no selection.
    */
-  it('exports the template as a json file', async () => {
-    // jsdom has no object urls
-    const { createObjectURL, revokeObjectURL } = URL;
-    URL.createObjectURL = vi.fn(() => 'blob:alpha');
-    URL.revokeObjectURL = vi.fn();
-    const click = vi
-      .spyOn(HTMLAnchorElement.prototype, 'click')
-      .mockImplementation(() => undefined);
-    const { openRowMenu, user, templateApi } = await renderList({
-      system: ['EditScenarioTemplates'],
+  it('exports every template when none is selected', async () => {
+    const { user, dialog } = await renderList({
+      system: ['ViewScenarioTemplates'],
+      templates: [template(), template({ id: 't2', name: 'Beta' })],
     });
-    await openRowMenu('Alpha');
 
-    await user.click(screen.getByRole('menuitem', { name: 'Export' }));
-
-    expect(templateApi.exportScenarioTemplates).toHaveBeenCalledWith(
-      ['t1'],
-      'response',
+    await user.click(
+      screen.getByRole('button', { name: 'Export Scenario Templates' }),
     );
-    const link = click.mock.contexts[0] as HTMLAnchorElement;
-    expect(link.download).toBe('Alpha.json');
-    expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:alpha');
-    click.mockRestore();
-    URL.createObjectURL = createObjectURL;
-    URL.revokeObjectURL = revokeObjectURL;
+
+    expect(dialog.open).toHaveBeenCalledWith(
+      ScenarioTemplateExportDialogComponent,
+      expect.objectContaining({
+        data: { ids: ['t1', 't2'], selected: false, all: true },
+      }),
+    );
+  });
+
+  /**
+   * Verifies: ticking rows exports only those, and the button says how many.
+   * Interacts with: the select column, SelectionModel, exportLabel, MatDialog.open stub.
+   * Data: two templates; the user ticks Beta.
+   */
+  it('exports only the selected templates and counts them on the button', async () => {
+    const { user, dialog } = await renderList({
+      system: ['ViewScenarioTemplates'],
+      templates: [template(), template({ id: 't2', name: 'Beta' })],
+    });
+
+    await user.click(screen.getByRole('checkbox', { name: 'Select Beta' }));
+    await user.click(
+      screen.getByRole('button', {
+        name: 'Export 1 Selected Scenario Template',
+      }),
+    );
+
+    expect(dialog.open).toHaveBeenCalledWith(
+      ScenarioTemplateExportDialogComponent,
+      expect.objectContaining({
+        data: { ids: ['t2'], selected: true, all: false },
+      }),
+    );
+  });
+
+  /**
+   * Verifies: without ViewScenarioTemplates an export lists the ids of the templates the caller can see, since the API exports all only with that permission.
+   * Interacts with: canExportAll, MatDialog.open stub.
+   * Data: one template the caller manages; no system permissions.
+   */
+  it('lists the ids rather than asking for all without ViewScenarioTemplates', async () => {
+    const { user, dialog } = await renderList();
+
+    await user.click(
+      screen.getByRole('button', { name: 'Export Scenario Templates' }),
+    );
+
+    expect(dialog.open).toHaveBeenCalledWith(
+      ScenarioTemplateExportDialogComponent,
+      expect.objectContaining({
+        data: { ids: ['t1'], selected: false, all: false },
+      }),
+    );
+  });
+
+  /**
+   * Verifies: the header checkbox selects every row, and again clears them.
+   * Interacts with: isAllSelected/toggleAllRows.
+   * Data: two templates.
+   */
+  it('selects and clears every row from the header checkbox', async () => {
+    const { user } = await renderList({
+      templates: [template(), template({ id: 't2', name: 'Beta' })],
+    });
+    const all = screen.getByRole('checkbox', {
+      name: 'Select all Scenario Templates',
+    });
+
+    await user.click(all);
+    expect(
+      screen.getByRole('button', {
+        name: 'Export 2 Selected Scenario Templates',
+      }),
+    ).toBeInTheDocument();
+
+    await user.click(all);
+    expect(
+      screen.getByRole('button', { name: 'Export Scenario Templates' }),
+    ).toBeInTheDocument();
   });
 
   /**

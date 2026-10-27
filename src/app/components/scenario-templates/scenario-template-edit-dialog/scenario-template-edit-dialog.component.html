@@ -7,92 +7,94 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
   !!data &&
   data.scenarioTemplate !== undefined &&
   data.scenarioTemplate !== null
-  ) {
+) {
   <crucible-dialog
-    [dialogTitle]="data.scenarioTemplate.id ? 'Edit Scenario Template' : 'Add Scenario Template'"
+    [dialogTitle]="
+      data.scenarioTemplate.id
+        ? 'Edit Scenario Template'
+        : 'Add Scenario Template'
+    "
     submitLabel="Save"
     [submitDisabled]="!errorFree()"
     [guardUnsavedWork]="true"
     (cancel)="handleEditComplete(false)"
     (submit)="handleEditComplete(true)"
   >
-  <div crucibleDialogContent>
-    <div class="add-margin">
-      <div>
-        <mat-form-field class="full-width">
-          <mat-label>Name (required)</mat-label>
-          <input
-            type="text"
-            matInput
-            [formControl]="scenarioTemplateNameFormControl"
-            placeholder="Name (required)"
-            value="{{ data.scenarioTemplate.name }}"
-            [errorStateMatcher]="matcher"
-            cdkFocusInitial
+    <div crucibleDialogContent>
+      <div class="add-margin">
+        <div>
+          <mat-form-field class="full-width">
+            <mat-label>Name (required)</mat-label>
+            <input
+              type="text"
+              matInput
+              [formControl]="scenarioTemplateNameFormControl"
+              placeholder="Name (required)"
+              value="{{ data.scenarioTemplate.name }}"
+              [errorStateMatcher]="matcher"
+              cdkFocusInitial
             />
-          @if (
-            scenarioTemplateNameFormControl.hasError('required') ||
-            scenarioTemplateNameFormControl.hasError('minlength')
+            @if (
+              scenarioTemplateNameFormControl.hasError('required') ||
+              scenarioTemplateNameFormControl.hasError('minlength')
             ) {
-            <mat-error
-              >
-              Name is <strong>required</strong> and must contain 4 or more
-              characters
-            </mat-error>
-          }
-        </mat-form-field>
+              <mat-error>
+                Name is <strong>required</strong> and must contain 4 or more
+                characters
+              </mat-error>
+            }
+          </mat-form-field>
+        </div>
       </div>
-    </div>
-    <div class="add-margin">
-      <div>
-        <mat-form-field class="full-width">
-          <mat-label>ScenarioTemplate Description (required)</mat-label>
-          <textarea
-            matInput
-            placeholder="ScenarioTemplate Description (required)"
-            [formControl]="descriptionFormControl"
-            value="{{ data.scenarioTemplate.description }}"
-            [errorStateMatcher]="matcher"
-            (focus)="trimInitialDescription()"
-          ></textarea>
-          @if (
-            descriptionFormControl.hasError('required') ||
-            descriptionFormControl.hasError('minlength')
+      <div class="add-margin">
+        <div>
+          <mat-form-field class="full-width">
+            <mat-label>ScenarioTemplate Description (required)</mat-label>
+            <textarea
+              matInput
+              placeholder="ScenarioTemplate Description (required)"
+              [formControl]="descriptionFormControl"
+              value="{{ data.scenarioTemplate.description }}"
+              [errorStateMatcher]="matcher"
+              (focus)="trimInitialDescription()"
+            ></textarea>
+            @if (
+              descriptionFormControl.hasError('required') ||
+              descriptionFormControl.hasError('minlength')
             ) {
-            <mat-error
-              >
-              Description is <strong>required</strong> and must contain 4 or more
-              characters
-            </mat-error>
-          }
-        </mat-form-field>
+              <mat-error>
+                Description is <strong>required</strong> and must contain 4 or
+                more characters
+              </mat-error>
+            }
+          </mat-form-field>
+        </div>
       </div>
-    </div>
-    <div class="add-margin">
-      <div>
-        <mat-form-field class="full-width">
-          <mat-label>Duration Hours (required)</mat-label>
-          <input
-            matInput
-            type="number"
-            min="1"
-            step="1"
-            placeholder="Duration Hours (required)"
-            [formControl]="durationHoursFormControl"
-            [errorStateMatcher]="notAnIntegerErrorState"
+      <div class="add-margin">
+        <div>
+          <mat-form-field class="full-width">
+            <mat-label>Duration Hours (required)</mat-label>
+            <input
+              matInput
+              type="number"
+              min="1"
+              step="1"
+              placeholder="Duration Hours (required)"
+              [formControl]="durationHoursFormControl"
+              [errorStateMatcher]="notAnIntegerErrorState"
             />
-          @if (
-            durationHoursFormControl.hasError('required') ||
-            durationHoursFormControl.hasError('notAnInteger')
+            @if (
+              durationHoursFormControl.hasError('required') ||
+              durationHoursFormControl.hasError('notAnInteger')
             ) {
-            <mat-error
-              >
-              Duration Hours must be an <strong>integer greater than 0</strong>
-            </mat-error>
-          }
-        </mat-form-field>
+              <mat-error>
+                Duration Hours must be an
+                <strong>integer greater than 0</strong>
+              </mat-error>
+            }
+          </mat-form-field>
+        </div>
       </div>
     </div>
-  </div>
   </crucible-dialog>
 }
