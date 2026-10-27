@@ -22,6 +22,12 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         {{ data.ids.length }}
       }
     </p>
+    @if (data.notViewable > 0) {
+      <p class="not-viewable">
+        {{ data.notViewable }} you cannot view
+        {{ data.notViewable === 1 ? 'is' : 'are' }} left out.
+      </p>
+    }
     <p>
       The Scenario Templates are saved as a .json file, with their Tasks and VM
       Credentials. VM Credential passwords are included.

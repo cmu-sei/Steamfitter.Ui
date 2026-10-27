@@ -1,13 +1,14 @@
 // Copyright 2026 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Component, inject } from '@angular/core';
+import { Component, OnDestroy, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
   CrucibleDialogComponent,
   CrucibleDialogContentDirective,
 } from '@cmusei/crucible-common';
-import { finalize } from 'rxjs';
+import { Subscription, finalize } from 'rxjs';
+import { archiveErrorMessage } from '../archive-error-message';
 import { ScenarioTemplateDataService } from 'src/app/data/scenario-template/scenario-template-data.service';
 
 export interface ScenarioTemplateExportDialogData {
@@ -17,6 +18,8 @@ export interface ScenarioTemplateExportDialogData {
   selected: boolean;
   /** Export every Scenario Template by sending no ids. The count shown is still ids.length. */
   all: boolean;
+  /** Templates in the selection (or the filtered list) left out because the caller may not view them. */
+  notViewable?: number;
 }
 
 /**
@@ -28,7 +31,7 @@ export interface ScenarioTemplateExportDialogData {
   styleUrls: ['./scenario-template-export-dialog.component.scss'],
   imports: [CrucibleDialogComponent, CrucibleDialogContentDirective],
 })
-export class ScenarioTemplateExportDialogComponent {
+export class ScenarioTemplateExportDialogComponent implements OnDestroy {
   private scenarioTemplateDataService = inject(ScenarioTemplateDataService);
   private dialogRef = inject(
     MatDialogRef<ScenarioTemplateExportDialogComponent>,
@@ -37,11 +40,12 @@ export class ScenarioTemplateExportDialogComponent {
 
   loading = false;
   errorMessage = '';
+  private request: Subscription | undefined;
 
   export(): void {
     this.loading = true;
     this.errorMessage = '';
-    this.scenarioTemplateDataService
+    this.request = this.scenarioTemplateDataService
       .exportScenarioTemplates(this.data.all ? [] : this.data.ids)
       .pipe(finalize(() => (this.loading = false)))
       .subscribe({
@@ -50,22 +54,20 @@ export class ScenarioTemplateExportDialogComponent {
       });
   }
 
-  /** A blob request returns its error body as a Blob too, so read the ProblemDetails out of it. */
-  private async showError(err: any) {
-    let title: string | undefined;
-    try {
-      title =
-        err?.error instanceof Blob
-          ? JSON.parse(await err.error.text())?.title
-          : err?.error?.title;
-    } catch {
-      title = undefined;
-    }
-    this.errorMessage =
-      title ?? 'The Scenario Templates could not be exported.';
+  private async showError(err: unknown) {
+    this.errorMessage = await archiveErrorMessage(
+      err,
+      'The Scenario Templates could not be exported.',
+    );
   }
 
+  /** Closing the dialog abandons an export still in flight, which aborts the request. */
   cancel(): void {
+    this.request?.unsubscribe();
     this.dialogRef.close(false);
+  }
+
+  ngOnDestroy(): void {
+    this.request?.unsubscribe();
   }
 }

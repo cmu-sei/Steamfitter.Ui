@@ -1,7 +1,7 @@
 // Copyright 2026 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Component, inject } from '@angular/core';
+import { Component, OnDestroy, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButton } from '@angular/material/button';
 import { MatDialogRef } from '@angular/material/dialog';
@@ -10,7 +10,8 @@ import {
   CrucibleDialogComponent,
   CrucibleDialogContentDirective,
 } from '@cmusei/crucible-common';
-import { finalize } from 'rxjs';
+import { Subscription, finalize } from 'rxjs';
+import { archiveErrorMessage } from '../archive-error-message';
 import { ScenarioTemplateDataService } from 'src/app/data/scenario-template/scenario-template-data.service';
 import { ImportScenarioTemplatesResult } from 'src/app/generated/steamfitter.api';
 
@@ -26,7 +27,7 @@ import { ImportScenarioTemplatesResult } from 'src/app/generated/steamfitter.api
     MatButton,
   ],
 })
-export class ScenarioTemplateImportDialogComponent {
+export class ScenarioTemplateImportDialogComponent implements OnDestroy {
   private scenarioTemplateDataService = inject(ScenarioTemplateDataService);
   private dialogRef = inject(
     MatDialogRef<ScenarioTemplateImportDialogComponent>,
@@ -38,6 +39,7 @@ export class ScenarioTemplateImportDialogComponent {
   loading = false;
   errorMessage = '';
   result: ImportScenarioTemplatesResult | null = null;
+  private request: Subscription | undefined;
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -48,21 +50,29 @@ export class ScenarioTemplateImportDialogComponent {
   import(): void {
     this.loading = true;
     this.errorMessage = '';
-    this.scenarioTemplateDataService
+    this.request = this.scenarioTemplateDataService
       .importScenarioTemplates(this.form.value.file)
       .pipe(finalize(() => (this.loading = false)))
       .subscribe({
         next: (result) => (this.result = result),
-        error: (err) =>
-          (this.errorMessage =
-            err?.error?.detail ||
-            err?.error?.title ||
-            err?.message ||
-            'Import failed'),
+        error: async (err) =>
+          (this.errorMessage = await archiveErrorMessage(
+            err,
+            'The Scenario Templates could not be imported.',
+          )),
       });
   }
 
+  /**
+   * Closing the dialog abandons an import still in flight, which aborts the request. The API saves an
+   * import in one SaveChanges, so an aborted import creates nothing.
+   */
   close(): void {
+    this.request?.unsubscribe();
     this.dialogRef.close(this.result);
+  }
+
+  ngOnDestroy(): void {
+    this.request?.unsubscribe();
   }
 }

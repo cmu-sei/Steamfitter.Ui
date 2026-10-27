@@ -212,6 +212,7 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
     ) {
       this.scenarioTemplateDataSource.data =
         changes.scenarioTemplateList.currentValue;
+      this.pruneSelection();
       this.filterAndSort();
     } else if (changes.filterString !== undefined) {
       this.filterAndSort();
@@ -319,6 +320,17 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
       });
   }
 
+  /** Drops selected ids whose template is no longer in the list, e.g. after a delete, so the counts stay true. */
+  private pruneSelection(): void {
+    const ids = new Set(
+      this.scenarioTemplateDataSource.data.map((row) => row.id),
+    );
+    const gone = this.selection.selected.filter((id) => !ids.has(id));
+    if (gone.length > 0) {
+      this.selection.deselect(...gone);
+    }
+  }
+
   /** Whether every Scenario Template that passes the current filter is selected. */
   isAllSelected(): boolean {
     const rows = this.scenarioTemplateDataSource.filteredData;
@@ -327,32 +339,66 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
     );
   }
 
-  /** Selects every Scenario Template that passes the current filter, or clears the selection. */
-  toggleAllRows(): void {
-    if (this.isAllSelected()) {
-      this.selection.clear();
-    } else {
-      this.selection.select(
-        ...this.scenarioTemplateDataSource.filteredData.map((row) => row.id),
-      );
-    }
-  }
-
-  /** The selected Scenario Templates that are still in the list, or every one in the list if none are selected. */
-  exportIds(): string[] {
-    const ids = this.scenarioTemplateDataSource.data.map((row) => row.id);
-    return this.selection.hasValue()
-      ? ids.filter((id) => this.selection.isSelected(id))
-      : ids;
+  /** Whether some, but not all, of the Scenario Templates that pass the current filter are selected. */
+  isSomeSelected(): boolean {
+    return (
+      !this.isAllSelected() &&
+      this.scenarioTemplateDataSource.filteredData.some((row) =>
+        this.selection.isSelected(row.id),
+      )
+    );
   }
 
   /**
-   * Whether an export with nothing selected can ask for every template rather than list each id. That needs
-   * the ViewScenarioTemplates system permission, and keeps a long list of ids out of the query string.
+   * Selects every Scenario Template that passes the current filter, or, when they all are, deselects them.
+   * Selected templates the filter hides are left as they are.
+   */
+  toggleAllRows(): void {
+    const ids = this.scenarioTemplateDataSource.filteredData.map(
+      (row) => row.id,
+    );
+    if (this.isAllSelected()) {
+      this.selection.deselect(...ids);
+    } else {
+      this.selection.select(...ids);
+    }
+  }
+
+  /** Whether the caller may export this Scenario Template. */
+  private canView(scenarioTemplate: ScenarioTemplate): boolean {
+    return (
+      this.hasPermission(SystemPermission.ViewScenarioTemplates) ||
+      !!scenarioTemplate.scenarioTemplatePermissions?.includes(
+        ScenarioTemplatePermission.ViewScenarioTemplate,
+      )
+    );
+  }
+
+  /** The Scenario Templates an export would hold: the selection, or what the filter shows when nothing is selected. */
+  private exportRows(): ScenarioTemplate[] {
+    return this.selection.hasValue()
+      ? this.scenarioTemplateDataSource.data.filter((row) =>
+          this.selection.isSelected(row.id),
+        )
+      : this.scenarioTemplateDataSource.filteredData;
+  }
+
+  /** The ids to export: those of exportRows() the caller may view. */
+  exportIds(): string[] {
+    return this.exportRows()
+      .filter((row) => this.canView(row))
+      .map((row) => row.id);
+  }
+
+  /**
+   * Whether the export can ask for every template rather than list each id: nothing is selected, the filter
+   * hides nothing, and the caller holds ViewScenarioTemplates. That keeps a long list of ids out of the query string.
    */
   canExportAll(): boolean {
     return (
       !this.selection.hasValue() &&
+      this.scenarioTemplateDataSource.filteredData.length ===
+        this.scenarioTemplateDataSource.data.length &&
       this.hasPermission(SystemPermission.ViewScenarioTemplates)
     );
   }
@@ -379,6 +425,7 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
         ids: this.exportIds(),
         selected: this.selection.hasValue(),
         all: this.canExportAll(),
+        notViewable: this.exportRows().length - this.exportIds().length,
       },
     });
   }

@@ -4,7 +4,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
-import { of, throwError } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { MatDialogRef } from '@angular/material/dialog';
 import { ImportScenarioTemplatesResult } from 'src/app/generated/steamfitter.api';
 import { ScenarioTemplateDataService } from 'src/app/data/scenario-template/scenario-template-data.service';
@@ -105,5 +105,62 @@ describe('ScenarioTemplateImportDialogComponent', () => {
 
     expect(screen.getByText('Forbidden')).toBeInTheDocument();
     expect(close).not.toHaveBeenCalled();
+  });
+
+  /**
+   * Verifies: a validation error shows its reason, not just its title.
+   * Data: a 400 ValidationProblemDetails naming the missing file.
+   */
+  it('shows the reason of a validation error', async () => {
+    const { user, chooseFile } = await renderDialog(
+      throwError(() => ({
+        status: 400,
+        error: {
+          title: 'One or more validation errors occurred.',
+          errors: { File: ['The File field is required.'] },
+        },
+      })),
+    );
+
+    await chooseFile(exportFile());
+    await user.click(screen.getByRole('button', { name: 'Import' }));
+
+    expect(
+      await screen.findByText('The File field is required.'),
+    ).toBeInTheDocument();
+  });
+
+  /**
+   * Verifies: a 413, which has no body, says the file is too large and what an import reads.
+   */
+  it('says the file is too large on a 413', async () => {
+    const { user, chooseFile } = await renderDialog(
+      throwError(() => ({ status: 413, error: null })),
+    );
+
+    await chooseFile(exportFile());
+    await user.click(screen.getByRole('button', { name: 'Import' }));
+
+    expect(await screen.findByText(/files up to 10 MB/)).toBeInTheDocument();
+  });
+
+  /**
+   * Verifies: cancelling while the import is in flight unsubscribes, which aborts the HTTP request.
+   * Data: an import that never answers.
+   */
+  it('aborts an import in flight when cancelled', async () => {
+    let aborted = false;
+    const { user, close, chooseFile } = await renderDialog(
+      new Observable<ImportScenarioTemplatesResult>(
+        () => () => (aborted = true),
+      ),
+    );
+
+    await chooseFile(exportFile());
+    await user.click(screen.getByRole('button', { name: 'Import' }));
+    await user.click(screen.getByRole('button', { name: 'Cancel' }));
+
+    expect(aborted).toBe(true);
+    expect(close).toHaveBeenCalled();
   });
 });

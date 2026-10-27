@@ -111,4 +111,38 @@ describe('ScenarioTemplateExportDialogComponent', () => {
     ).toBeInTheDocument();
     expect(close).not.toHaveBeenCalled();
   });
+
+  /**
+   * Verifies: cancelling while the export is in flight unsubscribes, which aborts the HTTP request.
+   * Data: an export that never answers.
+   */
+  it('aborts an export in flight when cancelled', async () => {
+    let aborted = false;
+    const { user, close } = await renderDialog(
+      { ids: ['t1'], selected: true, all: false },
+      new Observable<void>(() => () => (aborted = true)),
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Export' }));
+    await user.click(screen.getByRole('button', { name: 'Cancel' }));
+
+    expect(aborted).toBe(true);
+    expect(close).toHaveBeenCalledWith(false);
+  });
+
+  /**
+   * Verifies: templates left out because the caller cannot view them are counted in the dialog.
+   */
+  it('says how many templates are left out because they cannot be viewed', async () => {
+    await renderDialog({
+      ids: ['t1'],
+      selected: false,
+      all: false,
+      notViewable: 2,
+    });
+
+    expect(
+      screen.getByText(/2 you cannot view are left out/),
+    ).toBeInTheDocument();
+  });
 });
