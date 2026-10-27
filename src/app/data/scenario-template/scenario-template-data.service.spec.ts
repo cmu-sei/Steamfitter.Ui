@@ -545,11 +545,11 @@ describe('ScenarioTemplateDataService', () => {
 
   describe('exportScenarioTemplates()', () => {
     /**
-     * Verifies: the ids go in the request body, not the query string, and the file is saved under the response's name.
+     * Verifies: the ids are sent to the export, and the file is saved under the response's name.
      * Interacts with: ScenarioTemplateService.exportScenarioTemplates stub, URL.createObjectURL.
      * Data: two ids; the API answers a json blob named Pair.json.
      */
-    it('sends the ids in the body and saves the file', async () => {
+    it('sends the ids and saves the file', async () => {
       const exportScenarioTemplates = vi.fn(() =>
         of(
           new HttpResponse({
@@ -576,7 +576,7 @@ describe('ScenarioTemplateDataService', () => {
       await firstValueFrom(service.exportScenarioTemplates(['t1', 't2']));
 
       expect(exportScenarioTemplates).toHaveBeenCalledWith(
-        { ids: ['t1', 't2'] },
+        ['t1', 't2'],
         'response',
       );
       expect((click.mock.contexts[0] as HTMLAnchorElement).download).toBe(
