@@ -63,11 +63,15 @@ export class ScenarioTemplateImportDialogComponent {
   }
 
   /**
-   * Closing the dialog leaves an import still in flight running rather than aborting it: the API may already
-   * have saved the templates, and an abort would then hide them until the next reload, inviting a second
-   * import that copies them all again. The data service reloads the list when the import returns.
+   * Closes the dialog before an import is sent, or once its result is shown. While the import runs the
+   * dialog cannot be closed: the browser cannot know whether the API has saved the templates until it
+   * answers, so neither aborting nor closing early could tell the user what happened. crucible-dialog already
+   * keeps a backdrop click from closing it and ignores Escape while [loading]; the template disables Cancel.
    */
   close(): void {
+    if (this.loading) {
+      return;
+    }
     this.dialogRef.close(this.result);
   }
 }

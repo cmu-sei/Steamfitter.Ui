@@ -55,9 +55,8 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     loadingLabel="Importing..."
     [loading]="loading"
     [errorMessage]="errorMessage"
-    [submitDisabled]="!form.valid"
+    [hideDefaultActions]="true"
     (cancel)="close()"
-    (submit)="import()"
   >
     <div crucibleDialogContent [formGroup]="form" class="dialog-fields">
       <div class="file-row">
@@ -79,5 +78,19 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         whose name is already in use is renamed "name - your name".
       </p>
     </div>
+    <!-- Not dismissable while the import runs: whether the API has saved it cannot be known until it answers -->
+    <ng-container crucibleDialogActions>
+      <button matButton type="button" [disabled]="loading" (click)="close()">
+        Cancel
+      </button>
+      <button
+        matButton="filled"
+        type="button"
+        [disabled]="!form.valid || loading"
+        (click)="import()"
+      >
+        {{ loading ? 'Importing...' : 'Import' }}
+      </button>
+    </ng-container>
   </crucible-dialog>
 }

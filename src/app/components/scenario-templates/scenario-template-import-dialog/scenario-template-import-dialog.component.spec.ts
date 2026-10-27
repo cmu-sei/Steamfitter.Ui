@@ -18,7 +18,7 @@ async function renderDialog(
   >,
 ) {
   const importScenarioTemplates = vi.fn(() => importResult);
-  const { dialogRef, close } = dialogRefStub<
+  const { dialogRef, close, keydown } = dialogRefStub<
     ScenarioTemplateImportDialogComponent,
     ImportScenarioTemplatesResult
   >();
@@ -39,7 +39,7 @@ async function renderDialog(
       ) as HTMLInputElement,
       file,
     );
-  return { user, importScenarioTemplates, close, chooseFile };
+  return { user, importScenarioTemplates, close, chooseFile, keydown };
 }
 
 const exportFile = () =>
@@ -145,31 +145,41 @@ describe('ScenarioTemplateImportDialogComponent', () => {
   });
 
   /**
-   * Verifies: closing the dialog while the import is in flight does not abort it, since the API may already
-   * have saved the templates.
-   * Data: an import that answers only after the dialog is closed.
+   * Verifies: while the import runs the dialog cannot be dismissed (Cancel disabled, Escape ignored by
+   * crucible-dialog while loading), since whether the API saved it is unknown until it answers; once the
+   * result shows, OK closes it.
+   * Data: an import that answers only when the test says so.
    */
-  it('keeps an import in flight running when the dialog is closed', async () => {
-    let aborted = false;
+  it('cannot be closed while the import runs, then closes with OK', async () => {
     const answer = new Subject<ImportScenarioTemplatesResult>();
-    const { user, close, chooseFile } = await renderDialog(
-      new Observable<ImportScenarioTemplatesResult>((subscriber) => {
-        const inner = answer.subscribe(subscriber);
-        return () => {
-          inner.unsubscribe();
-          aborted = !subscriber.closed;
-        };
-      }),
+    const { user, close, chooseFile, keydown } = await renderDialog(
+      answer.asObservable(),
     );
 
     await chooseFile(exportFile());
     await user.click(screen.getByRole('button', { name: 'Import' }));
+
+    expect(screen.getByRole('button', { name: 'Cancel' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Importing...' })).toBeDisabled();
+    keydown.next(new KeyboardEvent('keydown', { key: 'Escape' }));
+    expect(close).not.toHaveBeenCalled();
+
+    answer.next({ scenarioTemplates: [{ id: 'n1', name: 'Alpha' }] });
+    answer.complete();
+    expect(await screen.findByText('Alpha')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'OK' }));
+    expect(close).toHaveBeenCalled();
+  });
+
+  /**
+   * Verifies: before an import is sent, Cancel closes the dialog.
+   */
+  it('closes from Cancel before an import is sent', async () => {
+    const { user, close } = await renderDialog(of({}));
+
     await user.click(screen.getByRole('button', { name: 'Cancel' }));
 
     expect(close).toHaveBeenCalled();
-    expect(aborted).toBe(false);
-    answer.next({ scenarioTemplates: [{ id: 'n1', name: 'Alpha' }] });
-    answer.complete();
-    expect(aborted).toBe(false);
   });
 });
