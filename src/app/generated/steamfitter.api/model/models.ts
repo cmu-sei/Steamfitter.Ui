@@ -21,6 +21,7 @@ export * from './scenarioPermissionClaim';
 export * from './scenarioRole';
 export * from './scenarioStatus';
 export * from './scenarioTemplate';
+export * from './scenarioTemplateExportRequest';
 export * from './scenarioTemplateForm';
 export * from './scenarioTemplateMembership';
 export * from './scenarioTemplatePermission';

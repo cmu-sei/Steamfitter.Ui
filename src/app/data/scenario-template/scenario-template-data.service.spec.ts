@@ -3,6 +3,7 @@
 
 import { describe, it, expect, vi } from 'vitest';
 import { TestBed } from '@angular/core/testing';
+import { HttpHeaders, HttpResponse } from '@angular/common/http';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { firstValueFrom, of, throwError } from 'rxjs';
 import {
@@ -539,6 +540,77 @@ describe('ScenarioTemplateDataService', () => {
         ['t1'],
         ['t2'],
       ]);
+    });
+  });
+
+  describe('exportScenarioTemplates()', () => {
+    /**
+     * Verifies: the ids go in the request body, not the query string, and the file is saved under the response's name.
+     * Interacts with: ScenarioTemplateService.exportScenarioTemplates stub, URL.createObjectURL.
+     * Data: two ids; the API answers a json blob named Pair.json.
+     */
+    it('sends the ids in the body and saves the file', async () => {
+      const exportScenarioTemplates = vi.fn(() =>
+        of(
+          new HttpResponse({
+            body: new Blob(['[]'], { type: 'application/json' }),
+            headers: new HttpHeaders({
+              'Content-Disposition': 'attachment; filename=Pair.json',
+            }),
+          }),
+        ),
+      );
+      const { service } = setup({
+        templateApi: {
+          exportScenarioTemplates,
+        } as ApiStub<ScenarioTemplateService>,
+      });
+      // jsdom has no object urls
+      const { createObjectURL, revokeObjectURL } = URL;
+      URL.createObjectURL = vi.fn(() => 'blob:pair');
+      URL.revokeObjectURL = vi.fn();
+      const click = vi
+        .spyOn(HTMLAnchorElement.prototype, 'click')
+        .mockImplementation(() => undefined);
+
+      await firstValueFrom(service.exportScenarioTemplates(['t1', 't2']));
+
+      expect(exportScenarioTemplates).toHaveBeenCalledWith(
+        { ids: ['t1', 't2'] },
+        'response',
+      );
+      expect((click.mock.contexts[0] as HTMLAnchorElement).download).toBe(
+        'Pair.json',
+      );
+      click.mockRestore();
+      URL.createObjectURL = createObjectURL;
+      URL.revokeObjectURL = revokeObjectURL;
+    });
+  });
+
+  describe('importScenarioTemplates()', () => {
+    /**
+     * Verifies: the list reloads once an import that created templates returns, whoever is still listening,
+     * so templates saved after the dialog was closed still show.
+     * Interacts with: ScenarioTemplateService.importScenarioTemplates and getScenarioTemplates stubs.
+     * Data: the import creates one template; the reload returns it.
+     */
+    it('reloads the list when an import creates templates', async () => {
+      const importScenarioTemplates = vi.fn(() =>
+        of({ scenarioTemplates: [template({ id: 'n1' })] }),
+      );
+      const getScenarioTemplates = vi.fn(() => of([template({ id: 'n1' })]));
+      const { service, query } = setup({
+        templateApi: {
+          importScenarioTemplates,
+          getScenarioTemplates,
+        } as ApiStub<ScenarioTemplateService>,
+      });
+
+      await firstValueFrom(service.importScenarioTemplates(new Blob(['[]'])));
+
+      expect(getScenarioTemplates).toHaveBeenCalled();
+      expect(query.hasEntity('n1')).toBe(true);
     });
   });
 });

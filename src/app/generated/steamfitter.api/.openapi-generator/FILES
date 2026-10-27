@@ -47,6 +47,7 @@ model/scenarioPermissionClaim.ts
 model/scenarioRole.ts
 model/scenarioStatus.ts
 model/scenarioTemplate.ts
+model/scenarioTemplateExportRequest.ts
 model/scenarioTemplateForm.ts
 model/scenarioTemplateMembership.ts
 model/scenarioTemplatePermission.ts

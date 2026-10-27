@@ -236,11 +236,12 @@ export class ScenarioTemplateDataService {
   }
 
   /**
-   * Downloads a json file of the given scenario templates, with their tasks
+   * Downloads a json file of the given scenario templates, with their tasks. No ids exports every template.
+   * The ids go in the request body, so a large selection is not limited by the length of a URL.
    */
   exportScenarioTemplates(ids: string[]): Observable<void> {
     return this.scenarioTemplateService
-      .exportScenarioTemplates(ids, 'response')
+      .exportScenarioTemplates({ ids }, 'response')
       .pipe(
         take(1),
         map((response) => {
