@@ -25,8 +25,6 @@ import { ProblemDetails } from '../model/problemDetails';
 // @ts-ignore
 import { ScenarioTemplate } from '../model/scenarioTemplate';
 // @ts-ignore
-import { ScenarioTemplateExportRequest } from '../model/scenarioTemplateExportRequest';
-// @ts-ignore
 import { ScenarioTemplateForm } from '../model/scenarioTemplateForm';
 
 // @ts-ignore
@@ -325,15 +323,23 @@ export class ScenarioTemplateService {
 
     /**
      * Exports ScenarioTemplates
-     * Returns a json file containing the specified ScenarioTemplates, with their VM Credentials and Task trees. All ScenarioTemplates are exported if no ids are specified. The ids travel in the body rather than the query string, so an export of many templates is not limited by the length of a URL. &lt;para /&gt; Accessible to a User with the ViewScenarioTemplates system permission, or ViewScenarioTemplate permission on each specified ScenarioTemplate
-     * @param scenarioTemplateExportRequest The ids of the ScenarioTemplates to export
+     * Returns a json file containing the specified ScenarioTemplates, with their VM Credentials and Task trees. All ScenarioTemplates are exported if no ids are specified. &lt;para /&gt; Accessible to a User with the ViewScenarioTemplates system permission, or ViewScenarioTemplate permission on each specified ScenarioTemplate
+     * @param ids The ids of the ScenarioTemplates to export
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public exportScenarioTemplates(scenarioTemplateExportRequest?: ScenarioTemplateExportRequest, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<Blob>;
-    public exportScenarioTemplates(scenarioTemplateExportRequest?: ScenarioTemplateExportRequest, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<Blob>>;
-    public exportScenarioTemplates(scenarioTemplateExportRequest?: ScenarioTemplateExportRequest, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<Blob>>;
-    public exportScenarioTemplates(scenarioTemplateExportRequest?: ScenarioTemplateExportRequest, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
+    public exportScenarioTemplates(ids?: Array<string>, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<Blob>;
+    public exportScenarioTemplates(ids?: Array<string>, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpResponse<Blob>>;
+    public exportScenarioTemplates(ids?: Array<string>, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<HttpEvent<Blob>>;
+    public exportScenarioTemplates(ids?: Array<string>, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json', context?: HttpContext}): Observable<any> {
+
+        let localVarQueryParameters = new HttpParams({encoder: this.encoder});
+        if (ids) {
+            ids.forEach((element) => {
+                localVarQueryParameters = this.addToHttpParams(localVarQueryParameters,
+                  <any>element, 'ids');
+            })
+        }
 
         let localVarHeaders = this.defaultHeaders;
 
@@ -362,22 +368,11 @@ export class ScenarioTemplateService {
         }
 
 
-        // to determine the Content-Type header
-        const consumes: string[] = [
-            'application/json',
-            'text/json',
-            'application/*+json'
-        ];
-        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
-        if (httpContentTypeSelected !== undefined) {
-            localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
-        }
-
         let localVarPath = `/api/scenariotemplates/actions/export`;
-        return this.httpClient.request('post', `${this.configuration.basePath}${localVarPath}`,
+        return this.httpClient.request('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
-                body: scenarioTemplateExportRequest,
+                params: localVarQueryParameters,
                 responseType: "blob",
                 withCredentials: this.configuration.withCredentials,
                 headers: localVarHeaders,
