@@ -98,6 +98,17 @@ describe('ScenarioTemplateMemberListComponent', () => {
   });
 
   /**
+   * Verifies: the list heading spells the type "Scenario Template".
+   * Interacts with: the toolbar heading text.
+   * Data: the same memberships; canEdit true.
+   */
+  it('titles the list Scenario Template Members', async () => {
+    await renderMemberList(true);
+
+    expect(screen.getByText('Scenario Template Members')).toBeInTheDocument();
+  });
+
+  /**
    * Verifies: with canEdit false the members are listed with their type, but the role selects are disabled and no Remove button is rendered.
    * Interacts with: displayedColumns (no actions column without canEdit), the role select's disabled binding.
    * Data: the same memberships; canEdit false.
