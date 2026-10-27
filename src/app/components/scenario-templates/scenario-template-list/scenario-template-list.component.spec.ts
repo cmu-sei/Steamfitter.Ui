@@ -6,6 +6,7 @@ import { Component, Directive, input } from '@angular/core';
 import { screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { of } from 'rxjs';
+import { HttpHeaders, HttpResponse } from '@angular/common/http';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { TestBed } from '@angular/core/testing';
@@ -30,6 +31,7 @@ import { ScenarioQuery } from 'src/app/data/scenario/scenario.query';
 import { ScenarioTemplateQuery } from 'src/app/data/scenario-template/scenario-template.query';
 import { ScenarioTemplateStore } from 'src/app/data/scenario-template/scenario-template.store';
 import { permissionDataProviders } from 'src/app/test-utils/mock-permission-data.service';
+import { ScenarioTemplateImportDialogComponent } from 'src/app/components/scenario-templates/scenario-template-import-dialog/scenario-template-import-dialog.component';
 import { ScenarioTemplateListComponent } from './scenario-template-list.component';
 
 @Directive({ selector: '[ngxClipboard]', standalone: false })
@@ -82,6 +84,16 @@ async function renderList(
       of(template({ id: 't2', name: 'Alpha copy' })),
     ),
     deleteScenarioTemplate: vi.fn(() => of(null)),
+    exportScenarioTemplates: vi.fn(() =>
+      of(
+        new HttpResponse({
+          body: new Blob(['[]'], { type: 'application/json' }),
+          headers: new HttpHeaders({
+            'Content-Disposition': 'attachment; filename=Alpha.json',
+          }),
+        }),
+      ),
+    ),
   } satisfies ApiStub<ScenarioTemplateService>;
   const scenarioApi = {
     createScenarioFromScenarioTemplate: vi.fn(() =>
@@ -143,6 +155,7 @@ async function renderList(
     templateApi,
     scenarioApi,
     confirm,
+    dialog,
     rowOf,
     rowMenuButton,
     openRowMenu,
@@ -267,24 +280,24 @@ describe('ScenarioTemplateListComponent', () => {
       keys: '[MouseRight]',
       target: rowOf('Alpha'),
     });
-    expect(menuItems()).toEqual(['Create a Scenario']);
+    expect(menuItems()).toEqual(['Export', 'Create a Scenario']);
   });
 
   /**
-   * Verifies: the row menu offers Edit, Copy, Delete and Create a Scenario according to system permissions.
+   * Verifies: the row menu offers Edit, Copy, Delete and Create a Scenario according to system permissions, and Export to anyone who sees the row.
    * Interacts with: the context menu template, canEdit/canManage/hasPermission, real PermissionDataService.
    * Data: each row pairs system permissions with the expected items.
    */
   it.each([
-    { system: ['EditScenarioTemplates'], items: ['Edit'] },
+    { system: ['EditScenarioTemplates'], items: ['Edit', 'Export'] },
     {
       system: ['EditScenarioTemplates', 'CreateScenarioTemplates'],
-      items: ['Edit', 'Copy'],
+      items: ['Edit', 'Copy', 'Export'],
     },
-    { system: ['ManageScenarioTemplates'], items: ['Delete'] },
+    { system: ['ManageScenarioTemplates'], items: ['Export', 'Delete'] },
     {
       system: ['EditScenarioTemplates', 'CreateScenarios'],
-      items: ['Edit', 'Create a Scenario'],
+      items: ['Edit', 'Export', 'Create a Scenario'],
     },
   ] as Array<{ system: SystemPermission[]; items: string[] }>)(
     'offers $items for $system',
@@ -314,7 +327,7 @@ describe('ScenarioTemplateListComponent', () => {
 
     await openRowMenu('Alpha');
 
-    expect(menuItems()).toEqual(['Edit', 'Delete']);
+    expect(menuItems()).toEqual(['Edit', 'Export', 'Delete']);
   });
 
   /**
@@ -377,5 +390,65 @@ describe('ScenarioTemplateListComponent', () => {
 
     expect(templateApi.deleteScenarioTemplate).toHaveBeenCalledWith('t1');
     expect(templateQuery.hasEntity('t1')).toBe(false);
+  });
+
+  /**
+   * Verifies: Export downloads the template as the file named by the response.
+   * Interacts with: real ScenarioTemplateDataService.exportScenarioTemplates, ScenarioTemplateService.exportScenarioTemplates stub, URL.createObjectURL.
+   * Data: EditScenarioTemplates; the API answers a json blob named Alpha.json.
+   */
+  it('exports the template as a json file', async () => {
+    // jsdom has no object urls
+    const { createObjectURL, revokeObjectURL } = URL;
+    URL.createObjectURL = vi.fn(() => 'blob:alpha');
+    URL.revokeObjectURL = vi.fn();
+    const click = vi
+      .spyOn(HTMLAnchorElement.prototype, 'click')
+      .mockImplementation(() => undefined);
+    const { openRowMenu, user, templateApi } = await renderList({
+      system: ['EditScenarioTemplates'],
+    });
+    await openRowMenu('Alpha');
+
+    await user.click(screen.getByRole('menuitem', { name: 'Export' }));
+
+    expect(templateApi.exportScenarioTemplates).toHaveBeenCalledWith(
+      ['t1'],
+      'response',
+    );
+    const link = click.mock.contexts[0] as HTMLAnchorElement;
+    expect(link.download).toBe('Alpha.json');
+    expect(URL.revokeObjectURL).toHaveBeenCalledWith('blob:alpha');
+    click.mockRestore();
+    URL.createObjectURL = createObjectURL;
+    URL.revokeObjectURL = revokeObjectURL;
+  });
+
+  /**
+   * Verifies: the Import button is offered with CreateScenarioTemplates and opens the import dialog.
+   * Interacts with: the header's CreateScenarioTemplates gate, MatDialog.open stub.
+   * Data: CreateScenarioTemplates, then no system permissions.
+   */
+  it('opens the import dialog from the Import button for template creators only', async () => {
+    const { user, dialog } = await renderList({
+      system: ['CreateScenarioTemplates'],
+    });
+
+    await user.click(
+      screen.getByRole('button', { name: 'Import Scenario Templates' }),
+    );
+
+    expect(dialog.open).toHaveBeenCalledWith(
+      ScenarioTemplateImportDialogComponent,
+      expect.anything(),
+    );
+  });
+
+  it('hides the Import button from users who cannot create templates', async () => {
+    await renderList({ system: ['EditScenarioTemplates'] });
+
+    expect(
+      screen.queryByRole('button', { name: 'Import Scenario Templates' }),
+    ).toBeNull();
   });
 });

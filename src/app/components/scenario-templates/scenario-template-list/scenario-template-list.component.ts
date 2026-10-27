@@ -48,6 +48,7 @@ import {
 } from 'src/app/generated/steamfitter.api';
 import { ScenarioTemplateEditDialogComponent } from 'src/app/components/scenario-templates/scenario-template-edit-dialog/scenario-template-edit-dialog.component';
 import { ScenarioTemplateEditComponent } from 'src/app/components/scenario-templates/scenario-template-edit/scenario-template-edit.component';
+import { ScenarioTemplateImportDialogComponent } from 'src/app/components/scenario-templates/scenario-template-import-dialog/scenario-template-import-dialog.component';
 import { ScenarioEditDialogComponent } from 'src/app/components/scenarios/scenario-edit-dialog/scenario-edit-dialog.component';
 import { ScenarioTemplateDataService } from 'src/app/data/scenario-template/scenario-template-data.service';
 import { ScenarioDataService } from 'src/app/data/scenario/scenario-data.service';
@@ -304,6 +305,24 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
           );
         }
       });
+  }
+
+  /**
+   * Download a scenarioTemplate and its tasks as a json file
+   */
+  exportScenarioTemplate(scenarioTemplate: ScenarioTemplate): void {
+    this.scenarioTemplateDataService
+      .exportScenarioTemplates([scenarioTemplate.id])
+      .subscribe();
+  }
+
+  /**
+   * Create scenarioTemplates from an exported json file
+   */
+  importScenarioTemplates(): void {
+    this.dialog.open(ScenarioTemplateImportDialogComponent, {
+      width: '560px',
+    });
   }
 
   /**
