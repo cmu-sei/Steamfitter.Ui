@@ -67,6 +67,7 @@ async function renderGroups(
   );
   const dialogService: Pick<CrucibleDialogService, 'confirm'> = { confirm };
   // The name dialog closes with the edited name, as NameDialogComponent does.
+  const nameDialogs: Pick<NameDialogComponent, 'title' | 'message'>[] = [];
   const open = vi.fn(() => {
     const { dialogRef } = dialogRefStub<NameDialogComponent, object>(
       overrides.renamedTo === undefined
@@ -78,6 +79,7 @@ async function renderGroups(
       title: '',
       message: '',
     };
+    nameDialogs.push(instance);
     dialogRef.componentInstance = instance as NameDialogComponent;
     return dialogRef;
   });
@@ -125,6 +127,7 @@ async function renderGroups(
     user,
     groupApi,
     confirm,
+    nameDialogs,
     header,
     row,
     button,
@@ -190,12 +193,20 @@ describe('AdminGroupsComponent', () => {
    * Data: ManageGroups; the user confirms deleting Red Team.
    */
   it('deletes a group after confirmation', async () => {
-    const { user, row, button, groupNames, groupApi } = await renderGroups({
-      system: ['ManageGroups'],
-    });
+    const { user, row, button, groupNames, groupApi, confirm } =
+      await renderGroups({
+        system: ['ManageGroups'],
+      });
 
     await user.click(button(row('Red Team'), 'Delete Red Team'));
 
+    expect(confirm).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: 'Delete Group',
+        message: 'Are you sure that you want to delete Red Team?',
+        confirmText: 'Delete',
+      }),
+    );
     expect(groupApi.deleteGroup).toHaveBeenCalledWith('g2');
     expect(groupNames()).toEqual(['Blue Team']);
   });
@@ -206,13 +217,14 @@ describe('AdminGroupsComponent', () => {
    * Data: ManageGroups; Blue Team is renamed to Green Team.
    */
   it('renames a group from the name dialog', async () => {
-    const { user, row, button, groupNames } = await renderGroups({
+    const { user, row, button, groupNames, nameDialogs } = await renderGroups({
       system: ['ManageGroups'],
       renamedTo: 'Green Team',
     });
 
     await user.click(button(row('Blue Team'), 'Rename'));
 
+    expect(nameDialogs.map((d) => d.title)).toEqual(['Edit Group']);
     expect(groupNames()).toEqual(['Green Team', 'Red Team']);
   });
 });

@@ -9,19 +9,19 @@ export class ScenarioTemplateRolesModel {
   public static ScenarioTemplatePermissions = new Map<string, string>([
     [
       'All',
-      'Gives permission to perform any action within the ScenarioTemplate',
+      'Gives permission to perform any action within the Scenario Template',
     ],
     [
       ScenarioTemplatePermission.EditScenarioTemplate,
-      'Allows performing most actions in the ScenarioTemplate. Can make changes to the contents of the ScenarioTemplate, including creating and editing Files, Directories, and Workspaces. Can Plan and Apply Workspace Runs.',
+      'Allows performing most actions in the Scenario Template. Can make changes to the contents of the Scenario Template, including creating and editing Files, Directories, and Workspaces. Can Plan and Apply Workspace Runs.',
     ],
     [
       ScenarioTemplatePermission.ManageScenarioTemplate,
-      'Allows for making changes to ScenarioTemplate Memberships in the ScenarioTemplate.',
+      'Allows for making changes to Scenario Template Memberships in the Scenario Template.',
     ],
     [
       ScenarioTemplatePermission.ViewScenarioTemplate,
-      'Allows viewing all contents of the ScenarioTemplate.',
+      'Allows viewing all contents of the Scenario Template.',
     ],
   ]);
 }

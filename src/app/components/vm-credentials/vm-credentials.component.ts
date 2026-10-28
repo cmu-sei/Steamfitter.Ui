@@ -154,10 +154,9 @@ export class VmCredentialsComponent implements OnInit {
     this.confirmService
       .confirm({
         title: 'Delete VM Credential',
-        message:
-          'Are you sure that you want to delete VM Credential ' +
-          vmCredential.username +
-          '?',
+        message: `Are you sure that you want to delete ${vmCredential.username}?`,
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
       })
       .afterClosed()
       .subscribe((confirmed) => {

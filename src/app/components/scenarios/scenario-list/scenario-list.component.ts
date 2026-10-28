@@ -280,10 +280,9 @@ export class ScenarioListComponent implements OnInit, OnChanges {
     this.confirmService
       .confirm({
         title: 'Delete Scenario',
-        message:
-          'Are you sure that you want to delete scenario ' +
-          scenario.name +
-          '?',
+        message: `Are you sure that you want to delete ${scenario.name}?`,
+        confirmText: 'Delete',
+        cancelText: 'Cancel',
       })
       .afterClosed()
       .subscribe((confirmed) => {
@@ -300,10 +299,9 @@ export class ScenarioListComponent implements OnInit, OnChanges {
     this.confirmService
       .confirm({
         title: 'Copy Scenario',
-        message:
-          'Are you sure that you want to create a new scenario from ' +
-          scenario.name +
-          '?',
+        message: `Are you sure that you want to copy ${scenario.name}?`,
+        confirmText: 'Copy',
+        cancelText: 'Cancel',
       })
       .afterClosed()
       .subscribe((confirmed) => {
@@ -319,9 +317,10 @@ export class ScenarioListComponent implements OnInit, OnChanges {
   startScenario(scenario: Scenario): void {
     this.confirmService
       .confirm({
-        title: 'Start Scenario Now',
-        message:
-          'Are you sure that you want to start scenario ' + scenario.name + '?',
+        title: 'Start Scenario',
+        message: `Are you sure that you want to start ${scenario.name}?`,
+        confirmText: 'Start',
+        cancelText: 'Cancel',
       })
       .afterClosed()
       .subscribe((confirmed) => {
@@ -337,9 +336,10 @@ export class ScenarioListComponent implements OnInit, OnChanges {
   endScenario(scenario: Scenario): void {
     this.confirmService
       .confirm({
-        title: 'End Scenario Now',
-        message:
-          'Are you sure that you want to end scenario ' + scenario.name + '?',
+        title: 'End Scenario',
+        message: `Are you sure that you want to end ${scenario.name}?`,
+        confirmText: 'End',
+        cancelText: 'Cancel',
       })
       .afterClosed()
       .subscribe((confirmed) => {

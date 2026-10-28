@@ -416,7 +416,12 @@ describe('ScenarioListComponent', () => {
       await user.click(screen.getByRole('menuitem', { name: 'Start' }));
 
       expect(confirm).toHaveBeenCalledWith(
-        expect.objectContaining({ title: 'Start Scenario Now' }),
+        expect.objectContaining({
+          title: 'Start Scenario',
+          message: 'Are you sure that you want to start Alpha?',
+          confirmText: 'Start',
+          cancelText: 'Cancel',
+        }),
       );
       expect(scenarioApi.startScenario).toHaveBeenCalledWith('s1');
       expect(TestBed.inject(ScenarioQuery).getEntity('s1')?.status).toBe(
@@ -430,7 +435,7 @@ describe('ScenarioListComponent', () => {
      * Data: a ready scenario; ManageScenarios; the user cancels.
      */
     it('does not delete when the confirmation is cancelled', async () => {
-      const { openRowMenu, user, scenarioApi } = await renderList({
+      const { openRowMenu, user, confirm, scenarioApi } = await renderList({
         system: ['ManageScenarios'],
         confirmed: false,
       });
@@ -438,6 +443,14 @@ describe('ScenarioListComponent', () => {
 
       await user.click(screen.getByRole('menuitem', { name: 'Delete' }));
 
+      expect(confirm).toHaveBeenCalledWith(
+        expect.objectContaining({
+          title: 'Delete Scenario',
+          message: 'Are you sure that you want to delete Alpha?',
+          confirmText: 'Delete',
+          cancelText: 'Cancel',
+        }),
+      );
       expect(scenarioApi.deleteScenario).not.toHaveBeenCalled();
     });
 

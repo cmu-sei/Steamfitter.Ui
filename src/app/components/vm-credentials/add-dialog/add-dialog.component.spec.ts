@@ -8,6 +8,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { screen } from '@testing-library/angular';
 import { renderComponent } from 'src/app/test-utils/render-component';
 import { AddDialogComponent } from './add-dialog.component';
 
@@ -39,5 +40,8 @@ describe('AddDialogComponent', () => {
 
     expect(fixture.componentInstance).toBeInstanceOf(AddDialogComponent);
     expect(fixture.nativeElement).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { name: 'Add VM Credential' }),
+    ).toBeInTheDocument();
   });
 });

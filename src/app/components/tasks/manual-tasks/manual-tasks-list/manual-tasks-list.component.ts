@@ -62,8 +62,8 @@ export class ManualTasksListComponent implements OnInit {
   executeTask(task: Task) {
     this.confirmDialogService
       .confirm({
-        title: 'Execute Task?',
-        message: `Are you sure you want to execute "${task.name}"?`,
+        title: 'Execute Task',
+        message: `Are you sure that you want to execute ${task.name}?`,
         confirmText: 'Execute',
         cancelText: 'Cancel',
       })

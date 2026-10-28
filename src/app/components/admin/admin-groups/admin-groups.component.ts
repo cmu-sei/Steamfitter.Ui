@@ -137,19 +137,15 @@ export class AdminGroupsComponent implements OnInit, AfterViewInit {
   }
 
   createGroup() {
-    this.nameDialog('Create New Group?', '', { nameValue: '' }).subscribe(
-      (result) => {
-        if (result) {
-          this.groupDataService
-            .create({ name: result[NAME_VALUE] })
-            .subscribe();
-        }
-      },
-    );
+    this.nameDialog('Add Group', '', { nameValue: '' }).subscribe((result) => {
+      if (result) {
+        this.groupDataService.create({ name: result[NAME_VALUE] }).subscribe();
+      }
+    });
   }
 
   updateGroup(group: Group) {
-    this.nameDialog('Rename ' + group.name, '', {
+    this.nameDialog('Edit Group', '', {
       nameValue: group.name,
     }).subscribe((result) => {
       if (result) {
@@ -163,8 +159,8 @@ export class AdminGroupsComponent implements OnInit, AfterViewInit {
   deleteGroup(group: Group) {
     this.confirmService
       .confirm({
-        title: 'Delete Group?',
-        message: 'Delete Group ' + group.name + '?',
+        title: 'Delete Group',
+        message: `Are you sure that you want to delete ${group.name}?`,
         confirmText: 'Delete',
       })
       .afterClosed()

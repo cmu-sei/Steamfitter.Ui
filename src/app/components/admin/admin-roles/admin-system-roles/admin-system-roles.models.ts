@@ -10,19 +10,19 @@ export class SystemRolesModel {
     ['All', 'Gives permission to perform any action'],
     [
       SystemPermission.CreateScenarioTemplates,
-      'Allows creation of new ScenarioTemplates. The creating User will be added as a Manager to the new ScenarioTemplate.',
+      'Allows creation of new Scenario Templates. The creating User will be added as a Manager to the new Scenario Template.',
     ],
     [
       SystemPermission.EditScenarioTemplates,
-      'Allows performing most actions in a ScenarioTemplate. Can make changes to the contents of a ScenarioTemplate.',
+      'Allows performing most actions in a Scenario Template. Can make changes to the contents of a Scenario Template.',
     ],
     [
       SystemPermission.ViewScenarioTemplates,
-      'Allows viewing all ScenarioTemplates and their Users and Groups. Implictly allows listing all Users and Groups. Enables the ScenarioTemplates Administration panel',
+      'Allows viewing all Scenario Templates and their Users and Groups. Implictly allows listing all Users and Groups. Enables the Scenario Templates Administration panel',
     ],
     [
       SystemPermission.ManageScenarioTemplates,
-      'Allows for making changes to ScenarioTemplate Memberships.',
+      'Allows for making changes to Scenario Template Memberships.',
     ],
     [
       SystemPermission.CreateScenarios,

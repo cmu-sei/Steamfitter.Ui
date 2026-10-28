@@ -132,6 +132,7 @@ async function renderCredentials(parent: 'scenario' | 'template') {
     scenarioApi,
     vmCredentialApi,
     usernames,
+    confirm,
   };
 }
 
@@ -179,10 +180,16 @@ describe('VmCredentialsComponent', () => {
    * Data: active template st1 with bob and alice; alice is deleted; the reloaded template holds only bob.
    */
   it('removes a deleted credential from a template', async () => {
-    const { user, vmCredentialApi, usernames, fixture } =
+    const { user, vmCredentialApi, usernames, fixture, confirm } =
       await renderCredentials('template');
 
     await user.click(screen.getByTitle('Delete alice from list'));
+    expect(confirm).toHaveBeenCalledWith({
+      title: 'Delete VM Credential',
+      message: 'Are you sure that you want to delete alice?',
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+    });
     await fixture.whenStable();
     fixture.detectChanges();
 
