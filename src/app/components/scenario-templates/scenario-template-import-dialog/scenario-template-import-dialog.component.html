@@ -1,0 +1,96 @@
+<!--
+Copyright 2026 Carnegie Mellon University. All Rights Reserved.
+Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
+-->
+
+@if (result) {
+  <crucible-dialog
+    dialogTitle="Import Scenario Templates"
+    [hideDefaultActions]="true"
+  >
+    <div crucibleDialogContent class="dialog-fields">
+      @if (result.scenarioTemplates?.length > 0) {
+        <p class="text-success">
+          Imported {{ result.scenarioTemplates.length }} Scenario Template(s):
+        </p>
+        <ul class="result-list imported-list">
+          @for (
+            scenarioTemplate of result.scenarioTemplates;
+            track scenarioTemplate.id
+          ) {
+            <li>{{ scenarioTemplate.name }}</li>
+          }
+        </ul>
+      }
+      @if (result.warnings?.length > 0) {
+        <p class="text-warning">Notes:</p>
+        <ul class="result-list warning-list">
+          @for (warning of result.warnings; track $index) {
+            <li>{{ warning }}</li>
+          }
+        </ul>
+      }
+      @if (result.failures?.length > 0) {
+        <p class="text-danger">The following could not be imported:</p>
+        <ul class="result-list failure-list">
+          @for (failure of result.failures; track $index) {
+            <li>
+              <div><strong>Id:</strong> {{ failure.id }}</div>
+              <div><strong>Name:</strong> {{ failure.name }}</div>
+              <div><strong>Reason:</strong> {{ failure.reason }}</div>
+            </li>
+          }
+        </ul>
+      }
+    </div>
+    <ng-container crucibleDialogActions>
+      <button matButton="filled" (click)="close()">OK</button>
+    </ng-container>
+  </crucible-dialog>
+} @else {
+  <crucible-dialog
+    dialogTitle="Import Scenario Templates"
+    [form]="form"
+    submitLabel="Import"
+    loadingLabel="Importing..."
+    [loading]="loading"
+    [errorMessage]="errorMessage"
+    [hideDefaultActions]="true"
+    (cancel)="close()"
+  >
+    <div crucibleDialogContent [formGroup]="form" class="dialog-fields">
+      <div class="file-row">
+        <button type="button" matButton="outlined" (click)="fileInput.click()">
+          Choose File
+        </button>
+        <input
+          hidden
+          (change)="onFileSelected($event)"
+          #fileInput
+          type="file"
+          accept=".json,.zip"
+          aria-label="Scenario Template export file"
+        />
+        <span class="file-name">{{ form.value.file?.name }}</span>
+      </div>
+      <p class="hint">
+        Each Scenario Template is imported as a new copy. A Scenario Template
+        whose name is already in use is renamed "name - your name".
+      </p>
+    </div>
+    <!-- Not dismissable while the import runs: whether the API has saved it cannot be known until it answers -->
+    <ng-container crucibleDialogActions>
+      <button matButton type="button" [disabled]="loading" (click)="close()">
+        Cancel
+      </button>
+      <button
+        matButton="filled"
+        type="button"
+        [disabled]="!form.valid || loading"
+        (click)="import()"
+      >
+        {{ loading ? 'Importing...' : 'Import' }}
+      </button>
+    </ng-container>
+  </crucible-dialog>
+}

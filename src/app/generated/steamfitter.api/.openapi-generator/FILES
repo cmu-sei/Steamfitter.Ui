@@ -28,12 +28,18 @@ model/gradedExecutionInfo.ts
 model/group.ts
 model/groupMembership.ts
 model/healthStatus.ts
+model/importScenarioTemplateFailure.ts
+model/importScenarioTemplatesResult.ts
 model/models.ts
 model/newLocation.ts
+model/powerState.ts
 model/problemDetails.ts
+model/proxmoxVmInfo.ts
+model/proxmoxVmType.ts
 model/result.ts
 model/scenario.ts
 model/scenarioCloneOptions.ts
+model/scenarioCloneUser.ts
 model/scenarioForm.ts
 model/scenarioMembership.ts
 model/scenarioPermission.ts
@@ -59,4 +65,6 @@ model/view.ts
 model/viewStatus.ts
 model/vm.ts
 model/vmCredential.ts
+model/vmType.ts
+param.ts
 variables.ts

@@ -19,7 +19,10 @@ import {
   output,
   viewChild,
 } from '@angular/core';
+import { SelectionModel } from '@angular/cdk/collections';
 import { MatDialog } from '@angular/material/dialog';
+import { MatBadge } from '@angular/material/badge';
+import { MatCheckbox } from '@angular/material/checkbox';
 import {
   MatMenuTrigger,
   MatMenu,
@@ -48,6 +51,11 @@ import {
 } from 'src/app/generated/steamfitter.api';
 import { ScenarioTemplateEditDialogComponent } from 'src/app/components/scenario-templates/scenario-template-edit-dialog/scenario-template-edit-dialog.component';
 import { ScenarioTemplateEditComponent } from 'src/app/components/scenario-templates/scenario-template-edit/scenario-template-edit.component';
+import {
+  ScenarioTemplateExportDialogComponent,
+  ScenarioTemplateExportDialogData,
+} from 'src/app/components/scenario-templates/scenario-template-export-dialog/scenario-template-export-dialog.component';
+import { ScenarioTemplateImportDialogComponent } from 'src/app/components/scenario-templates/scenario-template-import-dialog/scenario-template-import-dialog.component';
 import { ScenarioEditDialogComponent } from 'src/app/components/scenarios/scenario-edit-dialog/scenario-edit-dialog.component';
 import { ScenarioTemplateDataService } from 'src/app/data/scenario-template/scenario-template-data.service';
 import { ScenarioDataService } from 'src/app/data/scenario/scenario-data.service';
@@ -105,6 +113,8 @@ export interface Action {
     MatMenu,
     MatMenuContent,
     MatMenuItem,
+    MatCheckbox,
+    MatBadge,
     DatePipe,
   ],
 })
@@ -125,6 +135,7 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
     ScenarioTemplateEditComponent,
   );
   displayedColumns: string[] = [
+    'select',
     'actions',
     'name',
     'description',
@@ -143,6 +154,8 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
     new Array<ScenarioTemplate>(),
   );
   permissions: SystemPermission[] = [];
+  /** Scenario Template ids chosen for export. */
+  selection = new SelectionModel<string>(true, []);
   readonly SystemPermission = SystemPermission;
 
   constructor() {
@@ -199,6 +212,7 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
     ) {
       this.scenarioTemplateDataSource.data =
         changes.scenarioTemplateList.currentValue;
+      this.pruneSelection();
       this.filterAndSort();
     } else if (changes.filterString !== undefined) {
       this.filterAndSort();
@@ -302,6 +316,125 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
           );
         }
       });
+  }
+
+  /** Drops selected ids whose template is no longer in the list, e.g. after a delete, so the counts stay true. */
+  private pruneSelection(): void {
+    const ids = new Set(
+      this.scenarioTemplateDataSource.data.map((row) => row.id),
+    );
+    const gone = this.selection.selected.filter((id) => !ids.has(id));
+    if (gone.length > 0) {
+      this.selection.deselect(...gone);
+    }
+  }
+
+  /** Whether every Scenario Template that passes the current filter is selected. */
+  isAllSelected(): boolean {
+    const rows = this.scenarioTemplateDataSource.filteredData;
+    return (
+      rows.length > 0 && rows.every((row) => this.selection.isSelected(row.id))
+    );
+  }
+
+  /** Whether some, but not all, of the Scenario Templates that pass the current filter are selected. */
+  isSomeSelected(): boolean {
+    return (
+      !this.isAllSelected() &&
+      this.scenarioTemplateDataSource.filteredData.some((row) =>
+        this.selection.isSelected(row.id),
+      )
+    );
+  }
+
+  /**
+   * Selects every Scenario Template that passes the current filter, or, when they all are, deselects them.
+   * Selected templates the filter hides are left as they are.
+   */
+  toggleAllRows(): void {
+    const ids = this.scenarioTemplateDataSource.filteredData.map(
+      (row) => row.id,
+    );
+    if (this.isAllSelected()) {
+      this.selection.deselect(...ids);
+    } else {
+      this.selection.select(...ids);
+    }
+  }
+
+  /** Whether the caller may export this Scenario Template. */
+  private canView(scenarioTemplate: ScenarioTemplate): boolean {
+    return (
+      this.hasPermission(SystemPermission.ViewScenarioTemplates) ||
+      !!scenarioTemplate.scenarioTemplatePermissions?.includes(
+        ScenarioTemplatePermission.ViewScenarioTemplate,
+      )
+    );
+  }
+
+  /** The Scenario Templates an export would hold: the selection, or what the filter shows when nothing is selected. */
+  private exportRows(): ScenarioTemplate[] {
+    return this.selection.hasValue()
+      ? this.scenarioTemplateDataSource.data.filter((row) =>
+          this.selection.isSelected(row.id),
+        )
+      : this.scenarioTemplateDataSource.filteredData;
+  }
+
+  /** The ids to export: those of exportRows() the caller may view. */
+  exportIds(): string[] {
+    return this.exportRows()
+      .filter((row) => this.canView(row))
+      .map((row) => row.id);
+  }
+
+  /**
+   * Whether the export can ask for every template rather than list each id: nothing is selected, the filter
+   * hides nothing, and the caller holds ViewScenarioTemplates. That keeps a long list of ids out of the query string.
+   */
+  canExportAll(): boolean {
+    return (
+      !this.selection.hasValue() &&
+      this.scenarioTemplateDataSource.filteredData.length ===
+        this.scenarioTemplateDataSource.data.length &&
+      this.hasPermission(SystemPermission.ViewScenarioTemplates)
+    );
+  }
+
+  /** The export button's name, which says how many are selected, since the badge alone is not read out. */
+  exportLabel(): string {
+    const count = this.selection.selected.length;
+    return count > 0
+      ? `Export ${count} Selected Scenario Template${count === 1 ? '' : 's'}`
+      : 'Export Scenario Templates';
+  }
+
+  /**
+   * Download the selected scenarioTemplates, or all of them, with their tasks as a json file
+   */
+  exportScenarioTemplates(): void {
+    this.dialog.open<
+      ScenarioTemplateExportDialogComponent,
+      ScenarioTemplateExportDialogData
+    >(ScenarioTemplateExportDialogComponent, {
+      width: '480px',
+      maxWidth: '90vw',
+      data: {
+        ids: this.exportIds(),
+        selected: this.selection.hasValue(),
+        all: this.canExportAll(),
+        notViewable: this.exportRows().length - this.exportIds().length,
+      },
+    });
+  }
+
+  /**
+   * Create scenarioTemplates from an exported json file
+   */
+  importScenarioTemplates(): void {
+    this.dialog.open(ScenarioTemplateImportDialogComponent, {
+      width: '560px',
+    });
   }
 
   /**

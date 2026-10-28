@@ -1,0 +1,36 @@
+<!--
+Copyright 2026 Carnegie Mellon University. All Rights Reserved.
+Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
+-->
+
+<crucible-dialog
+  dialogTitle="Export Scenario Templates"
+  submitLabel="Export"
+  loadingLabel="Exporting..."
+  [loading]="loading"
+  [errorMessage]="errorMessage"
+  [submitDisabled]="data.ids.length === 0"
+  (cancel)="cancel()"
+  (submit)="export()"
+>
+  <div crucibleDialogContent class="dialog-fields">
+    <p class="export-count">
+      @if (data.ids.length === 0) {
+        There are no Scenario Templates to export.
+      } @else {
+        {{ data.selected ? 'Selected' : 'All' }} Scenario Templates:
+        {{ data.ids.length }}
+      }
+    </p>
+    @if (data.notViewable > 0) {
+      <p class="not-viewable">
+        {{ data.notViewable }} you cannot view
+        {{ data.notViewable === 1 ? 'is' : 'are' }} left out.
+      </p>
+    }
+    <p>
+      The Scenario Templates are saved as a .json file, with their Tasks and VM
+      Credentials. VM Credential passwords are included.
+    </p>
+  </div>
+</crucible-dialog>

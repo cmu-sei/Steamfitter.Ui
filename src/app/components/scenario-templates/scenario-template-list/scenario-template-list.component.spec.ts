@@ -30,6 +30,8 @@ import { ScenarioQuery } from 'src/app/data/scenario/scenario.query';
 import { ScenarioTemplateQuery } from 'src/app/data/scenario-template/scenario-template.query';
 import { ScenarioTemplateStore } from 'src/app/data/scenario-template/scenario-template.store';
 import { permissionDataProviders } from 'src/app/test-utils/mock-permission-data.service';
+import { ScenarioTemplateExportDialogComponent } from 'src/app/components/scenario-templates/scenario-template-export-dialog/scenario-template-export-dialog.component';
+import { ScenarioTemplateImportDialogComponent } from 'src/app/components/scenario-templates/scenario-template-import-dialog/scenario-template-import-dialog.component';
 import { ScenarioTemplateListComponent } from './scenario-template-list.component';
 
 @Directive({ selector: '[ngxClipboard]', standalone: false })
@@ -73,9 +75,15 @@ async function renderList(
     system?: SystemPermission[];
     templates?: ScenarioTemplate[];
     confirmed?: boolean;
+    filterString?: string;
   } = {},
 ) {
-  const { system = [], templates = [template()], confirmed = true } = overrides;
+  const {
+    system = [],
+    templates = [template()],
+    confirmed = true,
+    filterString = '',
+  } = overrides;
   const templateApi = {
     getScenarioTemplates: vi.fn(() => of([])),
     copyScenarioTemplate: vi.fn(() =>
@@ -117,7 +125,7 @@ async function renderList(
       { provide: CrucibleDialogService, useValue: dialogService },
       { provide: MatDialog, useValue: dialog },
     ],
-    inputs: { scenarioTemplateList: templates },
+    inputs: { scenarioTemplateList: templates, filterString },
   });
 
   const user = userEvent.setup();
@@ -143,6 +151,7 @@ async function renderList(
     templateApi,
     scenarioApi,
     confirm,
+    dialog,
     rowOf,
     rowMenuButton,
     openRowMenu,
@@ -398,5 +407,218 @@ describe('ScenarioTemplateListComponent', () => {
     );
     expect(templateApi.deleteScenarioTemplate).toHaveBeenCalledWith('t1');
     expect(templateQuery.hasEntity('t1')).toBe(false);
+  });
+
+  /**
+   * Verifies: with nothing selected, Export offers every template, and asks the API for all of them when the caller holds ViewScenarioTemplates.
+   * Interacts with: exportIds/canExportAll, MatDialog.open stub.
+   * Data: two templates; ViewScenarioTemplates, no selection.
+   */
+  it('exports every template when none is selected', async () => {
+    const { user, dialog } = await renderList({
+      system: ['ViewScenarioTemplates'],
+      templates: [template(), template({ id: 't2', name: 'Beta' })],
+    });
+
+    await user.click(
+      screen.getByRole('button', { name: 'Export Scenario Templates' }),
+    );
+
+    expect(dialog.open).toHaveBeenCalledWith(
+      ScenarioTemplateExportDialogComponent,
+      expect.objectContaining({
+        data: { ids: ['t1', 't2'], selected: false, all: true, notViewable: 0 },
+      }),
+    );
+  });
+
+  /**
+   * Verifies: ticking rows exports only those, and the button says how many.
+   * Interacts with: the select column, SelectionModel, exportLabel, MatDialog.open stub.
+   * Data: two templates; the user ticks Beta.
+   */
+  it('exports only the selected templates and counts them on the button', async () => {
+    const { user, dialog } = await renderList({
+      system: ['ViewScenarioTemplates'],
+      templates: [template(), template({ id: 't2', name: 'Beta' })],
+    });
+
+    await user.click(screen.getByRole('checkbox', { name: 'Select Beta' }));
+    await user.click(
+      screen.getByRole('button', {
+        name: 'Export 1 Selected Scenario Template',
+      }),
+    );
+
+    expect(dialog.open).toHaveBeenCalledWith(
+      ScenarioTemplateExportDialogComponent,
+      expect.objectContaining({
+        data: { ids: ['t2'], selected: true, all: false, notViewable: 0 },
+      }),
+    );
+  });
+
+  /**
+   * Verifies: without ViewScenarioTemplates an export lists the ids of the templates the caller can see, since the API exports all only with that permission.
+   * Interacts with: canExportAll, MatDialog.open stub.
+   * Data: one template the caller manages; no system permissions.
+   */
+  it('lists the ids rather than asking for all without ViewScenarioTemplates', async () => {
+    const { user, dialog } = await renderList({
+      templates: [
+        template({
+          scenarioTemplatePermissions: [
+            ScenarioTemplatePermission.ViewScenarioTemplate,
+          ],
+        }),
+        template({ id: 't2', name: 'Beta' }),
+      ],
+    });
+
+    await user.click(
+      screen.getByRole('button', { name: 'Export Scenario Templates' }),
+    );
+
+    // Beta carries no ViewScenarioTemplate, so asking for it would refuse the whole export
+    expect(dialog.open).toHaveBeenCalledWith(
+      ScenarioTemplateExportDialogComponent,
+      expect.objectContaining({
+        data: { ids: ['t1'], selected: false, all: false, notViewable: 1 },
+      }),
+    );
+  });
+
+  /**
+   * Verifies: the header checkbox selects every row, and again clears them.
+   * Interacts with: isAllSelected/toggleAllRows.
+   * Data: two templates.
+   */
+  it('selects and clears every row from the header checkbox', async () => {
+    const { user } = await renderList({
+      templates: [template(), template({ id: 't2', name: 'Beta' })],
+    });
+    const all = screen.getByRole('checkbox', {
+      name: 'Select all Scenario Templates',
+    });
+
+    await user.click(all);
+    expect(
+      screen.getByRole('button', {
+        name: 'Export 2 Selected Scenario Templates',
+      }),
+    ).toBeInTheDocument();
+
+    await user.click(all);
+    expect(
+      screen.getByRole('button', { name: 'Export Scenario Templates' }),
+    ).toBeInTheDocument();
+  });
+
+  /**
+   * Verifies: with nothing selected and a filter hiding rows, Export takes only what the filter shows, by id.
+   * Interacts with: exportRows/canExportAll reading filteredData.
+   * Data: Alpha and Beta; the filter 'beta'; ViewScenarioTemplates.
+   */
+  it('exports only what the filter shows when nothing is selected', async () => {
+    const { user, dialog } = await renderList({
+      system: ['ViewScenarioTemplates'],
+      templates: [template(), template({ id: 't2', name: 'Beta' })],
+      filterString: 'beta',
+    });
+
+    await user.click(
+      screen.getByRole('button', { name: 'Export Scenario Templates' }),
+    );
+
+    expect(dialog.open).toHaveBeenCalledWith(
+      ScenarioTemplateExportDialogComponent,
+      expect.objectContaining({
+        data: { ids: ['t2'], selected: false, all: false, notViewable: 0 },
+      }),
+    );
+  });
+
+  /**
+   * Verifies: a selected template that leaves the list (deleted, reloaded away) leaves the selection too.
+   * Interacts with: pruneSelection on a new scenarioTemplateList.
+   * Data: Beta selected, then a list without Beta.
+   */
+  it('drops a template from the selection when it leaves the list', async () => {
+    const { user, fixture } = await renderList({
+      templates: [template(), template({ id: 't2', name: 'Beta' })],
+    });
+    await user.click(screen.getByRole('checkbox', { name: 'Select Beta' }));
+    expect(
+      screen.getByRole('button', {
+        name: 'Export 1 Selected Scenario Template',
+      }),
+    ).toBeInTheDocument();
+
+    fixture.componentRef.setInput('scenarioTemplateList', [template()]);
+    fixture.detectChanges();
+
+    expect(
+      screen.getByRole('button', { name: 'Export Scenario Templates' }),
+    ).toBeInTheDocument();
+  });
+
+  /**
+   * Verifies: the header checkbox selects and clears only the rows the filter shows; a selection it hides stays.
+   * Interacts with: toggleAllRows/isAllSelected/isSomeSelected over filteredData.
+   * Data: Beta selected, then the filter 'alpha'; the header ticked and unticked.
+   */
+  it('keeps a selection the filter hides when the header checkbox is cleared', async () => {
+    const { user, fixture } = await renderList({
+      templates: [template(), template({ id: 't2', name: 'Beta' })],
+    });
+    await user.click(screen.getByRole('checkbox', { name: 'Select Beta' }));
+    fixture.componentRef.setInput('filterString', 'alpha');
+    fixture.detectChanges();
+    const all = screen.getByRole('checkbox', {
+      name: 'Select all Scenario Templates',
+    });
+    expect(all).not.toBeChecked();
+
+    await user.click(all);
+    expect(
+      screen.getByRole('button', {
+        name: 'Export 2 Selected Scenario Templates',
+      }),
+    ).toBeInTheDocument();
+
+    await user.click(all);
+    expect(
+      screen.getByRole('button', {
+        name: 'Export 1 Selected Scenario Template',
+      }),
+    ).toBeInTheDocument();
+  });
+
+  /**
+   * Verifies: the Import button is offered with CreateScenarioTemplates and opens the import dialog.
+   * Interacts with: the header's CreateScenarioTemplates gate, MatDialog.open stub.
+   * Data: CreateScenarioTemplates, then no system permissions.
+   */
+  it('opens the import dialog from the Import button for template creators only', async () => {
+    const { user, dialog } = await renderList({
+      system: ['CreateScenarioTemplates'],
+    });
+
+    await user.click(
+      screen.getByRole('button', { name: 'Import Scenario Templates' }),
+    );
+
+    expect(dialog.open).toHaveBeenCalledWith(
+      ScenarioTemplateImportDialogComponent,
+      expect.anything(),
+    );
+  });
+
+  it('hides the Import button from users who cannot create templates', async () => {
+    await renderList({ system: ['EditScenarioTemplates'] });
+
+    expect(
+      screen.queryByRole('button', { name: 'Import Scenario Templates' }),
+    ).toBeNull();
   });
 });
