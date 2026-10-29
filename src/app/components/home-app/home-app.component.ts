@@ -1,7 +1,14 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { Component, OnDestroy, OnInit, inject, viewChild } from '@angular/core';
+import {
+  Component,
+  OnDestroy,
+  OnInit,
+  inject,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { Subject, Observable } from 'rxjs';
@@ -106,10 +113,9 @@ export class HomeAppComponent implements OnDestroy, OnInit {
   hideTopbar = false;
   TopbarView = TopbarView;
   // An optional image URL from settings, so a site can brand the page
-  // without shipping the image in this repo.
-  backgroundImage = this.settingsService.settings.AppLandingBackgroundImage
-    ? `url("${this.settingsService.settings.AppLandingBackgroundImage}")`
-    : null;
+  // without shipping the image in this repo. Applied only once the image
+  // loads, so a missing image leaves the normal page background.
+  readonly backgroundImage = signal<string | null>(null);
   theme$: Observable<Theme>;
   username: string;
   readonly SystemPermission = SystemPermission;
@@ -148,6 +154,13 @@ export class HomeAppComponent implements OnDestroy, OnInit {
   }
 
   ngOnInit() {
+    const url = this.settingsService.settings.AppLandingBackgroundImage;
+    if (url) {
+      const image = new Image();
+      image.onload = () => this.backgroundImage.set(`url("${url}")`);
+      image.src = url;
+    }
+
     this.currentUserQuery
       .select()
       .pipe(takeUntil(this.unsubscribe$))
