@@ -10,6 +10,7 @@ import { PlayerDataService } from 'src/app/data/player/player-data-service';
 import { HistoryView, HistoryComponent } from '../history/history.component';
 import {
   ComnSettingsService,
+  CrucibleLandingBackgroundDirective,
   Theme,
   ComnAuthQuery,
   ComnAuthService,
@@ -74,6 +75,7 @@ enum Section {
     MatPaginator,
     AsyncPipe,
     KeyValuePipe,
+    CrucibleLandingBackgroundDirective,
   ],
 })
 export class HomeAppComponent implements OnDestroy, OnInit {
