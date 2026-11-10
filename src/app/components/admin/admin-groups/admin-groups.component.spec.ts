@@ -224,7 +224,7 @@ describe('AdminGroupsComponent', () => {
 
     await user.click(button(row('Blue Team'), 'Rename'));
 
-    expect(nameDialogs.map((d) => d.title)).toEqual(['Edit Group']);
+    expect(nameDialogs.map((d) => d.title)).toEqual(['Rename Group']);
     expect(groupNames()).toEqual(['Green Team', 'Red Team']);
   });
 });

@@ -19,10 +19,10 @@ import {
 } from 'src/app/generated/steamfitter.api';
 import { SignalRService } from 'src/app/services/signalr/signalr.service';
 import { renderComponent } from 'src/app/test-utils/render-component';
-import { unstubbed } from 'src/app/test-utils/unstubbed';
 import { ApiStub } from 'src/app/test-utils/api-stub';
 import { dialogRefStub } from 'src/app/test-utils/dialog-refs';
 import { permissionDataProviders } from 'src/app/test-utils/mock-permission-data.service';
+import { NameDialogComponent } from 'src/app/components/shared/name-dialog/name-dialog.component';
 import { AdminSystemRolesComponent } from './admin-system-roles.component';
 
 const ROLES: SystemRole[] = [
@@ -41,7 +41,11 @@ const ROLES: SystemRole[] = [
   },
 ];
 
-async function renderRoles(system: SystemPermission[], confirmed = true) {
+async function renderRoles(
+  system: SystemPermission[],
+  confirmed = true,
+  renamedTo?: string,
+) {
   const rolesApi = {
     getAllSystemRoles: vi.fn(() => of(structuredClone(ROLES))),
     updateSystemRole: vi.fn((id: string, role: SystemRole) =>
@@ -56,6 +60,22 @@ async function renderRoles(system: SystemPermission[], confirmed = true) {
     () => dialogRefStub<unknown, boolean>(confirmed).dialogRef,
   );
   const dialogService: Pick<CrucibleDialogService, 'confirm'> = { confirm };
+  // The name dialog closes with the entered name, as NameDialogComponent does.
+  const nameDialogs: Pick<NameDialogComponent, 'title' | 'message'>[] = [];
+  const open = vi.fn(() => {
+    const { dialogRef } = dialogRefStub<NameDialogComponent, object>(
+      renamedTo === undefined ? undefined : { nameValue: renamedTo },
+    );
+    // The component sets the dialog's title and message, nothing else.
+    const instance: Pick<NameDialogComponent, 'title' | 'message'> = {
+      title: '',
+      message: '',
+    };
+    nameDialogs.push(instance);
+    dialogRef.componentInstance = instance as NameDialogComponent;
+    return dialogRef;
+  });
+  const dialog: Pick<MatDialog, 'open'> = { open };
   const rendered = await renderComponent(AdminSystemRolesComponent, {
     declarations: [AdminSystemRolesComponent],
     imports: [
@@ -70,7 +90,7 @@ async function renderRoles(system: SystemPermission[], confirmed = true) {
       { provide: SystemRolesService, useValue: rolesApi },
       { provide: SignalRService, useValue: signalR },
       { provide: CrucibleDialogService, useValue: dialogService },
-      unstubbed(MatDialog),
+      { provide: MatDialog, useValue: dialog },
     ],
   });
   const table = () => screen.getByRole('table');
@@ -96,6 +116,8 @@ async function renderRoles(system: SystemPermission[], confirmed = true) {
     ...rendered,
     rolesApi,
     confirm,
+    open,
+    nameDialogs,
     header,
     permissionsHeader,
     roleNames,
@@ -208,5 +230,34 @@ describe('AdminSystemRolesComponent', () => {
     );
     expect(rolesApi.deleteSystemRole).toHaveBeenCalledWith('r2');
     expect(roleNames()).toEqual(['Administrator']);
+  });
+
+  /**
+   * Verifies: Rename opens the name dialog titled "Rename Role" with the current name and saves the entered name.
+   * Interacts with: MatDialog.open stub (closes with the new name), real RoleDataService.editRole, SystemRolesService.updateSystemRole stub.
+   * Data: ManageRoles; Observer is renamed to Auditor.
+   */
+  it('renames a role from the name dialog', async () => {
+    const { user, header, rolesApi, open, nameDialogs } = await renderRoles(
+      ['ManageRoles'],
+      true,
+      'Auditor',
+    );
+
+    await user.click(
+      within(header('Observer')).getByRole('button', {
+        name: 'Rename role Observer',
+      }),
+    );
+
+    expect(open).toHaveBeenCalledWith(
+      NameDialogComponent,
+      expect.objectContaining({ data: { nameValue: 'Observer' } }),
+    );
+    expect(nameDialogs.map((d) => d.title)).toEqual(['Rename Role']);
+    expect(rolesApi.updateSystemRole).toHaveBeenCalledWith(
+      'r2',
+      expect.objectContaining({ name: 'Auditor' }),
+    );
   });
 });
