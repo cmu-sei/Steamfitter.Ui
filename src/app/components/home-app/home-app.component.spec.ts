@@ -1,8 +1,8 @@
 // Copyright 2026 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-import { describe, it, expect, vi } from 'vitest';
-import { Component, NgZone, input } from '@angular/core';
+import { describe, it, expect, vi, afterEach } from 'vitest';
+import { Component, NgZone, input, signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -16,7 +16,11 @@ import { MatInputModule } from '@angular/material/input';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatSelectModule } from '@angular/material/select';
-import { ComnAuthService } from '@cmusei/crucible-common';
+import {
+  ComnAuthService,
+  ComnSettingsService,
+  CrucibleThemeService,
+} from '@cmusei/crucible-common';
 import {
   HealthService,
   HealthStatus,
@@ -81,6 +85,17 @@ type OidcUser =
   ComnAuthService['user$'] extends Observable<infer U> ? U : never;
 const signedIn = { profile: { name: 'Ada', sub: 'u1' } } as OidcUser;
 
+// The test DOM never loads images, so tests fire load or error themselves.
+class FakeImage {
+  static last: FakeImage | undefined;
+  onload: (() => void) | null = null;
+  onerror: (() => void) | null = null;
+  src = '';
+  constructor() {
+    FakeImage.last = this;
+  }
+}
+
 async function renderHome(
   overrides: {
     system?: SystemPermission[];
@@ -90,6 +105,8 @@ async function renderHome(
     systemPermissionsApi?: ApiStub<SystemPermissionsService>;
     userApi?: ApiStub<UserService>;
     logout?: ComnAuthService['logout'];
+    background?: string;
+    dark?: boolean;
   } = {},
 ) {
   const {
@@ -97,6 +114,8 @@ async function renderHome(
     tab,
     health = 'Healthy',
     user$ = of(signedIn),
+    background,
+    dark = false,
   } = overrides;
   const auth: Pick<ComnAuthService, 'user$' | 'logout'> = {
     user$,
@@ -141,6 +160,18 @@ async function renderHome(
           overrides.systemPermissionsApi ?? permissionApi.systemPermissions,
       },
       { provide: ComnAuthService, useValue: auth },
+      {
+        provide: ComnSettingsService,
+        useValue: {
+          settings: { AppTitle: 'Steamfitter', AppLandingBackgroundImage: background },
+        } satisfies Pick<ComnSettingsService, 'settings'>,
+      },
+      {
+        provide: CrucibleThemeService,
+        useValue: {
+          isDarkMode: signal(dark).asReadonly(),
+        } satisfies Pick<CrucibleThemeService, 'isDarkMode'>,
+      },
       { provide: SignalRService, useValue: signalR },
       { provide: ActivatedRoute, useValue: route },
       {
@@ -491,5 +522,79 @@ describe('HomeAppComponent', () => {
     fixture.destroy();
 
     expect(signalR.leaveSystem).toHaveBeenCalledTimes(1);
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    FakeImage.last = undefined;
+  });
+
+  /**
+   * Verifies: the page shows the background image named in settings once it loads.
+   * Interacts with: ComnSettingsService.settings (stub), a stubbed Image, HomeAppComponent template.
+   * Data: AppLandingBackgroundImage set to a relative asset URL; the image load event fires.
+   */
+  it('shows the landing background once the image loads', async () => {
+    vi.stubGlobal('Image', FakeImage);
+    const { fixture, container } = await renderHome({ background: '/assets/local/landing-background.jpg' });
+
+    expect(FakeImage.last?.src).toBe('/assets/local/landing-background.jpg');
+    FakeImage.last!.onload!();
+    fixture.detectChanges();
+
+    const page = container.querySelector('.app-container') as HTMLElement;
+    expect(page.style.getPropertyValue('--crucible-landing-background')).toBe('url("/assets/local/landing-background.jpg")');
+    expect(page.classList.contains('crucible-landing-background')).toBe(true);
+  });
+
+  /**
+   * Verifies: in dark mode the image gets the near-black tint, so the page stays dark.
+   * Interacts with: ComnSettingsService.settings and CrucibleThemeService.isDarkMode (stubs), a stubbed Image.
+   * Data: AppLandingBackgroundImage set, dark mode on; the image load event fires.
+   */
+  it('tints the landing background in dark mode', async () => {
+    vi.stubGlobal('Image', FakeImage);
+    const { fixture, container } = await renderHome({
+      background: '/assets/local/landing-background-dark.jpg',
+      dark: true,
+    });
+
+    FakeImage.last!.onload!();
+    fixture.detectChanges();
+
+    const page = container.querySelector('.app-container') as HTMLElement;
+    expect(page.style.backgroundImage).toContain('linear-gradient');
+    expect(page.style.backgroundImage).toContain('/assets/local/landing-background-dark.jpg');
+  });
+
+  /**
+   * Verifies: an image that fails to load leaves the normal page background, as if unset.
+   * Interacts with: ComnSettingsService.settings (stub), a stubbed Image, HomeAppComponent template.
+   * Data: AppLandingBackgroundImage set to a missing image; the image error event fires.
+   */
+  it('keeps the normal background when the image fails to load', async () => {
+    vi.stubGlobal('Image', FakeImage);
+    const { fixture, container } = await renderHome({ background: '/assets/local/missing.jpg' });
+
+    FakeImage.last!.onerror?.();
+    fixture.detectChanges();
+
+    const page = container.querySelector('.app-container') as HTMLElement;
+    expect(page.style.getPropertyValue('--crucible-landing-background')).toBe('');
+    expect(page.classList.contains('crucible-landing-background')).toBe(false);
+  });
+
+  /**
+   * Verifies: without the setting, no image is requested and the normal page background is kept.
+   * Interacts with: ComnSettingsService.settings (stub), a stubbed Image, HomeAppComponent template.
+   * Data: AppLandingBackgroundImage unset.
+   */
+  it('keeps the normal background without the setting', async () => {
+    vi.stubGlobal('Image', FakeImage);
+    const { container } = await renderHome();
+
+    expect(FakeImage.last).toBeUndefined();
+    const page = container.querySelector('.app-container') as HTMLElement;
+    expect(page.classList.contains('crucible-landing-background')).toBe(false);
   });
 });
