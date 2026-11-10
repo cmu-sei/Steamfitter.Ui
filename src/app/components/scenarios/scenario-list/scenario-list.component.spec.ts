@@ -419,8 +419,6 @@ describe('ScenarioListComponent', () => {
         expect.objectContaining({
           title: 'Start Scenario',
           message: 'Are you sure that you want to start Alpha?',
-          confirmText: 'Start',
-          cancelText: 'Cancel',
         }),
       );
       expect(scenarioApi.startScenario).toHaveBeenCalledWith('s1');

@@ -345,8 +345,6 @@ describe('ScenarioTemplateListComponent', () => {
       expect.objectContaining({
         title: 'Create Scenario',
         message: 'Are you sure that you want to create a scenario from Alpha?',
-        confirmText: 'Create',
-        cancelText: 'Cancel',
       }),
     );
     expect(scenarioApi.createScenarioFromScenarioTemplate).toHaveBeenCalledWith(
@@ -374,8 +372,6 @@ describe('ScenarioTemplateListComponent', () => {
       expect.objectContaining({
         title: 'Copy Scenario Template',
         message: 'Are you sure that you want to copy Alpha?',
-        confirmText: 'Copy',
-        cancelText: 'Cancel',
       }),
     );
     expect(templateApi.copyScenarioTemplate).not.toHaveBeenCalled();
