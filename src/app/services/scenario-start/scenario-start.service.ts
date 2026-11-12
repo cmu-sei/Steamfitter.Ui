@@ -12,7 +12,7 @@ import {
 import { ScenarioDataService } from 'src/app/data/scenario/scenario-data.service';
 import { Scenario } from 'src/app/generated/steamfitter.api';
 import { ErrorService } from '../error/error.service';
-import { lateStart } from './late-start';
+import { LateStart, lateStart } from './late-start';
 
 /**
  * Starts a scenario after asking the user. The API keeps a scenario's planned
@@ -21,7 +21,10 @@ import { lateStart } from './late-start';
  * start and end are saved as now and now + the planned length before
  * starting) or the planned end. Keeping the length saves the scenario, so it
  * is offered only when `canEdit` is true. A failed save or start is shown
- * through ErrorService. Every Start action goes through here.
+ * through ErrorService. Lateness is checked again when a prompt closes: a
+ * confirm that became late opens the late start dialog, and choosing to keep
+ * an end that passed while the dialog was open reopens it with the new state.
+ * Every Start action goes through here.
  */
 @Injectable({
   providedIn: 'root',
@@ -35,22 +38,39 @@ export class ScenarioStartService {
   start(scenario: Scenario, canEdit: boolean): void {
     const now = new Date();
     const late = lateStart(scenario, now);
-    if (!late) {
-      this.confirmService
-        .confirm({
-          title: 'Start Scenario',
-          message: `Are you sure that you want to start ${scenario.name}?`,
-          confirmText: 'Start',
-          cancelText: 'Cancel',
-        })
-        .afterClosed()
-        .subscribe((confirmed) => {
-          if (confirmed) {
-            this.begin(scenario.id);
-          }
-        });
+    if (late) {
+      this.askLate(scenario, canEdit, late, now);
       return;
     }
+    this.confirmService
+      .confirm({
+        title: 'Start Scenario',
+        message: `Are you sure that you want to start ${scenario.name}?`,
+        confirmText: 'Start',
+        cancelText: 'Cancel',
+      })
+      .afterClosed()
+      .subscribe((confirmed) => {
+        if (!confirmed) {
+          return;
+        }
+        // The confirm may have stayed open past the planned start.
+        const closedAt = new Date();
+        const lateNow = lateStart(scenario, closedAt);
+        if (lateNow) {
+          this.askLate(scenario, canEdit, lateNow, closedAt);
+        } else {
+          this.begin(scenario.id);
+        }
+      });
+  }
+
+  private askLate(
+    scenario: Scenario,
+    canEdit: boolean,
+    late: LateStart,
+    now: Date,
+  ): void {
     const data: LateStartDialogData = {
       scenarioName: scenario.name,
       late,
@@ -65,7 +85,15 @@ export class ScenarioStartService {
       });
     dialogRef.afterClosed().subscribe((choice) => {
       if (choice === 'end') {
-        this.begin(scenario.id);
+        // If the planned end passed while the dialog was open, starting now
+        // would end the scenario within a minute: ask again with the new state.
+        const closedAt = new Date();
+        const lateNow = lateStart(scenario, closedAt);
+        if (lateNow?.endPassed) {
+          this.askLate(scenario, canEdit, lateNow, closedAt);
+        } else {
+          this.begin(scenario.id);
+        }
       } else if (choice === 'keep' && canEdit) {
         // The start date moves too, so the saved window stays the planned
         // length even if the start below fails and Start is pressed again.

@@ -362,4 +362,84 @@ describe('ScenarioStartService', () => {
 
     expect(handleError).toHaveBeenCalledWith(failure);
   });
+
+  /**
+   * Verifies: a confirm opened on time but answered after the planned start opens the late start dialog instead of starting.
+   * Interacts with: CrucibleDialogService.confirm stub answering after the clock moves, MatDialog.open stub (dismissed).
+   * Data: Alpha planned 09:00 to 13:00 EST; the confirm opens at 08:59 and is answered at 09:30.
+   */
+  it('asks about a late start when the confirm is answered late', () => {
+    vi.setSystemTime(new Date('2026-11-12T13:59:00Z'));
+    const answer = new Subject<boolean>();
+    const { service, confirm, open, data } = setup({ choice: null });
+    confirm.mockReturnValueOnce({
+      afterClosed: () => answer,
+    } as unknown as ReturnType<typeof confirm>);
+
+    service.start(scenario(), true);
+    vi.setSystemTime(new Date('2026-11-12T14:30:00Z'));
+    answer.next(true);
+
+    expect(open).toHaveBeenCalledWith(
+      LateStartDialogComponent,
+      expect.objectContaining({
+        data: expect.objectContaining({
+          now: new Date('2026-11-12T14:30:00Z'),
+          late: expect.objectContaining({ remainingMs: 3.5 * HOUR }),
+        }),
+      }),
+    );
+    expect(data.startScenario).not.toHaveBeenCalled();
+  });
+
+  /**
+   * Verifies: choosing to keep the end after it passed while the dialog was open reopens the dialog with the end passed, and starts nothing.
+   * Interacts with: MatDialog.open stub (first answers 'end' after the clock moves, then is dismissed), startScenario stub.
+   * Data: Alpha planned 09:00 to 13:00 EST; the dialog opens at 12:50 and is answered at 13:05.
+   */
+  it('asks again when the end passes while the dialog is open', () => {
+    vi.setSystemTime(new Date('2026-11-12T17:50:00Z'));
+    const answer = new Subject<'end'>();
+    const { service, open, data } = setup({ choice: null });
+    open.mockReturnValueOnce({
+      afterClosed: () => answer,
+    } as unknown as ReturnType<typeof open>);
+
+    service.start(scenario(), true);
+    vi.setSystemTime(new Date('2026-11-12T18:05:00Z'));
+    answer.next('end');
+
+    expect(open).toHaveBeenCalledTimes(2);
+    expect(open).toHaveBeenLastCalledWith(
+      LateStartDialogComponent,
+      expect.objectContaining({
+        data: expect.objectContaining({
+          now: new Date('2026-11-12T18:05:00Z'),
+          late: expect.objectContaining({ endPassed: true }),
+        }),
+      }),
+    );
+    expect(data.startScenario).not.toHaveBeenCalled();
+  });
+
+  /**
+   * Verifies: choosing to keep the end still starts when the end has not passed by the time the dialog closes.
+   * Interacts with: MatDialog.open stub answering 'end' after the clock moves, startScenario stub.
+   * Data: Alpha planned 09:00 to 13:00 EST; the dialog opens at 10:30 and is answered at 10:45.
+   */
+  it('starts with the planned end when it is still ahead at close', () => {
+    vi.setSystemTime(new Date('2026-11-12T15:30:00Z'));
+    const answer = new Subject<'end'>();
+    const { service, open, data } = setup();
+    open.mockReturnValueOnce({
+      afterClosed: () => answer,
+    } as unknown as ReturnType<typeof open>);
+
+    service.start(scenario(), true);
+    vi.setSystemTime(new Date('2026-11-12T15:45:00Z'));
+    answer.next('end');
+
+    expect(open).toHaveBeenCalledTimes(1);
+    expect(data.startScenario).toHaveBeenCalledWith('s1');
+  });
 });
