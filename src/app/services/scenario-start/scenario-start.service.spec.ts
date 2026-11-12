@@ -442,4 +442,20 @@ describe('ScenarioStartService', () => {
     expect(open).toHaveBeenCalledTimes(1);
     expect(data.startScenario).toHaveBeenCalledWith('s1');
   });
+
+  /**
+   * Verifies: an on-demand scenario gets the plain confirm even when its dates say it is late.
+   * Interacts with: CrucibleDialogService.confirm stub, MatDialog.open stub, startScenario stub.
+   * Data: Alpha marked onDemand, planned 09:00 to 13:00 EST, started at 14:00 EST.
+   */
+  it('uses the plain confirm for an on-demand scenario', () => {
+    vi.setSystemTime(new Date('2026-11-12T19:00:00Z'));
+    const { service, confirm, open, data } = setup();
+
+    service.start(scenario({ onDemand: true }), true);
+
+    expect(confirm).toHaveBeenCalled();
+    expect(open).not.toHaveBeenCalled();
+    expect(data.startScenario).toHaveBeenCalledWith('s1');
+  });
 });

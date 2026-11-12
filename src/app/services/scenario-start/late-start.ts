@@ -33,10 +33,14 @@ function toDate(value: Date | string | null | undefined): Date | null {
 
 /**
  * Describes how late a scenario is being started, or returns null when
- * starting it now needs no choice: it is on time, it has no end, or its dates
+ * starting it now needs no choice: it is on time, it has no end, it is an
+ * on-demand scenario (its dates are defaults nobody planned), or its dates
  * are missing or out of order.
  */
 export function lateStart(scenario: Scenario, now: Date): LateStart | null {
+  if (scenario?.onDemand) {
+    return null;
+  }
   const plannedStart = toDate(scenario?.startDate);
   const plannedEnd = toDate(scenario?.endDate);
   if (!plannedStart || !plannedEnd) {

@@ -110,6 +110,18 @@ describe('lateStart', () => {
   });
 
   /**
+   * Verifies: an on-demand scenario needs no choice however late it starts.
+   * Interacts with: lateStart.
+   * Data: the 09:00 to 13:00 scenario marked onDemand, started at 10:30 and at 14:00.
+   */
+  it.each(['2026-11-12T15:30:00Z', '2026-11-12T19:00:00Z'])(
+    'returns null for an on-demand scenario at %s',
+    (now) => {
+      expect(lateStart(scenario({ onDemand: true }), new Date(now))).toBeNull();
+    },
+  );
+
+  /**
    * Verifies: ISO strings (dates not yet converted by the store) are read as dates.
    * Interacts with: lateStart.
    * Data: the 09:00 to 13:00 scenario as ISO strings, started at 10:30.
