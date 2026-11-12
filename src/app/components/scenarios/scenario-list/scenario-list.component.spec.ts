@@ -371,11 +371,11 @@ describe('ScenarioListComponent', () => {
     });
 
     /**
-     * Verifies: a scenario-level ExecuteScenario grant shows Start on a ready scenario but not End on an active one.
-     * Interacts with: the End item's canExecute(item.id) call in the context menu template.
+     * Verifies: a scenario-level ExecuteScenario grant offers End on an active scenario.
+     * Interacts with: the End item's canExecute(item) call in the context menu template.
      * Data: an active scenario with only the ExecuteScenario scenario permission.
      */
-    it('hides End from users who can only execute this scenario', async () => {
+    it('offers End to users who can only execute this scenario', async () => {
       const { openRowMenu, menuItems } = await renderList({
         scenarios: [
           scenario({
@@ -387,7 +387,28 @@ describe('ScenarioListComponent', () => {
 
       await openRowMenu('Alpha');
 
-      expect(menuItems()).toEqual([]);
+      expect(menuItems()).toEqual(['End']);
+    });
+
+    /**
+     * Verifies: a user with only scenario-level ExecuteScenario can end the scenario.
+     * Interacts with: the End item, CrucibleDialogService.confirm stub (confirms), ScenarioService.endScenario stub.
+     * Data: an active scenario with only the ExecuteScenario scenario permission.
+     */
+    it('ends the scenario for a scenario-level executor', async () => {
+      const { openRowMenu, user, scenarioApi } = await renderList({
+        scenarios: [
+          scenario({
+            status: 'active',
+            scenarioPermissions: [ScenarioPermission.ExecuteScenario],
+          }),
+        ],
+      });
+      await openRowMenu('Alpha');
+
+      await user.click(screen.getByRole('menuitem', { name: 'End' }));
+
+      expect(scenarioApi.endScenario).toHaveBeenCalledWith('s1');
     });
 
     /**
