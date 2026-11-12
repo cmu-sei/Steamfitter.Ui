@@ -19,6 +19,7 @@ import {
   tap,
   distinctUntilChanged,
   debounceTime,
+  finalize,
 } from 'rxjs/operators';
 import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
 import { TaskDataService } from 'src/app/data/task/task-data.service';
@@ -305,10 +306,8 @@ export class ScenarioDataService {
     this.scenarioService
       .updateScenario(scenario.id, scenario)
       .pipe(
-        tap(() => {
-          this.scenarioStore.setLoading(false);
-        }),
         take(1),
+        finalize(() => this.scenarioStore.setLoading(false)),
       )
       .subscribe((s) => {
         this.updateStore(s);

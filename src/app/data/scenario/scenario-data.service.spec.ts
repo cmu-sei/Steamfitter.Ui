@@ -513,7 +513,7 @@ describe('ScenarioDataService', () => {
       {
         name: 'updateScenario',
         act: (s: ScenarioDataService) => s.updateScenario(apiScenario()),
-        loading: true,
+        loading: false,
       },
       {
         name: 'delete',
