@@ -92,7 +92,7 @@ describe('ScenarioStartService', () => {
     vi.setSystemTime(new Date('2026-11-12T13:30:00Z'));
     const { service, confirm, open, data } = setup();
 
-    service.start(scenario());
+    service.start(scenario(), true);
 
     expect(confirm).toHaveBeenCalledWith({
       title: 'Start Scenario',
@@ -114,7 +114,7 @@ describe('ScenarioStartService', () => {
     vi.setSystemTime(new Date('2026-11-12T13:30:00Z'));
     const { service, data } = setup({ confirmed: false });
 
-    service.start(scenario());
+    service.start(scenario(), true);
 
     expect(data.start).not.toHaveBeenCalled();
   });
@@ -128,7 +128,10 @@ describe('ScenarioStartService', () => {
     vi.setSystemTime(new Date('2026-11-13T14:00:00Z'));
     const { service, confirm, open, data } = setup();
 
-    service.start(scenario({ endDate: new Date('2126-11-12T14:00:00Z') }));
+    service.start(
+      scenario({ endDate: new Date('2126-11-12T14:00:00Z') }),
+      true,
+    );
 
     expect(confirm).toHaveBeenCalled();
     expect(open).not.toHaveBeenCalled();
@@ -145,7 +148,7 @@ describe('ScenarioStartService', () => {
     vi.setSystemTime(now);
     const { service, confirm, open, data } = setup({ choice: 'end' });
 
-    service.start(scenario());
+    service.start(scenario(), true);
 
     expect(confirm).not.toHaveBeenCalled();
     expect(open).toHaveBeenCalledWith(
@@ -154,6 +157,7 @@ describe('ScenarioStartService', () => {
         data: {
           scenarioName: 'Alpha',
           now,
+          canEdit: true,
           late: {
             plannedStart: new Date('2026-11-12T14:00:00Z'),
             plannedEnd: new Date('2026-11-12T18:00:00Z'),
@@ -177,7 +181,7 @@ describe('ScenarioStartService', () => {
     vi.setSystemTime(new Date('2026-11-12T15:30:00Z'));
     const { service, data, calls } = setup({ choice: 'keep' });
 
-    service.start(scenario());
+    service.start(scenario(), true);
 
     expect(data.saveScenario).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -199,7 +203,7 @@ describe('ScenarioStartService', () => {
     vi.setSystemTime(new Date('2026-11-12T19:00:00Z'));
     const { service, open, data, calls } = setup({ choice: 'keep' });
 
-    service.start(scenario());
+    service.start(scenario(), true);
 
     expect(open).toHaveBeenCalledWith(
       LateStartDialogComponent,
@@ -228,7 +232,7 @@ describe('ScenarioStartService', () => {
       save: () => saved,
     });
 
-    service.start(scenario());
+    service.start(scenario(), true);
     expect(data.start).not.toHaveBeenCalled();
 
     saved.next(scenario());
@@ -248,7 +252,7 @@ describe('ScenarioStartService', () => {
       save: () => throwError(() => failure),
     });
 
-    service.start(scenario());
+    service.start(scenario(), true);
 
     expect(data.start).not.toHaveBeenCalled();
     expect(handleError).toHaveBeenCalledWith(failure);
@@ -263,8 +267,29 @@ describe('ScenarioStartService', () => {
     vi.setSystemTime(new Date('2026-11-12T15:30:00Z'));
     const { service, data } = setup({ choice: null });
 
-    service.start(scenario());
+    service.start(scenario(), true);
 
+    expect(data.saveScenario).not.toHaveBeenCalled();
+    expect(data.start).not.toHaveBeenCalled();
+  });
+
+  /**
+   * Verifies: a user who cannot edit the scenario is told so in the dialog data, and a 'keep' answer saves and starts nothing.
+   * Interacts with: MatDialog.open stub closing with 'keep', ScenarioDataService stubs.
+   * Data: Alpha started late by a user who can execute but not edit it.
+   */
+  it('does not save the end for a user who cannot edit', () => {
+    vi.setSystemTime(new Date('2026-11-12T15:30:00Z'));
+    const { service, open, data } = setup({ choice: 'keep' });
+
+    service.start(scenario(), false);
+
+    expect(open).toHaveBeenCalledWith(
+      LateStartDialogComponent,
+      expect.objectContaining({
+        data: expect.objectContaining({ canEdit: false }),
+      }),
+    );
     expect(data.saveScenario).not.toHaveBeenCalled();
     expect(data.start).not.toHaveBeenCalled();
   });

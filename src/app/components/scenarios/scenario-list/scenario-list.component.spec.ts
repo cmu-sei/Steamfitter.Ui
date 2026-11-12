@@ -434,17 +434,31 @@ describe('ScenarioListComponent', () => {
 
   describe('actions', () => {
     /**
-     * Verifies: Start on the Scenarios page and on Admin > Scenarios goes through ScenarioStartService.
-     * Interacts with: the row menu's Start item, ScenarioStartService.start spy.
-     * Data: a ready scenario with view; ExecuteScenarios; adminMode false and true.
+     * Verifies: Start on the Scenarios page and on Admin > Scenarios goes through ScenarioStartService, with whether the user can edit.
+     * Interacts with: the row menu's Start item, ScenarioStartService.start spy, canEdit.
+     * Data: a ready scenario with view; ExecuteScenarios alone or with EditScenarios; adminMode false and true.
      */
-    it.each([{ adminMode: false }, { adminMode: true }])(
-      'starts through ScenarioStartService (adminMode $adminMode)',
-      async ({ adminMode }) => {
-        const { openRowMenu, user } = await renderList({
-          system: ['ExecuteScenarios'],
-          adminMode,
-        });
+    it.each([
+      { adminMode: false, system: ['ExecuteScenarios'], canEdit: false },
+      { adminMode: true, system: ['ExecuteScenarios'], canEdit: false },
+      {
+        adminMode: false,
+        system: ['ExecuteScenarios', 'EditScenarios'],
+        canEdit: true,
+      },
+      {
+        adminMode: true,
+        system: ['ExecuteScenarios', 'EditScenarios'],
+        canEdit: true,
+      },
+    ] as Array<{
+      adminMode: boolean;
+      system: SystemPermission[];
+      canEdit: boolean;
+    }>)(
+      'starts through ScenarioStartService (adminMode $adminMode, canEdit $canEdit)',
+      async ({ adminMode, system, canEdit }) => {
+        const { openRowMenu, user } = await renderList({ system, adminMode });
         const start = vi
           .spyOn(TestBed.inject(ScenarioStartService), 'start')
           .mockImplementation(() => undefined);
@@ -454,9 +468,39 @@ describe('ScenarioListComponent', () => {
 
         expect(start).toHaveBeenCalledWith(
           expect.objectContaining({ id: 's1', name: 'Alpha' }),
+          canEdit,
         );
       },
     );
+
+    /**
+     * Verifies: a scenario-level EditScenario grant counts as able to edit when starting.
+     * Interacts with: the row menu's Start item, ScenarioStartService.start spy, canEdit.
+     * Data: a ready scenario with ExecuteScenario and EditScenario scenario permissions and no system permissions.
+     */
+    it('passes a scenario-level edit grant to ScenarioStartService', async () => {
+      const { openRowMenu, user } = await renderList({
+        scenarios: [
+          scenario({
+            scenarioPermissions: [
+              ScenarioPermission.ExecuteScenario,
+              ScenarioPermission.EditScenario,
+            ],
+          }),
+        ],
+      });
+      const start = vi
+        .spyOn(TestBed.inject(ScenarioStartService), 'start')
+        .mockImplementation(() => undefined);
+      await openRowMenu('Alpha');
+
+      await user.click(screen.getByRole('menuitem', { name: 'Start' }));
+
+      expect(start).toHaveBeenCalledWith(
+        expect.objectContaining({ id: 's1' }),
+        true,
+      );
+    });
 
     /**
      * Verifies: starting late and choosing to keep the length saves the moved end, then starts.
@@ -469,7 +513,7 @@ describe('ScenarioListComponent', () => {
       const startDate = new Date(Date.now() - 1.5 * hour);
       const { openRowMenu, user, confirm, dialog, scenarioApi } =
         await renderList({
-          system: ['ExecuteScenarios'],
+          system: ['ExecuteScenarios', 'EditScenarios'],
           scenarios: [
             scenario({
               startDate,

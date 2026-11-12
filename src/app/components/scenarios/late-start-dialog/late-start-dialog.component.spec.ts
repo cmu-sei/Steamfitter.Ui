@@ -21,10 +21,15 @@ const HOUR = 3_600_000;
 const plannedStart = new Date('2026-11-12T14:00:00Z');
 const plannedEnd = new Date('2026-11-12T18:00:00Z');
 
-async function renderDialog(now: Date, late: Partial<LateStart>) {
+async function renderDialog(
+  now: Date,
+  late: Partial<LateStart>,
+  canEdit = true,
+) {
   const data: LateStartDialogData = {
     scenarioName: 'Alpha',
     now,
+    canEdit,
     late: {
       plannedStart,
       plannedEnd,
@@ -92,6 +97,44 @@ describe('LateStartDialogComponent', () => {
       ),
     ).toBeInTheDocument();
     expect(buttonNames()).toEqual(['Cancel', 'Start and keep 4 h']);
+  });
+
+  /**
+   * Verifies: a user who cannot edit the scenario is not offered to keep the length of a late start.
+   * Interacts with: the dialog template, formatTime (viewer's zone).
+   * Data: Alpha planned 09:00 to 13:00 EST, started at 10:30 EST; canEdit false.
+   */
+  it('offers only to keep the end to a user who cannot edit', async () => {
+    const now = new Date('2026-11-12T15:30:00Z');
+    await renderDialog(now, {}, false);
+    const end = formatTime(plannedEnd, now);
+
+    expect(
+      screen.getByText(
+        /^Alpha was planned to start at .* of its planned 4 h\.$/,
+      ),
+    ).toBeInTheDocument();
+    expect(buttonNames()).toEqual(['Cancel', `Start, end at ${end}`]);
+  });
+
+  /**
+   * Verifies: once the end has passed, a user who cannot edit the scenario gets only Cancel and is told who can move the end.
+   * Interacts with: the dialog template, formatTime (viewer's zone).
+   * Data: Alpha planned 09:00 to 13:00 EST, started at 14:00 EST; canEdit false.
+   */
+  it('offers only Cancel once the end has passed to a user who cannot edit', async () => {
+    const now = new Date('2026-11-12T19:00:00Z');
+    await renderDialog(now, { endPassed: true }, false);
+    const end = formatTime(plannedEnd, now);
+
+    expect(
+      screen.getByText(
+        `Alpha's end (${end}) has passed. ` +
+          'Starting now would end it within a minute. ' +
+          'Ask someone who can edit this scenario to move its end.',
+      ),
+    ).toBeInTheDocument();
+    expect(buttonNames()).toEqual(['Cancel']);
   });
 
   /**

@@ -12,13 +12,15 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
         Start, end at {{ plannedEnd }}
       </button>
     }
-    <button
-      matButton="filled"
-      type="button"
-      cdkFocusInitial
-      (click)="close('keep')"
-    >
-      Start and keep {{ plannedLength }}
-    </button>
+    @if (canEdit) {
+      <button
+        matButton="filled"
+        type="button"
+        cdkFocusInitial
+        (click)="close('keep')"
+      >
+        Start and keep {{ plannedLength }}
+      </button>
+    }
   </ng-container>
 </crucible-dialog>

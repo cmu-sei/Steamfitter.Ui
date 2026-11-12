@@ -19,7 +19,8 @@ import { lateStart } from './late-start';
  * end when it starts, so a scenario started late loses the delay from its
  * length. When it is late this asks whether to keep the planned length (the
  * end is saved as now + the planned length before starting) or the planned
- * end. Every Start action goes through here.
+ * end. Keeping the length saves the scenario, so it is offered only when
+ * `canEdit` is true. Every Start action goes through here.
  */
 @Injectable({
   providedIn: 'root',
@@ -30,7 +31,7 @@ export class ScenarioStartService {
   private dialog = inject(MatDialog);
   private errorService = inject(ErrorService);
 
-  start(scenario: Scenario): void {
+  start(scenario: Scenario, canEdit: boolean): void {
     const now = new Date();
     const late = lateStart(scenario, now);
     if (!late) {
@@ -53,6 +54,7 @@ export class ScenarioStartService {
       scenarioName: scenario.name,
       late,
       now,
+      canEdit,
     };
     const dialogRef: MatDialogRef<LateStartDialogComponent, LateStartChoice> =
       this.dialog.open(LateStartDialogComponent, {
@@ -63,7 +65,7 @@ export class ScenarioStartService {
     dialogRef.afterClosed().subscribe((choice) => {
       if (choice === 'end') {
         this.scenarioDataService.start(scenario.id);
-      } else if (choice === 'keep') {
+      } else if (choice === 'keep' && canEdit) {
         const endDate = new Date(Date.now() + late.plannedLengthMs);
         this.scenarioDataService
           .saveScenario({ ...scenario, endDate })

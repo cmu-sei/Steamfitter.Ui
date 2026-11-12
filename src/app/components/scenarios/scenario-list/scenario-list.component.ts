@@ -317,7 +317,7 @@ export class ScenarioListComponent implements OnInit, OnChanges {
    * Start a scenario
    */
   startScenario(scenario: Scenario): void {
-    this.scenarioStartService.start(scenario);
+    this.scenarioStartService.start(scenario, this.canEdit(scenario));
   }
 
   /**
