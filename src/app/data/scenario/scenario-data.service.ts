@@ -21,7 +21,7 @@ import {
   debounceTime,
   finalize,
 } from 'rxjs/operators';
-import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
+import { BehaviorSubject, Observable, combineLatest, defer } from 'rxjs';
 import { TaskDataService } from 'src/app/data/task/task-data.service';
 import { PlayerDataService } from 'src/app/data/player/player-data-service';
 
@@ -307,11 +307,14 @@ export class ScenarioDataService {
 
   /**
    * Saves a scenario and stores the API's version. Emits the saved scenario
-   * so a caller can wait for the save; errors reach the subscriber.
+   * so a caller can wait for the save; errors reach the subscriber. Nothing
+   * is sent, and loading is not set, until it is subscribed.
    */
   saveScenario(scenario: Scenario): Observable<Scenario> {
-    this.scenarioStore.setLoading(true);
-    return this.scenarioService.updateScenario(scenario.id, scenario).pipe(
+    return defer(() => {
+      this.scenarioStore.setLoading(true);
+      return this.scenarioService.updateScenario(scenario.id, scenario);
+    }).pipe(
       take(1),
       finalize(() => this.scenarioStore.setLoading(false)),
       tap((s) => this.updateStore(s)),

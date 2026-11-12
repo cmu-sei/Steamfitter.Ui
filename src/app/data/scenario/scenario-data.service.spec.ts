@@ -385,6 +385,27 @@ describe('ScenarioDataService', () => {
     });
 
     /**
+     * Verifies: saveScenario() sends nothing and leaves loading alone until it is subscribed.
+     * Interacts with: ScenarioService.updateScenario stub, ScenarioQuery.
+     * Data: stored scenario 's1'; the returned observable is held, then subscribed.
+     */
+    it('saveScenario() waits for a subscriber', async () => {
+      const scenarioApi = {
+        updateScenario: vi.fn((id: string, form: Scenario) => of(form)),
+      } satisfies ApiStub<ScenarioService>;
+      const { service, store, query } = setup({ scenarioApi });
+      store.set([apiScenario()]);
+      store.setLoading(false);
+
+      const save = service.saveScenario(apiScenario());
+
+      expect(scenarioApi.updateScenario).not.toHaveBeenCalled();
+      expect(query.getValue().loading).toBe(false);
+      await firstValueFrom(save);
+      expect(scenarioApi.updateScenario).toHaveBeenCalledTimes(1);
+    });
+
+    /**
      * Verifies: a failed saveScenario() hands the error to its subscriber, leaves the store alone, and clears loading.
      * Interacts with: failing ScenarioService.updateScenario stub, ScenarioQuery.
      * Data: stored scenario 's1'; the API fails with 'boom'.
