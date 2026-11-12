@@ -87,9 +87,15 @@ export function formatDuration(ms: number): string {
 /**
  * A time in the viewer's time zone with its short name, e.g. "1:00 PM EST".
  * The date is added when it falls on another day than `now`, and the year
- * when it falls in another year. `timeZone` is for tests.
+ * when it falls in another year. `timeZone` and `locale` default to the
+ * viewer's; tests pass them.
  */
-export function formatTime(date: Date, now: Date, timeZone?: string): string {
+export function formatTime(
+  date: Date,
+  now: Date,
+  timeZone?: string,
+  locale?: string,
+): string {
   const dayOf = (d: Date) =>
     d.toLocaleDateString('en-CA', {
       timeZone,
@@ -110,5 +116,5 @@ export function formatTime(date: Date, now: Date, timeZone?: string): string {
       options.year = 'numeric';
     }
   }
-  return date.toLocaleString(undefined, options);
+  return date.toLocaleString(locale, options);
 }

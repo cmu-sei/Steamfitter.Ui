@@ -172,7 +172,9 @@ describe('formatTime', () => {
     { date: '2026-11-13T18:00:00Z', text: 'Nov 13, 1:00 PM EST' },
     { date: '2027-11-12T18:00:00Z', text: 'Nov 12, 2027, 1:00 PM EST' },
   ])('shows $date as "$text"', ({ date, text }) => {
-    expect(formatTime(new Date(date), now, 'America/New_York')).toBe(text);
+    expect(formatTime(new Date(date), now, 'America/New_York', 'en-US')).toBe(
+      text,
+    );
   });
 
   /**
@@ -182,7 +184,28 @@ describe('formatTime', () => {
    */
   it('compares days in the given time zone', () => {
     expect(
-      formatTime(new Date('2026-11-13T02:00:00Z'), now, 'America/New_York'),
+      formatTime(
+        new Date('2026-11-13T02:00:00Z'),
+        now,
+        'America/New_York',
+        'en-US',
+      ),
     ).toBe('9:00 PM EST');
+  });
+
+  /**
+   * Verifies: the locale argument picks the format, so en-GB shows a 24-hour time.
+   * Interacts with: formatTime, Intl with an explicit time zone and locale.
+   * Data: 13:00 EST the same day, America/New_York, en-GB.
+   */
+  it('formats in the given locale', () => {
+    const text = formatTime(
+      new Date('2026-11-12T18:00:00Z'),
+      now,
+      'America/New_York',
+      'en-GB',
+    );
+
+    expect(text).toMatch(/^13:00 /);
   });
 });
