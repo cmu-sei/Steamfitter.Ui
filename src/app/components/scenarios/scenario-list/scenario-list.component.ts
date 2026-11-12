@@ -50,6 +50,7 @@ import { View } from 'src/app/generated/steamfitter.api';
 import { ScenarioEditComponent } from 'src/app/components/scenarios/scenario-edit/scenario-edit.component';
 import { ScenarioEditDialogComponent } from 'src/app/components/scenarios/scenario-edit-dialog/scenario-edit-dialog.component';
 import { ScenarioDataService } from 'src/app/data/scenario/scenario-data.service';
+import { ScenarioStartService } from 'src/app/services/scenario-start/scenario-start.service';
 import { Scenario } from 'src/app/generated/steamfitter.api';
 import { CrucibleDialogService } from '@cmusei/crucible-common';
 import { MatIconButton } from '@angular/material/button';
@@ -112,6 +113,7 @@ export class ScenarioListComponent implements OnInit, OnChanges {
   private permissionDataService = inject(PermissionDataService);
   private confirmService = inject(CrucibleDialogService);
   private dialog = inject(MatDialog);
+  private scenarioStartService = inject(ScenarioStartService);
 
   readonly scenarioList = input<Scenario[]>(undefined);
   @Input() selectedScenario: Scenario;
@@ -315,19 +317,7 @@ export class ScenarioListComponent implements OnInit, OnChanges {
    * Start a scenario
    */
   startScenario(scenario: Scenario): void {
-    this.confirmService
-      .confirm({
-        title: 'Start Scenario',
-        message: `Are you sure that you want to start ${scenario.name}?`,
-        confirmText: 'Start',
-        cancelText: 'Cancel',
-      })
-      .afterClosed()
-      .subscribe((confirmed) => {
-        if (confirmed) {
-          this.scenarioDataService.start(scenario.id);
-        }
-      });
+    this.scenarioStartService.start(scenario, this.canEdit(scenario));
   }
 
   /**

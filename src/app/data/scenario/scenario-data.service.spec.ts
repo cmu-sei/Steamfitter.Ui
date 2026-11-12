@@ -357,6 +357,101 @@ describe('ScenarioDataService', () => {
     });
 
     /**
+     * Verifies: saveScenario() sends the scenario, stores the API's version before emitting it, and clears loading.
+     * Interacts with: ScenarioService.updateScenario stub, ScenarioQuery.
+     * Data: stored scenario 's1' saved with a new end date; the API returns it renamed.
+     */
+    it('saveScenario() emits the saved scenario once it is stored', async () => {
+      const scenarioApi = {
+        updateScenario: vi.fn((id: string, form: Scenario) =>
+          of(apiScenario({ ...form, id, name: 'Renamed' })),
+        ),
+      } satisfies ApiStub<ScenarioService>;
+      const { service, store, query } = setup({ scenarioApi });
+      store.set([apiScenario()]);
+      const endDate = new Date('2026-02-03T00:00:00Z');
+
+      const saved = await firstValueFrom(
+        service.saveScenario(apiScenario({ endDate })),
+      );
+
+      expect(scenarioApi.updateScenario).toHaveBeenCalledWith(
+        's1',
+        expect.objectContaining({ endDate }),
+      );
+      expect(saved.name).toBe('Renamed');
+      expect(query.getEntity('s1').endDate).toEqual(endDate);
+      expect(query.getValue().loading).toBe(false);
+    });
+
+    /**
+     * Verifies: saveScenario() sends nothing and leaves loading alone until it is subscribed.
+     * Interacts with: ScenarioService.updateScenario stub, ScenarioQuery.
+     * Data: stored scenario 's1'; the returned observable is held, then subscribed.
+     */
+    it('saveScenario() waits for a subscriber', async () => {
+      const scenarioApi = {
+        updateScenario: vi.fn((id: string, form: Scenario) => of(form)),
+      } satisfies ApiStub<ScenarioService>;
+      const { service, store, query } = setup({ scenarioApi });
+      store.set([apiScenario()]);
+      store.setLoading(false);
+
+      const save = service.saveScenario(apiScenario());
+
+      expect(scenarioApi.updateScenario).not.toHaveBeenCalled();
+      expect(query.getValue().loading).toBe(false);
+      await firstValueFrom(save);
+      expect(scenarioApi.updateScenario).toHaveBeenCalledTimes(1);
+    });
+
+    /**
+     * Verifies: startScenario() stores the started scenario, and a failed start reaches the subscriber.
+     * Interacts with: ScenarioService.startScenario stub (succeeds, then fails), ScenarioQuery.
+     * Data: stored scenario 's1' moving ready to active; then a start failing with 'boom'.
+     */
+    it('startScenario() stores the result and passes a failure on', async () => {
+      const startScenario = vi.fn((id: string) =>
+        of(apiScenario({ id, status: 'active' })),
+      );
+      const { service, store, query } = setup({
+        scenarioApi: { startScenario },
+      });
+      store.set([apiScenario()]);
+
+      const start = service.startScenario('s1');
+      expect(startScenario).not.toHaveBeenCalled();
+      await firstValueFrom(start);
+      expect(query.getEntity('s1').status).toBe('active');
+
+      startScenario.mockReturnValueOnce(throwError(() => new Error('boom')));
+      await expect(firstValueFrom(service.startScenario('s1'))).rejects.toThrow(
+        'boom',
+      );
+    });
+
+    /**
+     * Verifies: a failed saveScenario() hands the error to its subscriber, leaves the store alone, and clears loading.
+     * Interacts with: failing ScenarioService.updateScenario stub, ScenarioQuery.
+     * Data: stored scenario 's1'; the API fails with 'boom'.
+     */
+    it('saveScenario() passes a failed save to the subscriber', async () => {
+      const { service, store, query } = setup({
+        scenarioApi: {
+          updateScenario: () => throwError(() => new Error('boom')),
+        },
+      });
+      store.set([apiScenario()]);
+
+      await expect(
+        firstValueFrom(service.saveScenario(apiScenario({ name: 'Edited' }))),
+      ).rejects.toThrow('boom');
+
+      expect(query.getEntity('s1').name).toBe('Alpha');
+      expect(query.getValue().loading).toBe(false);
+    });
+
+    /**
      * Verifies: start() and end() store the scenario status the API returns.
      * Interacts with: ScenarioService.startScenario/endScenario stubs, ScenarioQuery.
      * Data: scenario 's1' moving ready → active → ended.
@@ -513,7 +608,7 @@ describe('ScenarioDataService', () => {
       {
         name: 'updateScenario',
         act: (s: ScenarioDataService) => s.updateScenario(apiScenario()),
-        loading: true,
+        loading: false,
       },
       {
         name: 'delete',

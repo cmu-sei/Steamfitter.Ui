@@ -28,6 +28,8 @@ import { dialogRefStub } from 'src/app/test-utils/dialog-refs';
 import { ScenarioEditDialogComponent } from '../scenario-edit-dialog/scenario-edit-dialog.component';
 import { ScenarioQuery } from 'src/app/data/scenario/scenario.query';
 import { permissionDataProviders } from 'src/app/test-utils/mock-permission-data.service';
+import { LateStartDialogComponent } from '../late-start-dialog/late-start-dialog.component';
+import { ScenarioStartService } from 'src/app/services/scenario-start/scenario-start.service';
 import { ScenarioListComponent } from './scenario-list.component';
 
 @Directive({ selector: '[ngxClipboard]', standalone: false })
@@ -50,6 +52,7 @@ class ScenarioMembershipsStubComponent {
   readonly showHeader = input<boolean>(undefined);
 }
 
+// Planned in the future, so Start asks the plain confirm.
 function scenario(overrides: Partial<Scenario> = {}): Scenario {
   return {
     id: 's1',
@@ -57,8 +60,8 @@ function scenario(overrides: Partial<Scenario> = {}): Scenario {
     status: 'ready',
     view: 'View One',
     viewId: 'v1',
-    startDate: new Date('2026-02-01T10:00:00Z'),
-    endDate: new Date('2026-02-02T10:00:00Z'),
+    startDate: new Date('2099-02-01T10:00:00Z'),
+    endDate: new Date('2099-02-02T10:00:00Z'),
     scenarioPermissions: [],
     ...overrides,
   };
@@ -69,15 +72,22 @@ async function renderList(
     system?: SystemPermission[];
     scenarios?: Scenario[];
     confirmed?: boolean;
+    adminMode?: boolean;
   } = {},
 ) {
-  const { system = [], scenarios = [scenario()], confirmed = true } = overrides;
+  const {
+    system = [],
+    scenarios = [scenario()],
+    confirmed = true,
+    adminMode = false,
+  } = overrides;
   const scenarioApi = {
     getScenarios: vi.fn(() => of([])),
     startScenario: vi.fn((id: string) =>
       of(scenario({ id, status: 'active' })),
     ),
     endScenario: vi.fn((id: string) => of(scenario({ id, status: 'ended' }))),
+    updateScenario: vi.fn((id: string, form: Scenario) => of({ ...form, id })),
     deleteScenario: vi.fn(() => of(null)),
   } satisfies ApiStub<ScenarioService>;
   const confirm = vi.fn(
@@ -108,7 +118,7 @@ async function renderList(
       { provide: CrucibleDialogService, useValue: dialogService },
       { provide: MatDialog, useValue: dialog },
     ],
-    inputs: { scenarioList: scenarios, views: [] },
+    inputs: { scenarioList: scenarios, views: [], adminMode },
   });
 
   const user = userEvent.setup();
@@ -361,11 +371,11 @@ describe('ScenarioListComponent', () => {
     });
 
     /**
-     * Verifies: a scenario-level ExecuteScenario grant shows Start on a ready scenario but not End on an active one.
-     * Interacts with: the End item's canExecute(item.id) call in the context menu template.
+     * Verifies: a scenario-level ExecuteScenario grant offers End on an active scenario.
+     * Interacts with: the End item's canExecute(item) call in the context menu template.
      * Data: an active scenario with only the ExecuteScenario scenario permission.
      */
-    it('hides End from users who can only execute this scenario', async () => {
+    it('offers End to users who can only execute this scenario', async () => {
       const { openRowMenu, menuItems } = await renderList({
         scenarios: [
           scenario({
@@ -377,7 +387,28 @@ describe('ScenarioListComponent', () => {
 
       await openRowMenu('Alpha');
 
-      expect(menuItems()).toEqual([]);
+      expect(menuItems()).toEqual(['End']);
+    });
+
+    /**
+     * Verifies: a user with only scenario-level ExecuteScenario can end the scenario.
+     * Interacts with: the End item, CrucibleDialogService.confirm stub (confirms), ScenarioService.endScenario stub.
+     * Data: an active scenario with only the ExecuteScenario scenario permission.
+     */
+    it('ends the scenario for a scenario-level executor', async () => {
+      const { openRowMenu, user, scenarioApi } = await renderList({
+        scenarios: [
+          scenario({
+            status: 'active',
+            scenarioPermissions: [ScenarioPermission.ExecuteScenario],
+          }),
+        ],
+      });
+      await openRowMenu('Alpha');
+
+      await user.click(screen.getByRole('menuitem', { name: 'End' }));
+
+      expect(scenarioApi.endScenario).toHaveBeenCalledWith('s1');
     });
 
     /**
@@ -402,6 +433,118 @@ describe('ScenarioListComponent', () => {
   });
 
   describe('actions', () => {
+    /**
+     * Verifies: Start on the Scenarios page and on Admin > Scenarios goes through ScenarioStartService, with whether the user can edit.
+     * Interacts with: the row menu's Start item, ScenarioStartService.start spy, canEdit.
+     * Data: a ready scenario with view; ExecuteScenarios alone or with EditScenarios; adminMode false and true.
+     */
+    it.each([
+      { adminMode: false, system: ['ExecuteScenarios'], canEdit: false },
+      { adminMode: true, system: ['ExecuteScenarios'], canEdit: false },
+      {
+        adminMode: false,
+        system: ['ExecuteScenarios', 'EditScenarios'],
+        canEdit: true,
+      },
+      {
+        adminMode: true,
+        system: ['ExecuteScenarios', 'EditScenarios'],
+        canEdit: true,
+      },
+    ] as Array<{
+      adminMode: boolean;
+      system: SystemPermission[];
+      canEdit: boolean;
+    }>)(
+      'starts through ScenarioStartService (adminMode $adminMode, canEdit $canEdit)',
+      async ({ adminMode, system, canEdit }) => {
+        const { openRowMenu, user } = await renderList({ system, adminMode });
+        const start = vi
+          .spyOn(TestBed.inject(ScenarioStartService), 'start')
+          .mockImplementation(() => undefined);
+        await openRowMenu('Alpha');
+
+        await user.click(screen.getByRole('menuitem', { name: 'Start' }));
+
+        expect(start).toHaveBeenCalledWith(
+          expect.objectContaining({ id: 's1', name: 'Alpha' }),
+          canEdit,
+        );
+      },
+    );
+
+    /**
+     * Verifies: a scenario-level EditScenario grant counts as able to edit when starting.
+     * Interacts with: the row menu's Start item, ScenarioStartService.start spy, canEdit.
+     * Data: a ready scenario with ExecuteScenario and EditScenario scenario permissions and no system permissions.
+     */
+    it('passes a scenario-level edit grant to ScenarioStartService', async () => {
+      const { openRowMenu, user } = await renderList({
+        scenarios: [
+          scenario({
+            scenarioPermissions: [
+              ScenarioPermission.ExecuteScenario,
+              ScenarioPermission.EditScenario,
+            ],
+          }),
+        ],
+      });
+      const start = vi
+        .spyOn(TestBed.inject(ScenarioStartService), 'start')
+        .mockImplementation(() => undefined);
+      await openRowMenu('Alpha');
+
+      await user.click(screen.getByRole('menuitem', { name: 'Start' }));
+
+      expect(start).toHaveBeenCalledWith(
+        expect.objectContaining({ id: 's1' }),
+        true,
+      );
+    });
+
+    /**
+     * Verifies: starting late and choosing to keep the length saves the moved end, then starts.
+     * Interacts with: the row menu's Start item, real ScenarioStartService and ScenarioDataService,
+     * MatDialog.open stub closing with 'keep', ScenarioService.updateScenario and startScenario stubs.
+     * Data: a scenario planned to start 90 minutes ago and run 4 hours; the new end is 4 hours from now.
+     */
+    it('saves the moved end before starting a late scenario', async () => {
+      const hour = 3_600_000;
+      const startDate = new Date(Date.now() - 1.5 * hour);
+      const { openRowMenu, user, confirm, dialog, scenarioApi } =
+        await renderList({
+          system: ['ExecuteScenarios', 'EditScenarios'],
+          scenarios: [
+            scenario({
+              startDate,
+              endDate: new Date(startDate.getTime() + 4 * hour),
+            }),
+          ],
+        });
+      vi.mocked(dialog.open).mockReturnValue(dialogRefStub('keep').dialogRef);
+      await openRowMenu('Alpha');
+
+      const before = Date.now();
+      await user.click(screen.getByRole('menuitem', { name: 'Start' }));
+      const after = Date.now();
+
+      expect(confirm).not.toHaveBeenCalled();
+      expect(dialog.open).toHaveBeenCalledWith(
+        LateStartDialogComponent,
+        expect.anything(),
+      );
+      const [id, saved] = scenarioApi.updateScenario.mock.calls[0];
+      expect(id).toBe('s1');
+      expect(saved.endDate.getTime()).toBeGreaterThanOrEqual(before + 4 * hour);
+      expect(saved.endDate.getTime()).toBeLessThanOrEqual(after + 4 * hour);
+      expect(
+        scenarioApi.updateScenario.mock.invocationCallOrder[0],
+      ).toBeLessThan(scenarioApi.startScenario.mock.invocationCallOrder[0]);
+      expect(TestBed.inject(ScenarioQuery).getEntity('s1')?.status).toBe(
+        'active',
+      );
+    });
+
     /**
      * Verifies: confirming Start sends the start request and stores the returned status.
      * Interacts with: CrucibleDialogService.confirm stub, real ScenarioDataService.start, real ScenarioStore and ScenarioQuery, ScenarioService.startScenario stub.
