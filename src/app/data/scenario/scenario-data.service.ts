@@ -302,16 +302,20 @@ export class ScenarioDataService {
   }
 
   updateScenario(scenario: Scenario) {
+    this.saveScenario(scenario).subscribe();
+  }
+
+  /**
+   * Saves a scenario and stores the API's version. Emits the saved scenario
+   * so a caller can wait for the save; errors reach the subscriber.
+   */
+  saveScenario(scenario: Scenario): Observable<Scenario> {
     this.scenarioStore.setLoading(true);
-    this.scenarioService
-      .updateScenario(scenario.id, scenario)
-      .pipe(
-        take(1),
-        finalize(() => this.scenarioStore.setLoading(false)),
-      )
-      .subscribe((s) => {
-        this.updateStore(s);
-      });
+    return this.scenarioService.updateScenario(scenario.id, scenario).pipe(
+      take(1),
+      finalize(() => this.scenarioStore.setLoading(false)),
+      tap((s) => this.updateStore(s)),
+    );
   }
 
   delete(id: string) {
