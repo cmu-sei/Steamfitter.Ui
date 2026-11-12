@@ -302,8 +302,10 @@ describe('ScenarioStartService', () => {
   });
 
   /**
-   * Verifies: when the save succeeds but the start fails, the error is shown, and pressing Start again later works from the saved window, so the planned length is still 4 h.
-   * Interacts with: ScenarioDataService.saveScenario and startScenario stubs (start fails once), ErrorService.handleError stub, MatDialog.open stub.
+   * Verifies: when the save succeeds but the start fails, the error is shown, and a later Start
+   * works from the saved window, so the planned length is still 4 h.
+   * Interacts with: ScenarioDataService.saveScenario and startScenario stubs (start fails),
+   * ErrorService.handleError stub, MatDialog.open stub.
    * Data: Alpha planned 09:00 to 13:00 EST, started at 10:30 EST (saved as 10:30 to 14:30), start fails; retried at 11:00 EST.
    */
   it('shows a failed start and keeps the planned length for a retry', () => {
@@ -393,7 +395,8 @@ describe('ScenarioStartService', () => {
   });
 
   /**
-   * Verifies: choosing to keep the end after it passed while the dialog was open reopens the dialog with the end passed, and starts nothing.
+   * Verifies: choosing to keep the end after it passed while the dialog was open reopens the
+   * dialog with the end passed, and starts nothing.
    * Interacts with: MatDialog.open stub (first answers 'end' after the clock moves, then is dismissed), startScenario stub.
    * Data: Alpha planned 09:00 to 13:00 EST; the dialog opens at 12:50 and is answered at 13:05.
    */
