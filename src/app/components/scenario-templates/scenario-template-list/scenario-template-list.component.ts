@@ -305,8 +305,6 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
       .confirm({
         title: 'Copy Scenario Template',
         message: `Are you sure that you want to copy ${scenarioTemplate.name}?`,
-        confirmText: 'Copy',
-        cancelText: 'Cancel',
       })
       .afterClosed()
       .subscribe((confirmed) => {
@@ -445,8 +443,6 @@ export class ScenarioTemplateListComponent implements OnInit, OnChanges {
       .confirm({
         title: 'Create Scenario',
         message: `Are you sure that you want to create a scenario from ${scenarioTemplate.name}?`,
-        confirmText: 'Create',
-        cancelText: 'Cancel',
       })
       .afterClosed()
       .subscribe((confirmed) => {

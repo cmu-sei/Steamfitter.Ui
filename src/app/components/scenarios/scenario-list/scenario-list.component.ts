@@ -300,8 +300,6 @@ export class ScenarioListComponent implements OnInit, OnChanges {
       .confirm({
         title: 'Copy Scenario',
         message: `Are you sure that you want to copy ${scenario.name}?`,
-        confirmText: 'Copy',
-        cancelText: 'Cancel',
       })
       .afterClosed()
       .subscribe((confirmed) => {
@@ -319,8 +317,6 @@ export class ScenarioListComponent implements OnInit, OnChanges {
       .confirm({
         title: 'Start Scenario',
         message: `Are you sure that you want to start ${scenario.name}?`,
-        confirmText: 'Start',
-        cancelText: 'Cancel',
       })
       .afterClosed()
       .subscribe((confirmed) => {
@@ -338,8 +334,6 @@ export class ScenarioListComponent implements OnInit, OnChanges {
       .confirm({
         title: 'End Scenario',
         message: `Are you sure that you want to end ${scenario.name}?`,
-        confirmText: 'End',
-        cancelText: 'Cancel',
       })
       .afterClosed()
       .subscribe((confirmed) => {
