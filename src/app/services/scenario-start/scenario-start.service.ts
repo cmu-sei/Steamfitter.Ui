@@ -18,9 +18,10 @@ import { lateStart } from './late-start';
  * Starts a scenario after asking the user. The API keeps a scenario's planned
  * end when it starts, so a scenario started late loses the delay from its
  * length. When it is late this asks whether to keep the planned length (the
- * end is saved as now + the planned length before starting) or the planned
- * end. Keeping the length saves the scenario, so it is offered only when
- * `canEdit` is true. Every Start action goes through here.
+ * start and end are saved as now and now + the planned length before
+ * starting) or the planned end. Keeping the length saves the scenario, so it
+ * is offered only when `canEdit` is true. A failed save or start is shown
+ * through ErrorService. Every Start action goes through here.
  */
 @Injectable({
   providedIn: 'root',
@@ -45,7 +46,7 @@ export class ScenarioStartService {
         .afterClosed()
         .subscribe((confirmed) => {
           if (confirmed) {
-            this.scenarioDataService.start(scenario.id);
+            this.begin(scenario.id);
           }
         });
       return;
@@ -64,16 +65,25 @@ export class ScenarioStartService {
       });
     dialogRef.afterClosed().subscribe((choice) => {
       if (choice === 'end') {
-        this.scenarioDataService.start(scenario.id);
+        this.begin(scenario.id);
       } else if (choice === 'keep' && canEdit) {
-        const endDate = new Date(Date.now() + late.plannedLengthMs);
+        // The start date moves too, so the saved window stays the planned
+        // length even if the start below fails and Start is pressed again.
+        const startDate = new Date();
+        const endDate = new Date(startDate.getTime() + late.plannedLengthMs);
         this.scenarioDataService
-          .saveScenario({ ...scenario, endDate })
+          .saveScenario({ ...scenario, startDate, endDate })
           .subscribe({
-            next: () => this.scenarioDataService.start(scenario.id),
+            next: () => this.begin(scenario.id),
             error: (err) => this.errorService.handleError(err),
           });
       }
+    });
+  }
+
+  private begin(id: string): void {
+    this.scenarioDataService.startScenario(id).subscribe({
+      error: (err) => this.errorService.handleError(err),
     });
   }
 }

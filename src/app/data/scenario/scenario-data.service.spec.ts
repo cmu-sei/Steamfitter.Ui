@@ -406,6 +406,31 @@ describe('ScenarioDataService', () => {
     });
 
     /**
+     * Verifies: startScenario() stores the started scenario, and a failed start reaches the subscriber.
+     * Interacts with: ScenarioService.startScenario stub (succeeds, then fails), ScenarioQuery.
+     * Data: stored scenario 's1' moving ready to active; then a start failing with 'boom'.
+     */
+    it('startScenario() stores the result and passes a failure on', async () => {
+      const startScenario = vi.fn((id: string) =>
+        of(apiScenario({ id, status: 'active' })),
+      );
+      const { service, store, query } = setup({
+        scenarioApi: { startScenario },
+      });
+      store.set([apiScenario()]);
+
+      const start = service.startScenario('s1');
+      expect(startScenario).not.toHaveBeenCalled();
+      await firstValueFrom(start);
+      expect(query.getEntity('s1').status).toBe('active');
+
+      startScenario.mockReturnValueOnce(throwError(() => new Error('boom')));
+      await expect(firstValueFrom(service.startScenario('s1'))).rejects.toThrow(
+        'boom',
+      );
+    });
+
+    /**
      * Verifies: a failed saveScenario() hands the error to its subscriber, leaves the store alone, and clears loading.
      * Interacts with: failing ScenarioService.updateScenario stub, ScenarioQuery.
      * Data: stored scenario 's1'; the API fails with 'boom'.

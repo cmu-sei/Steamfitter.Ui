@@ -332,12 +332,19 @@ export class ScenarioDataService {
   }
 
   start(id: string) {
-    this.scenarioService
-      .startScenario(id)
-      .pipe(take(1))
-      .subscribe((s) => {
-        this.updateStore(s);
-      });
+    this.startScenario(id).subscribe();
+  }
+
+  /**
+   * Starts a scenario and stores the API's version. Emits the started
+   * scenario; errors reach the subscriber. Nothing is sent until it is
+   * subscribed.
+   */
+  startScenario(id: string): Observable<Scenario> {
+    return defer(() => this.scenarioService.startScenario(id)).pipe(
+      take(1),
+      tap((s) => this.updateStore(s)),
+    );
   }
 
   end(id: string) {

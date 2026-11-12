@@ -36,12 +36,16 @@ function setup(
     confirmed?: boolean;
     choice?: 'keep' | 'end' | null;
     save?: () => Observable<Scenario>;
+    begin?: () => Observable<Scenario>;
   } = {},
 ) {
   const calls: string[] = [];
   const data = {
-    start: vi.fn((id: string) => {
+    startScenario: vi.fn((id: string) => {
       calls.push(`start ${id}`);
+      return options.begin
+        ? options.begin()
+        : of(scenario({ id, status: 'active' }));
     }),
     saveScenario: vi.fn((s: Scenario) => {
       calls.push(`save ${s.id}`);
@@ -101,7 +105,7 @@ describe('ScenarioStartService', () => {
       cancelText: 'Cancel',
     });
     expect(open).not.toHaveBeenCalled();
-    expect(data.start).toHaveBeenCalledWith('s1');
+    expect(data.startScenario).toHaveBeenCalledWith('s1');
     expect(data.saveScenario).not.toHaveBeenCalled();
   });
 
@@ -116,7 +120,7 @@ describe('ScenarioStartService', () => {
 
     service.start(scenario(), true);
 
-    expect(data.start).not.toHaveBeenCalled();
+    expect(data.startScenario).not.toHaveBeenCalled();
   });
 
   /**
@@ -135,7 +139,7 @@ describe('ScenarioStartService', () => {
 
     expect(confirm).toHaveBeenCalled();
     expect(open).not.toHaveBeenCalled();
-    expect(data.start).toHaveBeenCalledWith('s1');
+    expect(data.startScenario).toHaveBeenCalledWith('s1');
   });
 
   /**
@@ -169,7 +173,7 @@ describe('ScenarioStartService', () => {
       }),
     );
     expect(data.saveScenario).not.toHaveBeenCalled();
-    expect(data.start).toHaveBeenCalledWith('s1');
+    expect(data.startScenario).toHaveBeenCalledWith('s1');
   });
 
   /**
@@ -187,7 +191,7 @@ describe('ScenarioStartService', () => {
       expect.objectContaining({
         id: 's1',
         name: 'Alpha',
-        startDate: new Date('2026-11-12T14:00:00Z'),
+        startDate: new Date('2026-11-12T15:30:00Z'),
         endDate: new Date('2026-11-12T19:30:00Z'),
       }),
     );
@@ -214,7 +218,10 @@ describe('ScenarioStartService', () => {
       }),
     );
     expect(data.saveScenario).toHaveBeenCalledWith(
-      expect.objectContaining({ endDate: new Date('2026-11-12T23:00:00Z') }),
+      expect.objectContaining({
+        startDate: new Date('2026-11-12T19:00:00Z'),
+        endDate: new Date('2026-11-12T23:00:00Z'),
+      }),
     );
     expect(calls).toEqual(['save s1', 'start s1']);
   });
@@ -233,10 +240,10 @@ describe('ScenarioStartService', () => {
     });
 
     service.start(scenario(), true);
-    expect(data.start).not.toHaveBeenCalled();
+    expect(data.startScenario).not.toHaveBeenCalled();
 
     saved.next(scenario());
-    expect(data.start).toHaveBeenCalledWith('s1');
+    expect(data.startScenario).toHaveBeenCalledWith('s1');
   });
 
   /**
@@ -254,7 +261,7 @@ describe('ScenarioStartService', () => {
 
     service.start(scenario(), true);
 
-    expect(data.start).not.toHaveBeenCalled();
+    expect(data.startScenario).not.toHaveBeenCalled();
     expect(handleError).toHaveBeenCalledWith(failure);
   });
 
@@ -270,7 +277,7 @@ describe('ScenarioStartService', () => {
     service.start(scenario(), true);
 
     expect(data.saveScenario).not.toHaveBeenCalled();
-    expect(data.start).not.toHaveBeenCalled();
+    expect(data.startScenario).not.toHaveBeenCalled();
   });
 
   /**
@@ -291,6 +298,68 @@ describe('ScenarioStartService', () => {
       }),
     );
     expect(data.saveScenario).not.toHaveBeenCalled();
-    expect(data.start).not.toHaveBeenCalled();
+    expect(data.startScenario).not.toHaveBeenCalled();
+  });
+
+  /**
+   * Verifies: when the save succeeds but the start fails, the error is shown, and pressing Start again later works from the saved window, so the planned length is still 4 h.
+   * Interacts with: ScenarioDataService.saveScenario and startScenario stubs (start fails once), ErrorService.handleError stub, MatDialog.open stub.
+   * Data: Alpha planned 09:00 to 13:00 EST, started at 10:30 EST (saved as 10:30 to 14:30), start fails; retried at 11:00 EST.
+   */
+  it('shows a failed start and keeps the planned length for a retry', () => {
+    vi.setSystemTime(new Date('2026-11-12T15:30:00Z'));
+    const failure = new Error('Start failed');
+    let saved: Scenario | undefined;
+    const { service, data, open, handleError } = setup({
+      choice: 'end',
+      begin: () => throwError(() => failure),
+    });
+    data.saveScenario.mockImplementationOnce((s: Scenario) => {
+      saved = s;
+      return of(s);
+    });
+    open.mockReturnValueOnce(dialogRefStub('keep').dialogRef);
+
+    service.start(scenario(), true);
+
+    expect(handleError).toHaveBeenCalledWith(failure);
+    expect(saved).toEqual(
+      expect.objectContaining({
+        startDate: new Date('2026-11-12T15:30:00Z'),
+        endDate: new Date('2026-11-12T19:30:00Z'),
+      }),
+    );
+
+    vi.setSystemTime(new Date('2026-11-12T16:00:00Z'));
+    service.start(saved, true);
+
+    expect(open).toHaveBeenLastCalledWith(
+      LateStartDialogComponent,
+      expect.objectContaining({
+        data: expect.objectContaining({
+          late: expect.objectContaining({
+            plannedLengthMs: 4 * HOUR,
+            remainingMs: 3.5 * HOUR,
+          }),
+        }),
+      }),
+    );
+  });
+
+  /**
+   * Verifies: a failed start from the plain confirm is shown through ErrorService.
+   * Interacts with: CrucibleDialogService.confirm stub, failing startScenario stub, ErrorService.handleError stub.
+   * Data: Alpha started on time; the start fails.
+   */
+  it('shows a failed on-time start', () => {
+    vi.setSystemTime(new Date('2026-11-12T13:30:00Z'));
+    const failure = new Error('Start failed');
+    const { service, handleError } = setup({
+      begin: () => throwError(() => failure),
+    });
+
+    service.start(scenario(), true);
+
+    expect(handleError).toHaveBeenCalledWith(failure);
   });
 });
