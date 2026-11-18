@@ -164,7 +164,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
     @if (item.status === 'ready' && !!item.viewId && canExecute(item)) {
       <button mat-menu-item (click)="startScenario(item)">Start</button>
     }
-    @if (item.status === 'active' && canExecute(item.id)) {
+    @if (item.status === 'active' && canExecute(item)) {
       <button mat-menu-item (click)="endScenario(item)">End</button>
     }
     @if (canManage(item)) {

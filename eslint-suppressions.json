@@ -589,9 +589,6 @@
     },
     "@angular-eslint/prefer-standalone": {
       "count": 3
-    },
-    "@typescript-eslint/array-type": {
-      "count": 3
     }
   },
   "src/app/components/scenarios/scenario-list/scenario-list.component.ts": {
