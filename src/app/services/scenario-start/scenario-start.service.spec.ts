@@ -19,6 +19,10 @@ import { ScenarioStartService } from './scenario-start.service';
 
 const HOUR = 3_600_000;
 
+// expect.objectContaining() is typed any; nested uses need an unknown-typed wrapper.
+const matching = (expected: object): unknown =>
+  expect.objectContaining(expected);
+
 // Planned 09:00 to 13:00 EST.
 function scenario(overrides: Partial<Scenario> = {}): Scenario {
   return {
@@ -212,8 +216,8 @@ describe('ScenarioStartService', () => {
     expect(open).toHaveBeenCalledWith(
       LateStartDialogComponent,
       expect.objectContaining({
-        data: expect.objectContaining({
-          late: expect.objectContaining({ endPassed: true }),
+        data: matching({
+          late: matching({ endPassed: true }),
         }),
       }),
     );
@@ -294,7 +298,7 @@ describe('ScenarioStartService', () => {
     expect(open).toHaveBeenCalledWith(
       LateStartDialogComponent,
       expect.objectContaining({
-        data: expect.objectContaining({ canEdit: false }),
+        data: matching({ canEdit: false }),
       }),
     );
     expect(data.saveScenario).not.toHaveBeenCalled();
@@ -338,8 +342,8 @@ describe('ScenarioStartService', () => {
     expect(open).toHaveBeenLastCalledWith(
       LateStartDialogComponent,
       expect.objectContaining({
-        data: expect.objectContaining({
-          late: expect.objectContaining({
+        data: matching({
+          late: matching({
             plannedLengthMs: 4 * HOUR,
             remainingMs: 3.5 * HOUR,
           }),
@@ -385,9 +389,9 @@ describe('ScenarioStartService', () => {
     expect(open).toHaveBeenCalledWith(
       LateStartDialogComponent,
       expect.objectContaining({
-        data: expect.objectContaining({
+        data: matching({
           now: new Date('2026-11-12T14:30:00Z'),
-          late: expect.objectContaining({ remainingMs: 3.5 * HOUR }),
+          late: matching({ remainingMs: 3.5 * HOUR }),
         }),
       }),
     );
@@ -416,9 +420,9 @@ describe('ScenarioStartService', () => {
     expect(open).toHaveBeenLastCalledWith(
       LateStartDialogComponent,
       expect.objectContaining({
-        data: expect.objectContaining({
+        data: matching({
           now: new Date('2026-11-12T18:05:00Z'),
-          late: expect.objectContaining({ endPassed: true }),
+          late: matching({ endPassed: true }),
         }),
       }),
     );

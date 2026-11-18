@@ -207,7 +207,7 @@ describe('ScenarioListComponent', () => {
         system: ['EditScenarios', 'ExecuteScenarios', 'ManageScenarios'],
         shown: false,
       },
-    ] as Array<{ system: SystemPermission[]; shown: boolean }>)(
+    ] as { system: SystemPermission[]; shown: boolean }[])(
       'shows Add Scenario = $shown for $system',
       async ({ system, shown }) => {
         await renderList({ system });
@@ -227,7 +227,7 @@ describe('ScenarioListComponent', () => {
         system: ['EditScenarios', 'ExecuteScenarios', 'ManageScenarios'],
         shown: false,
       },
-    ] as Array<{ system: SystemPermission[]; shown: boolean }>)(
+    ] as { system: SystemPermission[]; shown: boolean }[])(
       'shows the Copy ID button = $shown for $system',
       async ({ system, shown }) => {
         await renderList({ system });
@@ -333,12 +333,12 @@ describe('ScenarioListComponent', () => {
         status: 'active',
         items: ['Delete'],
       },
-    ] as Array<{
+    ] as {
       label: string;
       system: SystemPermission[];
       status: Scenario['status'];
       items: string[];
-    }>)('offers $items for $label', async ({ system, status, items }) => {
+    }[])('offers $items for $label', async ({ system, status, items }) => {
       const { openRowMenu, menuItems } = await renderList({
         system,
         scenarios: [scenario({ status })],
@@ -451,11 +451,11 @@ describe('ScenarioListComponent', () => {
         system: ['ExecuteScenarios', 'EditScenarios'],
         canEdit: true,
       },
-    ] as Array<{
+    ] as {
       adminMode: boolean;
       system: SystemPermission[];
       canEdit: boolean;
-    }>)(
+    }[])(
       'starts through ScenarioStartService (adminMode $adminMode, canEdit $canEdit)',
       async ({ adminMode, system, canEdit }) => {
         const { openRowMenu, user } = await renderList({ system, adminMode });
