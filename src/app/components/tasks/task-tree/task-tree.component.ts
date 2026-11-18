@@ -400,8 +400,6 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
       .confirm({
         title: 'Execute Task',
         message: `Are you sure that you want to execute ${task.name}?`,
-        confirmText: 'Execute',
-        cancelText: 'Cancel',
       })
       .afterClosed()
       .subscribe((confirmed) => {
@@ -416,8 +414,6 @@ export class TaskTreeComponent implements OnInit, OnDestroy {
       .confirm({
         title: 'Stop Task Iterations',
         message: `Are you sure that you want to stop ${task.name}?`,
-        confirmText: 'Stop',
-        cancelText: 'Cancel',
       })
       .afterClosed()
       .subscribe((confirmed) => {

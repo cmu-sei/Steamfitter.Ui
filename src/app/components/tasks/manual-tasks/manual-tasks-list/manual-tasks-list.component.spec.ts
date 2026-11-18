@@ -30,7 +30,7 @@ describe('ManualTasksListComponent', () => {
   });
 
   /**
-   * Verifies: Execute asks with the standard wording: "Execute Task", the task named in the question, and Execute/Cancel buttons.
+   * Verifies: Execute asks with the standard wording: "Execute Task", the task named in the question, and no button labels, so the dialog shows its default Yes / No.
    * Interacts with: executeTask, CrucibleDialogService.confirm stub (declines).
    * Data: a manual task named Ping.
    */
@@ -52,8 +52,6 @@ describe('ManualTasksListComponent', () => {
     expect(confirm).toHaveBeenCalledWith({
       title: 'Execute Task',
       message: 'Are you sure that you want to execute Ping?',
-      confirmText: 'Execute',
-      cancelText: 'Cancel',
     });
   });
 });
