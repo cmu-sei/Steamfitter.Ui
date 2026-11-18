@@ -7,7 +7,8 @@ Copyright 2021 Carnegie Mellon University. All Rights Reserved.
   width: 100%;
   border-collapse: collapse;
 
-  th, td {
+  th,
+  td {
     border: 1px solid var(--mat-sys-outline-variant);
     padding: 4px 8px;
   }

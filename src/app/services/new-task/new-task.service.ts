@@ -52,7 +52,7 @@ export class NewTaskService {
 
   removeVm(vm: Vm) {
     const newList: Array<Vm> = this.vmList.value.filter(
-      (virtM) => virtM.id !== vm.id
+      (virtM) => virtM.id !== vm.id,
     );
     this.vmList.next(newList);
     this.buildRawCommand();
@@ -73,7 +73,7 @@ export class NewTaskService {
       this._task.action =
         Task.ActionEnum[
           Object.keys(Task.ActionEnum).find(
-            (key) => Task.ActionEnum[key] === this.command.value.action
+            (key) => Task.ActionEnum[key] === this.command.value.action,
           )
         ];
       // let evryone know the new Task

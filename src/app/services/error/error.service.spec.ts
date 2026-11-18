@@ -101,15 +101,26 @@ describe('ErrorService', () => {
    * Data: raw Network Error and other Error reasons without a rejection wrapper.
    */
   it.each([
-    { label: 'network failure', error: new Error('Network Error'), expected: ['Error', 'Network Error'] },
-    { label: 'other failure', error: new Error('nope'), expected: ['Error', 'nope'] },
-  ])('reports raw $label with its error name and message', ({ error, expected }) => {
-    const { service, displayMessage } = setup();
+    {
+      label: 'network failure',
+      error: new Error('Network Error'),
+      expected: ['Error', 'Network Error'],
+    },
+    {
+      label: 'other failure',
+      error: new Error('nope'),
+      expected: ['Error', 'nope'],
+    },
+  ])(
+    'reports raw $label with its error name and message',
+    ({ error, expected }) => {
+      const { service, displayMessage } = setup();
 
-    service.handleError(error);
+      service.handleError(error);
 
-    expect(displayMessage).toHaveBeenCalledExactlyOnceWith(...expected);
-  });
+      expect(displayMessage).toHaveBeenCalledExactlyOnceWith(...expected);
+    },
+  );
 
   /**
    * Verifies: a non-Error reason throws before the reporter displays a message.

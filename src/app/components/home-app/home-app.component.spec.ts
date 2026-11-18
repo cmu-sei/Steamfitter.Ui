@@ -163,7 +163,10 @@ async function renderHome(
       {
         provide: ComnSettingsService,
         useValue: {
-          settings: { AppTitle: 'Steamfitter', AppLandingBackgroundImage: background },
+          settings: {
+            AppTitle: 'Steamfitter',
+            AppLandingBackgroundImage: background,
+          },
         } satisfies Pick<ComnSettingsService, 'settings'>,
       },
       {
@@ -272,9 +275,15 @@ describe('HomeAppComponent', () => {
   ] satisfies Array<{ permission: SystemPermission; section: string }>)(
     'offers $section with exactly $permission',
     async ({ permission, section }) => {
-      const { sectionMenu, user, navigate } = await renderHome({ system: [permission] });
+      const { sectionMenu, user, navigate } = await renderHome({
+        system: [permission],
+      });
       await sectionMenu();
-      await user.click(within(screen.getByRole('menu')).getByRole('menuitem', { name: section }));
+      await user.click(
+        within(screen.getByRole('menu')).getByRole('menuitem', {
+          name: section,
+        }),
+      );
       expect(navigate).toHaveBeenCalledWith([], {
         queryParams: {
           tab: section,
@@ -295,15 +304,38 @@ describe('HomeAppComponent', () => {
    * Data: another resource's View or ManageScenarios instead of ManageTasks.
    */
   it.each([
-    { gate: 'canViewScenarioTemplateList', permission: 'ViewScenarios', section: 'Scenario Templates' },
-    { gate: 'canViewScenarioList', permission: 'ViewScenarioTemplates', section: 'Scenarios' },
-    { gate: 'SystemPermission.ManageTasks', permission: 'ManageScenarios', section: 'Tasks' },
-  ] satisfies Array<{ gate: string; permission: SystemPermission; section: string }>)(
+    {
+      gate: 'canViewScenarioTemplateList',
+      permission: 'ViewScenarios',
+      section: 'Scenario Templates',
+    },
+    {
+      gate: 'canViewScenarioList',
+      permission: 'ViewScenarioTemplates',
+      section: 'Scenarios',
+    },
+    {
+      gate: 'SystemPermission.ManageTasks',
+      permission: 'ManageScenarios',
+      section: 'Tasks',
+    },
+  ] satisfies Array<{
+    gate: string;
+    permission: SystemPermission;
+    section: string;
+  }>)(
     'hides $section for $gate with $permission',
     async ({ permission, section }) => {
-      const { sectionMenu, renderedPanels } = await renderHome({ system: [permission], tab: section });
+      const { sectionMenu, renderedPanels } = await renderHome({
+        system: [permission],
+        tab: section,
+      });
       await sectionMenu();
-      expect(within(screen.getByRole('menu')).queryByRole('menuitem', { name: section })).not.toBeInTheDocument();
+      expect(
+        within(screen.getByRole('menu')).queryByRole('menuitem', {
+          name: section,
+        }),
+      ).not.toBeInTheDocument();
       expect(renderedPanels()).toEqual([]);
     },
   );
@@ -378,13 +410,20 @@ describe('HomeAppComponent', () => {
    * Interacts with: real PermissionDataService.canViewAdiminstration and the rendered button.
    * Data: each View system permission held on its own.
    */
-  it.each(['ViewScenarioTemplates', 'ViewScenarios', 'ViewUsers', 'ViewRoles', 'ViewGroups'] as const)(
-    'shows Administration with exactly %s',
-    async (permission) => {
-      const { fixture } = await renderHome({ system: [permission] });
-      expect(within(fixture.nativeElement).getByRole('button', { name: 'Show Administration Page' })).toBeInTheDocument();
-    },
-  );
+  it.each([
+    'ViewScenarioTemplates',
+    'ViewScenarios',
+    'ViewUsers',
+    'ViewRoles',
+    'ViewGroups',
+  ] as const)('shows Administration with exactly %s', async (permission) => {
+    const { fixture } = await renderHome({ system: [permission] });
+    expect(
+      within(fixture.nativeElement).getByRole('button', {
+        name: 'Show Administration Page',
+      }),
+    ).toBeInTheDocument();
+  });
 
   /**
    * Verifies: canViewAdministration hides the Administration button for ManageGroups alone.
@@ -393,7 +432,11 @@ describe('HomeAppComponent', () => {
    */
   it('hides Administration for canViewAdministration with ManageGroups', async () => {
     const { fixture } = await renderHome({ system: ['ManageGroups'] });
-    expect(within(fixture.nativeElement).queryByRole('button', { name: 'Show Administration Page' })).not.toBeInTheDocument();
+    expect(
+      within(fixture.nativeElement).queryByRole('button', {
+        name: 'Show Administration Page',
+      }),
+    ).not.toBeInTheDocument();
   });
 
   /**
@@ -505,7 +548,11 @@ describe('HomeAppComponent', () => {
 
     expect(logoutCalled).toHaveBeenCalledTimes(1);
     expect(errors).toEqual([failure]);
-    expect(within(fixture.nativeElement).getByRole('button', { name: 'My Scenarios' })).toBeInTheDocument();
+    expect(
+      within(fixture.nativeElement).getByRole('button', {
+        name: 'My Scenarios',
+      }),
+    ).toBeInTheDocument();
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
@@ -536,14 +583,18 @@ describe('HomeAppComponent', () => {
    */
   it('shows the landing background once the image loads', async () => {
     vi.stubGlobal('Image', FakeImage);
-    const { fixture, container } = await renderHome({ background: '/assets/local/landing-background.jpg' });
+    const { fixture, container } = await renderHome({
+      background: '/assets/local/landing-background.jpg',
+    });
 
     expect(FakeImage.last?.src).toBe('/assets/local/landing-background.jpg');
     FakeImage.last!.onload!();
     fixture.detectChanges();
 
     const page = container.querySelector('.app-container') as HTMLElement;
-    expect(page.style.getPropertyValue('--crucible-landing-background')).toBe('url("/assets/local/landing-background.jpg")');
+    expect(page.style.getPropertyValue('--crucible-landing-background')).toBe(
+      'url("/assets/local/landing-background.jpg")',
+    );
     expect(page.classList.contains('crucible-landing-background')).toBe(true);
   });
 
@@ -564,7 +615,9 @@ describe('HomeAppComponent', () => {
 
     const page = container.querySelector('.app-container') as HTMLElement;
     expect(page.style.backgroundImage).toContain('linear-gradient');
-    expect(page.style.backgroundImage).toContain('/assets/local/landing-background-dark.jpg');
+    expect(page.style.backgroundImage).toContain(
+      '/assets/local/landing-background-dark.jpg',
+    );
   });
 
   /**
@@ -574,13 +627,17 @@ describe('HomeAppComponent', () => {
    */
   it('keeps the normal background when the image fails to load', async () => {
     vi.stubGlobal('Image', FakeImage);
-    const { fixture, container } = await renderHome({ background: '/assets/local/missing.jpg' });
+    const { fixture, container } = await renderHome({
+      background: '/assets/local/missing.jpg',
+    });
 
     FakeImage.last!.onerror?.();
     fixture.detectChanges();
 
     const page = container.querySelector('.app-container') as HTMLElement;
-    expect(page.style.getPropertyValue('--crucible-landing-background')).toBe('');
+    expect(page.style.getPropertyValue('--crucible-landing-background')).toBe(
+      '',
+    );
     expect(page.classList.contains('crucible-landing-background')).toBe(false);
   });
 

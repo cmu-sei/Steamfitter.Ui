@@ -18,7 +18,11 @@ const observer: ScenarioRole = {
   name: 'Observer',
   permissions: ['ViewScenario'],
 };
-const manager: ScenarioRole = { id: 'r2', name: 'Manager', allPermissions: true };
+const manager: ScenarioRole = {
+  id: 'r2',
+  name: 'Manager',
+  allPermissions: true,
+};
 
 function setup(api: ApiStub<ScenarioRolesService>) {
   TestBed.configureTestingModule({

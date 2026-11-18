@@ -104,21 +104,24 @@ describe('TopbarComponent', () => {
    * Interacts with: real PermissionDataService (canViewAdiminstration) over the stubbed getMySystemPermissions, MatMenu.
    * Data: each View system permission on its own.
    */
-  it.each(['ViewUsers', 'ViewRoles', 'ViewGroups', 'ViewScenarios', 'ViewScenarioTemplates'] as const)(
-    'shows Administration with %s',
-    async (permission) => {
-      const { openMenu, permissionApi } = await renderTopbar({
-        grants: { system: [permission] },
-      });
-      expect(
-        permissionApi.systemPermissions.getMySystemPermissions,
-      ).toHaveBeenCalled();
-      await openMenu();
-      expect(
-        screen.getByRole('menuitem', { name: 'Administration' }),
-      ).toBeInTheDocument();
-    },
-  );
+  it.each([
+    'ViewUsers',
+    'ViewRoles',
+    'ViewGroups',
+    'ViewScenarios',
+    'ViewScenarioTemplates',
+  ] as const)('shows Administration with %s', async (permission) => {
+    const { openMenu, permissionApi } = await renderTopbar({
+      grants: { system: [permission] },
+    });
+    expect(
+      permissionApi.systemPermissions.getMySystemPermissions,
+    ).toHaveBeenCalled();
+    await openMenu();
+    expect(
+      screen.getByRole('menuitem', { name: 'Administration' }),
+    ).toBeInTheDocument();
+  });
 
   /**
    * Verifies: without a View* system permission the Administration item is hidden, even with Manage/Create rights.
@@ -147,9 +150,15 @@ describe('TopbarComponent', () => {
    * Data: Manage instead of View on users.
    */
   it('hides Administration for canViewAdmin with ManageUsers', async () => {
-    const { openMenu } = await renderTopbar({ grants: { system: ['ManageUsers'] } });
+    const { openMenu } = await renderTopbar({
+      grants: { system: ['ManageUsers'] },
+    });
     await openMenu();
-    expect(within(screen.getByRole('menu')).queryByRole('menuitem', { name: 'Administration' })).not.toBeInTheDocument();
+    expect(
+      within(screen.getByRole('menu')).queryByRole('menuitem', {
+        name: 'Administration',
+      }),
+    ).not.toBeInTheDocument();
   });
 
   /**
@@ -253,13 +262,19 @@ describe('TopbarComponent', () => {
     });
     await openMenu();
 
-    await user.click(within(screen.getByRole('menu')).getByRole('menuitem', { name: 'Logout' }));
+    await user.click(
+      within(screen.getByRole('menu')).getByRole('menuitem', {
+        name: 'Logout',
+      }),
+    );
     await flush();
 
     expect(logoutCalled).toHaveBeenCalledTimes(1);
     expect(errors).toEqual([failure]);
     expect(screen.queryByRole('menu')).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Ada Lovelace' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: 'Ada Lovelace' }),
+    ).toBeInTheDocument();
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
