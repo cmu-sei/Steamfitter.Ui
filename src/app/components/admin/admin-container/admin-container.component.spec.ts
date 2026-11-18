@@ -230,7 +230,9 @@ describe('AdminContainerComponent', () => {
     async ({ permission, section }) => {
       const { fixture, navigate } = await renderAdmin({ system: [permission] });
       const sidebar = within(fixture.nativeElement);
-      await userEvent.setup().click(sidebar.getByRole('button', { name: section }));
+      await userEvent
+        .setup()
+        .click(sidebar.getByRole('button', { name: section }));
       expect(navigate).toHaveBeenCalledWith([], {
         queryParams: { section },
         queryParamsHandling: 'merge',
@@ -244,16 +246,45 @@ describe('AdminContainerComponent', () => {
    * Data: another resource's View or Manage on the same resource instead of View.
    */
   it.each([
-    { gate: 'canViewScenarioTemplateList', permission: 'ViewScenarios', section: 'Scenario Templates' },
-    { gate: 'canViewScenarioList', permission: 'ViewScenarioTemplates', section: 'Scenarios' },
-    { gate: 'SystemPermission.ViewUsers', permission: 'ManageUsers', section: 'Users' },
-    { gate: 'SystemPermission.ViewRoles', permission: 'ManageRoles', section: 'Roles' },
-    { gate: 'SystemPermission.ViewGroups', permission: 'ManageGroups', section: 'Groups' },
-  ] satisfies Array<{ gate: string; permission: SystemPermission; section: string }>)(
+    {
+      gate: 'canViewScenarioTemplateList',
+      permission: 'ViewScenarios',
+      section: 'Scenario Templates',
+    },
+    {
+      gate: 'canViewScenarioList',
+      permission: 'ViewScenarioTemplates',
+      section: 'Scenarios',
+    },
+    {
+      gate: 'SystemPermission.ViewUsers',
+      permission: 'ManageUsers',
+      section: 'Users',
+    },
+    {
+      gate: 'SystemPermission.ViewRoles',
+      permission: 'ManageRoles',
+      section: 'Roles',
+    },
+    {
+      gate: 'SystemPermission.ViewGroups',
+      permission: 'ManageGroups',
+      section: 'Groups',
+    },
+  ] satisfies Array<{
+    gate: string;
+    permission: SystemPermission;
+    section: string;
+  }>)(
     'hides $section for $gate with $permission',
     async ({ permission, section }) => {
-      const { fixture, visiblePanels } = await renderAdmin({ system: [permission], section });
-      expect(within(fixture.nativeElement).queryByRole('button', { name: section })).not.toBeInTheDocument();
+      const { fixture, visiblePanels } = await renderAdmin({
+        system: [permission],
+        section,
+      });
+      expect(
+        within(fixture.nativeElement).queryByRole('button', { name: section }),
+      ).not.toBeInTheDocument();
       expect(visiblePanels()).toEqual([]);
     },
   );
@@ -364,7 +395,9 @@ describe('AdminContainerComponent', () => {
 
     expect(logoutCalled).toHaveBeenCalledTimes(1);
     expect(errors).toEqual([failure]);
-    expect(within(fixture.nativeElement).getByRole('button', { name: 'Users' })).toBeInTheDocument();
+    expect(
+      within(fixture.nativeElement).getByRole('button', { name: 'Users' }),
+    ).toBeInTheDocument();
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });

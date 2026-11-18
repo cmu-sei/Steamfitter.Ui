@@ -1,9 +1,9 @@
 // Copyright 2021 Carnegie Mellon University. All Rights Reserved.
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
-@use "@angular/material" as mat;
-@use "./theme-colors" as theme;
-@use "./dark-theme-colors" as dark-theme;
+@use '@angular/material' as mat;
+@use './theme-colors' as theme;
+@use './dark-theme-colors' as dark-theme;
 @use '@mdi/font/scss/materialdesignicons.scss';
 // Declares the Open Sans family the theme typography and the classification banner use.
 @use '@cmusei/crucible-common/fonts';
@@ -30,23 +30,33 @@
 }
 
 html {
-  @include mat.theme((color: theme.$primary-palette,
+  @include mat.theme(
+    (
+      color: theme.$primary-palette,
       typography: '"Open Sans", sans-serif',
-    ));
-  @include mat.icon-button-overrides((icon-color: var(--mat-sys-primary),
-    ));
+    )
+  );
+  @include mat.icon-button-overrides(
+    (
+      icon-color: var(--mat-sys-primary),
+    )
+  );
 }
 
 .darkMode {
-  @include mat.theme((color: (primary: dark-theme.$dark-primary-palette,
+  @include mat.theme(
+    (
+      color: (
+        primary: dark-theme.$dark-primary-palette,
         typography: '"Open Sans", sans-serif',
         theme-type: dark,
       ),
-    ));
+    )
+  );
 }
 
 body {
-  font-family: "Open Sans", sans-serif;
+  font-family: 'Open Sans', sans-serif;
   margin: 0;
   overflow: hidden;
 }
@@ -103,7 +113,6 @@ mat-icon.sp-icon {
 }
 
 .highlight {
-
   &:hover,
   &:focus {
     background: var(--mat-sys-surface-variant);
@@ -162,7 +171,9 @@ a {
 }
 
 .mat-mdc-select-panel:not([class*='mat-elevation-z']) {
-  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.2), 0 4px 5px 0 rgba(0, 0, 0, 0.14),
+  box-shadow:
+    0 2px 4px -1px rgba(0, 0, 0, 0.2),
+    0 4px 5px 0 rgba(0, 0, 0, 0.14),
     0 1px 10px 0 rgba(0, 0, 0, 0.12);
 }
 
