@@ -54,7 +54,7 @@
     "@angular/compiler-cli": "^21.2.7",
     "@angular/language-service": "^21.2.26",
     "@cmusei/eslint-config-crucible": "^0.1.1",
-    "@openapitools/openapi-generator-cli": "^2.6.0",
+    "@openapitools/openapi-generator-cli": "^2.42.2",
     "@testing-library/angular": "^19.1.0",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
