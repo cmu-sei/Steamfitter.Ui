@@ -76,13 +76,20 @@ describe('ScenarioTemplateExportDialogComponent', () => {
   });
 
   /**
-   * Verifies: the dialog warns that VM Credential passwords travel in the file.
+   * Verifies: the dialog warns that VM Credential passwords travel in the file for the templates the user can edit, and says what a template they can only view is saved without.
    */
-  it('says that VM Credential passwords are included', async () => {
+  it('says which VM Credential passwords are included', async () => {
     await renderDialog({ ids: ['t1'], selected: false, all: false });
 
     expect(
-      screen.getByText(/VM Credential passwords are included/),
+      screen.getByText(
+        /VM Credential passwords are included for the templates you\s+can edit/,
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /A template you can only view is saved without its VM\s+Credentials/,
+      ),
     ).toBeInTheDocument();
   });
 

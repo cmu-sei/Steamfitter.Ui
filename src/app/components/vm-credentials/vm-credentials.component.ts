@@ -12,12 +12,13 @@ import { AddDialogComponent } from './add-dialog/add-dialog.component';
 import { Observable } from 'rxjs';
 import { delay, tap } from 'rxjs/operators';
 import { CrucibleDialogService } from '@cmusei/crucible-common';
-import { MatFormField, MatInput } from '@angular/material/input';
+import { MatFormField, MatHint, MatInput } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { MatExpansionPanel } from '@angular/material/expansion';
 import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { AsyncPipe } from '@angular/common';
+import { REDACTED_SECRET } from 'src/app/models/redacted-secret';
 
 @Component({
   selector: 'app-vm-credentials',
@@ -25,6 +26,7 @@ import { AsyncPipe } from '@angular/common';
   styleUrls: ['./vm-credentials.component.scss'],
   imports: [
     MatFormField,
+    MatHint,
     MatInput,
     FormsModule,
     MatExpansionPanel,
@@ -93,6 +95,11 @@ export class VmCredentialsComponent implements OnInit {
     }
   }
 
+  /** Whether the Task's saved password was sent redacted; saving the Task keeps it. */
+  passwordIsRedacted(): boolean {
+    return this.password === REDACTED_SECRET;
+  }
+
   handleCredentialChange() {
     const credential = { username: this.username, password: this.password };
     this.selectedVmCredentialChanged.emit(credential);
@@ -100,7 +107,10 @@ export class VmCredentialsComponent implements OnInit {
 
   sortVmCredentialList(vmCredentials): VmCredential[] {
     const credArray: VmCredential[] = [];
-    vmCredentials.forEach((val) => credArray.push(Object.assign({}, val)));
+    // a viewer is sent none, and SignalR never sends them
+    (vmCredentials ?? []).forEach((val) =>
+      credArray.push(Object.assign({}, val)),
+    );
     return credArray.sort((a, b) => (a.username <= b.username ? -1 : 1));
   }
 
@@ -124,7 +134,8 @@ export class VmCredentialsComponent implements OnInit {
   addVmCredential() {
     const newVmCredential = {
       username: this.username,
-      password: this.password,
+      // a redacted password is not one, and the API refuses to save it
+      password: this.passwordIsRedacted() ? '' : this.password,
       description: '',
     } as VmCredential;
     const dialogRef = this.dialog.open(AddDialogComponent, {

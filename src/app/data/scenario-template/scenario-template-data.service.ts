@@ -17,6 +17,7 @@ import {
 import { map, take, tap } from 'rxjs/operators';
 import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
 import { TaskDataService } from 'src/app/data/task/task-data.service';
+import { keepVmCredentials } from 'src/app/data/keep-vm-credentials';
 
 @Injectable({
   providedIn: 'root',
@@ -344,7 +345,13 @@ export class ScenarioTemplateDataService {
   }
 
   updateStore(scenarioTemplate: ScenarioTemplate) {
-    this.scenarioTemplateStore.upsert(scenarioTemplate.id, scenarioTemplate);
+    this.scenarioTemplateStore.upsert(
+      scenarioTemplate.id,
+      keepVmCredentials(
+        scenarioTemplate,
+        this.scenarioTemplateQuery.getEntity(scenarioTemplate.id),
+      ),
+    );
   }
 
   deleteFromStore(id: string) {

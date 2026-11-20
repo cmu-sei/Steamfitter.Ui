@@ -24,6 +24,7 @@ import {
 import { BehaviorSubject, Observable, combineLatest, defer } from 'rxjs';
 import { TaskDataService } from 'src/app/data/task/task-data.service';
 import { PlayerDataService } from 'src/app/data/player/player-data-service';
+import { keepVmCredentials } from 'src/app/data/keep-vm-credentials';
 
 @Injectable({
   providedIn: 'root',
@@ -387,7 +388,10 @@ export class ScenarioDataService {
 
   updateStore(scenario: Scenario) {
     this.setAsDates(scenario);
-    this.scenarioStore.upsert(scenario.id, scenario);
+    this.scenarioStore.upsert(
+      scenario.id,
+      keepVmCredentials(scenario, this.scenarioQuery.getEntity(scenario.id)),
+    );
   }
 
   deleteFromStore(id: string) {

@@ -2,11 +2,12 @@
 // Released under a MIT (SEI)-style license. See LICENSE.md in the project root for license information.
 
 import { describe, it, expect, vi } from 'vitest';
-import { inject, provideEnvironmentInitializer } from '@angular/core';
+import { Provider, inject, provideEnvironmentInitializer } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
-import { of } from 'rxjs';
+import { Subject, of } from 'rxjs';
+import { MatDialog } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -31,6 +32,7 @@ import {
   captureUnhandledRxErrors,
   flush,
 } from 'src/app/test-utils/unhandled-rx-errors';
+import { REDACTED_SECRET } from 'src/app/models/redacted-secret';
 import { VmCredentialsComponent } from './vm-credentials.component';
 
 const CREDENTIALS: VmCredential[] = [
@@ -38,12 +40,22 @@ const CREDENTIALS: VmCredential[] = [
   { id: 'c1', username: 'alice', password: 'pw1', description: '' },
 ];
 
-async function renderCredentials(parent: 'scenario' | 'template') {
+async function renderCredentials(
+  parent: 'scenario' | 'template',
+  options: {
+    inputs?: Record<string, unknown>;
+    providers?: Provider[];
+    vmCredentials?: VmCredential[] | null;
+  } = {},
+) {
   const scenario: Scenario = {
     id: 's1',
     name: 'Alpha',
     defaultVmCredentialId: 'c2',
-    vmCredentials: structuredClone(CREDENTIALS),
+    vmCredentials:
+      options.vmCredentials === undefined
+        ? structuredClone(CREDENTIALS)
+        : options.vmCredentials,
   };
   const template: ScenarioTemplate = {
     id: 'st1',
@@ -93,6 +105,7 @@ async function renderCredentials(parent: 'scenario' | 'template') {
       { provide: ScenarioTemplateService, useValue: templateApi },
       { provide: VmCredentialService, useValue: vmCredentialApi },
       { provide: CrucibleDialogService, useValue: dialogService },
+      ...(options.providers ?? []),
       // The host activates the scenario or template before this renders.
       provideEnvironmentInitializer(() => {
         if (parent === 'scenario') {
@@ -106,10 +119,12 @@ async function renderCredentials(parent: 'scenario' | 'template') {
         }
       }),
     ],
-    inputs:
-      parent === 'scenario'
+    inputs: {
+      ...(parent === 'scenario'
         ? { scenarioId: 's1' }
-        : { scenarioTemplateId: 'st1' },
+        : { scenarioTemplateId: 'st1' }),
+      ...(options.inputs ?? {}),
+    },
   });
   const selected = vi.fn();
   rendered.fixture.componentInstance.selectedVmCredentialChanged.subscribe(
@@ -221,5 +236,69 @@ describe('VmCredentialsComponent', () => {
     ]);
     expect(TestBed.inject(ScenarioQuery).getValue().loading).toBe(true);
     expect(usernames()).toEqual(['alice', 'bob']);
+  });
+  /**
+   * Verifies: a Task whose saved password came back redacted says the password is kept, and one with a password of its own does not.
+   * Interacts with: the password input, the redacted-password hint.
+   * Data: active scenario s1; the password input is the redacted placeholder, then a typed password.
+   */
+  it('says a redacted password is kept unless changed', async () => {
+    await renderCredentials('scenario', {
+      inputs: { username: 'guest', password: REDACTED_SECRET },
+    });
+
+    expect(
+      screen.getByText(
+        'The saved password is hidden. It is kept unless you change it.',
+      ),
+    ).toBeTruthy();
+  });
+
+  it('does not show the redacted-password hint for a password of its own', async () => {
+    await renderCredentials('scenario', {
+      inputs: { username: 'guest', password: 'typed' },
+    });
+
+    expect(screen.queryByText(/The saved password is hidden/)).toBeNull();
+  });
+
+  /**
+   * Verifies: Add VM Credential does not offer the redacted placeholder as the new credential's password, which the API refuses.
+   * Interacts with: a MatDialog stub capturing the dialog data.
+   * Data: active scenario s1; the Task's password is the redacted placeholder.
+   */
+  it('does not copy a redacted password into a new credential', async () => {
+    const open = vi.fn(() => ({
+      componentInstance: { editComplete: new Subject() },
+      close: vi.fn(),
+    }));
+    const { user } = await renderCredentials('scenario', {
+      inputs: { username: 'guest', password: REDACTED_SECRET },
+      providers: [{ provide: MatDialog, useValue: { open } }],
+    });
+
+    await user.click(screen.getByTitle('Add VM Credential'));
+
+    const [, config] = open.mock.calls[0] as unknown as [
+      unknown,
+      { data: { vmCredential: VmCredential } },
+    ];
+    expect(config.data.vmCredential.username).toBe('guest');
+    expect(config.data.vmCredential.password).toBe('');
+  });
+
+  /**
+   * Verifies: a scenario stored without credentials, as a viewer's or one pushed before any were loaded, lists none rather than failing.
+   * Interacts with: real ScenarioStore and ScenarioQuery (selectActive), captureUnhandledRxErrors.
+   * Data: active scenario s1 with vmCredentials null.
+   */
+  it('lists no credentials for a scenario stored without them', async () => {
+    const errors = captureUnhandledRxErrors();
+    const { usernames } = await renderCredentials('scenario', {
+      vmCredentials: null,
+    });
+
+    expect(usernames()).toEqual([]);
+    expect(errors).toEqual([]);
   });
 });

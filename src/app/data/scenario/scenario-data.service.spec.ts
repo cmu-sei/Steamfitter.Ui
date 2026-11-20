@@ -547,6 +547,26 @@ describe('ScenarioDataService', () => {
       service.deleteFromStore('s1');
       expect(query.hasEntity('s1')).toBe(false);
     });
+
+    /**
+     * Verifies: a scenario pushed without its VM Credentials (null, as SignalR sends it) keeps the ones loaded, and one never loaded stores none.
+     * Interacts with: ScenarioStore via the service, ScenarioQuery.
+     * Data: 's1' loaded with one credential, then pushed renamed with vmCredentials null; 's2' pushed with null.
+     */
+    it('updateStore() keeps the stored credentials when a push carries none', () => {
+      const { service, query } = setup();
+      const credential = { id: 'c1', username: 'guest', password: 'secret' };
+
+      service.updateStore(apiScenario({ vmCredentials: [credential] }));
+      service.updateStore(
+        apiScenario({ name: 'Renamed', vmCredentials: null }),
+      );
+      service.updateStore(apiScenario({ id: 's2', vmCredentials: null }));
+
+      expect(query.getEntity('s1').name).toBe('Renamed');
+      expect(query.getEntity('s1').vmCredentials).toEqual([credential]);
+      expect(query.getEntity('s2').vmCredentials).toEqual([]);
+    });
   });
 
   describe('failed requests', () => {
