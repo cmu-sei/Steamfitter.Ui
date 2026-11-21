@@ -164,24 +164,35 @@ export class TaskEditComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * A kept secret stays kept while its field is left empty. Entering a value replaces it, and a new username
-   * drops it, as the API would otherwise keep the old user's secret for the new one.
+   * A kept secret is sent back whenever its field is empty, so a value entered and then erased keeps it again.
+   * A new username drops it, as the API would otherwise keep the old user's secret for the new one.
    */
   private applyKeptSecretRules() {
     const parameters = this.selectedCommand?.parameters ?? [];
     const username = `${parameters.find((p) => p.key.toLowerCase() === 'username')?.value ?? ''}`;
     const usernameChanged = username !== this.lastUsername;
     this.lastUsername = username;
-    parameters
-      .filter((p) => this.secretKept[p.key])
-      .forEach((p) => {
-        if (p.value) {
-          this.secretKept[p.key] = false;
-        } else if (usernameChanged) {
+    if (usernameChanged) {
+      parameters
+        .filter((p) => this.secretKept[p.key])
+        .forEach((p) => {
           this.secretKept[p.key] = false;
           this.secretCleared = true;
-        }
-      });
+        });
+    }
+  }
+
+  /** Clears the password the API withheld, so the Task is saved without one. */
+  clearKeptPassword() {
+    const password = this.selectedCommand?.parameters.find(
+      (p) => p.key === 'Password',
+    );
+    this.secretKept.Password = false;
+    this.secretCleared = false;
+    if (password) {
+      password.value = '';
+    }
+    this.onCommandChange();
   }
 
   credentialsAreRequired() {

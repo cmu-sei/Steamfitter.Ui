@@ -15,7 +15,7 @@ import { CrucibleDialogService } from '@cmusei/crucible-common';
 import { MatFormField, MatHint, MatInput } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { MatExpansionPanel } from '@angular/material/expansion';
-import { MatIconButton } from '@angular/material/button';
+import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { AsyncPipe } from '@angular/common';
 
@@ -29,6 +29,7 @@ import { AsyncPipe } from '@angular/common';
     MatInput,
     FormsModule,
     MatExpansionPanel,
+    MatButton,
     MatIconButton,
     MatIcon,
     AsyncPipe,
@@ -54,6 +55,8 @@ export class VmCredentialsComponent implements OnInit {
   /** Whether the Task keeps a password the API withheld, which the field shows empty. */
   readonly passwordKept = input(false);
   readonly selectedVmCredentialChanged = output<VmCredential>();
+  /** Asks the Task editor to clear the password the API withheld, rather than keep it. */
+  readonly clearSavedPassword = output<void>();
   showManagement = false;
   defaultVmCredential: VmCredential;
   scenarioTemplate: Observable<ScenarioTemplate>;

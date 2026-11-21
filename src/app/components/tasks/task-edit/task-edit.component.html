@@ -224,6 +224,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
                 [secretCleared]="secretCleared"
                 [passwordKept]="!!secretKept['Password']"
                 (selectedVmCredentialChanged)="handleVmCredentialChange($event)"
+                (clearSavedPassword)="clearKeptPassword()"
               />
             </span>
           }

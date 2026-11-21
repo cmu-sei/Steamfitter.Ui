@@ -209,7 +209,32 @@ describe('TaskEditComponent', () => {
       expect(component.data.task.actionParameters.Password).toBe(
         `abc${REDACTED_SECRET}xyz`,
       );
+    });
+
+    it('is kept again when an entered password is erased', async () => {
+      const { fixture } = await renderRedacted();
+      const component = fixture.componentInstance;
+
+      parameter(component, 'Password').value = 'h';
+      component.onCommandChange();
+      parameter(component, 'Password').value = '';
+      component.onCommandChange();
+
+      expect(component.data.task.actionParameters.Password).toBe(
+        REDACTED_SECRET,
+      );
+      expect(component.secretKept.Password).toBe(true);
+    });
+
+    it('is saved empty once cleared', async () => {
+      const { fixture } = await renderRedacted();
+      const component = fixture.componentInstance;
+
+      component.clearKeptPassword();
+
+      expect(component.data.task.actionParameters.Password).toBe('');
       expect(component.secretKept.Password).toBe(false);
+      expect(component.secretCleared).toBe(false);
     });
 
     it('is cleared when the username changes', async () => {

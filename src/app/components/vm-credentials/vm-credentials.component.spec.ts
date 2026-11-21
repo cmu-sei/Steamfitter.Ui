@@ -387,12 +387,34 @@ describe('VmCredentialsComponent', () => {
     ).toBeTruthy();
   });
 
+  /**
+   * Verifies: a kept password can be cleared on purpose: the Clear saved password button asks the Task editor to, and is offered only while the field is empty.
+   * Interacts with: the clearSavedPassword output.
+   * Data: the Task keeps a redacted password (field empty), then has a typed one.
+   */
+  it('offers to clear a kept password', async () => {
+    const { user, fixture } = await renderCredentials('scenario', {
+      inputs: { username: 'guest', password: '', passwordKept: true },
+    });
+    const cleared = vi.fn();
+    fixture.componentInstance.clearSavedPassword.subscribe(cleared);
+
+    await user.click(
+      screen.getByRole('button', { name: 'Clear saved password' }),
+    );
+
+    expect(cleared).toHaveBeenCalledTimes(1);
+  });
+
   it('does not show the redacted-password hint for a password of its own', async () => {
     await renderCredentials('scenario', {
       inputs: { username: 'guest', password: 'typed', passwordKept: true },
     });
 
     expect(screen.queryByText(/The saved password is hidden/)).toBeNull();
+    expect(
+      screen.queryByRole('button', { name: 'Clear saved password' }),
+    ).toBeNull();
   });
 
   /**
