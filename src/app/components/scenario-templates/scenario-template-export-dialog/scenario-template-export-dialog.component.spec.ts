@@ -83,7 +83,7 @@ describe('ScenarioTemplateExportDialogComponent', () => {
 
     expect(
       screen.getByText(
-        /For the templates you can edit, the file includes the VM\s+Credential passwords and the Tasks' passwords and private keys/,
+        /For the templates you can edit, VM Credential passwords are\s+included, and so are the Tasks' passwords and private keys/,
       ),
     ).toBeInTheDocument();
     expect(

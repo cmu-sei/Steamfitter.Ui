@@ -5,7 +5,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { Provider, inject, provideEnvironmentInitializer } from '@angular/core';
 import { screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
-import { Subject, of } from 'rxjs';
+import { Subject, of, throwError } from 'rxjs';
 import { MatDialog } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -23,6 +23,8 @@ import {
 } from 'src/app/generated/steamfitter.api';
 import { ScenarioStore } from 'src/app/data/scenario/scenario.store';
 import { ScenarioTemplateStore } from 'src/app/data/scenario-template/scenario-template.store';
+import { TestBed } from '@angular/core/testing';
+import { ScenarioQuery } from 'src/app/data/scenario/scenario.query';
 import { renderComponent } from 'src/app/test-utils/render-component';
 import { ApiStub } from 'src/app/test-utils/api-stub';
 import { dialogRefStub } from 'src/app/test-utils/dialog-refs';
@@ -142,7 +144,7 @@ async function renderCredentials(
       ...(options.inputs ?? {}),
     },
   });
-  const selected = vi.fn();
+  const selected = vi.fn<(credential: VmCredential) => void>();
   rendered.fixture.componentInstance.selectedVmCredentialChanged.subscribe(
     selected,
   );
@@ -307,24 +309,85 @@ describe('VmCredentialsComponent', () => {
   });
 
   /**
-   * Verifies: changing the username clears a redacted password, which the API would otherwise keep for the new user.
-   * Interacts with: the username input's change handler, the selectedVmCredentialChanged output.
-   * Data: username guest with the redacted placeholder; the username becomes other.
+   * Verifies: nothing is listed or used as the default until the fresh load returns, so a cached default with an old password is never applied.
+   * Interacts with: a ScenarioService.getScenario stub that answers later, the selectedVmCredentialChanged output.
+   * Data: s1 stored with default bob holding password old; the API later returns bob with password new.
    */
-  it('clears a redacted password when the username changes', async () => {
-    const { user, selected } = await renderCredentials('scenario', {
-      inputs: { username: 'guest', password: REDACTED_SECRET },
-    });
-    const input = screen.getByPlaceholderText('Username');
+  it('waits for the fresh load before applying the default credential', async () => {
+    const response = new Subject<Scenario>();
+    const { fixture, selected, usernames } = await renderCredentials(
+      'scenario',
+      {
+        storedVmCredentials: [{ ...CREDENTIALS[0], password: 'old' }],
+        providers: [
+          {
+            provide: ScenarioService,
+            useValue: { getScenario: () => response },
+          },
+        ],
+      },
+    );
 
-    await user.clear(input);
-    await user.type(input, 'other');
-    await user.tab();
+    expect(selected).not.toHaveBeenCalled();
+    expect(usernames()).toEqual([]);
 
-    expect(selected).toHaveBeenLastCalledWith({
-      username: 'other',
-      password: '',
+    response.next({
+      id: 's1',
+      name: 'Alpha',
+      defaultVmCredentialId: 'c2',
+      vmCredentials: [{ ...CREDENTIALS[0], password: 'new' }],
     });
+    response.complete();
+    // the parent stream is delayed by one macrotask
+    await flush();
+    fixture.detectChanges();
+
+    expect(selected.mock.calls.map(([c]) => c.password)).toEqual(['new']);
+    expect(usernames()).toEqual(['bob']);
+  });
+
+  /**
+   * Verifies: a failed fresh load says so and forgets the stored credentials, without leaving the store loading.
+   * Interacts with: a ScenarioService.getScenario stub that fails, real ScenarioStore and ScenarioQuery.
+   * Data: s1 stored with bob and alice; the GET fails with a 403.
+   */
+  it('says the credentials could not be loaded and forgets the stored ones', async () => {
+    const errors = captureUnhandledRxErrors();
+    const { usernames } = await renderCredentials('scenario', {
+      storedVmCredentials: CREDENTIALS,
+      providers: [
+        {
+          provide: ScenarioService,
+          useValue: {
+            getScenario: () => throwError(() => ({ status: 403 })),
+          },
+        },
+      ],
+    });
+
+    expect(
+      screen.getByText(/The VM Credentials could not be loaded/),
+    ).toBeTruthy();
+    expect(usernames()).toEqual([]);
+    const query = TestBed.inject(ScenarioQuery);
+    expect(query.getEntity('s1').vmCredentials).toEqual([]);
+    expect(query.getValue().loading).toBe(false);
+    expect(errors).toEqual([]);
+  });
+
+  /**
+   * Verifies: the hint says why the password went empty when the Task editor cleared a redacted one for a new username.
+   * Interacts with: the secretCleared input, the password hint.
+   * Data: the Task editor cleared the password (secretCleared true, password empty).
+   */
+  it('says a cleared password was for the previous username', async () => {
+    await renderCredentials('scenario', {
+      inputs: { username: 'other', password: '', secretCleared: true },
+    });
+
+    expect(
+      screen.getByText(/The saved password was for the previous username/),
+    ).toBeTruthy();
   });
 
   /**

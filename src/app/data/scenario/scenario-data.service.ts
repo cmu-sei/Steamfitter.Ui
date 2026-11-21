@@ -20,8 +20,15 @@ import {
   distinctUntilChanged,
   debounceTime,
   finalize,
+  catchError,
 } from 'rxjs/operators';
-import { BehaviorSubject, Observable, combineLatest, defer } from 'rxjs';
+import {
+  BehaviorSubject,
+  Observable,
+  combineLatest,
+  defer,
+  throwError,
+} from 'rxjs';
 import { TaskDataService } from 'src/app/data/task/task-data.service';
 import { PlayerDataService } from 'src/app/data/player/player-data-service';
 import { keepVmCredentials } from 'src/app/data/keep-vm-credentials';
@@ -216,6 +223,24 @@ export class ScenarioDataService {
       .subscribe((s) => {
         this.updateStore({ ...s });
       });
+  }
+
+  /**
+   * Loads the scenario fresh for the VM Credentials it shows the Task editor, without the store's loading
+   * flag. On failure (as when the user has lost access) the stored credentials are forgotten rather than
+   * kept, and the error is passed on.
+   */
+  refreshVmCredentials(id: string): Observable<Scenario> {
+    return this.scenarioService.getScenario(id).pipe(
+      take(1),
+      tap((s) => this.updateStore({ ...s })),
+      catchError((error: unknown) => {
+        if (this.scenarioQuery.hasEntity(id)) {
+          this.scenarioStore.update(id, { vmCredentials: [] });
+        }
+        return throwError(() => error);
+      }),
+    );
   }
 
   loadByViewId(viewId: string) {

@@ -14,8 +14,8 @@ import {
   VmCredential,
   VmCredentialService,
 } from 'src/app/generated/steamfitter.api';
-import { map, take, tap } from 'rxjs/operators';
-import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
+import { catchError, map, take, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, combineLatest, throwError } from 'rxjs';
 import { TaskDataService } from 'src/app/data/task/task-data.service';
 import { keepVmCredentials } from 'src/app/data/keep-vm-credentials';
 
@@ -187,6 +187,24 @@ export class ScenarioTemplateDataService {
           this.scenarioTemplateStore.set([]);
         },
       );
+  }
+
+  /**
+   * Loads the template fresh for the VM Credentials it shows the Task editor, without the store's loading
+   * flag. On failure (as when the user has lost access) the stored credentials are forgotten rather than
+   * kept, and the error is passed on.
+   */
+  refreshVmCredentials(id: string): Observable<ScenarioTemplate> {
+    return this.scenarioTemplateService.getScenarioTemplate(id).pipe(
+      take(1),
+      tap((s) => this.updateStore({ ...s })),
+      catchError((error: unknown) => {
+        if (this.scenarioTemplateQuery.hasEntity(id)) {
+          this.scenarioTemplateStore.update(id, { vmCredentials: [] });
+        }
+        return throwError(() => error);
+      }),
+    );
   }
 
   loadById(id: string) {

@@ -9,8 +9,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { ScenarioTemplateDataService } from 'src/app/data/scenario-template/scenario-template-data.service';
 import { ScenarioDataService } from 'src/app/data/scenario/scenario-data.service';
 import { AddDialogComponent } from './add-dialog/add-dialog.component';
-import { Observable } from 'rxjs';
-import { delay, tap } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { catchError, delay, switchMap, tap } from 'rxjs/operators';
 import { CrucibleDialogService } from '@cmusei/crucible-common';
 import { MatFormField, MatHint, MatInput } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
@@ -45,8 +45,13 @@ export class VmCredentialsComponent implements OnInit {
 
   @Input() username: string;
   @Input() password: string;
+
+  /** Whether the fresh load of the credentials failed. */
+  loadFailed = false;
   readonly scenarioTemplateId = input<string>(undefined);
   readonly scenarioId = input<string>(undefined);
+  /** Whether the Task editor cleared a redacted password because the username changed. */
+  readonly secretCleared = input(false);
   readonly selectedVmCredentialChanged = output<VmCredential>();
   showManagement = false;
   defaultVmCredential: VmCredential;
@@ -80,15 +85,36 @@ export class VmCredentialsComponent implements OnInit {
     // The stored credentials can be stale (another editor changed them, or the user has since lost edit),
     // and a record first pushed over SignalR has none, as SignalR never sends them: load them fresh
     // whenever the Task editor shows them. A viewer is sent none.
+    // Nothing is listed, or used as the default, until that load is done.
     const scenarioTemplateId = this.scenarioTemplateId();
     const scenarioId = this.scenarioId();
     if (scenarioTemplateId) {
-      this.parent = this.scenarioTemplate;
-      this.scenarioTemplateDataService.loadById(scenarioTemplateId);
+      this.parent = this.afterRefresh(
+        this.scenarioTemplateDataService.refreshVmCredentials(
+          scenarioTemplateId,
+        ),
+        this.scenarioTemplate,
+      );
     } else if (scenarioId) {
-      this.parent = this.scenario;
-      this.scenarioDataService.loadById(scenarioId);
+      this.parent = this.afterRefresh(
+        this.scenarioDataService.refreshVmCredentials(scenarioId),
+        this.scenario,
+      );
     }
+  }
+
+  private afterRefresh<T>(
+    refresh: Observable<unknown>,
+    parent: Observable<T>,
+  ): Observable<T> {
+    return refresh.pipe(
+      catchError(() => {
+        // the data service has forgotten the stored credentials
+        this.loadFailed = true;
+        return of(null);
+      }),
+      switchMap(() => parent),
+    );
   }
 
   private setVmCredentialsToDefault(p: ScenarioTemplate | Scenario) {
@@ -112,14 +138,6 @@ export class VmCredentialsComponent implements OnInit {
     if (this.passwordIsRedacted()) {
       (event.target as HTMLInputElement).select();
     }
-  }
-
-  /** A new username does not keep the old one's redacted password, which the API would keep with it. */
-  handleUsernameChange() {
-    if (this.passwordIsRedacted()) {
-      this.password = '';
-    }
-    this.handleCredentialChange();
   }
 
   handleCredentialChange() {

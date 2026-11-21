@@ -149,4 +149,73 @@ describe('TaskEditComponent', () => {
       expect(task.actionParameters.Username).toBe('guest');
     },
   );
+  /**
+   * Verifies: the rules for a redacted secret hold whichever field changed it: a new username clears the redacted password (and says so), and typing after the placeholder replaces it.
+   * Interacts with: the command catalog stub, onCommandChange, the Action section's parameters and the password stream.
+   * Data: a guest command task with Username guest and the redacted Password.
+   */
+  describe('a redacted password', () => {
+    const command = {
+      name: 'guest_process_run',
+      api: 'stackstorm',
+      action: 'guest_process_run',
+      requiresVm: false,
+      parameters: ['Username', 'Password', 'CommandText'].map((key) => ({
+        key,
+        default: '',
+      })),
+    };
+    const renderRedacted = () =>
+      renderEdit(
+        {
+          id: 't1',
+          name: 'Redacted',
+          action: 'guest_process_run',
+          apiUrl: 'stackstorm',
+          actionParameters: {
+            Username: 'guest',
+            Password: REDACTED_SECRET,
+            CommandText: 'whoami',
+          },
+        },
+        [command],
+      );
+    const parameter = (component: TaskEditComponent, key: string) =>
+      component.selectedCommand.parameters.find((p) => p.key === key);
+
+    it('is cleared when the username changes', async () => {
+      const { fixture } = await renderRedacted();
+      const component = fixture.componentInstance;
+
+      parameter(component, 'Username').value = 'other';
+      component.onCommandChange();
+
+      expect(component.data.task.actionParameters.Password).toBe('');
+      expect(component.password.value).toBe('');
+      expect(component.secretCleared).toBe(true);
+    });
+
+    it('is kept when something else changes', async () => {
+      const { fixture } = await renderRedacted();
+      const component = fixture.componentInstance;
+
+      parameter(component, 'CommandText').value = 'hostname';
+      component.onCommandChange();
+
+      expect(component.data.task.actionParameters.Password).toBe(
+        REDACTED_SECRET,
+      );
+      expect(component.secretCleared).toBe(false);
+    });
+
+    it('is replaced by what is typed after it', async () => {
+      const { fixture } = await renderRedacted();
+      const component = fixture.componentInstance;
+
+      parameter(component, 'Password').value = `${REDACTED_SECRET}hunter2`;
+      component.onCommandChange();
+
+      expect(component.data.task.actionParameters.Password).toBe('hunter2');
+    });
+  });
 });

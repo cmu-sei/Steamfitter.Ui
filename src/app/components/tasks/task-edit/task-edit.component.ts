@@ -27,6 +27,10 @@ import { MatMenuItem } from '@angular/material/menu';
 import { VmCredentialsComponent } from '../../vm-credentials/vm-credentials.component';
 import { VmListComponent } from '../../vm-list/vm-list.component';
 import { AsyncPipe } from '@angular/common';
+import {
+  REDACTED_SECRET,
+  isSecretParameter,
+} from 'src/app/models/redacted-secret';
 
 @Component({
   selector: 'app-task-edit',
@@ -75,6 +79,10 @@ export class TaskEditComponent implements OnInit, OnDestroy {
   chooseVms = false;
   username = new BehaviorSubject<string>('');
   password = new BehaviorSubject<string>('');
+  /** Whether a redacted secret was cleared because the username changed. */
+  secretCleared = false;
+  /** The parameters as the Task was opened or last changed, to tell when a redacted secret is edited. */
+  private lastParameters: Record<string, string> = {};
   private unsubscribe$ = new Subject();
 
   ngOnInit() {
@@ -132,6 +140,7 @@ export class TaskEditComponent implements OnInit, OnDestroy {
   }
 
   onCommandChange() {
+    this.applyRedactedSecretRules();
     const actionParameters: Record<string, string> = {};
     this.selectedCommand.parameters.forEach((param) => {
       actionParameters[param.key] = param.value?.toString();
@@ -144,6 +153,38 @@ export class TaskEditComponent implements OnInit, OnDestroy {
     this.data.task.actionParameters = actionParameters;
     this.data.task.apiUrl = this.selectedCommand.api;
     this.data.task.action = this.selectedCommand.action;
+    this.lastParameters = { ...actionParameters };
+  }
+
+  /**
+   * The API sends a secret it withholds as the placeholder, and keeps the stored secret when it is saved back.
+   * Whichever field changed it: typing after the placeholder replaces it rather than adding to it, and a new
+   * username drops the old one's secret, which the API would otherwise keep for the new user.
+   */
+  private applyRedactedSecretRules() {
+    const parameters = this.selectedCommand?.parameters ?? [];
+    const previous = (key: string) =>
+      Object.entries(this.lastParameters).find(
+        ([k]) => k.toLowerCase() === key,
+      )?.[1] ?? '';
+    const current =
+      parameters.find((p) => p.key.toLowerCase() === 'username')?.value ?? '';
+    const usernameChanged = `${current}` !== previous('username');
+    parameters
+      .filter(
+        (p) =>
+          isSecretParameter(p.key) &&
+          this.lastParameters[p.key] === REDACTED_SECRET,
+      )
+      .forEach((p) => {
+        const value = `${p.value ?? ''}`;
+        if (value !== REDACTED_SECRET && value.startsWith(REDACTED_SECRET)) {
+          p.value = value.slice(REDACTED_SECRET.length);
+        } else if (value === REDACTED_SECRET && usernameChanged) {
+          p.value = '';
+          this.secretCleared = true;
+        }
+      });
   }
 
   credentialsAreRequired() {
@@ -171,6 +212,7 @@ export class TaskEditComponent implements OnInit, OnDestroy {
             } else if (p.key.toLowerCase() === 'password') {
               this.password.next(p.value);
             }
+            this.lastParameters[p.key] = p.value;
           });
           this.selectedCommand = cmd;
         } else {

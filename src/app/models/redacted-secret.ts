@@ -7,3 +7,8 @@
  * a new Task or VM Credential cannot be saved with it.
  */
 export const REDACTED_SECRET = '********';
+
+/** Whether a Task action parameter carries a guest secret, which the API redacts. */
+export function isSecretParameter(key: string): boolean {
+  return ['password', 'privatekey'].includes(key.toLowerCase());
+}
