@@ -178,8 +178,9 @@ export class TaskEditComponent implements OnInit, OnDestroy {
       )
       .forEach((p) => {
         const value = `${p.value ?? ''}`;
-        if (value !== REDACTED_SECRET && value.startsWith(REDACTED_SECRET)) {
-          p.value = value.slice(REDACTED_SECRET.length);
+        if (value !== REDACTED_SECRET && value.includes(REDACTED_SECRET)) {
+          // typed before, after or inside it
+          p.value = value.replace(REDACTED_SECRET, '');
         } else if (value === REDACTED_SECRET && usernameChanged) {
           p.value = '';
           this.secretCleared = true;
@@ -249,6 +250,16 @@ export class TaskEditComponent implements OnInit, OnDestroy {
       vmCredential.username;
     this.selectedCommand.parameters.find((p) => p.key === 'Password').value =
       vmCredential.password;
+    if (vmCredential.id) {
+      // a saved credential, picked from the list: its password is taken as it is, never edited by the
+      // redacted-secret rules, which are for what the user types
+      this.lastParameters = {
+        ...this.lastParameters,
+        Username: vmCredential.username,
+        Password: vmCredential.password,
+      };
+      this.secretCleared = false;
+    }
     this.onCommandChange();
   }
 

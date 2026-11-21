@@ -365,9 +365,9 @@ describe('VmCredentialsComponent', () => {
       ],
     });
 
-    expect(
-      screen.getByText(/The VM Credentials could not be loaded/),
-    ).toBeTruthy();
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      /The VM Credentials could not be loaded/,
+    );
     expect(usernames()).toEqual([]);
     const query = TestBed.inject(ScenarioQuery);
     expect(query.getEntity('s1').vmCredentials).toEqual([]);

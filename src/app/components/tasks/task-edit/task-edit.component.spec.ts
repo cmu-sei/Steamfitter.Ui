@@ -208,6 +208,33 @@ describe('TaskEditComponent', () => {
       expect(component.secretCleared).toBe(false);
     });
 
+    it('is replaced by what is typed before it', async () => {
+      const { fixture } = await renderRedacted();
+      const component = fixture.componentInstance;
+
+      parameter(component, 'Password').value = `hunter2${REDACTED_SECRET}`;
+      component.onCommandChange();
+
+      expect(component.data.task.actionParameters.Password).toBe('hunter2');
+    });
+
+    it('gives way to a picked credential, whose password is kept as it is', async () => {
+      const { fixture } = await renderRedacted();
+      const component = fixture.componentInstance;
+
+      component.handleVmCredentialChange({
+        id: 'c1',
+        username: 'other',
+        password: `${REDACTED_SECRET}x`,
+      });
+
+      expect(component.data.task.actionParameters.Username).toBe('other');
+      expect(component.data.task.actionParameters.Password).toBe(
+        `${REDACTED_SECRET}x`,
+      );
+      expect(component.secretCleared).toBe(false);
+    });
+
     it('is replaced by what is typed after it', async () => {
       const { fixture } = await renderRedacted();
       const component = fixture.componentInstance;
