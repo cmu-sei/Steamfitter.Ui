@@ -18,7 +18,6 @@ import { MatExpansionPanel } from '@angular/material/expansion';
 import { MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { AsyncPipe } from '@angular/common';
-import { REDACTED_SECRET } from 'src/app/models/redacted-secret';
 
 @Component({
   selector: 'app-vm-credentials',
@@ -52,6 +51,8 @@ export class VmCredentialsComponent implements OnInit {
   readonly scenarioId = input<string>(undefined);
   /** Whether the Task editor cleared a redacted password because the username changed. */
   readonly secretCleared = input(false);
+  /** Whether the Task keeps a password the API withheld, which the field shows empty. */
+  readonly passwordKept = input(false);
   readonly selectedVmCredentialChanged = output<VmCredential>();
   showManagement = false;
   defaultVmCredential: VmCredential;
@@ -128,18 +129,6 @@ export class VmCredentialsComponent implements OnInit {
     }
   }
 
-  /** Whether the Task's saved password was sent redacted; saving the Task keeps it. */
-  passwordIsRedacted(): boolean {
-    return this.password === REDACTED_SECRET;
-  }
-
-  /** Typing replaces a redacted password rather than adding to the placeholder. */
-  selectIfRedacted(event: FocusEvent) {
-    if (this.passwordIsRedacted()) {
-      (event.target as HTMLInputElement).select();
-    }
-  }
-
   handleCredentialChange() {
     const credential = { username: this.username, password: this.password };
     this.selectedVmCredentialChanged.emit(credential);
@@ -174,8 +163,8 @@ export class VmCredentialsComponent implements OnInit {
   addVmCredential() {
     const newVmCredential = {
       username: this.username,
-      // a redacted password is not one, and the API refuses to save it
-      password: this.passwordIsRedacted() ? '' : this.password,
+      // a kept password is shown empty, so it is never copied
+      password: this.password,
       description: '',
     } as VmCredential;
     const dialogRef = this.dialog.open(AddDialogComponent, {

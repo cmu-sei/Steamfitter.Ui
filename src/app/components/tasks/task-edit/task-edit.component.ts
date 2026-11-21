@@ -79,10 +79,15 @@ export class TaskEditComponent implements OnInit, OnDestroy {
   chooseVms = false;
   username = new BehaviorSubject<string>('');
   password = new BehaviorSubject<string>('');
-  /** Whether a redacted secret was cleared because the username changed. */
+  /**
+   * The secrets the API sent redacted and the Task keeps: their fields show empty, and an empty one is sent
+   * back as the placeholder, which the API reads as keeping the stored secret.
+   */
+  secretKept: Record<string, boolean> = {};
+  /** Whether a kept secret was dropped because the username changed. */
   secretCleared = false;
-  /** The parameters as the Task was opened or last changed, to tell when a redacted secret is edited. */
-  private lastParameters: Record<string, string> = {};
+  /** The username as the Task was opened or last changed. */
+  private lastUsername = '';
   private unsubscribe$ = new Subject();
 
   ngOnInit() {
@@ -140,10 +145,13 @@ export class TaskEditComponent implements OnInit, OnDestroy {
   }
 
   onCommandChange() {
-    this.applyRedactedSecretRules();
+    this.applyKeptSecretRules();
     const actionParameters: Record<string, string> = {};
     this.selectedCommand.parameters.forEach((param) => {
       actionParameters[param.key] = param.value?.toString();
+      if (this.secretKept[param.key] && !param.value) {
+        actionParameters[param.key] = REDACTED_SECRET;
+      }
       if (param.key.toLowerCase() === 'username') {
         this.username.next(param.value);
       } else if (param.key.toLowerCase() === 'password') {
@@ -153,36 +161,24 @@ export class TaskEditComponent implements OnInit, OnDestroy {
     this.data.task.actionParameters = actionParameters;
     this.data.task.apiUrl = this.selectedCommand.api;
     this.data.task.action = this.selectedCommand.action;
-    this.lastParameters = { ...actionParameters };
   }
 
   /**
-   * The API sends a secret it withholds as the placeholder, and keeps the stored secret when it is saved back.
-   * Whichever field changed it: typing after the placeholder replaces it rather than adding to it, and a new
-   * username drops the old one's secret, which the API would otherwise keep for the new user.
+   * A kept secret stays kept while its field is left empty. Entering a value replaces it, and a new username
+   * drops it, as the API would otherwise keep the old user's secret for the new one.
    */
-  private applyRedactedSecretRules() {
+  private applyKeptSecretRules() {
     const parameters = this.selectedCommand?.parameters ?? [];
-    const previous = (key: string) =>
-      Object.entries(this.lastParameters).find(
-        ([k]) => k.toLowerCase() === key,
-      )?.[1] ?? '';
-    const current =
-      parameters.find((p) => p.key.toLowerCase() === 'username')?.value ?? '';
-    const usernameChanged = `${current}` !== previous('username');
+    const username = `${parameters.find((p) => p.key.toLowerCase() === 'username')?.value ?? ''}`;
+    const usernameChanged = username !== this.lastUsername;
+    this.lastUsername = username;
     parameters
-      .filter(
-        (p) =>
-          isSecretParameter(p.key) &&
-          this.lastParameters[p.key] === REDACTED_SECRET,
-      )
+      .filter((p) => this.secretKept[p.key])
       .forEach((p) => {
-        const value = `${p.value ?? ''}`;
-        if (value !== REDACTED_SECRET && value.includes(REDACTED_SECRET)) {
-          // typed before, after or inside it
-          p.value = value.replace(REDACTED_SECRET, '');
-        } else if (value === REDACTED_SECRET && usernameChanged) {
-          p.value = '';
+        if (p.value) {
+          this.secretKept[p.key] = false;
+        } else if (usernameChanged) {
+          this.secretKept[p.key] = false;
           this.secretCleared = true;
         }
       });
@@ -208,12 +204,17 @@ export class TaskEditComponent implements OnInit, OnDestroy {
             p.value = this.data.task.actionParameters[p.key];
             // p.value = p.value || !p.default ? p.value : p.default;
             p.value = p.value?.toLowerCase() === 'false' ? '' : p.value;
+            if (isSecretParameter(p.key) && p.value === REDACTED_SECRET) {
+              // shown empty, never as the placeholder, so nothing typed can mix with it
+              p.value = '';
+              this.secretKept[p.key] = true;
+            }
             if (p.key.toLowerCase() === 'username') {
               this.username.next(p.value);
+              this.lastUsername = `${p.value ?? ''}`;
             } else if (p.key.toLowerCase() === 'password') {
               this.password.next(p.value);
             }
-            this.lastParameters[p.key] = p.value;
           });
           this.selectedCommand = cmd;
         } else {
@@ -251,13 +252,8 @@ export class TaskEditComponent implements OnInit, OnDestroy {
     this.selectedCommand.parameters.find((p) => p.key === 'Password').value =
       vmCredential.password;
     if (vmCredential.id) {
-      // a saved credential, picked from the list: its password is taken as it is, never edited by the
-      // redacted-secret rules, which are for what the user types
-      this.lastParameters = {
-        ...this.lastParameters,
-        Username: vmCredential.username,
-        Password: vmCredential.password,
-      };
+      // a saved credential, picked from the list, replaces the kept password with its own
+      this.secretKept.Password = false;
       this.secretCleared = false;
     }
     this.onCommandChange();

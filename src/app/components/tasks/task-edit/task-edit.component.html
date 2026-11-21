@@ -222,6 +222,7 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
                 [username]="username | async"
                 [password]="password | async"
                 [secretCleared]="secretCleared"
+                [passwordKept]="!!secretKept['Password']"
                 (selectedVmCredentialChanged)="handleVmCredentialChange($event)"
               />
             </span>

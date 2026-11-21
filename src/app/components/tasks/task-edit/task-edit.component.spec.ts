@@ -150,7 +150,7 @@ describe('TaskEditComponent', () => {
     },
   );
   /**
-   * Verifies: the rules for a redacted secret hold whichever field changed it: a new username clears the redacted password (and says so), and typing after the placeholder replaces it.
+   * Verifies: a redacted secret is shown empty and kept while its field is left empty, whichever field changed: a new password replaces it as entered, a new username drops it (and says so), and a picked credential replaces it.
    * Interacts with: the command catalog stub, onCommandChange, the Action section's parameters and the password stream.
    * Data: a guest command task with Username guest and the redacted Password.
    */
@@ -183,6 +183,35 @@ describe('TaskEditComponent', () => {
     const parameter = (component: TaskEditComponent, key: string) =>
       component.selectedCommand.parameters.find((p) => p.key === key);
 
+    it('is shown empty, and sent back as the placeholder while left empty', async () => {
+      const { fixture } = await renderRedacted();
+      const component = fixture.componentInstance;
+
+      expect(parameter(component, 'Password').value).toBe('');
+      expect(component.password.value).toBe('');
+      expect(component.secretKept.Password).toBe(true);
+
+      component.onCommandChange();
+
+      expect(component.data.task.actionParameters.Password).toBe(
+        REDACTED_SECRET,
+      );
+    });
+
+    it('is replaced, as entered, by a new password', async () => {
+      const { fixture } = await renderRedacted();
+      const component = fixture.componentInstance;
+
+      // eight asterisks inside a real password are kept as they are
+      parameter(component, 'Password').value = `abc${REDACTED_SECRET}xyz`;
+      component.onCommandChange();
+
+      expect(component.data.task.actionParameters.Password).toBe(
+        `abc${REDACTED_SECRET}xyz`,
+      );
+      expect(component.secretKept.Password).toBe(false);
+    });
+
     it('is cleared when the username changes', async () => {
       const { fixture } = await renderRedacted();
       const component = fixture.componentInstance;
@@ -208,16 +237,6 @@ describe('TaskEditComponent', () => {
       expect(component.secretCleared).toBe(false);
     });
 
-    it('is replaced by what is typed before it', async () => {
-      const { fixture } = await renderRedacted();
-      const component = fixture.componentInstance;
-
-      parameter(component, 'Password').value = `hunter2${REDACTED_SECRET}`;
-      component.onCommandChange();
-
-      expect(component.data.task.actionParameters.Password).toBe('hunter2');
-    });
-
     it('gives way to a picked credential, whose password is kept as it is', async () => {
       const { fixture } = await renderRedacted();
       const component = fixture.componentInstance;
@@ -233,16 +252,6 @@ describe('TaskEditComponent', () => {
         `${REDACTED_SECRET}x`,
       );
       expect(component.secretCleared).toBe(false);
-    });
-
-    it('is replaced by what is typed after it', async () => {
-      const { fixture } = await renderRedacted();
-      const component = fixture.componentInstance;
-
-      parameter(component, 'Password').value = `${REDACTED_SECRET}hunter2`;
-      component.onCommandChange();
-
-      expect(component.data.task.actionParameters.Password).toBe('hunter2');
     });
   });
 });

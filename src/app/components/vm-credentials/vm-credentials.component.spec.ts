@@ -32,7 +32,6 @@ import {
   captureUnhandledRxErrors,
   flush,
 } from 'src/app/test-utils/unhandled-rx-errors';
-import { REDACTED_SECRET } from 'src/app/models/redacted-secret';
 import { VmCredentialsComponent } from './vm-credentials.component';
 
 const CREDENTIALS: VmCredential[] = [
@@ -290,25 +289,6 @@ describe('VmCredentialsComponent', () => {
   });
 
   /**
-   * Verifies: focusing a redacted password selects it, so typing replaces the placeholder rather than adding to it.
-   * Interacts with: the password input's focus handler.
-   * Data: the Task's password is the redacted placeholder.
-   */
-  it('selects a redacted password on focus', async () => {
-    const { user } = await renderCredentials('scenario', {
-      inputs: { username: 'guest', password: REDACTED_SECRET },
-    });
-    const input = screen.getByPlaceholderText<HTMLInputElement>('Password');
-
-    await user.click(input);
-
-    expect([input.selectionStart, input.selectionEnd]).toEqual([
-      0,
-      REDACTED_SECRET.length,
-    ]);
-  });
-
-  /**
    * Verifies: nothing is listed or used as the default until the fresh load returns, so a cached default with an old password is never applied.
    * Interacts with: a ScenarioService.getScenario stub that answers later, the selectedVmCredentialChanged output.
    * Data: s1 stored with default bob holding password old; the API later returns bob with password new.
@@ -391,34 +371,34 @@ describe('VmCredentialsComponent', () => {
   });
 
   /**
-   * Verifies: a Task whose saved password came back redacted says the password is kept, and one with a password of its own does not.
-   * Interacts with: the password input, the redacted-password hint.
-   * Data: active scenario s1; the password input is the redacted placeholder, then a typed password.
+   * Verifies: a Task that keeps a password the API withheld says so while the field is empty, and not once a password is entered.
+   * Interacts with: the passwordKept input, the password hint.
+   * Data: active scenario s1; the kept password's field is empty, then holds a typed password.
    */
   it('says a redacted password is kept unless changed', async () => {
     await renderCredentials('scenario', {
-      inputs: { username: 'guest', password: REDACTED_SECRET },
+      inputs: { username: 'guest', password: '', passwordKept: true },
     });
 
     expect(
       screen.getByText(
-        'The saved password is hidden. It is kept unless you change it.',
+        'The saved password is hidden. It is kept unless you enter a new one.',
       ),
     ).toBeTruthy();
   });
 
   it('does not show the redacted-password hint for a password of its own', async () => {
     await renderCredentials('scenario', {
-      inputs: { username: 'guest', password: 'typed' },
+      inputs: { username: 'guest', password: 'typed', passwordKept: true },
     });
 
     expect(screen.queryByText(/The saved password is hidden/)).toBeNull();
   });
 
   /**
-   * Verifies: Add VM Credential does not offer the redacted placeholder as the new credential's password, which the API refuses.
+   * Verifies: Add VM Credential offers no password for a Task that keeps one the API withheld (the field is empty), never the placeholder.
    * Interacts with: a MatDialog stub capturing the dialog data.
-   * Data: active scenario s1; the Task's password is the redacted placeholder.
+   * Data: active scenario s1; the Task keeps a redacted password.
    */
   it('does not copy a redacted password into a new credential', async () => {
     const open = vi.fn(() => ({
@@ -426,7 +406,7 @@ describe('VmCredentialsComponent', () => {
       close: vi.fn(),
     }));
     const { user } = await renderCredentials('scenario', {
-      inputs: { username: 'guest', password: REDACTED_SECRET },
+      inputs: { username: 'guest', password: '', passwordKept: true },
       providers: [{ provide: MatDialog, useValue: { open } }],
     });
 
