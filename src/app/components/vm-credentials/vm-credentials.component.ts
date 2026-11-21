@@ -77,10 +77,17 @@ export class VmCredentialsComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.scenarioTemplateId()) {
+    // The stored credentials can be stale (another editor changed them, or the user has since lost edit),
+    // and a record first pushed over SignalR has none, as SignalR never sends them: load them fresh
+    // whenever the Task editor shows them. A viewer is sent none.
+    const scenarioTemplateId = this.scenarioTemplateId();
+    const scenarioId = this.scenarioId();
+    if (scenarioTemplateId) {
       this.parent = this.scenarioTemplate;
-    } else if (this.scenarioId()) {
+      this.scenarioTemplateDataService.loadById(scenarioTemplateId);
+    } else if (scenarioId) {
       this.parent = this.scenario;
+      this.scenarioDataService.loadById(scenarioId);
     }
   }
 
@@ -98,6 +105,21 @@ export class VmCredentialsComponent implements OnInit {
   /** Whether the Task's saved password was sent redacted; saving the Task keeps it. */
   passwordIsRedacted(): boolean {
     return this.password === REDACTED_SECRET;
+  }
+
+  /** Typing replaces a redacted password rather than adding to the placeholder. */
+  selectIfRedacted(event: FocusEvent) {
+    if (this.passwordIsRedacted()) {
+      (event.target as HTMLInputElement).select();
+    }
+  }
+
+  /** A new username does not keep the old one's redacted password, which the API would keep with it. */
+  handleUsernameChange() {
+    if (this.passwordIsRedacted()) {
+      this.password = '';
+    }
+    this.handleCredentialChange();
   }
 
   handleCredentialChange() {
@@ -180,7 +202,7 @@ export class VmCredentialsComponent implements OnInit {
             );
           } else if (this.scenarioId()) {
             this.scenarioDataService.deleteVmCredential(
-              scenarioTemplateId,
+              this.scenarioId(),
               vmCredential.id,
             );
           }

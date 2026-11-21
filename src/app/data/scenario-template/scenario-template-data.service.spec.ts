@@ -184,6 +184,26 @@ describe('ScenarioTemplateDataService', () => {
     });
 
     /**
+     * Verifies: copyScenarioTemplate()'s response keeps its VM Credentials when the template's SignalR push, which carries none, arrived first.
+     * Interacts with: copyScenarioTemplate stub, updateStore (the SignalR entry point), ScenarioTemplateQuery.
+     * Data: the push stores 'new' with vmCredentials null; the response carries credential c1.
+     */
+    it('copyScenarioTemplate() keeps the response credentials when the push arrived first', () => {
+      const credential = { id: 'c1', username: 'guest', password: 'secret' };
+      const { service, query } = setup({
+        templateApi: {
+          copyScenarioTemplate: () =>
+            of(template({ id: 'new', vmCredentials: [credential] })),
+        },
+      });
+      service.updateStore(template({ id: 'new', vmCredentials: null }));
+
+      service.copyScenarioTemplate('t1');
+
+      expect(query.getEntity('new').vmCredentials).toEqual([credential]);
+    });
+
+    /**
      * Verifies: updateScenarioTemplate() sends the template and stores the API's version.
      * Interacts with: ScenarioTemplateService.updateScenarioTemplate stub.
      * Data: template 't1' whose duration the API changes to 8.
@@ -285,7 +305,7 @@ describe('ScenarioTemplateDataService', () => {
     });
 
     /**
-     * Verifies: a template pushed without its VM Credentials (null, as SignalR sends it) keeps the ones loaded, and one never loaded stores none.
+     * Verifies: a template pushed without its VM Credentials (null, as SignalR sends it) keeps the ones loaded, and one never loaded is stored without any, so the VM Credentials component loads it.
      * Interacts with: ScenarioTemplateDataService.updateStore, ScenarioTemplateQuery.
      * Data: 't1' loaded with one credential, then pushed renamed with vmCredentials null; 't2' pushed with null.
      */
@@ -299,7 +319,7 @@ describe('ScenarioTemplateDataService', () => {
 
       expect(query.getEntity('t1').name).toBe('Renamed');
       expect(query.getEntity('t1').vmCredentials).toEqual([credential]);
-      expect(query.getEntity('t2').vmCredentials).toEqual([]);
+      expect(query.getEntity('t2').vmCredentials).toBeUndefined();
     });
 
     /**

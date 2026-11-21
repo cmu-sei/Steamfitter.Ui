@@ -200,7 +200,7 @@ export class ScenarioTemplateDataService {
         take(1),
       )
       .subscribe((s) => {
-        this.scenarioTemplateStore.upsert(s.id, { ...s });
+        this.updateStore({ ...s });
       });
   }
 
@@ -215,7 +215,8 @@ export class ScenarioTemplateDataService {
         take(1),
       )
       .subscribe((s) => {
-        this.scenarioTemplateStore.add(s);
+        // its SignalR push can arrive first, without the credentials this response carries
+        this.updateStore(s);
         this.setActive(s.id);
       });
   }
@@ -231,7 +232,8 @@ export class ScenarioTemplateDataService {
         take(1),
       )
       .subscribe((s) => {
-        this.scenarioTemplateStore.add(s);
+        // its SignalR push can arrive first, without the credentials this response carries
+        this.updateStore(s);
         this.setActive(s.id);
       });
   }
