@@ -183,11 +183,11 @@ describe('ScenarioDataService', () => {
     });
 
     /**
-     * Verifies: loadById() stores the API's ISO date strings unconverted, so a later date sort of the list throws.
+     * Verifies: loadById() stores the fetched scenario through updateStore(), converting its dates, so a date sort of the list works. (It is called whenever the Task editor shows VM Credentials.)
      * Interacts with: ScenarioService.getScenario stub, ScenarioQuery, ScenarioDataService.scenarioList.
      * Data: one stored scenario with Date fields (from updateStore); 's1' fetched with ISO-string dates; URL sorton=startDate.
      */
-    it('stores the fetched dates as strings, which breaks a date sort', async () => {
+    it('converts the fetched dates, so a date sort works', async () => {
       const { service, query } = setup({
         params: { sorton: 'startDate' },
         scenarioApi: { getScenario: (id: string) => of(apiScenario({ id })) },
@@ -196,10 +196,12 @@ describe('ScenarioDataService', () => {
 
       service.loadById('s1');
 
-      expect(typeof query.getEntity('s1').startDate).toBe('string');
-      await expect(firstValueFrom(service.scenarioList)).rejects.toThrow(
-        TypeError,
+      expect(query.getEntity('s1').startDate).toEqual(
+        new Date('2026-02-01T00:00:00Z'),
       );
+      expect(
+        (await firstValueFrom(service.scenarioList)).map((s) => s.id),
+      ).toHaveLength(2);
     });
   });
 
@@ -310,6 +312,29 @@ describe('ScenarioDataService', () => {
           queryParamsHandling: 'merge',
         });
         expect(query.getValue().loading).toBe(false);
+      },
+    );
+
+    /**
+     * Verifies: the API's response keeps its VM Credentials when the scenario's SignalR push, which carries none, arrived first.
+     * Interacts with: the matching ScenarioService stub, updateStore (the SignalR entry point), ScenarioQuery.
+     * Data: the push stores 'new' with vmCredentials null; the response carries credential c1.
+     */
+    it.each(cases)(
+      '$name keeps the response credentials when the push arrived first',
+      ({ act, scenarioApi }) => {
+        const credential = { id: 'c1', username: 'guest', password: 'secret' };
+        const respond = Object.keys(scenarioApi)[0] as keyof ScenarioService;
+        const { service, query } = setup({
+          scenarioApi: {
+            [respond]: () => of({ ...created, vmCredentials: [credential] }),
+          },
+        });
+        service.updateStore({ ...created, vmCredentials: null });
+
+        act(service);
+
+        expect(query.getEntity('new').vmCredentials).toEqual([credential]);
       },
     );
 
@@ -546,6 +571,26 @@ describe('ScenarioDataService', () => {
 
       service.deleteFromStore('s1');
       expect(query.hasEntity('s1')).toBe(false);
+    });
+
+    /**
+     * Verifies: a scenario pushed without its VM Credentials (null, as SignalR sends it) keeps the ones loaded, and one never loaded is stored without any, so the VM Credentials component loads it.
+     * Interacts with: ScenarioStore via the service, ScenarioQuery.
+     * Data: 's1' loaded with one credential, then pushed renamed with vmCredentials null; 's2' pushed with null.
+     */
+    it('updateStore() keeps the stored credentials when a push carries none', () => {
+      const { service, query } = setup();
+      const credential = { id: 'c1', username: 'guest', password: 'secret' };
+
+      service.updateStore(apiScenario({ vmCredentials: [credential] }));
+      service.updateStore(
+        apiScenario({ name: 'Renamed', vmCredentials: null }),
+      );
+      service.updateStore(apiScenario({ id: 's2', vmCredentials: null }));
+
+      expect(query.getEntity('s1').name).toBe('Renamed');
+      expect(query.getEntity('s1').vmCredentials).toEqual([credential]);
+      expect(query.getEntity('s2').vmCredentials).toBeUndefined();
     });
   });
 

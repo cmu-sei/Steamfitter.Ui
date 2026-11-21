@@ -9,13 +9,13 @@ import { MatDialog } from '@angular/material/dialog';
 import { ScenarioTemplateDataService } from 'src/app/data/scenario-template/scenario-template-data.service';
 import { ScenarioDataService } from 'src/app/data/scenario/scenario-data.service';
 import { AddDialogComponent } from './add-dialog/add-dialog.component';
-import { Observable } from 'rxjs';
-import { delay, tap } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { catchError, delay, switchMap, tap } from 'rxjs/operators';
 import { CrucibleDialogService } from '@cmusei/crucible-common';
-import { MatFormField, MatInput } from '@angular/material/input';
+import { MatFormField, MatHint, MatInput } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { MatExpansionPanel } from '@angular/material/expansion';
-import { MatIconButton } from '@angular/material/button';
+import { MatButton, MatIconButton } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 import { AsyncPipe } from '@angular/common';
 
@@ -25,9 +25,11 @@ import { AsyncPipe } from '@angular/common';
   styleUrls: ['./vm-credentials.component.scss'],
   imports: [
     MatFormField,
+    MatHint,
     MatInput,
     FormsModule,
     MatExpansionPanel,
+    MatButton,
     MatIconButton,
     MatIcon,
     AsyncPipe,
@@ -43,9 +45,18 @@ export class VmCredentialsComponent implements OnInit {
 
   @Input() username: string;
   @Input() password: string;
+
+  /** Whether the fresh load of the credentials failed. */
+  loadFailed = false;
   readonly scenarioTemplateId = input<string>(undefined);
   readonly scenarioId = input<string>(undefined);
+  /** Whether the Task editor cleared a redacted password because the username changed. */
+  readonly secretCleared = input(false);
+  /** Whether the Task keeps a password the API withheld, which the field shows empty. */
+  readonly passwordKept = input(false);
   readonly selectedVmCredentialChanged = output<VmCredential>();
+  /** Asks the Task editor to clear the password the API withheld, rather than keep it. */
+  readonly clearSavedPassword = output<void>();
   showManagement = false;
   defaultVmCredential: VmCredential;
   scenarioTemplate: Observable<ScenarioTemplate>;
@@ -75,11 +86,39 @@ export class VmCredentialsComponent implements OnInit {
   }
 
   ngOnInit() {
-    if (this.scenarioTemplateId()) {
-      this.parent = this.scenarioTemplate;
-    } else if (this.scenarioId()) {
-      this.parent = this.scenario;
+    // The stored credentials can be stale (another editor changed them, or the user has since lost edit),
+    // and a record first pushed over SignalR has none, as SignalR never sends them: load them fresh
+    // whenever the Task editor shows them. A viewer is sent none.
+    // Nothing is listed, or used as the default, until that load is done.
+    const scenarioTemplateId = this.scenarioTemplateId();
+    const scenarioId = this.scenarioId();
+    if (scenarioTemplateId) {
+      this.parent = this.afterRefresh(
+        this.scenarioTemplateDataService.refreshVmCredentials(
+          scenarioTemplateId,
+        ),
+        this.scenarioTemplate,
+      );
+    } else if (scenarioId) {
+      this.parent = this.afterRefresh(
+        this.scenarioDataService.refreshVmCredentials(scenarioId),
+        this.scenario,
+      );
     }
+  }
+
+  private afterRefresh<T>(
+    refresh: Observable<unknown>,
+    parent: Observable<T>,
+  ): Observable<T> {
+    return refresh.pipe(
+      catchError(() => {
+        // the data service has forgotten the stored credentials
+        this.loadFailed = true;
+        return of(null);
+      }),
+      switchMap(() => parent),
+    );
   }
 
   private setVmCredentialsToDefault(p: ScenarioTemplate | Scenario) {
@@ -100,7 +139,10 @@ export class VmCredentialsComponent implements OnInit {
 
   sortVmCredentialList(vmCredentials): VmCredential[] {
     const credArray: VmCredential[] = [];
-    vmCredentials.forEach((val) => credArray.push(Object.assign({}, val)));
+    // a viewer is sent none, and SignalR never sends them
+    (vmCredentials ?? []).forEach((val) =>
+      credArray.push(Object.assign({}, val)),
+    );
     return credArray.sort((a, b) => (a.username <= b.username ? -1 : 1));
   }
 
@@ -124,6 +166,7 @@ export class VmCredentialsComponent implements OnInit {
   addVmCredential() {
     const newVmCredential = {
       username: this.username,
+      // a kept password is shown empty, so it is never copied
       password: this.password,
       description: '',
     } as VmCredential;
@@ -169,7 +212,7 @@ export class VmCredentialsComponent implements OnInit {
             );
           } else if (this.scenarioId()) {
             this.scenarioDataService.deleteVmCredential(
-              scenarioTemplateId,
+              this.scenarioId(),
               vmCredential.id,
             );
           }

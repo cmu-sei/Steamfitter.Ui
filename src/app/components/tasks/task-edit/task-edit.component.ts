@@ -27,6 +27,10 @@ import { MatMenuItem } from '@angular/material/menu';
 import { VmCredentialsComponent } from '../../vm-credentials/vm-credentials.component';
 import { VmListComponent } from '../../vm-list/vm-list.component';
 import { AsyncPipe } from '@angular/common';
+import {
+  REDACTED_SECRET,
+  isSecretParameter,
+} from 'src/app/models/redacted-secret';
 
 @Component({
   selector: 'app-task-edit',
@@ -75,6 +79,15 @@ export class TaskEditComponent implements OnInit, OnDestroy {
   chooseVms = false;
   username = new BehaviorSubject<string>('');
   password = new BehaviorSubject<string>('');
+  /**
+   * The secrets the API sent redacted and the Task keeps: their fields show empty, and an empty one is sent
+   * back as the placeholder, which the API reads as keeping the stored secret.
+   */
+  secretKept: Record<string, boolean> = {};
+  /** Whether a kept secret was dropped because the username changed. */
+  secretCleared = false;
+  /** The username as the Task was opened or last changed. */
+  private lastUsername = '';
   private unsubscribe$ = new Subject();
 
   ngOnInit() {
@@ -132,9 +145,13 @@ export class TaskEditComponent implements OnInit, OnDestroy {
   }
 
   onCommandChange() {
+    this.applyKeptSecretRules();
     const actionParameters: Record<string, string> = {};
     this.selectedCommand.parameters.forEach((param) => {
       actionParameters[param.key] = param.value?.toString();
+      if (this.secretKept[param.key] && !param.value) {
+        actionParameters[param.key] = REDACTED_SECRET;
+      }
       if (param.key.toLowerCase() === 'username') {
         this.username.next(param.value);
       } else if (param.key.toLowerCase() === 'password') {
@@ -144,6 +161,38 @@ export class TaskEditComponent implements OnInit, OnDestroy {
     this.data.task.actionParameters = actionParameters;
     this.data.task.apiUrl = this.selectedCommand.api;
     this.data.task.action = this.selectedCommand.action;
+  }
+
+  /**
+   * A kept secret is sent back whenever its field is empty, so a value entered and then erased keeps it again.
+   * A new username drops it, as the API would otherwise keep the old user's secret for the new one.
+   */
+  private applyKeptSecretRules() {
+    const parameters = this.selectedCommand?.parameters ?? [];
+    const username = `${parameters.find((p) => p.key.toLowerCase() === 'username')?.value ?? ''}`;
+    const usernameChanged = username !== this.lastUsername;
+    this.lastUsername = username;
+    if (usernameChanged) {
+      parameters
+        .filter((p) => this.secretKept[p.key])
+        .forEach((p) => {
+          this.secretKept[p.key] = false;
+          this.secretCleared = true;
+        });
+    }
+  }
+
+  /** Clears the password the API withheld, so the Task is saved without one. */
+  clearKeptPassword() {
+    const password = this.selectedCommand?.parameters.find(
+      (p) => p.key === 'Password',
+    );
+    this.secretKept.Password = false;
+    this.secretCleared = false;
+    if (password) {
+      password.value = '';
+    }
+    this.onCommandChange();
   }
 
   credentialsAreRequired() {
@@ -166,8 +215,14 @@ export class TaskEditComponent implements OnInit, OnDestroy {
             p.value = this.data.task.actionParameters[p.key];
             // p.value = p.value || !p.default ? p.value : p.default;
             p.value = p.value?.toLowerCase() === 'false' ? '' : p.value;
+            if (isSecretParameter(p.key) && p.value === REDACTED_SECRET) {
+              // shown empty, never as the placeholder, so nothing typed can mix with it
+              p.value = '';
+              this.secretKept[p.key] = true;
+            }
             if (p.key.toLowerCase() === 'username') {
               this.username.next(p.value);
+              this.lastUsername = `${p.value ?? ''}`;
             } else if (p.key.toLowerCase() === 'password') {
               this.password.next(p.value);
             }
@@ -207,6 +262,11 @@ export class TaskEditComponent implements OnInit, OnDestroy {
       vmCredential.username;
     this.selectedCommand.parameters.find((p) => p.key === 'Password').value =
       vmCredential.password;
+    if (vmCredential.id) {
+      // a saved credential, picked from the list, replaces the kept password with its own
+      this.secretKept.Password = false;
+      this.secretCleared = false;
+    }
     this.onCommandChange();
   }
 

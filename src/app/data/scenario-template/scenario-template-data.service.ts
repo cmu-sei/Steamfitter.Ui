@@ -14,9 +14,10 @@ import {
   VmCredential,
   VmCredentialService,
 } from 'src/app/generated/steamfitter.api';
-import { map, take, tap } from 'rxjs/operators';
-import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
+import { catchError, map, take, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, combineLatest, throwError } from 'rxjs';
 import { TaskDataService } from 'src/app/data/task/task-data.service';
+import { keepVmCredentials } from 'src/app/data/keep-vm-credentials';
 
 @Injectable({
   providedIn: 'root',
@@ -188,6 +189,24 @@ export class ScenarioTemplateDataService {
       );
   }
 
+  /**
+   * Loads the template fresh for the VM Credentials it shows the Task editor, without the store's loading
+   * flag. On failure (as when the user has lost access) the stored credentials are forgotten rather than
+   * kept, and the error is passed on.
+   */
+  refreshVmCredentials(id: string): Observable<ScenarioTemplate> {
+    return this.scenarioTemplateService.getScenarioTemplate(id).pipe(
+      take(1),
+      tap((s) => this.updateStore({ ...s })),
+      catchError((error: unknown) => {
+        if (this.scenarioTemplateQuery.hasEntity(id)) {
+          this.scenarioTemplateStore.update(id, { vmCredentials: [] });
+        }
+        return throwError(() => error);
+      }),
+    );
+  }
+
   loadById(id: string) {
     this.scenarioTemplateStore.setLoading(true);
     return this.scenarioTemplateService
@@ -199,7 +218,7 @@ export class ScenarioTemplateDataService {
         take(1),
       )
       .subscribe((s) => {
-        this.scenarioTemplateStore.upsert(s.id, { ...s });
+        this.updateStore({ ...s });
       });
   }
 
@@ -214,7 +233,8 @@ export class ScenarioTemplateDataService {
         take(1),
       )
       .subscribe((s) => {
-        this.scenarioTemplateStore.add(s);
+        // its SignalR push can arrive first, without the credentials this response carries
+        this.updateStore(s);
         this.setActive(s.id);
       });
   }
@@ -230,7 +250,8 @@ export class ScenarioTemplateDataService {
         take(1),
       )
       .subscribe((s) => {
-        this.scenarioTemplateStore.add(s);
+        // its SignalR push can arrive first, without the credentials this response carries
+        this.updateStore(s);
         this.setActive(s.id);
       });
   }
@@ -344,7 +365,13 @@ export class ScenarioTemplateDataService {
   }
 
   updateStore(scenarioTemplate: ScenarioTemplate) {
-    this.scenarioTemplateStore.upsert(scenarioTemplate.id, scenarioTemplate);
+    this.scenarioTemplateStore.upsert(
+      scenarioTemplate.id,
+      keepVmCredentials(
+        scenarioTemplate,
+        this.scenarioTemplateQuery.getEntity(scenarioTemplate.id),
+      ),
+    );
   }
 
   deleteFromStore(id: string) {

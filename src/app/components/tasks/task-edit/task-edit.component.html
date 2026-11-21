@@ -221,7 +221,10 @@ Released under a MIT (SEI)-style license. See LICENSE.md in the project root for
                 [scenarioId]="data.task.scenarioId"
                 [username]="username | async"
                 [password]="password | async"
+                [secretCleared]="secretCleared"
+                [passwordKept]="!!secretKept['Password']"
                 (selectedVmCredentialChanged)="handleVmCredentialChange($event)"
+                (clearSavedPassword)="clearKeptPassword()"
               />
             </span>
           }

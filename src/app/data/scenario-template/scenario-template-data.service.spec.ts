@@ -184,6 +184,26 @@ describe('ScenarioTemplateDataService', () => {
     });
 
     /**
+     * Verifies: copyScenarioTemplate()'s response keeps its VM Credentials when the template's SignalR push, which carries none, arrived first.
+     * Interacts with: copyScenarioTemplate stub, updateStore (the SignalR entry point), ScenarioTemplateQuery.
+     * Data: the push stores 'new' with vmCredentials null; the response carries credential c1.
+     */
+    it('copyScenarioTemplate() keeps the response credentials when the push arrived first', () => {
+      const credential = { id: 'c1', username: 'guest', password: 'secret' };
+      const { service, query } = setup({
+        templateApi: {
+          copyScenarioTemplate: () =>
+            of(template({ id: 'new', vmCredentials: [credential] })),
+        },
+      });
+      service.updateStore(template({ id: 'new', vmCredentials: null }));
+
+      service.copyScenarioTemplate('t1');
+
+      expect(query.getEntity('new').vmCredentials).toEqual([credential]);
+    });
+
+    /**
      * Verifies: updateScenarioTemplate() sends the template and stores the API's version.
      * Interacts with: ScenarioTemplateService.updateScenarioTemplate stub.
      * Data: template 't1' whose duration the API changes to 8.
@@ -282,6 +302,40 @@ describe('ScenarioTemplateDataService', () => {
         'Renamed',
         undefined,
       ]);
+    });
+
+    /**
+     * Verifies: a template pushed without its VM Credentials (null, as SignalR sends it) keeps the ones loaded, and one never loaded is stored without any, so the VM Credentials component loads it.
+     * Interacts with: ScenarioTemplateDataService.updateStore, ScenarioTemplateQuery.
+     * Data: 't1' loaded with one credential, then pushed renamed with vmCredentials null; 't2' pushed with null.
+     */
+    it('updateStore() keeps the stored credentials when a push carries none', () => {
+      const { service, query } = setup();
+      const credential = { id: 'c1', username: 'guest', password: 'secret' };
+
+      service.updateStore(template({ vmCredentials: [credential] }));
+      service.updateStore(template({ name: 'Renamed', vmCredentials: null }));
+      service.updateStore(template({ id: 't2', vmCredentials: null }));
+
+      expect(query.getEntity('t1').name).toBe('Renamed');
+      expect(query.getEntity('t1').vmCredentials).toEqual([credential]);
+      expect(query.getEntity('t2').vmCredentials).toBeUndefined();
+    });
+
+    /**
+     * Verifies: a template loaded with an empty credential list, as a viewer is sent it, replaces the stored list.
+     * Interacts with: ScenarioTemplateDataService.updateStore, ScenarioTemplateQuery.
+     * Data: 't1' stored with one credential, then stored with an empty list.
+     */
+    it('updateStore() replaces the stored credentials with a list that is sent, empty or not', () => {
+      const { service, query } = setup();
+
+      service.updateStore(
+        template({ vmCredentials: [{ id: 'c1', username: 'guest' }] }),
+      );
+      service.updateStore(template({ vmCredentials: [] }));
+
+      expect(query.getEntity('t1').vmCredentials).toEqual([]);
     });
   });
 
