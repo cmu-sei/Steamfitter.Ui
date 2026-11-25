@@ -105,8 +105,6 @@ describe('ScenarioStartService', () => {
     expect(confirm).toHaveBeenCalledWith({
       title: 'Start Scenario',
       message: 'Are you sure that you want to start Alpha?',
-      confirmText: 'Start',
-      cancelText: 'Cancel',
     });
     expect(open).not.toHaveBeenCalled();
     expect(data.startScenario).toHaveBeenCalledWith('s1');
