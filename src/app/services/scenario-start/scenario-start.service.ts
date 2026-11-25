@@ -46,8 +46,6 @@ export class ScenarioStartService {
       .confirm({
         title: 'Start Scenario',
         message: `Are you sure that you want to start ${scenario.name}?`,
-        confirmText: 'Start',
-        cancelText: 'Cancel',
       })
       .afterClosed()
       .subscribe((confirmed) => {
