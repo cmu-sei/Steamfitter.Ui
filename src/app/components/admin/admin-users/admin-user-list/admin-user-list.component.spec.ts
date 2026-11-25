@@ -110,7 +110,7 @@ async function renderUserList(canEdit: boolean) {
 
 describe('AdminUserListComponent', () => {
   /**
-   * Verifies: with canEdit true a user manager picks another role, which is sent to the API; the stored user keeps its old role.
+   * Verifies: with canEdit true a user manager picks another role, which is sent to the API and shows in the stored user.
    * Interacts with: the role mat-select, real UserDataService.update, UserService.updateUser stub, real UserStore and UserQuery.
    * Data: users Alice (Observer) and Bob in the store; canEdit true; Alice's role is changed to Content Developer.
    */
@@ -128,8 +128,7 @@ describe('AdminUserListComponent', () => {
       name: 'Alice',
       roleId: 'r2',
     });
-    // Same case as 'update() calls the API but does not change the stored user' in user-data.service.spec.ts.
-    expect(TestBed.inject(UserQuery).getEntity('u1')?.roleId).toBe('r1');
+    expect(TestBed.inject(UserQuery).getEntity('u1')?.roleId).toBe('r2');
   });
 
   /**
