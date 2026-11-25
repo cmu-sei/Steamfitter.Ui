@@ -142,11 +142,11 @@ describe('UserDataService', () => {
   });
 
   /**
-   * Verifies: update() sends the change but leaves the stored user unchanged, because it re-adds an existing id.
+   * Verifies: update() merges the API's answer into the stored user, so a new role shows.
    * Interacts with: UserService.updateUser stub, UserQuery.
-   * Data: stored user 'u1' named 'Ada'; the API returns the rename to 'Ada L.'.
+   * Data: stored user 'u1' named 'Ada' with 'old-role'; the API returns the rename to 'Ada L.' with 'new-role'.
    */
-  it('update() calls the API but does not change the stored user', () => {
+  it('update() merges the API answer into the stored user', () => {
     const userApi = {
       updateUser: vi.fn((id: string, u: User) => of({ ...u, id })),
     } satisfies ApiStub<UserService>;
@@ -160,9 +160,48 @@ describe('UserDataService', () => {
       expect.objectContaining({ roleId: 'new-role' }),
     );
     expect(query.getEntity('u1')).toMatchObject({
-      name: 'Ada',
-      roleId: 'old-role',
+      name: 'Ada L.',
+      roleId: 'new-role',
     });
+  });
+
+  /**
+   * Verifies: update() leaves the stored user with no role when the answer's role is null, as when an admin removes it.
+   * Interacts with: UserService.updateUser stub, UserQuery.
+   * Data: stored user 'u1' with 'old-role'; the API answers with roleId null.
+   */
+  it('update() leaves no role when the API answer has a null role', () => {
+    const userApi = {
+      updateUser: vi.fn((id: string) =>
+        of<User>({ id, name: 'Ada', roleId: null }),
+      ),
+    } satisfies ApiStub<UserService>;
+    const { service, store, query } = setup({ userApi });
+    store.set([{ id: 'u1', name: 'Ada', roleId: 'old-role' }]);
+
+    service.update({ id: 'u1', name: 'Ada', roleId: null });
+
+    expect(query.getEntity('u1').roleId).toBeNull();
+  });
+
+  /**
+   * Verifies: update() adds a user that is not in the store yet, with the initial UI state.
+   * Interacts with: UserService.updateUser stub, UserQuery and its UI query.
+   * Data: the store is empty; the API answers for 'u9'.
+   */
+  it('update() adds a user that is not stored yet', () => {
+    const userApi = {
+      updateUser: vi.fn((id: string, u: User) => of({ ...u, id })),
+    } satisfies ApiStub<UserService>;
+    const { service, query } = setup({ userApi });
+
+    service.update({ id: 'u9', name: 'Grace', roleId: 'r1' });
+
+    expect(query.getEntity('u9')).toMatchObject({
+      name: 'Grace',
+      roleId: 'r1',
+    });
+    expect(query.ui.getEntity('u9')).toMatchObject({ isSelected: false });
   });
 
   /**
